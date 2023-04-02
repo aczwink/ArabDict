@@ -1,0 +1,6 @@
+{
+    "type": "openapi",
+    "source": "./src/api",
+    "destination": "./dist/openapi",
+    "securitySchemes": {}
+}

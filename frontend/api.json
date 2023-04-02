@@ -1,0 +1,6 @@
+{
+    "type": "api",
+    "source": "../backend/dist/openapi.json",
+    "destination": "./dist/api.ts",
+    "excludedStatusCodes": []
+}

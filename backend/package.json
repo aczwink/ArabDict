@@ -1,0 +1,26 @@
+{
+  "name": "arabdict-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx webpack",
+    "run-dev-server": "nodemon --exec \"npx acts-util-apilib && tsc; (export $(cat .env | xargs) && cd dist && node main.js)\""
+  },
+  "keywords": [],
+  "author": "Amir Czwink",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "acts-util-apilib": "*",
+    "acts-util-core": "*",
+    "acts-util-node": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "nodemon": "^2.0.22",
+    "source-map-loader": "^4.0.1",
+    "ts-loader": "^9.4.2",
+    "webpack": "^5.77.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
