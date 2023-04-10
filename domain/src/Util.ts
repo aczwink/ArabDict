@@ -15,33 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
+import "acts-util-core";
 import { FATHA, SHADDA } from "./Definitions";
-import { VerbRoot } from "./VerbRoot";
-import { Person, TA, Tempus, VerbStem } from "./VerbStem";
 
-export class VerbStem5 implements VerbStem
+export function RemoveTashkil(text: string)
 {
-    constructor(private root: VerbRoot)
-    {
-    }
-
-    //Public methods
-    public Conjugate(tempus: Tempus, person: Person): string
-    {
-        switch(tempus)
-        {
-            case "perfect":
-                {
-                    switch(person)
-                    {
-                        case "3rd-singular-masulin":
-                            return TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + this.root.r3 + FATHA;
-                    }
-
-                    throw new Error("Method not implemented.");
-                }
-        }
-        throw new Error("Method not implemented.");
-    }
+    return text.ReplaceAll(FATHA, "")
+        .ReplaceAll(SHADDA, "");
 }

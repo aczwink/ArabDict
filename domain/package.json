@@ -8,5 +8,8 @@
   },
   "keywords": [],
   "author": "Amir Czwink",
-  "license": "AGPL-3.0"
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "acts-util-core": "*"
+  }
 }

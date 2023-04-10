@@ -17,7 +17,7 @@
  * */
 
 import { Anchor, Component, Injectable, JSX_CreateElement, MatIcon, PopupManager, ProgressSpinner, RouterState, Textarea } from "acfrontend";
-import { NounData, RootCreationData, VerbData } from "../../dist/api";
+import { RootCreationData, VerbData, WordData, WordType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
 
@@ -31,7 +31,7 @@ export class ShowVerbComponent extends Component
         this.verbId = parseInt(routerState.routeParams.verbId!);
         this.data = null;
         this.root = { radicals: "" };
-        this.nouns = null;
+        this.derivedWords = null;
     }
     
     protected Render(): RenderValue
@@ -41,7 +41,7 @@ export class ShowVerbComponent extends Component
 
         return <fragment>
             {this.RenderProperties()}
-            {this.RenderNouns()}
+            {this.RenderDerivedWords()}
         </fragment>;
     }
 
@@ -49,35 +49,36 @@ export class ShowVerbComponent extends Component
     private verbId: number;
     private data: VerbData | null;
     private root: RootCreationData;
-    private nouns: NounData[] | null;
+    private derivedWords: WordData[] | null;
 
     //Private methods
-    private async LoadNouns()
+    private async LoadDerivedWords()
     {
-        const response3 = await this.apiService.verbs.nouns.get({ verbId: this.data!.id });
-        this.nouns = response3.data;
+        const response3 = await this.apiService.verbs.words.get({ verbId: this.data!.id });
+        this.derivedWords = response3.data;
     }
 
-    private RenderNoun(noun: NounData)
+    private RenderDerivedWord(derivedWord: WordData)
     {
         return <div className="row mb-2">
             <div className="col">
-                <h6 className="d-inline me-2">{noun.noun}</h6>
-                {noun.translation}
-                <a href="#" onclick={this.OnEditNounTranslation.bind(this, noun)}><MatIcon>edit</MatIcon></a>
+                <h6 className="d-inline me-2">{derivedWord.word + " " + this.RenderWordType(derivedWord)}</h6>
+                {derivedWord.translation}
+                <a href="#" onclick={this.OnEditWordTranslation.bind(this, derivedWord)}><MatIcon>edit</MatIcon></a>
             </div>
         </div>;
     }
 
-    private RenderNouns()
+    private RenderDerivedWords()
     {
-        if(this.nouns === null)
+        if(this.derivedWords === null)
             return <ProgressSpinner />;
 
         return <div className="mt-2">
             <h5>Nouns</h5>
-            {this.nouns.map(this.RenderNoun.bind(this))}
-            <button className="btn btn-primary" type="button" onclick={this.OnCreateNoun.bind(this)}>Add noun</button>
+            {this.derivedWords.map(this.RenderDerivedWord.bind(this))}
+            <button className="btn btn-primary" type="button" onclick={this.OnCreateWord.bind(this, WordType.Noun)}>Add noun</button>
+            <button className="btn btn-primary" type="button" onclick={this.OnCreateWord.bind(this, WordType.Preposition)}>Add preposition</button>
         </div>;
     }
 
@@ -102,42 +103,54 @@ export class ShowVerbComponent extends Component
         </table>;
     }
 
+    private RenderWordType(derivedWord: WordData)
+    {
+        switch(derivedWord.type)
+        {
+            case WordType.Noun:
+                return "";
+            case WordType.Preposition:
+                return "(prep.)";
+        }
+    }
+
     //Event handlers
-    private async OnCreateNoun()
+    private async OnCreateWord(wordType: WordType)
     {
         const result = prompt("Enter noun with full tashkil");
         if(result !== null)
         {
-            this.nouns = null;
+            this.derivedWords = null;
 
-            await this.apiService.verbs.nouns.post({
-                noun: result,
+            await this.apiService.verbs.words.post({
+                type: wordType,
+                word: result,
                 verbId: this.data!.id
             });
 
-            this.LoadNouns();
+            this.LoadDerivedWords();
         }
     }
 
-    private OnEditNounTranslation(noun: NounData, event: Event)
+    private OnEditWordTranslation(derivedWord: WordData, event: Event)
     {
         event.preventDefault();
 
-        let newText = noun.translation;
+        let newText = derivedWord.translation;
 
         const ref = this.popupManager.OpenDialog(<Textarea value={newText} onChanged={newValue => newText = newValue} />, {
             title: "Edit translation"
         });
         ref.onAccept.Subscribe( async () => {
             ref.waiting.Set(true);
-            await this.apiService.verbs.nouns.put({
-                data: noun,
+            await this.apiService.verbs.words.put({
+                wordId: derivedWord.id,
                 translation: newText
             });
             ref.Close();
 
-            this.nouns = null;
-            this.LoadNouns();
+            this.derivedWords = null;
+            this.LoadDerivedWords();
         });
     }
 
@@ -154,6 +167,6 @@ export class ShowVerbComponent extends Component
         this.root = response2.data;
         this.data = response1.data;
 
-        this.LoadNouns();
+        this.LoadDerivedWords();
     }
 }

@@ -16,6 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { SHADDA, WAW, YA } from "./Definitions";
+
+export enum RootType
+{
+    Quadriliteral,
+    Regular,
+    SecondConsonantDoubled,
+    SecondConsonantWawOrYa,
+}
+
 export class VerbRoot
 {
     constructor(private radicals: string)
@@ -36,5 +46,35 @@ export class VerbRoot
     public get r3()
     {
         return this.radicals.charAt(2);
+    }
+
+    public get r4()
+    {
+        return this.radicals.charAt(3);
+    }
+
+    public get radicalsAsSeparateLetters()
+    {
+        switch(this.type)
+        {
+            case RootType.Quadriliteral:
+                return [this.r1, this.r2, this.r3, this.r4];
+            case RootType.Regular:
+            case RootType.SecondConsonantWawOrYa:
+                return [this.r1, this.r2, this.r3];
+            case RootType.SecondConsonantDoubled:
+                return [this.r1, this.r2, this.r2];
+        }
+    }
+
+    public get type()
+    {
+        if(this.radicals.length === 4)
+            return RootType.Quadriliteral;
+        if(this.r3 === SHADDA)
+            return RootType.SecondConsonantDoubled;
+        if((this.r2 === WAW) || (this.r2 === YA))
+            return RootType.SecondConsonantWawOrYa;
+        return RootType.Regular;
     }
 }

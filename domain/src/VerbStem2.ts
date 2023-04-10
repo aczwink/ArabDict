@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { FATHA, SHADDA } from "./Definitions";
 import { VerbRoot } from "./VerbRoot";
-import { FATHA, Person, SHADDA, Tempus, VerbStem } from "./VerbStem";
+import { Person, Tempus, VerbStem } from "./VerbStem";
 
 export class VerbStem2 implements VerbStem
 {

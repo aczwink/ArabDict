@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npx webpack",
-    "run-dev-server": "nodemon --exec \"npx acts-util-apilib && tsc; (export $(cat .env | xargs) && cd dist && node main.js)\""
+    "run-dev-server": "nodemon --exec \"npx acts-util-apilib && tsc; (export $(cat .env | xargs) && cd dist && node bundle.js)\""
   },
   "keywords": [],
   "author": "Amir Czwink",

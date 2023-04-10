@@ -19,48 +19,58 @@
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 
-export interface NounCreationData
+enum WordType
 {
-    noun: string;
-    verbId: number;
+    Noun = 0,
+    Preposition = 1
 }
 
-interface NounData extends NounCreationData
+export interface WordCreationData
 {
+    verbId: number;
+    word: string;
+    type: WordType;
+}
+
+interface WordData extends WordCreationData
+{
+    id: number;
     translation: string;
 }
 
 @Injectable
-export class NounsController
+export class WordsController
 {
     constructor(private dbController: DatabaseController)
     {
     }
 
     //Public methods
-    public async CreateNoun(data: NounCreationData)
+    public async CreateWord(data: WordCreationData)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        await conn.InsertRow("nouns", {
-            noun: data.noun,
+        const result = await conn.InsertRow("words", {
+            translation: "",
+            type: data.type,
             verbId: data.verbId,
-            translation: ""
+            word: data.word,
         });
+        return result.insertId;
     }
 
-    public async UpdateNounTranslation(noun: NounCreationData, translation: string)
+    public async UpdateWordTranslation(wordId: number, translation: string)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        await conn.UpdateRows("nouns", { translation }, "noun = ? AND verbId = ?", noun.noun, noun.verbId);
+        await conn.UpdateRows("words", { translation }, "id = ?", wordId);
     }
 
-    public async QueryNouns(verbId: number)
+    public async QueryVerbDerivedWords(verbId: number)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const rows = await conn.Select<NounData>("SELECT noun, verbId, translation FROM nouns WHERE verbId = ?", verbId);
+        const rows = await conn.Select<WordData>("SELECT id, verbId, type, word, translation FROM words WHERE verbId = ?", verbId);
 
         return rows;
     }

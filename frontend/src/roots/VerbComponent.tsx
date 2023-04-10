@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner } from "acfrontend";
+import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { CreateVerb } from "arabdict-domain/src/CreateVerb";
 import { KASRA } from "arabdict-domain/src/VerbStem";
-import { NounData, RootCreationData, VerbData } from "../../dist/api";
+import { RootCreationData, VerbData, WordData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
 
@@ -56,7 +56,7 @@ export class VerbComponent extends Component<{ root: RootCreationData; verbData:
     {
         super();
 
-        this.nouns = null;
+        this.derivedWords = null;
     }
     
     protected Render(): RenderValue
@@ -79,35 +79,35 @@ export class VerbComponent extends Component<{ root: RootCreationData; verbData:
     }
 
     //Private state
-    private nouns: NounData[] | null;
+    private derivedWords: WordData[] | null;
 
     //Private methods
-    private RenderNoun(noun: NounData)
+    private RenderNoun(derivedWord: WordData)
     {
         return <div className="row">
             <div className="col">
-                <h6 className="d-inline me-2">{noun.noun}</h6>
-                {noun.translation}
+                <h6 className="d-inline me-2">{derivedWord.word}</h6>
+                {derivedWord.translation}
             </div>
         </div>;
     }
 
     private RenderNouns()
     {
-        if(this.nouns === null)
+        if(this.derivedWords === null)
             return <ProgressSpinner />;
-        if(this.nouns.length === 0)
+        if(this.derivedWords.length === 0)
             return null;
 
         return <div className="mt-3">
-            {this.nouns.map(this.RenderNoun.bind(this))}
+            {this.derivedWords.map(this.RenderNoun.bind(this))}
         </div>;
     }
 
     //Event handlers
     override async OnInitiated(): Promise<void>
     {
-        const response = await this.apiService.verbs.nouns.get({ verbId: this.input.verbData.id });
-        this.nouns = response.data;
+        const response = await this.apiService.verbs.words.get({ verbId: this.input.verbData.id });
+        this.derivedWords = response.data;
     }
 }

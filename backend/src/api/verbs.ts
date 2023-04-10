@@ -17,13 +17,13 @@
  * */
 
 import { APIController, Body, BodyProp, Get, Post, Put, Query } from "acts-util-apilib";
-import { NounCreationData, NounsController } from "../data-access/NounsController";
 import { VerbCreationData, VerbsController } from "../data-access/VerbsController";
+import { WordCreationData, WordsController } from "../data-access/WordsController";
 
 @APIController("verbs")
 class _api_
 {
-    constructor(private verbsController: VerbsController, private nounsController: NounsController)
+    constructor(private verbsController: VerbsController, private wordsController: WordsController)
     {
     }
 
@@ -43,29 +43,29 @@ class _api_
         return await this.verbsController.QueryVerb(verbId);
     }
 
-    @Post("nouns")
-    public async CreateNoun(
-        @Body data: NounCreationData
+    @Post("words")
+    public async CreateWord(
+        @Body data: WordCreationData
     )
     {
-        return await this.nounsController.CreateNoun(data);
+        return await this.wordsController.CreateWord(data);
     }
 
-    @Get("nouns")
-    public async QueryVerbNouns(
+    @Get("words")
+    public async QueryVerbDerivedWords(
         @Query verbId: number
     )
     {
-        return await this.nounsController.QueryNouns(verbId);
+        return await this.wordsController.QueryVerbDerivedWords(verbId);
     }
 
-    @Put("nouns")
-    public async UpdateNounTranslation(
-        @BodyProp data: NounCreationData,
+    @Put("words")
+    public async UpdateWordTranslation(
+        @BodyProp wordId: number,
         @BodyProp translation: string
     )
     {
-        return await this.nounsController.UpdateNounTranslation(data, translation);
+        return await this.wordsController.UpdateWordTranslation(wordId, translation);
     }
 
     @Put("translation")

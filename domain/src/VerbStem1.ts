@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { VerbRoot } from "./VerbRoot";
-import { FATHA, Person, Tempus, VerbStem } from "./VerbStem";
+import { ALEF, FATHA, SHADDA } from "./Definitions";
+import { RootType, VerbRoot } from "./VerbRoot";
+import { Person, SUKUN, Tempus, VerbStem } from "./VerbStem";
 
 export class VerbStem1 implements VerbStem
 {
@@ -35,7 +36,17 @@ export class VerbStem1 implements VerbStem
                     switch(person)
                     {
                         case "3rd-singular-masulin":
-                            return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA;
+                            switch(this.root.type)
+                            {
+                                case RootType.Quadriliteral:
+                                    return this.root.r1 + FATHA + this.root.r2 + SUKUN + this.root.r3 + FATHA + this.root.r4 + FATHA;
+                                case RootType.Regular:
+                                    return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA;
+                                case RootType.SecondConsonantDoubled:
+                                    return this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA;
+                                case RootType.SecondConsonantWawOrYa:
+                                    return this.root.r1 + FATHA + ALEF + this.root.r3 + FATHA;
+                            }
                     }
 
                     throw new Error("Method not implemented.");

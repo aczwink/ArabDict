@@ -28,8 +28,8 @@ interface AlphabetRange
 
 const alphabetChars: AlphabetRange[] = [
     { first: 0x0627, count: 2}, //alef and ba
-    { first: 0x062A, count: 16}, //ta - ghain
-    { first: 0x0641, count: 7}, //ta - waw
+    { first: 0x062A, count: 17}, //ta - ghain
+    { first: 0x0641, count: 8}, //fa - waw
     { first: 0x064A, count: 1}, //ya
 ];
 

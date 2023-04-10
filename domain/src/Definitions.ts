@@ -15,19 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-export const ALEF_HAMZA = "\u0623";
-export const TA = "\u062A";
-export const SIIN = "\u0633";
-export const NUN = "\u0646";
 
-export const DHAMMA = "\u064F";
-export const KASRA = "\u0650";
-export const SUKUN = "\u0652";
+export const ALEF = "\u0627";
+export const WAW = "\u0648";
+export const YA = "\u064A";
 
-export type Tempus = "perfect";
-export type Person = "3rd-singular-masulin";
-
-export interface VerbStem
-{
-    Conjugate(tempus: Tempus, person: Person): string;
-}
+export const FATHA = "\u064E";
+export const SHADDA = "\u0651";

@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { ALEF, FATHA } from "./Definitions";
 import { VerbRoot } from "./VerbRoot";
-import { ALEF, FATHA, KASRA, Person, SUKUN, TA, Tempus, VerbStem } from "./VerbStem";
+import { KASRA, Person, SUKUN, TA, Tempus, VerbStem } from "./VerbStem";
 
 export class VerbStem8 implements VerbStem
 {
