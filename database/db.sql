@@ -1,8 +1,8 @@
--- MariaDB dump 10.19  Distrib 10.6.11-MariaDB, for debian-linux-gnu (x86_64)
+-- MariaDB dump 10.19  Distrib 10.6.12-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: arabdict
 -- ------------------------------------------------------
--- Server version	10.6.11-MariaDB-0ubuntu0.22.04.1
+-- Server version	10.6.12-MariaDB-0ubuntu0.22.10.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,23 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `nouns`
---
-
-DROP TABLE IF EXISTS `nouns`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `nouns` (
-  `noun` varchar(200) NOT NULL,
-  `verbId` int(10) unsigned NOT NULL,
-  `translation` text NOT NULL,
-  PRIMARY KEY (`noun`),
-  KEY `nouns_verbId` (`verbId`),
-  CONSTRAINT `nouns_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `roots`
 --
 
@@ -41,7 +24,7 @@ DROP TABLE IF EXISTS `roots`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roots` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `radicals` char(3) NOT NULL,
+  `radicals` char(4) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -64,6 +47,25 @@ CREATE TABLE `verbs` (
   CONSTRAINT `verbs_rootId` FOREIGN KEY (`rootId`) REFERENCES `roots` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `words`
+--
+
+DROP TABLE IF EXISTS `words`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `words` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `verbId` int(10) unsigned NOT NULL,
+  `type` tinyint(3) unsigned NOT NULL,
+  `word` text NOT NULL,
+  `translation` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `nouns_verbId` (`verbId`),
+  CONSTRAINT `nouns_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -74,4 +76,4 @@ CREATE TABLE `verbs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-02 22:13:01
+-- Dump completed on 2023-04-23 23:54:29
