@@ -16,22 +16,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, JSX_CreateElement, Navigation, NavItem, RouterComponent } from "acfrontend";
+import { Component, JSX_CreateElement } from "acfrontend";
 
-export class RootComponent extends Component
+export class EgpytianDialectComponent extends Component
 {
-    protected Render()
+    protected Render(): RenderValue
     {
         return <fragment>
-            <Navigation>
-                <ul className="nav nav-pills">
-                    <NavItem route="/roots">Roots</NavItem>
-                    <NavItem route="/dialects">Dialects</NavItem>
-                </ul>
-            </Navigation>
-            <div className="container-fluid">
-                <RouterComponent />
-            </div>
+            <h1>Egyptian dialect</h1>
+            <h2>Words</h2>
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fusha</th>
+                        <th>Egpytian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>هذا</td>
+                        <td>دا</td>
+                    </tr>
+                    <tr>
+                        <td>هذه</td>
+                        <td>دي</td>
+                    </tr>
+                </tbody>
+            </table>
         </fragment>;
     }
 }

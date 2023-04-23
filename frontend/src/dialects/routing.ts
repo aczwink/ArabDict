@@ -17,13 +17,9 @@
  * */
 
 import { Routes } from "acfrontend";
-import { routes as dialectsRoutes } from "./dialects/routing";
-import { routes as rootRoutes } from "./roots/routing";
-import { routes as verbsRoutes } from "./verbs/routing";
+import { EgpytianDialectComponent } from "./EgpytianDialectComponent";
 
 export const routes : Routes = [
-    { path: "dialects", children: dialectsRoutes },
-    { path: "roots", children: rootRoutes },
-    { path: "verbs", children: verbsRoutes },
-    { path: "*", redirect: "roots" },
+    { path: "egyptian", component: EgpytianDialectComponent },
+    { path: "", redirect: "egyptian" },
 ];
