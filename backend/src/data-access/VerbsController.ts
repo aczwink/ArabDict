@@ -24,12 +24,18 @@ export interface VerbCreationData
     rootId: number;
     stem: number;
     stem1MiddleRadicalTashkil: string;
+    stem1MiddleRadicalTashkilPresent: string;
 }
 
-interface VerbData extends VerbCreationData
+export interface VerbUpdateData
+{
+    translation: string;
+    verbalNounIds: number[];
+}
+
+interface VerbData extends VerbCreationData, VerbUpdateData
 {
     id: number;
-    translation: string;
 }
 
 @Injectable
@@ -48,6 +54,7 @@ export class VerbsController
             rootId: data.rootId,
             stem: data.stem,
             stem1MiddleRadicalTashkil: (data.stem === 1) ? data.stem1MiddleRadicalTashkil : "",
+            stem1MiddleRadicalTashkilPresent: (data.stem === 1) ? data.stem1MiddleRadicalTashkilPresent : "",
             translation: ""
         });
 
@@ -58,7 +65,12 @@ export class VerbsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const row = await conn.SelectOne<VerbData>("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, translation FROM verbs WHERE id = ?", verbId);
+        const row = await conn.SelectOne<VerbData>("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, stem1MiddleRadicalTashkilPresent, translation FROM verbs WHERE id = ?", verbId);
+        if(row !== undefined)
+        {
+            const rows = await conn.Select("SELECT verbalNounId FROM verbs_verbalNouns WHERE verbId = ?", verbId);
+            row.verbalNounIds = rows.map(x => x.verbalNounId);
+        }
 
         return row;
     }
@@ -67,15 +79,23 @@ export class VerbsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const rows = await conn.Select<VerbData>("SELECT id, stem, stem1MiddleRadicalTashkil, translation FROM verbs WHERE rootId = ? ORDER BY stem, stem1MiddleRadicalTashkil", rootId);
-
-        return rows;
+        const rows = await conn.Select("SELECT id FROM verbs WHERE rootId = ? ORDER BY stem, stem1MiddleRadicalTashkil", rootId);
+        const result = await rows.Values().Map(x => this.QueryVerb(x.id)).PromiseAll();
+        return result.Values().NotUndefined().ToArray();
     }
 
-    public async UpdateVerbTranslation(verbId: number, translation: string)
+    public async UpdateVerb(verbId: number, data: VerbUpdateData)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        await conn.UpdateRows("verbs", { translation }, "id = ?", verbId);
+        await conn.UpdateRows("verbs", {
+            translation: data.translation
+        }, "id = ?", verbId);
+
+        await conn.DeleteRows("verbs_verbalNouns", "verbId = ?", verbId);
+        for (const verbalNounId of data.verbalNounIds)
+        {    
+            await conn.InsertRow("verbs_verbalNouns", { verbId, verbalNounId });
+        }
     }
 }

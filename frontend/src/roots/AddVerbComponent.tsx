@@ -30,6 +30,7 @@ export class AddVerbComponent extends Component
         this.rootId = parseInt(routerState.routeParams.rootId!);
         this.stem = 1;
         this.stem1tashkil = "\u064E";
+        this.stem1tashkilPresent = "\u064E";
     }
     
     protected Render(): RenderValue
@@ -51,20 +52,30 @@ export class AddVerbComponent extends Component
     private rootId: number;
     private stem: number;
     private stem1tashkil: string;
+    private stem1tashkilPresent: string;
 
     //Private methods
     private RenderStem1TashkilSelect()
     {
+        if(this.stem != 1)
+            return null;
+
+        return <fragment>
+            {this.RenderTashkilSelect("past", this.stem1tashkil, newValue => this.stem1tashkil = newValue)}
+            {this.RenderTashkilSelect("present", this.stem1tashkilPresent, newValue => this.stem1tashkilPresent = newValue)}
+        </fragment>;
+    }
+
+    private RenderTashkilSelect(tense: string, value: string, onChanged: (newValue: string) => void)
+    {
         const tashkil = ["\u064E", "\u064F", "\u0650"];
         const tashkilDisplayName = ["فتحة", "ضمة", "كسرة"];
 
-        if(this.stem != 1)
-            return null;
-        return <FormField title="Tashkil for middle radical">
-            <SingleSelect onSelectionChanged={newIndex => this.stem1tashkil = tashkil[newIndex]} selectedIndex={tashkil.indexOf(this.stem1tashkil)}>
+        return <FormField title={"Tashkil for middle radical (" + tense + ")"}>
+            <SingleSelect onSelectionChanged={newIndex => onChanged(tashkil[newIndex])} selectedIndex={tashkil.indexOf(value)}>
                 {tashkilDisplayName.map( (x, i) => x + ": " + tashkil[i])}
             </SingleSelect>
-        </FormField>;
+        </FormField>
     }
 
     //Event handlers
@@ -73,7 +84,8 @@ export class AddVerbComponent extends Component
         await this.apiService.verbs.post({
             rootId: this.rootId,
             stem: this.stem,
-            stem1MiddleRadicalTashkil: this.stem1tashkil
+            stem1MiddleRadicalTashkil: this.stem1tashkil,
+            stem1MiddleRadicalTashkilPresent: this.stem1tashkilPresent
         });
 
         this.router.RouteTo("/roots/" + this.rootId);

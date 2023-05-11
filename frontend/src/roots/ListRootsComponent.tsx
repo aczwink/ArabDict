@@ -78,7 +78,7 @@ export class ListRootsComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        return <table>
+        return <table className="table table-striped table-hover table-sm">
             <thead>
                 <tr>
                     <th>Root</th>

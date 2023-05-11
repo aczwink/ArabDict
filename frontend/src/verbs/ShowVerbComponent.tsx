@@ -20,6 +20,10 @@ import { Anchor, Component, Injectable, JSX_CreateElement, MatIcon, PopupManager
 import { RootCreationData, VerbData, WordData, WordType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
+import { CreateVerb } from "arabdict-domain/src/CreateVerb";
+import { RemoveTashkil } from "arabdict-domain/src/Util";
+import { Tense, VerbStem, Voice } from "arabdict-domain/src/VerbStem";
+import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 
 @Injectable
 export class ShowVerbComponent extends Component
@@ -39,9 +43,23 @@ export class ShowVerbComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
+        const verbData = this.data;
+        const verb = CreateVerb(this.root.radicals, verbData.stem, { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent });
+        const conjugated = verb.Conjugate("perfect", "active", "male", "third", "singular");
+
+        const allVerbalNouns = verb.GenerateAllPossibleVerbalNouns();
+        const verbalNouns = (allVerbalNouns.length === 1)
+            ? allVerbalNouns.map(x => x.text)
+            : verbData.verbalNounIds.Values().Map(x => allVerbalNouns.find(y => y.id === x)).NotUndefined().Map(x => x.text).ToArray();
+
         return <fragment>
-            {this.RenderProperties()}
+            <h2>{conjugated} <Anchor route={"/verbs/edit/" + verbData.id}><MatIcon>edit</MatIcon></Anchor></h2>
+            {this.RenderProperties(verb, verbalNouns)}
             {this.RenderDerivedWords()}
+            {this.RenderConjugation(verb)}
+
+            <br />
+            <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(conjugated)} target="_blank">See on Wiktionary</a>
         </fragment>;
     }
 
@@ -56,6 +74,78 @@ export class ShowVerbComponent extends Component
     {
         const response3 = await this.apiService.verbs.words.get({ verbId: this.data!.id });
         this.derivedWords = response3.data;
+    }
+
+    private RenderConjugation(verb: VerbStem)
+    {
+        const past = verb.Conjugate("perfect", "active", "male", "third", "singular");
+        const present = verb.Conjugate("present", "active", "male", "third", "singular");
+
+        return <div className="mt-2">
+            <h4>Conjugation</h4>
+            <h5>Past الْمَاضِي</h5>
+            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", verb, "perfect", "active", past)}
+            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", verb, "perfect", "passive", past)}
+
+            <h5>Present الْمُضَارِع الْمَرْفُوع</h5>
+            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", verb, "present", "active", past)}
+            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", verb, "present", "passive", present)}
+            {this.RenderConjugationTable("Imperative الْأَمْر", verb, "imperative", "active", past)}
+        </div>;
+    }
+
+    private RenderConjugationTable(tenseTitle: string, verb: VerbStem, tempus: Tense, voice: Voice, base: string)
+    {
+        return <fragment>
+            <h6>{tenseTitle}</h6>
+            <table className="table table-bordered">
+            <thead>
+                <tr>
+                    <th colSpan="2"> </th>
+                    <th>1st person الْمُتَكَلِّم</th>
+                    <th>2nd person الْمُخَاطَب</th>
+                    <th>3rd person الْغَائِب</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th rowSpan="2">singular الْمُفْرَد</th>
+                    <th>Male</th>
+                    <td rowSpan="2">{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "first", "singular"), base)}</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "second", "singular"), base)}</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "singular"), base)}</td>
+                </tr>
+                <tr>
+                    <th>Female</th>
+                    <td>TODO</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "third", "singular"), base)}</td>
+                </tr>
+                <tr>
+                    <th rowSpan="2">dual الْمُثَنَّى</th>
+                    <th>Male</th>
+                    <td rowSpan="2"> </td>
+                    <td rowSpan="2">TODO</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "dual"), base)}</td>
+                </tr>
+                <tr>
+                    <th>Female</th>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "third", "dual"), base)}</td>
+                </tr>
+                <tr>
+                    <th rowSpan="2">plural الْجَمْع</th>
+                    <th>Male</th>
+                    <td rowSpan="2">{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "first", "plural"), base)}</td>
+                    <td>TODO</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "plural"), base)}</td>
+                </tr>
+                <tr>
+                    <th>Female</th>
+                    <td>TODO</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "plural"), base)}</td>
+                </tr>
+            </tbody>
+        </table>
+        </fragment>;
     }
 
     private RenderDerivedWord(derivedWord: WordData)
@@ -82,9 +172,10 @@ export class ShowVerbComponent extends Component
         </div>;
     }
 
-    private RenderProperties()
+    private RenderProperties(verb: VerbStem, verbalNouns: string[])
     {
         const data = this.data!;
+        const past = verb.Conjugate("perfect", "active", "male", "third", "singular");
         return <table>
             <tbody>
                 <tr>
@@ -96,11 +187,33 @@ export class ShowVerbComponent extends Component
                     <td><RomanNumberComponent num={data.stem} /></td>
                 </tr>
                 <tr>
+                    <th>Active participle اِسْم الْفَاعِل:</th>
+                    <td>{RenderWithDiffHighlights(verb.ConjugateParticiple("active"), past)}</td>
+                </tr>
+                <tr>
+                    <th>Passive participle اِسْم الْمَفْعُول:</th>
+                    <td>{RenderWithDiffHighlights(verb.ConjugateParticiple("passive"), past)}</td>
+                </tr>
+                <tr>
+                    <th>Verbal noun(s) الْمَصَادِر:</th>
+                    <td>{this.RenderVerbalNouns(verbalNouns, past)}</td>
+                </tr>
+                <tr>
                     <th>Translation:</th>
-                    <td>{data.translation} <Anchor route={"/verbs/edit/" + data.id}><MatIcon>edit</MatIcon></Anchor></td>
+                    <td>{data.translation}</td>
                 </tr>
             </tbody>
         </table>;
+    }
+
+    private RenderVerbalNouns(verbalNouns: string[], past: string)
+    {
+        if(verbalNouns.length === 1)
+            return RenderWithDiffHighlights(verbalNouns[0], past);
+
+        return <ul>
+            {verbalNouns.map(x => <li>{RenderWithDiffHighlights(x, past)}</li>)}
+        </ul>;
     }
 
     private RenderWordType(derivedWord: WordData)

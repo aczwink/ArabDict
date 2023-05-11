@@ -23,7 +23,10 @@ export enum RootType
     Quadriliteral,
     Regular,
     SecondConsonantDoubled,
-    SecondConsonantWawOrYa,
+    /**
+     * Second radical is waw or ya
+     */
+    Hollow,
 }
 
 export class VerbRoot
@@ -60,7 +63,7 @@ export class VerbRoot
             case RootType.Quadriliteral:
                 return [this.r1, this.r2, this.r3, this.r4];
             case RootType.Regular:
-            case RootType.SecondConsonantWawOrYa:
+            case RootType.Hollow:
                 return [this.r1, this.r2, this.r3];
             case RootType.SecondConsonantDoubled:
                 return [this.r1, this.r2, this.r2];
@@ -74,7 +77,7 @@ export class VerbRoot
         if(this.r3 === SHADDA)
             return RootType.SecondConsonantDoubled;
         if((this.r2 === WAW) || (this.r2 === YA))
-            return RootType.SecondConsonantWawOrYa;
+            return RootType.Hollow;
         return RootType.Regular;
     }
 }

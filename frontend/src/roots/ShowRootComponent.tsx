@@ -20,7 +20,6 @@ import { BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinne
 import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { VerbComponent } from "./VerbComponent";
-import { RemoveTashkil } from "arabdict-domain/src/Util";
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { CreateVerb } from "arabdict-domain/src/CreateVerb";
 
@@ -47,14 +46,11 @@ export class ShowRootComponent extends Component
             return <ProgressSpinner />;
         
         const root = new VerbRoot(this.data!.root.radicals);
-        const conjugated = (root.type === RootType.Regular) ? this.data!.root.radicals : CreateVerb(this.data!.root.radicals, 1, "").Conjugate("perfect", "3rd-singular-masulin");
+        const conjugated = (root.type === RootType.Regular) ? this.data!.root.radicals : CreateVerb(this.data!.root.radicals, 1, { middleRadicalTashkil: "", middleRadicalTashkilPresent: ""}).Conjugate("perfect", "active", "male", "third", "singular");
         return <fragment>
-            <h2>Root: {conjugated} ({root.radicalsAsSeparateLetters.join("-")})</h2>
+            <h2>Root: {conjugated} / {root.radicalsAsSeparateLetters.join("-")}</h2>
             {this.data.verbs.map(x => <VerbComponent root={this.data!.root} verbData={x} />)}
-            <RouterButton route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
-
-            <br />
-            <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(conjugated)} target="_blank">See on Wiktionary</a>
+            <RouterButton className="btn btn-primary" route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </fragment>;
     }
 

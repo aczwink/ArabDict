@@ -17,10 +17,10 @@
  * */
 
 import { Routes } from "acfrontend";
-import { EditVerbTranslationComponent } from "./EditVerbTranslationComponent";
+import { EditVerbComponent } from "./EditVerbComponent";
 import { ShowVerbComponent } from "./ShowVerbComponent";
 
 export const routes : Routes = [
-    { path: "edit/:verbId", component: EditVerbTranslationComponent },
+    { path: "edit/:verbId", component: EditVerbComponent },
     { path: ":verbId", component: ShowVerbComponent },
 ];

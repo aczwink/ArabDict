@@ -17,6 +17,7 @@
  * */
 
 import { VerbRoot } from "./VerbRoot";
+import { VerbStem } from "./VerbStem";
 import { VerbStem1 } from "./VerbStem1";
 import { VerbStem10 } from "./VerbStem10";
 import { VerbStem2 } from "./VerbStem2";
@@ -28,15 +29,21 @@ import { VerbStem7 } from "./VerbStem7";
 import { VerbStem8 } from "./VerbStem8";
 import { VerbStem9 } from "./VerbStem9";
 
-export function CreateVerb(root: string, stem: number, stem1MiddleRadicalTashkil?: string)
+interface Stem1Context
+{
+    middleRadicalTashkil: string;
+    middleRadicalTashkilPresent: string;
+}
+
+export function CreateVerb(root: string, stem: number, stem1Context?: Stem1Context): VerbStem
 {
     const vRoot = new VerbRoot(root);
     switch(stem)
     {
         case 1:
-            if(stem1MiddleRadicalTashkil === undefined)
-                throw new Error("Missing tashkil for middle radical for verb in stem 1");
-            return new VerbStem1(vRoot, stem1MiddleRadicalTashkil);
+            if(stem1Context === undefined)
+                throw new Error("Missing context for verb in stem 1");
+            return new VerbStem1(vRoot, stem1Context.middleRadicalTashkil, stem1Context.middleRadicalTashkilPresent);
         case 2:
             return new VerbStem2(vRoot);
         case 3:

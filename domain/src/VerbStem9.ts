@@ -18,7 +18,7 @@
 
 import { ALEF, FATHA, SHADDA } from "./Definitions";
 import { VerbRoot } from "./VerbRoot";
-import { KASRA, Person, SUKUN, Tempus, VerbStem } from "./VerbStem";
+import { Gender, KASRA, Numerus, Person, SUKUN, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
 
 export class VerbStem9 implements VerbStem
 {
@@ -27,21 +27,56 @@ export class VerbStem9 implements VerbStem
     }
 
     //Public methods
-    public Conjugate(tempus: Tempus, person: Person): string
+    public Conjugate(tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus): string
     {
-        switch(tempus)
+        if(voice === "passive")
+            return "TODO";
+        switch(tense)
         {
             case "perfect":
                 {
-                    switch(person)
+                    switch(gender)
                     {
-                        case "3rd-singular-masulin":
-                            return ALEF + KASRA + this.root.r1 + SUKUN + this.root.r2 + FATHA + this.root.r3 + SHADDA + FATHA;
+                        case "female":
+                            return "TODO";
+                        case "male":
+                            {
+                                switch(person)
+                                {
+                                    case "first":
+                                    case "second":
+                                        return "TODO";
+                                    case "third":
+                                        {
+                                            switch(numerus)
+                                            {
+                                                case "dual":
+                                                case "plural":
+                                                    return "TODO";
+                                                case "singular":
+                                                    return ALEF + KASRA + this.root.r1 + SUKUN + this.root.r2 + FATHA + this.root.r3 + SHADDA + FATHA;
+                                            }
+                                        }
+                                }
+                            }
                     }
-
-                    throw new Error("Method not implemented.");
                 }
         }
-        throw new Error("Method not implemented.");
+        return "TODO";
+    }
+
+    public ConjugateParticiple(voice: Voice): string
+    {
+        return "TODO";
+    }
+
+    public GenerateAllPossibleVerbalNouns(): VerbalNoun[]
+    {
+        return [
+            {
+                id: 0,
+                text: "TODO"
+            }
+        ];
     }
 }

@@ -24,10 +24,21 @@ export const DHAMMA = "\u064F";
 export const KASRA = "\u0650";
 export const SUKUN = "\u0652";
 
-export type Tempus = "perfect";
-export type Person = "3rd-singular-masulin";
+export type Tense = "imperative" | "perfect" | "present";
+export type Voice = "active" | "passive";
+export type Gender = "male" | "female";
+export type Person = "first" | "second" | "third";
+export type Numerus = "singular" | "dual" | "plural";
+
+export interface VerbalNoun
+{
+    id: number;
+    text: string;
+}
 
 export interface VerbStem
 {
-    Conjugate(tempus: Tempus, person: Person): string;
+    Conjugate(tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus): string;
+    ConjugateParticiple(voice: Voice): string;
+    GenerateAllPossibleVerbalNouns(): VerbalNoun[];
 }

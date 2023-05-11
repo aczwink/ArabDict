@@ -22,32 +22,7 @@ import { KASRA } from "arabdict-domain/src/VerbStem";
 import { RootCreationData, VerbData, WordData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
-
-function RenderWithDiffHighlights(word: string, reference: string)
-{
-    const result = [];
-
-    while( (word.length > 0) && (reference.length > 0) )
-    {
-        if(word[0] === reference[0])
-        {
-            result.push(word[0]);
-            word = word.substring(1);
-            reference = reference.substring(1);
-        }
-        else if(word.length > reference.length)
-        {
-            result.push(<span className="text-danger">{word[0]}</span>);
-            word = word.substring(1);
-        }
-        else
-        {
-            reference = reference.substring(1);
-        }
-    }
-
-    return result;
-}
+import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 
 @Injectable
 export class VerbComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
@@ -62,9 +37,9 @@ export class VerbComponent extends Component<{ root: RootCreationData; verbData:
     protected Render(): RenderValue
     {
         const verbData = this.input.verbData;
-        const verb = CreateVerb(this.input.root.radicals, verbData.stem, verbData.stem1MiddleRadicalTashkil);
-        const conjugated = verb.Conjugate("perfect", "3rd-singular-masulin");
-        const verbPresentation = (verbData.stem === 1) ? conjugated : RenderWithDiffHighlights(conjugated, CreateVerb(this.input.root.radicals, 1, KASRA).Conjugate("perfect", "3rd-singular-masulin"));
+        const verb = CreateVerb(this.input.root.radicals, verbData.stem, { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent });
+        const conjugated = verb.Conjugate("perfect", "active", "male", "third", "singular");
+        const verbPresentation = (verbData.stem === 1) ? conjugated : RenderWithDiffHighlights(conjugated, CreateVerb(this.input.root.radicals, 1, { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: "" }).Conjugate("perfect", "active", "male", "third", "singular"));
 
         return <div className="border border-3 rounded-2 p-2 my-2 shadow-sm">
             <h4>

@@ -15,13 +15,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import "acts-util-core";
-import { FATHA, SHADDA } from "./Definitions";
-import { SUKUN } from "./VerbStem";
 
-export function RemoveTashkil(text: string)
+import { JSX_CreateElement } from "acfrontend";
+
+export function RenderWithDiffHighlights(word: string, reference: string)
 {
-    return text.ReplaceAll(FATHA, "")
-        .ReplaceAll(SHADDA, "")
-        .ReplaceAll(SUKUN, "");
+    const result = [];
+
+    while( (word.length > 0) || (reference.length > 0) )
+    {
+        if(word[0] === reference[0])
+        {
+            result.push(word[0]);
+            word = word.substring(1);
+            reference = reference.substring(1);
+        }
+        else if(word.length > reference.length)
+        {
+            result.push(<span className="text-danger">{word[0]}</span>);
+            word = word.substring(1);
+        }
+        else
+        {
+            reference = reference.substring(1);
+        }
+    }
+
+    return result;
 }

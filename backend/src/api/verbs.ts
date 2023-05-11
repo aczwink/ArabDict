@@ -17,7 +17,7 @@
  * */
 
 import { APIController, Body, BodyProp, Get, Post, Put, Query } from "acts-util-apilib";
-import { VerbCreationData, VerbsController } from "../data-access/VerbsController";
+import { VerbCreationData, VerbUpdateData, VerbsController } from "../data-access/VerbsController";
 import { WordCreationData, WordsController } from "../data-access/WordsController";
 
 @APIController("verbs")
@@ -43,6 +43,15 @@ class _api_
         return await this.verbsController.QueryVerb(verbId);
     }
 
+    @Put()
+    public async UpdateVerb(
+        @BodyProp verbId: number,
+        @BodyProp data: VerbUpdateData
+    )
+    {
+        await this.verbsController.UpdateVerb(verbId, data);
+    }
+
     @Post("words")
     public async CreateWord(
         @Body data: WordCreationData
@@ -66,14 +75,5 @@ class _api_
     )
     {
         return await this.wordsController.UpdateWordTranslation(wordId, translation);
-    }
-
-    @Put("translation")
-    public async UpdateTranslation(
-        @BodyProp verbId: number,
-        @BodyProp translation: string
-    )
-    {
-        await this.verbsController.UpdateVerbTranslation(verbId, translation);
     }
 }

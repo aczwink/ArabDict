@@ -41,10 +41,26 @@ CREATE TABLE `verbs` (
   `rootId` int(10) unsigned NOT NULL,
   `stem` tinyint(3) unsigned NOT NULL,
   `stem1MiddleRadicalTashkil` char(1) NOT NULL,
+  `stem1MiddleRadicalTashkilPresent` char(1) NOT NULL,
   `translation` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `rootId` (`rootId`,`stem`,`stem1MiddleRadicalTashkil`),
   CONSTRAINT `verbs_rootId` FOREIGN KEY (`rootId`) REFERENCES `roots` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `verbs_verbalNouns`
+--
+
+DROP TABLE IF EXISTS `verbs_verbalNouns`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `verbs_verbalNouns` (
+  `verbId` int(10) unsigned NOT NULL,
+  `verbalNounId` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`verbId`,`verbalNounId`),
+  CONSTRAINT `verbs_verbalNouns_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -76,4 +92,4 @@ CREATE TABLE `words` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-23 23:54:29
+-- Dump completed on 2023-05-11 22:00:17
