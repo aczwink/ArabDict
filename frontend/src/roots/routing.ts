@@ -21,9 +21,11 @@ import { AddRootComponent } from "./AddRootComponent";
 import { AddVerbComponent } from "./AddVerbComponent";
 import { ListRootsComponent } from "./ListRootsComponent";
 import { ShowRootComponent } from "./ShowRootComponent";
+import { EditRootComponent } from "./EditRootComponent";
 
 const rootRoutes: Routes = [
     { path: "addverb", component: AddVerbComponent },
+    { path: "edit", component: EditRootComponent },
     { path: "", component: ShowRootComponent },
 ];
 

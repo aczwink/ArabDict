@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, BodyProp, Get, Post, Put, Query } from "acts-util-apilib";
+import { APIController, Body, BodyProp, Delete, Get, Post, Put, Query } from "acts-util-apilib";
 import { VerbCreationData, VerbUpdateData, VerbsController } from "../data-access/VerbsController";
 import { WordCreationData, WordsController } from "../data-access/WordsController";
 
 @APIController("verbs")
 class _api_
 {
-    constructor(private verbsController: VerbsController, private wordsController: WordsController)
+    constructor(private verbsController: VerbsController)
     {
     }
 
@@ -51,8 +51,16 @@ class _api_
     {
         await this.verbsController.UpdateVerb(verbId, data);
     }
+}
 
-    @Post("words")
+@APIController("verbs/words")
+class _api2_
+{
+    constructor(private wordsController: WordsController)
+    {
+    }
+
+    @Post()
     public async CreateWord(
         @Body data: WordCreationData
     )
@@ -60,7 +68,15 @@ class _api_
         return await this.wordsController.CreateWord(data);
     }
 
-    @Get("words")
+    @Delete()
+    public async DeleteWord(
+        @BodyProp wordId: number,
+    )
+    {
+        await this.wordsController.DeleteWord(wordId);
+    }
+
+    @Get()
     public async QueryVerbDerivedWords(
         @Query verbId: number
     )
@@ -68,7 +84,7 @@ class _api_
         return await this.wordsController.QueryVerbDerivedWords(verbId);
     }
 
-    @Put("words")
+    @Put()
     public async UpdateWordTranslation(
         @BodyProp wordId: number,
         @BodyProp translation: string

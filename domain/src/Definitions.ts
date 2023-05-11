@@ -17,6 +17,7 @@
  * */
 
 export const ALEF = "\u0627";
+export const ALEF_MAQSURA = "\u0649";
 export const MIM = "\u0645";
 export const WAW = "\u0648";
 export const YA = "\u064A";

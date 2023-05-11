@@ -165,6 +165,7 @@ export class VerbStem1 implements VerbStem
                     }
                 }
         }
+        return "TODO";
     }
 
     private ConjugatePerfectPassive(gender: Gender, person: Person, numerus: Numerus)

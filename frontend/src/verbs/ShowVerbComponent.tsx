@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, Component, Injectable, JSX_CreateElement, MatIcon, PopupManager, ProgressSpinner, RouterState, Textarea } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, PopupManager, ProgressSpinner, RouterState, Textarea } from "acfrontend";
 import { RootCreationData, VerbData, WordData, WordType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
@@ -155,6 +155,7 @@ export class ShowVerbComponent extends Component
                 <h6 className="d-inline me-2">{derivedWord.word + " " + this.RenderWordType(derivedWord)}</h6>
                 {derivedWord.translation}
                 <a href="#" onclick={this.OnEditWordTranslation.bind(this, derivedWord)}><MatIcon>edit</MatIcon></a>
+                <a href="#" className="link-danger" onclick={this.OnDeleteWord.bind(this, derivedWord)}><BootstrapIcon>trash</BootstrapIcon></a>
             </div>
         </div>;
     }
@@ -180,7 +181,7 @@ export class ShowVerbComponent extends Component
             <tbody>
                 <tr>
                     <th>Root:</th>
-                    <td><Anchor route={"/roots/" + data.rootId}>{this.root.radicals}</Anchor></td>
+                    <td><Anchor route={"/roots/" + data.rootId}>{this.root.radicals.split("").join("-")}</Anchor></td>
                 </tr>
                 <tr>
                     <th>Stem:</th>
@@ -241,6 +242,18 @@ export class ShowVerbComponent extends Component
                 verbId: this.data!.id
             });
 
+            this.LoadDerivedWords();
+        }
+    }
+
+    private async OnDeleteWord(derivedWord: WordData, event: Event)
+    {
+        event.preventDefault();
+
+        if(confirm("Are you sure that you want to delete the word: " + derivedWord.word + "?"))
+        {
+            this.derivedWords = null;
+            await this.apiService.verbs.words.delete({ wordId: derivedWord.id });
             this.LoadDerivedWords();
         }
     }

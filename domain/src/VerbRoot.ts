@@ -27,6 +27,10 @@ export enum RootType
      * Second radical is waw or ya
      */
     Hollow,
+    /**
+     * Third radical is waw or ya
+     */
+    Defective,
 }
 
 export class VerbRoot
@@ -64,6 +68,7 @@ export class VerbRoot
                 return [this.r1, this.r2, this.r3, this.r4];
             case RootType.Regular:
             case RootType.Hollow:
+            case RootType.Defective:
                 return [this.r1, this.r2, this.r3];
             case RootType.SecondConsonantDoubled:
                 return [this.r1, this.r2, this.r2];
@@ -78,6 +83,8 @@ export class VerbRoot
             return RootType.SecondConsonantDoubled;
         if((this.r2 === WAW) || (this.r2 === YA))
             return RootType.Hollow;
+        if((this.r3 === WAW) || (this.r3 === YA))
+            return RootType.Defective;
         return RootType.Regular;
     }
 }

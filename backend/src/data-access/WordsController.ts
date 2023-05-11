@@ -59,6 +59,13 @@ export class WordsController
         return result.insertId;
     }
 
+    public async DeleteWord(wordId: number)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        await conn.DeleteRows("words", "id = ?", wordId);
+    }
+
     public async UpdateWordTranslation(wordId: number, translation: string)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();

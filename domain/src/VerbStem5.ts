@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { FATHA, SHADDA } from "./Definitions";
-import { VerbRoot } from "./VerbRoot";
+import { ALEF_MAQSURA, FATHA, SHADDA, YA } from "./Definitions";
+import { RootType, VerbRoot } from "./VerbRoot";
 import { Gender, Numerus, Person, TA, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
 
 export class VerbStem5 implements VerbStem
@@ -34,33 +34,9 @@ export class VerbStem5 implements VerbStem
         switch(tense)
         {
             case "perfect":
-                {
-                    switch(gender)
-                    {
-                        case "female":
-                            return "TODO";
-                        case "male":
-                            {
-                                switch(person)
-                                {
-                                    case "first":
-                                    case "second":
-                                        return "TODO";
-                                    case "third":
-                                        {
-                                            switch(numerus)
-                                            {
-                                                case "dual":
-                                                case "plural":
-                                                    return "TODO";
-                                                case "singular":
-                                                    return TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + this.root.r3 + FATHA;
-                                            }
-                                        }
-                                }
-                            }
-                    }
-                }
+                return this.ConjugatePerfect(voice, gender, person, numerus);
+            case "present":
+                return this.ConjugatePresent(voice, gender, person, numerus);
         }
         return "TODO";
     }
@@ -78,5 +54,82 @@ export class VerbStem5 implements VerbStem
                 text: "TODO"
             }
         ];
+    }
+
+    //Private methods
+    private ConjugatePerfect(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
+    {
+        if(voice === "passive")
+            return "TODO";
+
+        switch(gender)
+        {
+            case "female":
+                return "TODO";
+            case "male":
+                {
+                    switch(person)
+                    {
+                        case "first":
+                        case "second":
+                            return "TODO";
+                        case "third":
+                            {
+                                switch(numerus)
+                                {
+                                    case "dual":
+                                    case "plural":
+                                        return "TODO";
+                                    case "singular":
+                                        switch(this.root.type)
+                                        {
+                                            case RootType.Defective:
+                                                return TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + ALEF_MAQSURA;
+                                            case RootType.Regular:
+                                                return TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + this.root.r3 + FATHA;
+                                        }
+                                }
+                            }
+                    }
+                }
+        }
+        return "TODO";
+    }
+
+    private ConjugatePresent(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
+    {
+        if(voice === "passive")
+            return "TODO";
+
+        switch(gender)
+        {
+            case "female":
+                return "TODO";
+            case "male":
+                {
+                    switch(person)
+                    {
+                        case "first":
+                        case "second":
+                            return "TODO";
+                        case "third":
+                            {
+                                switch(numerus)
+                                {
+                                    case "dual":
+                                    case "plural":
+                                        return "TODO";
+                                    case "singular":
+                                        switch(this.root.type)
+                                        {
+                                            case RootType.Defective:
+                                                return YA + FATHA + TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + ALEF_MAQSURA;
+                                        }
+                                }
+                            }
+                    }
+                }
+        }
+        return "TODO";
     }
 }

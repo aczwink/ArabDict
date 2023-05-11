@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
 import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { VerbComponent } from "./VerbComponent";
@@ -46,9 +46,8 @@ export class ShowRootComponent extends Component
             return <ProgressSpinner />;
         
         const root = new VerbRoot(this.data!.root.radicals);
-        const conjugated = (root.type === RootType.Regular) ? this.data!.root.radicals : CreateVerb(this.data!.root.radicals, 1, { middleRadicalTashkil: "", middleRadicalTashkilPresent: ""}).Conjugate("perfect", "active", "male", "third", "singular");
         return <fragment>
-            <h2>Root: {conjugated} / {root.radicalsAsSeparateLetters.join("-")}</h2>
+            <h2>Root: {root.radicalsAsSeparateLetters.join("-")} <Anchor route={"/roots/" + this.rootId + "/edit"}><MatIcon>edit</MatIcon></Anchor></h2>
             {this.data.verbs.map(x => <VerbComponent root={this.data!.root} verbData={x} />)}
             <RouterButton className="btn btn-primary" route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </fragment>;

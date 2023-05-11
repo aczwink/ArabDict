@@ -63,4 +63,11 @@ export class RootsController
 
         return rows;
     }
+
+    public async UpdateRoot(rootId: number, data: RootCreationData)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        await conn.UpdateRows("roots", { radicals: data.radicals }, "id = ?", rootId);
+    }
 }

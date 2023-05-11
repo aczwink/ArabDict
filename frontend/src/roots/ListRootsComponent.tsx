@@ -85,7 +85,7 @@ export class ListRootsComponent extends Component
                 </tr>
             </thead>
             <tbody>
-                {this.data.map(x => <tr><td><Anchor route={"/roots/" + x.id}>{x.radicals}</Anchor></td></tr>)}
+                {this.data.map(x => <tr><td><Anchor route={"/roots/" + x.id}>{x.radicals.split("").join("-")}</Anchor></td></tr>)}
             </tbody>
         </table>;
     }

@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, Get, Path, Post, Query } from "acts-util-apilib";
+import { APIController, Body, Get, Path, Post, Put, Query } from "acts-util-apilib";
 import { RootCreationData, RootsController } from "../data-access/RootsController";
 import { VerbsController } from "../data-access/VerbsController";
 
 @APIController("roots")
 class _api_
 {
-    constructor(private rootsController: RootsController, private verbsController: VerbsController)
+    constructor(private rootsController: RootsController)
     {
     }
 
@@ -35,14 +35,6 @@ class _api_
         return await this.rootsController.AddRoot(data);
     }
 
-    @Get("{rootId}")
-    public async QueryRoot(
-        @Path rootId: number
-    )
-    {
-        return await this.rootsController.QueryRoot(rootId);
-    }
-
     @Get()
     public async QueryRoots(
         @Query prefix: string
@@ -50,12 +42,37 @@ class _api_
     {
         return await this.rootsController.QueryRoots(prefix);
     }
+}
 
-    @Get("{rootId}/verbs")
+@APIController("roots/{rootId}")
+class _api2_
+{
+    constructor(private rootsController: RootsController, private verbsController: VerbsController)
+    {
+    }
+
+    @Get()
+    public async QueryRoot(
+        @Path rootId: number
+    )
+    {
+        return await this.rootsController.QueryRoot(rootId);
+    }
+
+    @Get("verbs")
     public async QueryVerbs(
         @Path rootId: number
     )
     {
         return await this.verbsController.QueryVerbs(rootId);
+    }
+
+    @Put()
+    public async UpdateRoot(
+        @Path rootId: number,
+        @Body data: RootCreationData
+    )
+    {
+        await this.rootsController.UpdateRoot(rootId, data);
     }
 }

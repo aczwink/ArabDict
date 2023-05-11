@@ -16,21 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, Router } from "acfrontend";
+import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner, Router, RouterState } from "acfrontend";
 import { APIService } from "../APIService";
 
 @Injectable
-export class AddRootComponent extends Component
+export class EditRootComponent extends Component
 {
-    constructor(private router: Router, private apiService: APIService)
+    constructor(private router: Router, routerState: RouterState, private apiService: APIService)
     {
         super();
 
-        this.radicals = "";
+        this.rootId = parseInt(routerState.routeParams.rootId!);
+        this.radicals = null;
     }
     
     protected Render(): RenderValue
     {
+        if(this.radicals === null)
+            return <ProgressSpinner />;
+
         return <fragment>
             <FormField title="Radicals" description="The radicals that make up the root">
                 <LineEdit value={this.radicals} onChanged={newValue => this.radicals = newValue} />
@@ -38,17 +42,27 @@ export class AddRootComponent extends Component
 
             Root: {this.radicals.split("").join("-")}
 
-            <button className="btn btn-primary" type="button" onclick={this.OnCreateRoot.bind(this)}>Create</button>
+            <button className="btn btn-primary" type="button" onclick={this.OnSaveRoot.bind(this)}>Save</button>
         </fragment>;
     }
 
     //Private state
-    private radicals: string;
+    private rootId: number;
+    private radicals: string | null;
 
     //Event handlers
-    private async OnCreateRoot()
+    override async OnInitiated(): Promise<void>
     {
-        const response = await this.apiService.roots.post({ radicals: this.radicals });
-        this.router.RouteTo("/roots/" + response.data);
+        const response = await this.apiService.roots._any_.get(this.rootId);
+
+        if(response.statusCode != 200)
+            throw new Error("TODO: implement me");
+        this.radicals = response.data.radicals;
+    }
+
+    private async OnSaveRoot()
+    {
+        await this.apiService.roots._any_.put(this.rootId, { radicals: this.radicals! });
+        this.router.RouteTo("/roots/" + this.rootId);
     }
 }
