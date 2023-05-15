@@ -29,6 +29,8 @@ export interface VerbCreationData
 
 export interface VerbUpdateData
 {
+    stem1MiddleRadicalTashkil: string;
+    stem1MiddleRadicalTashkilPresent: string;
     translation: string;
     verbalNounIds: number[];
 }
@@ -86,10 +88,16 @@ export class VerbsController
 
     public async UpdateVerb(verbId: number, data: VerbUpdateData)
     {
+        const verb = await this.QueryVerb(verbId);
+        if(verb === undefined)
+            return;
+
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
         await conn.UpdateRows("verbs", {
-            translation: data.translation
+            translation: data.translation,
+            stem1MiddleRadicalTashkil: (verb.stem === 1) ? data.stem1MiddleRadicalTashkil : "",
+            stem1MiddleRadicalTashkilPresent: (verb.stem === 1) ? data.stem1MiddleRadicalTashkilPresent : "",
         }, "id = ?", verbId);
 
         await conn.DeleteRows("verbs_verbalNouns", "verbId = ?", verbId);

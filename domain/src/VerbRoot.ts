@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { SHADDA, WAW, YA } from "./Definitions";
+import { HAMZA, SHADDA, WAW, YA } from "./Definitions";
 
 export enum RootType
 {
@@ -31,6 +31,10 @@ export enum RootType
      * Third radical is waw or ya
      */
     Defective,
+    /**
+     * The first radical is a hamza
+     */
+    HamzaOnR1
 }
 
 export class VerbRoot
@@ -69,6 +73,7 @@ export class VerbRoot
             case RootType.Regular:
             case RootType.Hollow:
             case RootType.Defective:
+            case RootType.HamzaOnR1:
                 return [this.r1, this.r2, this.r3];
             case RootType.SecondConsonantDoubled:
                 return [this.r1, this.r2, this.r2];
@@ -85,6 +90,8 @@ export class VerbRoot
             return RootType.Hollow;
         if((this.r3 === WAW) || (this.r3 === YA))
             return RootType.Defective;
+        if(this.r1 === HAMZA)
+            return RootType.HamzaOnR1;
         return RootType.Regular;
     }
 }

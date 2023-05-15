@@ -19,8 +19,10 @@
 import { Routes } from "acfrontend";
 import { EditVerbComponent } from "./EditVerbComponent";
 import { ShowVerbComponent } from "./ShowVerbComponent";
+import { AddWordComponent } from "./AddWordComponent";
 
 export const routes : Routes = [
+    { path: "addword/:verbId", component: AddWordComponent },
     { path: "edit/:verbId", component: EditVerbComponent },
     { path: ":verbId", component: ShowVerbComponent },
 ];

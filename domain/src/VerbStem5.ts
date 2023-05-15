@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF_MAQSURA, FATHA, SHADDA, YA } from "./Definitions";
+import { ALEF_MAKSURA, FATHA, SHADDA, YA } from "./Definitions";
 import { RootType, VerbRoot } from "./VerbRoot";
 import { Gender, Numerus, Person, TA, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
 
@@ -84,7 +84,7 @@ export class VerbStem5 implements VerbStem
                                         switch(this.root.type)
                                         {
                                             case RootType.Defective:
-                                                return TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + ALEF_MAQSURA;
+                                                return TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + ALEF_MAKSURA;
                                             case RootType.Regular:
                                                 return TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + this.root.r3 + FATHA;
                                         }
@@ -123,7 +123,7 @@ export class VerbStem5 implements VerbStem
                                         switch(this.root.type)
                                         {
                                             case RootType.Defective:
-                                                return YA + FATHA + TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + ALEF_MAQSURA;
+                                                return YA + FATHA + TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + ALEF_MAKSURA;
                                         }
                                 }
                             }

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, PopupManager, ProgressSpinner, RouterState, Textarea } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, PopupManager, ProgressSpinner, RouterButton, RouterState, Textarea } from "acfrontend";
 import { RootCreationData, VerbData, WordData, WordType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
@@ -166,10 +166,9 @@ export class ShowVerbComponent extends Component
             return <ProgressSpinner />;
 
         return <div className="mt-2">
-            <h5>Nouns</h5>
+            <h5>Derived words</h5>
             {this.derivedWords.map(this.RenderDerivedWord.bind(this))}
-            <button className="btn btn-primary" type="button" onclick={this.OnCreateWord.bind(this, WordType.Noun)}>Add noun</button>
-            <button className="btn btn-primary" type="button" onclick={this.OnCreateWord.bind(this, WordType.Preposition)}>Add preposition</button>
+            <RouterButton className="btn btn-primary" route={"/verbs/addword/" + this.verbId}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </div>;
     }
 
@@ -225,27 +224,12 @@ export class ShowVerbComponent extends Component
                 return "";
             case WordType.Preposition:
                 return "(prep.)";
+            case WordType.Adjective:
+                return "(adj.)";
         }
     }
 
     //Event handlers
-    private async OnCreateWord(wordType: WordType)
-    {
-        const result = prompt("Enter noun with full tashkil");
-        if(result !== null)
-        {
-            this.derivedWords = null;
-
-            await this.apiService.verbs.words.post({
-                type: wordType,
-                word: result,
-                verbId: this.data!.id
-            });
-
-            this.LoadDerivedWords();
-        }
-    }
-
     private async OnDeleteWord(derivedWord: WordData, event: Event)
     {
         event.preventDefault();

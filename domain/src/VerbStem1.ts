@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, FATHA, MIM, SHADDA, WAW, YA } from "./Definitions";
+import { ALEF, ALEF_HAMZA, ALEF_MAKSURA, FATHA, MIM, SHADDA, WAW, YA } from "./Definitions";
 import { RootType, VerbRoot } from "./VerbRoot";
 import { DHAMMA, Gender, KASRA, Numerus, Person, SUKUN, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
 
@@ -159,6 +159,11 @@ export class VerbStem1 implements VerbStem
                                                 return this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA;
                                             case RootType.Hollow:
                                                 return this.root.r1 + FATHA + ALEF + this.root.r3 + FATHA;
+                                            case RootType.Defective:
+                                                if(this.stem1MiddleRadicalTashkil === KASRA)
+                                                    return this.root.r1 + FATHA + this.root.r2 + FATHA + ALEF_MAKSURA;
+                                            case RootType.HamzaOnR1:
+                                                return ALEF_HAMZA + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA;
                                         }
                                 }
                             }
@@ -235,6 +240,12 @@ export class VerbStem1 implements VerbStem
                                         {
                                             case RootType.Regular:
                                                 return YA + FATHA + this.root.r1 + SUKUN + this.root.r2 + this.stem1MiddleRadicalTashkilPresent + this.root.r3 + DHAMMA;
+                                            case RootType.Defective:
+                                                if(this.stem1MiddleRadicalTashkilPresent === KASRA)
+                                                    return YA + FATHA + this.root.r1 + SUKUN + this.root.r2 + KASRA + YA;
+                                                return "TODO";
+                                            case RootType.HamzaOnR1:
+                                                return YA + FATHA + ALEF_HAMZA + SUKUN + this.root.r2 + this.stem1MiddleRadicalTashkilPresent + this.root.r3 + DHAMMA;
                                         }
                                         return "TODO";
                                 }

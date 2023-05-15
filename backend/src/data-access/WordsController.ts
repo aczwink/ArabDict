@@ -22,7 +22,8 @@ import { DatabaseController } from "./DatabaseController";
 enum WordType
 {
     Noun = 0,
-    Preposition = 1
+    Preposition = 1,
+    Adjective = 2
 }
 
 export interface WordCreationData

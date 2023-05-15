@@ -16,9 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, Router, RouterState, Select, SingleSelect } from "acfrontend";
+import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select, SingleSelect } from "acfrontend";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
+import { CreateVerb } from "arabdict-domain/src/CreateVerb";
+import { RootCreationData } from "../../dist/api";
+import { Stem1ContextData, VerbEditorComponent } from "../verbs/VerbEditorComponent";
 
 @Injectable
 export class AddVerbComponent extends Component
@@ -28,14 +31,23 @@ export class AddVerbComponent extends Component
         super();
 
         this.rootId = parseInt(routerState.routeParams.rootId!);
+        this.root = null;
         this.stem = 1;
-        this.stem1tashkil = "\u064E";
-        this.stem1tashkilPresent = "\u064E";
+
+        this.stem1Context = {
+            stem1MiddleRadicalTashkil: "\u064E",
+            stem1MiddleRadicalTashkilPresent: "\u064E"
+        };
     }
     
     protected Render(): RenderValue
     {
+        if(this.root === null)
+            return <ProgressSpinner />;
+
         const stems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+        const verb = CreateVerb(this.root.radicals, this.stem, { middleRadicalTashkil: this.stem1Context.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: this.stem1Context.stem1MiddleRadicalTashkilPresent });
 
         return <fragment>
             <FormField title="Stem">
@@ -43,40 +55,17 @@ export class AddVerbComponent extends Component
                     {stems.map(x => <option value={x} selected={this.stem === x}><RomanNumberComponent num={x} /></option>)}
                 </Select>
             </FormField>
-            {this.RenderStem1TashkilSelect()}
-            <button type="button" onclick={this.OnCreateVerb.bind(this)}>Create</button>
+            <VerbEditorComponent stem={this.stem} stem1Context={this.stem1Context} verb={verb} onChanged={this.Update.bind(this)} />
+            
+            <button className="btn btn-primary" type="button" onclick={this.OnCreateVerb.bind(this)}>Create</button>
         </fragment>;
     }
 
     //Private state
     private rootId: number;
+    private root: RootCreationData | null;
     private stem: number;
-    private stem1tashkil: string;
-    private stem1tashkilPresent: string;
-
-    //Private methods
-    private RenderStem1TashkilSelect()
-    {
-        if(this.stem != 1)
-            return null;
-
-        return <fragment>
-            {this.RenderTashkilSelect("past", this.stem1tashkil, newValue => this.stem1tashkil = newValue)}
-            {this.RenderTashkilSelect("present", this.stem1tashkilPresent, newValue => this.stem1tashkilPresent = newValue)}
-        </fragment>;
-    }
-
-    private RenderTashkilSelect(tense: string, value: string, onChanged: (newValue: string) => void)
-    {
-        const tashkil = ["\u064E", "\u064F", "\u0650"];
-        const tashkilDisplayName = ["فتحة", "ضمة", "كسرة"];
-
-        return <FormField title={"Tashkil for middle radical (" + tense + ")"}>
-            <SingleSelect onSelectionChanged={newIndex => onChanged(tashkil[newIndex])} selectedIndex={tashkil.indexOf(value)}>
-                {tashkilDisplayName.map( (x, i) => x + ": " + tashkil[i])}
-            </SingleSelect>
-        </FormField>
-    }
+    private stem1Context: Stem1ContextData;
 
     //Event handlers
     private async OnCreateVerb()
@@ -84,10 +73,19 @@ export class AddVerbComponent extends Component
         await this.apiService.verbs.post({
             rootId: this.rootId,
             stem: this.stem,
-            stem1MiddleRadicalTashkil: this.stem1tashkil,
-            stem1MiddleRadicalTashkilPresent: this.stem1tashkilPresent
+            stem1MiddleRadicalTashkil: this.stem1Context.stem1MiddleRadicalTashkil,
+            stem1MiddleRadicalTashkilPresent: this.stem1Context.stem1MiddleRadicalTashkilPresent
         });
 
         this.router.RouteTo("/roots/" + this.rootId);
+    }
+
+    override async OnInitiated(): Promise<void>
+    {
+        const response = await this.apiService.roots._any_.get(this.rootId);
+        if(response.statusCode !== 200)
+            throw new Error("TODO implement me");
+
+        this.root = response.data;
     }
 }

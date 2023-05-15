@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { FATHA } from "./Definitions";
+import { ALEF_HAMZA, FATHA } from "./Definitions";
 import { VerbRoot } from "./VerbRoot";
-import { ALEF_HAMZA, Gender, Numerus, Person, SUKUN, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
+import { Gender, Numerus, Person, SUKUN, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
 
 export class VerbStem4 implements VerbStem
 {

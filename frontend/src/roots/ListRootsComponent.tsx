@@ -31,6 +31,7 @@ const alphabetChars: AlphabetRange[] = [
     { first: 0x062A, count: 17}, //ta - ghain
     { first: 0x0641, count: 8}, //fa - waw
     { first: 0x064A, count: 1}, //ya
+    { first: 0x0621, count: 1}, //hamza
 ];
 
 @Injectable
@@ -51,7 +52,7 @@ export class ListRootsComponent extends Component
                 {alphabetChars.map(this.RenderRange.bind(this))}
             </ul>
             {this.RenderTable()}
-            <RouterButton route="/roots/add"><BootstrapIcon>plus</BootstrapIcon></RouterButton>
+            <RouterButton className="btn btn-primary" route="/roots/add"><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </fragment>;
     }
 

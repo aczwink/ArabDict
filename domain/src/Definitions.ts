@@ -17,10 +17,13 @@
  * */
 
 export const ALEF = "\u0627";
-export const ALEF_MAQSURA = "\u0649";
+export const ALEF_HAMZA = "\u0623";
+export const ALEF_MAKSURA = "\u0649";
 export const MIM = "\u0645";
 export const WAW = "\u0648";
 export const YA = "\u064A";
+
+export const HAMZA = "\u0621";
 
 export const FATHA = "\u064E";
 export const SHADDA = "\u0651";

@@ -21,6 +21,7 @@ import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { CreateVerb } from "arabdict-domain/src/CreateVerb";
 import { VerbalNoun } from "arabdict-domain/src/VerbStem";
+import { VerbEditorComponent } from "./VerbEditorComponent";
 
 @Injectable
 export class EditVerbComponent extends Component
@@ -44,6 +45,8 @@ export class EditVerbComponent extends Component
         const verb = CreateVerb(this.root.radicals, verbData.stem, { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent });
 
         return <fragment>
+            <VerbEditorComponent stem={verbData.stem} stem1Context={this.data} verb={verb} onChanged={this.Update.bind(this)} />
+            
             <FormField title="Translation">
                 <Textarea value={this.data.translation} onChanged={this.OnTranslationChanged.bind(this)} columns={80} rows={12} />
             </FormField>
@@ -129,7 +132,9 @@ export class EditVerbComponent extends Component
             verbId: this.verbId,
             data: {
                 translation: data.translation,
-                verbalNounIds: data.verbalNounIds
+                verbalNounIds: data.verbalNounIds,
+                stem1MiddleRadicalTashkil: data.stem1MiddleRadicalTashkil,
+                stem1MiddleRadicalTashkilPresent: data.stem1MiddleRadicalTashkilPresent
             }
         });
         
