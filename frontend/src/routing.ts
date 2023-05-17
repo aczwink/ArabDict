@@ -19,11 +19,13 @@
 import { Routes } from "acfrontend";
 import { routes as dialectsRoutes } from "./dialects/routing";
 import { routes as rootRoutes } from "./roots/routing";
+import { routes as underivedWordsRoutes } from "./underived_words/routing";
 import { routes as verbsRoutes } from "./verbs/routing";
 
 export const routes : Routes = [
     { path: "dialects", children: dialectsRoutes },
     { path: "roots", children: rootRoutes },
+    { path: "underived_words", children: underivedWordsRoutes },
     { path: "verbs", children: verbsRoutes },
     { path: "*", redirect: "roots" },
 ];

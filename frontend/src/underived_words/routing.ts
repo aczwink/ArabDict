@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import "./api/roots";
-import "./api/underived_words";
-import "./api/verbs";
+import { Routes } from "acfrontend";
+import { SearchWordsComponent } from "./SearchWordsComponent";
+
+export const routes : Routes = [
+    { path: "", component: SearchWordsComponent },
+];

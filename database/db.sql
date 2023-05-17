@@ -30,6 +30,21 @@ CREATE TABLE `roots` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `underived_words`
+--
+
+DROP TABLE IF EXISTS `underived_words`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `underived_words` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `word` text NOT NULL,
+  `translation` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `verbs`
 --
 
@@ -92,4 +107,4 @@ CREATE TABLE `words` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-11 22:00:17
+-- Dump completed on 2023-05-17 22:37:24

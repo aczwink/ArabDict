@@ -79,6 +79,21 @@ export class VerbStem1 implements VerbStem
                         text: "TODO"
                     }
                 ];
+            case RootType.SecondConsonantDoubled:
+                return [
+                    {
+                        id: 2,
+                        text: this.root.r1 + KASRA + this.root.r2 + SHADDA,
+                    },
+                    {
+                        id: 1,
+                        text: this.root.r1 + FATHA + this.root.r2 + KASRA + YA + this.root.r3
+                    },
+                    {
+                        id: 0,
+                        text: "TODO"
+                    }
+                ];
         }
 
         return [

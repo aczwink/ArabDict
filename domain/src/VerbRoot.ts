@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { HAMZA, SHADDA, WAW, YA } from "./Definitions";
+import { HAMZA, WAW, YA } from "./Definitions";
 
 export enum RootType
 {
@@ -84,7 +84,7 @@ export class VerbRoot
     {
         if(this.radicals.length === 4)
             return RootType.Quadriliteral;
-        if(this.r3 === SHADDA)
+        if(this.r2 === this.r3)
             return RootType.SecondConsonantDoubled;
         if((this.r2 === WAW) || (this.r2 === YA))
             return RootType.Hollow;
