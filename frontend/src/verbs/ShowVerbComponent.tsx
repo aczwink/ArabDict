@@ -117,14 +117,14 @@ export class ShowVerbComponent extends Component
                 </tr>
                 <tr>
                     <th>Female</th>
-                    <td>TODO</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "second", "singular"), base)}</td>
                     <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "third", "singular"), base)}</td>
                 </tr>
                 <tr>
                     <th rowSpan="2">dual الْمُثَنَّى</th>
                     <th>Male</th>
                     <td rowSpan="2"> </td>
-                    <td rowSpan="2">TODO</td>
+                    <td rowSpan="2">{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "second", "dual"), base)}</td>
                     <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "dual"), base)}</td>
                 </tr>
                 <tr>
@@ -135,13 +135,13 @@ export class ShowVerbComponent extends Component
                     <th rowSpan="2">plural الْجَمْع</th>
                     <th>Male</th>
                     <td rowSpan="2">{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "first", "plural"), base)}</td>
-                    <td>TODO</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "second", "plural"), base)}</td>
                     <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "plural"), base)}</td>
                 </tr>
                 <tr>
                     <th>Female</th>
-                    <td>TODO</td>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "plural"), base)}</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "second", "plural"), base)}</td>
+                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "third", "plural"), base)}</td>
                 </tr>
             </tbody>
         </table>
