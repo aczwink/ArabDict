@@ -23,7 +23,8 @@ enum WordType
 {
     Noun = 0,
     Preposition = 1,
-    Adjective = 2
+    Adjective = 2,
+    Conjunction = 3
 }
 
 export interface WordCreationData

@@ -226,6 +226,8 @@ export class ShowVerbComponent extends Component
                 return "(prep.)";
             case WordType.Adjective:
                 return "(adj.)";
+            case WordType.Conjunction:
+                return "(conj.)";
         }
     }
 

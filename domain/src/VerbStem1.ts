@@ -68,6 +68,17 @@ export class VerbStem1 implements VerbStem
     {
         switch(this.root.type)
         {
+            case RootType.HamzaOnR1:
+                return [
+                    {
+                        id: 1,
+                        text: ALEF_HAMZA + FATHA + this.root.r2 + FATHA + ALEF + this.root.r3
+                    },
+                    {
+                        id: 0,
+                        text: "TODO"
+                    }
+                ];
             case RootType.Hollow:
                 return [
                     {
@@ -88,10 +99,6 @@ export class VerbStem1 implements VerbStem
                     {
                         id: 1,
                         text: this.root.r1 + FATHA + this.root.r2 + KASRA + YA + this.root.r3
-                    },
-                    {
-                        id: 0,
-                        text: "TODO"
                     }
                 ];
         }
@@ -283,8 +290,11 @@ export class VerbStem1 implements VerbStem
                                     case RootType.Hollow:
                                         return this.root.r1 + FATHA + ALEF + this.root.r3 + FATHA;
                                     case RootType.Defective:
+                                        if(this.stem1MiddleRadicalTashkil === DHAMMA)
+                                            return this.root.r1 + FATHA + this.root.r2 + FATHA + ALEF;
                                         if(this.stem1MiddleRadicalTashkil === KASRA)
                                             return this.root.r1 + FATHA + this.root.r2 + FATHA + ALEF_MAKSURA;
+                                        return "TODO";
                                     case RootType.HamzaOnR1:
                                         return ALEF_HAMZA + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA;
                                 }
@@ -361,6 +371,8 @@ export class VerbStem1 implements VerbStem
                                             case RootType.Regular:
                                                 return YA + FATHA + this.root.r1 + SUKUN + this.root.r2 + this.stem1MiddleRadicalTashkilPresent + this.root.r3 + DHAMMA;
                                             case RootType.Defective:
+                                                if(this.stem1MiddleRadicalTashkil === DHAMMA)
+                                                    return YA + FATHA + this.root.r1 + SUKUN + this.root.r2 + DHAMMA + WAW;
                                                 if(this.stem1MiddleRadicalTashkilPresent === KASRA)
                                                     return YA + FATHA + this.root.r1 + SUKUN + this.root.r2 + KASRA + YA;
                                                 return "TODO";

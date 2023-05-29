@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, FATHA } from "./Definitions";
-import { VerbRoot } from "./VerbRoot";
+import { ALEF, ALEF_MAKSURA, FATHA } from "./Definitions";
+import { RootType, VerbRoot } from "./VerbRoot";
 import { Gender, KASRA, Numerus, Person, SUKUN, TA, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
 
 export class VerbStem8 implements VerbStem
@@ -29,40 +29,17 @@ export class VerbStem8 implements VerbStem
     //Public methods
     public Conjugate(tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus): string
     {
-        if(voice === "passive")
-            return "TODO";
         switch(tense)
         {
+            case "imperative":
+                if(voice === "passive")
+                    throw new Error("imperative and passive does not exist");
+                return this.ConjugateImperative(gender, person, numerus);
             case "perfect":
-                {
-                    switch(gender)
-                    {
-                        case "female":
-                            return "TODO";
-                        case "male":
-                            {
-                                switch(person)
-                                {
-                                    case "first":
-                                    case "second":
-                                        return "TODO";
-                                    case "third":
-                                        {
-                                            switch(numerus)
-                                            {
-                                                case "dual":
-                                                case "plural":
-                                                    return "TODO";
-                                                case "singular":
-                                                    return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + this.root.r2 + FATHA + this.root.r3 + FATHA;
-                                            }
-                                        }
-                                }
-                            }
-                    }
-                }
+                return this.ConjugatePerfect(voice, gender, person, numerus);
+            case "present":
+                return this.ConjugatePresent(voice, gender, person, numerus);
         }
-        return "TODO";
     }
 
     public ConjugateParticiple(voice: Voice): string
@@ -78,5 +55,74 @@ export class VerbStem8 implements VerbStem
                 text: "TODO"
             }
         ];
+    }
+
+    //Private methods
+    private ConjugateImperative(gender: Gender, person: Person, numerus: Numerus): string
+    {
+        return "TODO";
+    }
+
+    private ConjugatePerfect(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
+    {
+        if(voice === "active")
+            return this.ConjugatePerfectActive(gender, person, numerus);
+        return this.ConjugatePerfectPassive(gender, person, numerus);
+    }
+
+    private ConjugatePerfectActive(gender: Gender, person: Person, numerus: Numerus)
+    {
+        switch(numerus)
+        {
+            case "dual":
+            case "plural":
+                return "TODO";
+            case "singular":
+                switch(person)
+                {
+                    case "first":
+                    case "second":
+                        return "TODO";
+                    case "third":
+                        {
+                            switch(gender)
+                            {
+                                case "female":
+                                    return "TODO";
+                                case "male":
+                                    switch(this.root.type)
+                                    {
+                                        case RootType.Defective:
+                                            return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + this.root.r2 + FATHA + ALEF_MAKSURA;
+                                        case RootType.Regular:
+                                            return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + this.root.r2 + FATHA + this.root.r3 + FATHA;
+                                    }
+                                    return "TODO";
+                            }
+                        }
+                }
+        }
+    }
+
+    private ConjugatePerfectPassive(gender: Gender, person: Person, numerus: Numerus)
+    {
+        return "TODO";
+    }
+
+    private ConjugatePresent(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
+    {
+        if(voice === "active")
+            return this.ConjugatePresentActive(gender, person, numerus);
+        return this.ConjugatePresentPassive(gender, person, numerus);
+    }
+
+    private ConjugatePresentActive(gender: Gender, person: Person, numerus: Numerus)
+    {
+        return "TODO";
+    }
+
+    private ConjugatePresentPassive(gender: Gender, person: Person, numerus: Numerus)
+    {
+        return "TODO";
     }
 }

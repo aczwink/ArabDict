@@ -40,6 +40,7 @@ export class AddWordComponent extends Component
             
         const wordTypes = [
             { key: WordType.Adjective, value: "Adjective" },
+            { key: WordType.Conjunction, value: "Conjunction" },
             { key: WordType.Noun, value: "Noun" },
             { key: WordType.Preposition, value: "Preposition" }
         ];
