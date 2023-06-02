@@ -21,7 +21,6 @@ export const NUN = "\u0646";
 
 export const DHAMMA = "\u064F";
 export const KASRA = "\u0650";
-export const SUKUN = "\u0652";
 
 export type Tense = "imperative" | "perfect" | "present";
 export type Voice = "active" | "passive";
