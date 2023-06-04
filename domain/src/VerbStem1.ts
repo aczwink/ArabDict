@@ -82,6 +82,10 @@ export class VerbStem1 implements VerbStem
             case RootType.Hollow:
                 return [
                     {
+                        id: 2,
+                        text: this.root.r1 + FATHA + WAW + SUKUN + this.root.r3,
+                    },
+                    {
                         id: 1,
                         text: MIM + FATHA + this.root.r1 + FATHA + ALEF + this.root.r3
                     },
@@ -246,7 +250,13 @@ export class VerbStem1 implements VerbStem
                 switch(person)
                 {
                     case "first":
-                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA;
+                        switch(this.root.type)
+                        {
+                            case RootType.Regular:
+                                return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA;
+                            default:
+                                return "TODO";
+                        }
                     case "second":
                         switch(gender)
                         {
