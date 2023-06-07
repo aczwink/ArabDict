@@ -29,7 +29,7 @@ import { VerbStem7 } from "./VerbStem7";
 import { VerbStem8 } from "./VerbStem8";
 import { VerbStem9 } from "./VerbStem9";
 
-interface Stem1Context
+export interface Stem1Context
 {
     middleRadicalTashkil: string;
     middleRadicalTashkilPresent: string;

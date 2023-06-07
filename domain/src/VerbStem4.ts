@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF_HAMZA, FATHA, SUKUN } from "./Definitions";
+import { ALEF, ALEF_HAMZA, FATHA, SUKUN } from "./Definitions";
 import { Hamzate } from "./Hamza";
 import { RootType, VerbRoot } from "./VerbRoot";
 import { Gender, Numerus, Person, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
@@ -94,6 +94,8 @@ export class VerbStem4 implements VerbStem
                                 case "male":
                                     switch(this.root.type)
                                     {
+                                        case RootType.Hollow:
+                                            return ALEF_HAMZA + FATHA + this.root.r1 + FATHA + ALEF + this.root.r3 + FATHA;
                                         case RootType.Regular:
                                             return Hamzate( Vocalize(ALEF_HAMZA, FATHA), Vocalize(this.root.r1, SUKUN), Vocalize(this.root.r2, FATHA), Vocalize(this.root.r3, FATHA) );
                                     }

@@ -16,19 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-export const ALEF = "\u0627";
-export const ALEF_HAMZA = "\u0623";
-export const ALEF_MAKSURA = "\u0649";
-export const A3EIN = "\u0639";
-export const LAM = "\u0644";
-export const MIM = "\u0645";
-export const WAW = "\u0648";
-export const YA = "\u064A";
+import { FATHA } from "../../../Definitions";
+import { RootType } from "../../../VerbRoot";
+import { StemTenseVoiceDefinition } from "../../Definitions";
 
-export const HAMZA = "\u0621";
-
-export const FATHA = "\u064E";
-export const SHADDA = "\u0651";
-export const SUKUN = "\u0652";
-
-export type BASE_TASHKIL = "\u064E" | "\u064F" | "\u0652";
+export const stem1_present_active: StemTenseVoiceDefinition = {
+    [RootType.Assimilated]: {
+        rules: [
+            { condition: ctx => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "يَعَلُ" }
+        ]
+    }
+};

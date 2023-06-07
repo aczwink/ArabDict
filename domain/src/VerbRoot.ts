@@ -20,9 +20,12 @@ import { HAMZA, WAW, YA } from "./Definitions";
 
 export enum RootType
 {
-    Quadriliteral,
     Regular,
-    SecondConsonantDoubled,
+
+    /**
+     * First radical is waw or ya
+     */
+    Assimilated,
     /**
      * Second radical is waw or ya
      */
@@ -31,10 +34,14 @@ export enum RootType
      * Third radical is waw or ya
      */
     Defective,
+
+    SecondConsonantDoubled,
     /**
      * The first radical is a hamza
      */
-    HamzaOnR1
+    HamzaOnR1,
+
+    Quadriliteral,
 }
 
 export class VerbRoot
@@ -70,6 +77,7 @@ export class VerbRoot
         {
             case RootType.Quadriliteral:
                 return [this.r1, this.r2, this.r3, this.r4];
+            case RootType.Assimilated:
             case RootType.Regular:
             case RootType.Hollow:
             case RootType.Defective:
@@ -86,6 +94,8 @@ export class VerbRoot
             return RootType.Quadriliteral;
         if(this.r2 === this.r3)
             return RootType.SecondConsonantDoubled;
+        if((this.r1 === WAW) || (this.r1 === YA))
+            return RootType.Assimilated;
         if((this.r2 === WAW) || (this.r2 === YA))
             return RootType.Hollow;
         if((this.r3 === WAW) || (this.r3 === YA))

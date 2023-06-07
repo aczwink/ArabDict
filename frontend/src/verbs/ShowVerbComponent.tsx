@@ -20,15 +20,16 @@ import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIco
 import { RootCreationData, VerbData, WordData, WordType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
-import { CreateVerb } from "arabdict-domain/src/CreateVerb";
+import { CreateVerb, Stem1Context } from "arabdict-domain/src/CreateVerb";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
-import { Tense, VerbStem, Voice } from "arabdict-domain/src/VerbStem";
+import { Gender, Numerus, Person, Tense, VerbStem, Voice } from "arabdict-domain/src/VerbStem";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
+import { ConjugationService } from "../ConjugationService";
 
 @Injectable
 export class ShowVerbComponent extends Component
 {
-    constructor(private apiService: APIService, routerState: RouterState, private popupManager: PopupManager)
+    constructor(private apiService: APIService, routerState: RouterState, private popupManager: PopupManager, private conjugationService: ConjugationService)
     {
         super();
 
@@ -44,8 +45,10 @@ export class ShowVerbComponent extends Component
             return <ProgressSpinner />;
 
         const verbData = this.data;
+        const stem1ctx = { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent };
+        const conjugated = this.conjugationService.Conjugate(this.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", stem1ctx);
+
         const verb = CreateVerb(this.root.radicals, verbData.stem, { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent });
-        const conjugated = verb.Conjugate("perfect", "active", "male", "third", "singular");
 
         const allVerbalNouns = verb.GenerateAllPossibleVerbalNouns();
         const verbalNouns = (allVerbalNouns.length === 1)
@@ -56,7 +59,7 @@ export class ShowVerbComponent extends Component
             <h2>{conjugated} <Anchor route={"/verbs/edit/" + verbData.id}><MatIcon>edit</MatIcon></Anchor></h2>
             {this.RenderProperties(verb, verbalNouns)}
             {this.RenderDerivedWords()}
-            {this.RenderConjugation(verb)}
+            {this.RenderConjugation(verb, stem1ctx)}
 
             <br />
             <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(conjugated)} target="_blank">See on Wiktionary</a>
@@ -76,26 +79,29 @@ export class ShowVerbComponent extends Component
         this.derivedWords = response3.data;
     }
 
-    private RenderConjugation(verb: VerbStem)
+    private RenderConjugation(verb: VerbStem, stem1ctx: Stem1Context)
     {
-        const past = verb.Conjugate("perfect", "active", "male", "third", "singular");
-        const present = verb.Conjugate("present", "active", "male", "third", "singular");
+        const past = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "perfect", "active", "male", "third", "singular", stem1ctx);
+        const present = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "present", "active", "male", "third", "singular", stem1ctx);
 
         return <div className="mt-2">
             <h4>Conjugation</h4>
             <h5>Past الْمَاضِي</h5>
-            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", verb, "perfect", "active", past)}
-            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", verb, "perfect", "passive", past)}
+            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", verb, stem1ctx, "perfect", "active", past)}
+            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", verb, stem1ctx, "perfect", "passive", past)}
 
             <h5>Present الْمُضَارِع الْمَرْفُوع</h5>
-            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", verb, "present", "active", past)}
-            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", verb, "present", "passive", present)}
-            {this.RenderConjugationTable("Imperative الْأَمْر", verb, "imperative", "active", past)}
+            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", verb, stem1ctx, "present", "active", past)}
+            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", verb, stem1ctx, "present", "passive", present)}
+            {this.RenderConjugationTable("Imperative الْأَمْر", verb, stem1ctx, "imperative", "active", past)}
         </div>;
     }
 
-    private RenderConjugationTable(tenseTitle: string, verb: VerbStem, tempus: Tense, voice: Voice, base: string)
+    private RenderConjugationTable(tenseTitle: string, verb: VerbStem, stem1ctx: Stem1Context, tempus: Tense, voice: Voice, base: string)
     {
+        const conjugate = (g: Gender, p: Person, n: Numerus) => this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, tempus, voice, g, p, n, stem1ctx);
+        const renderEntry = (g: Gender, p: Person, n: Numerus) => RenderWithDiffHighlights(conjugate(g, p, n), base);
+
         return <fragment>
             <h6>{tenseTitle}</h6>
             <table className="table table-bordered">
@@ -113,7 +119,7 @@ export class ShowVerbComponent extends Component
                     <th>Male</th>
                     <td rowSpan="2">{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "first", "singular"), base)}</td>
                     <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "second", "singular"), base)}</td>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "singular"), base)}</td>
+                    <td>{renderEntry("male", "third", "singular")}</td>
                 </tr>
                 <tr>
                     <th>Female</th>

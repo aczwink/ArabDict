@@ -94,6 +94,8 @@ export class VerbStem8 implements VerbStem
                                     {
                                         case RootType.Defective:
                                             return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + this.root.r2 + FATHA + ALEF_MAKSURA;
+                                        case RootType.Hollow:
+                                            return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + ALEF + this.root.r3 + FATHA;
                                         case RootType.Regular:
                                             return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + this.root.r2 + FATHA + this.root.r3 + FATHA;
                                     }

@@ -16,12 +16,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL } from "./Definitions";
+import { BASE_TASHKIL, FATHA } from "./Definitions";
+import { DHAMMA } from "./VerbStem";
 
 export interface Vocalized
 {
     letter: string;
-    tashkil: BASE_TASHKIL;
+    tashkil?: BASE_TASHKIL;
+}
+
+export function ParseVocalizedText(text: string)
+{
+    const result: Vocalized[] = [];
+
+    for(let i = 0; i < text.length;)
+    {
+        const letter = text[i++];
+        let tashkil: BASE_TASHKIL | undefined = undefined;
+
+        let parseTashkil = true;
+        while(parseTashkil)
+        {
+            switch(text[i])
+            {
+                case DHAMMA:
+                    if(tashkil !== undefined)
+                        throw new Error("Doubled tashkil");
+                    tashkil = DHAMMA;
+                    i++;
+                    break;
+                case FATHA:
+                    if(tashkil !== undefined)
+                        throw new Error("Doubled tashkil");
+                    tashkil = FATHA;
+                    i++;
+                    break;
+                default:
+                    parseTashkil = false;
+            }
+        }
+
+        result.push({
+            letter,
+            tashkil
+        });
+    }
+
+    return result;
 }
 
 export function Vocalize(letter: string, tashkil: BASE_TASHKIL): Vocalized

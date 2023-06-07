@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF_MAKSURA, FATHA, SHADDA } from "./Definitions";
+import { ALEF_MAKSURA, FATHA, MIM, SHADDA } from "./Definitions";
 import { RootType, VerbRoot } from "./VerbRoot";
-import { Gender, Numerus, Person, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
+import { DHAMMA, Gender, KASRA, Numerus, Person, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
 
 export class VerbStem2 implements VerbStem
 {
@@ -44,7 +44,24 @@ export class VerbStem2 implements VerbStem
 
     public ConjugateParticiple(voice: Voice): string
     {
-        return "TODO";
+        if(voice === "active")
+        {
+            switch(this.root.type)
+            {
+                case RootType.Regular:
+                    return MIM + DHAMMA + this.root.r1 + FATHA + this.root.r2 + SHADDA + KASRA + this.root.r3;
+                default:
+                    return "TODO";
+            }
+        }
+
+        switch(this.root.type)
+        {
+            case RootType.Regular:
+                return MIM + DHAMMA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + this.root.r3;
+            default:
+                return "TODO";
+        }
     }
 
     public GenerateAllPossibleVerbalNouns(): VerbalNoun[]
