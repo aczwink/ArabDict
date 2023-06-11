@@ -17,5 +17,5 @@
  * */
 
 import "./api/roots";
-import "./api/underived_words";
 import "./api/verbs";
+import "./api/words";

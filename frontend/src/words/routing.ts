@@ -17,15 +17,8 @@
  * */
 
 import { Routes } from "acfrontend";
-import { routes as rootRoutes } from "./roots/routing";
-import { routes as underivedWordsRoutes } from "./underived_words/routing";
-import { routes as verbsRoutes } from "./verbs/routing";
-import { routes as wordsRoutes } from "./words/routing";
+import { EditWordComponent } from "./EditWordComponent";
 
 export const routes : Routes = [
-    { path: "roots", children: rootRoutes },
-    { path: "underived_words", children: underivedWordsRoutes },
-    { path: "verbs", children: verbsRoutes },
-    { path: "words", children: wordsRoutes },
-    { path: "*", redirect: "roots" },
+    { path: ":wordId/edit", component: EditWordComponent },
 ];

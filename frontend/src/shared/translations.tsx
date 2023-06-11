@@ -16,16 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Routes } from "acfrontend";
-import { routes as rootRoutes } from "./roots/routing";
-import { routes as underivedWordsRoutes } from "./underived_words/routing";
-import { routes as verbsRoutes } from "./verbs/routing";
-import { routes as wordsRoutes } from "./words/routing";
+import { JSX_CreateElement } from "acfrontend";
+import { TranslationEntry } from "../../dist/api";
+import { DialectToEmoji } from "./dialects";
 
-export const routes : Routes = [
-    { path: "roots", children: rootRoutes },
-    { path: "underived_words", children: underivedWordsRoutes },
-    { path: "verbs", children: verbsRoutes },
-    { path: "words", children: wordsRoutes },
-    { path: "*", redirect: "roots" },
-];
+function RenderTranslationEntry(translationEntry: TranslationEntry)
+{
+    return DialectToEmoji(translationEntry.dialect) + " " + translationEntry.text;
+}
+
+export function RenderTranslations(translations: TranslationEntry[])
+{
+    if(translations.length === 1)
+        return RenderTranslationEntry(translations[0]);
+
+    return <ol>{translations.map(x => <li>{RenderTranslationEntry(x)}</li>)}</ol>;
+}

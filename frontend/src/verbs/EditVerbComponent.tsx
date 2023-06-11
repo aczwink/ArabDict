@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select, Textarea } from "acfrontend";
+import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
 import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { CreateVerb } from "arabdict-domain/src/CreateVerb";
@@ -45,11 +45,7 @@ export class EditVerbComponent extends Component
         const verb = CreateVerb(this.root.radicals, verbData.stem, { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent });
 
         return <fragment>
-            <VerbEditorComponent stem={verbData.stem} stem1Context={this.data} verb={verb} onChanged={this.Update.bind(this)} />
-            
-            <FormField title="Translation">
-                <Textarea value={this.data.translation} onChanged={this.OnTranslationChanged.bind(this)} columns={80} rows={12} />
-            </FormField>
+            <VerbEditorComponent data={this.data} verb={verb} onChanged={this.Update.bind(this)} />
 
             {this.RenderVerbalNouns(verb.GenerateAllPossibleVerbalNouns())}
 
@@ -131,7 +127,8 @@ export class EditVerbComponent extends Component
         await this.apiService.verbs.put({
             verbId: this.verbId,
             data: {
-                translation: data.translation,
+                stem: data.stem,
+                translations: data.translations,
                 verbalNounIds: data.verbalNounIds,
                 stem1MiddleRadicalTashkil: data.stem1MiddleRadicalTashkil,
                 stem1MiddleRadicalTashkilPresent: data.stem1MiddleRadicalTashkilPresent
@@ -139,11 +136,5 @@ export class EditVerbComponent extends Component
         });
         
         this.router.RouteTo("/verbs/" + this.verbId);
-    }
-
-    private OnTranslationChanged(newValue: string)
-    {
-        this.data!.translation = newValue;
-        this.Update();
     }
 }

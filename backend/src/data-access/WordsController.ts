@@ -18,6 +18,7 @@
 
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
+import { TranslationEntry, TranslationsController } from "./TranslationsController";
 
 enum WordType
 {
@@ -27,23 +28,39 @@ enum WordType
     Conjunction = 3
 }
 
-export interface WordCreationData
+interface WordBaseData
 {
-    verbId: number;
     word: string;
     type: WordType;
+    translations: TranslationEntry[];
 }
 
-interface WordData extends WordCreationData
+export interface WordCreationData extends WordBaseData
+{
+    verbId?: number;
+}
+
+interface VerbDerivedWordData extends WordBaseData
 {
     id: number;
-    translation: string;
+    verbId: number;
+}
+
+interface UnderivedWordData extends WordBaseData
+{
+    id: number;
+}
+
+interface AnyWordData extends WordBaseData
+{
+    id: number;
+    verbId?: number;
 }
 
 @Injectable
 export class WordsController
 {
-    constructor(private dbController: DatabaseController)
+    constructor(private dbController: DatabaseController, private translationsController: TranslationsController)
     {
     }
 
@@ -53,34 +70,105 @@ export class WordsController
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
         const result = await conn.InsertRow("words", {
-            translation: "",
             type: data.type,
-            verbId: data.verbId,
             word: data.word,
         });
-        return result.insertId;
+        const wordId = result.insertId;
+
+        if(data.verbId !== undefined)
+        {
+            await conn.InsertRow("words_verbs", { wordId, verbId: data.verbId });
+        }
+
+        await this.translationsController.UpdateWordTranslations(wordId, data.translations);
+
+        return wordId;
     }
 
     public async DeleteWord(wordId: number)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
+        await conn.DeleteRows("words_verbs", "wordId = ?", wordId);
         await conn.DeleteRows("words", "id = ?", wordId);
     }
 
-    public async UpdateWordTranslation(wordId: number, translation: string)
+    public async QueryUnderivedWords(offset: number, limit: number)
     {
+        const query = `
+        SELECT w.id, w.word, w.type
+        FROM words w
+        LEFT JOIN words_verbs wv
+            ON wv.wordId = w.id
+        WHERE wv.verbId IS NULL
+        LIMIT ?
+        OFFSET ?
+        `;
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        await conn.UpdateRows("words", { translation }, "id = ?", wordId);
+        const rows = await conn.Select<UnderivedWordData>(query, limit, offset);
+        for (const row of rows)
+        {
+            row.translations = await this.translationsController.QueryWordTranslations(row.id);
+        }
+
+        return rows;
     }
 
     public async QueryVerbDerivedWords(verbId: number)
     {
+        const query = `
+        SELECT w.id, w.word, w.type, wv.verbId
+        FROM words w
+        INNER JOIN words_verbs wv
+            ON wv.wordId = w.id
+        WHERE wv.verbId = ?
+        `;
+
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const rows = await conn.Select<WordData>("SELECT id, verbId, type, word, translation FROM words WHERE verbId = ?", verbId);
+        const rows = await conn.Select<VerbDerivedWordData>(query, verbId);
+        for (const row of rows)
+        {
+            row.translations = await this.translationsController.QueryWordTranslations(row.id);
+        }
 
         return rows;
+    }
+
+    public async QueryWord(wordId: number)
+    {
+        const query = `
+        SELECT w.id, w.word, w.type, wv.verbId
+        FROM words w
+        LEFT JOIN words_verbs wv
+            ON wv.wordId = w.id
+        WHERE w.id = ?
+        `;
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const row = await conn.SelectOne<AnyWordData>(query, wordId);
+        if(row !== undefined)
+        {
+            row.verbId = (typeof row.verbId === "number") ? row.verbId : undefined;
+            row.translations = await this.translationsController.QueryWordTranslations(row.id);
+        }
+
+        return row;
+    }
+
+    public async UpdateWord(wordId: number, data: WordCreationData)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        await conn.UpdateRows("words", { type: data.type, word: data.word }, "id = ?", wordId);
+
+        await conn.DeleteRows("words_verbs", "wordId = ?", wordId);
+        if(data.verbId !== undefined)
+        {
+            await conn.InsertRow("words_verbs", { wordId, verbId: data.verbId });
+        }
+
+        await this.translationsController.UpdateWordTranslations(wordId, data.translations);
     }
 }

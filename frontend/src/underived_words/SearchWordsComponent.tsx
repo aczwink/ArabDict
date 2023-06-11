@@ -16,15 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, PopupManager, ProgressSpinner, Textarea } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton } from "acfrontend";
 import { APIService } from "../APIService";
-import { UnderivedWordData } from "../../dist/api";
+import { TranslationEntry, UnderivedWordData } from "../../dist/api";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
+import { WordTypeToAbbreviationText } from "../shared/words";
+import { DialectToEmoji } from "../shared/dialects";
+import { RenderTranslations } from "../shared/translations";
 
 @Injectable
 export class SearchWordsComponent extends Component
 {
-    constructor(private apiService: APIService, private popupManager: PopupManager)
+    constructor(private apiService: APIService)
     {
         super();
 
@@ -38,7 +41,7 @@ export class SearchWordsComponent extends Component
 
         return <fragment>
             {this.RenderTable()}
-            <button className="btn btn-primary" type="button" onclick={this.OnAddWord.bind(this)}><BootstrapIcon>plus</BootstrapIcon></button>
+            <RouterButton route="underived_words/add" className="btn btn-primary"><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </fragment>
     }
 
@@ -48,7 +51,7 @@ export class SearchWordsComponent extends Component
     //Private methods
     private async LoadData()
     {
-        const response = await this.apiService.words.underived.get({ offset: 0, limit: 25 });
+        const response = await this.apiService.words.get({ offset: 0, limit: 25 });
         this.data = response.data;
     }
 
@@ -64,10 +67,14 @@ export class SearchWordsComponent extends Component
             </thead>
             <tbody>
                 {this.data!.map(x => <tr>
-                    <td><a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(x.word)} target="_blank">{x.word}</a></td>
-                    <td>{x.translation}</td>
+                    <td>{x.word + " " + WordTypeToAbbreviationText(x.type)}</td>
                     <td>
-                        <a href="#" onclick={this.OnEditWordTranslation.bind(this, x)}><MatIcon>edit</MatIcon></a>
+                        {RenderTranslations(x.translations)}
+                    </td>
+                    <td>
+                        <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(x.word)} target="_blank">See on Wiktionary</a>
+                        {" | "}
+                        <Anchor route={"words/" + x.id + "/edit"}><MatIcon>edit</MatIcon></Anchor>
                     </td>
                 </tr>)}
             </tbody>
@@ -75,41 +82,6 @@ export class SearchWordsComponent extends Component
     }
 
     //Event handlers
-    private async OnAddWord()
-    {
-        const word = prompt("Add word with full tashkil");
-        if(word !== null)
-        {
-            this.data = null;
-
-            await this.apiService.words.underived.post({ word });
-            
-            this.LoadData();
-        }
-    }
-
-    private OnEditWordTranslation(wordData: UnderivedWordData, event: Event)
-    {
-        event.preventDefault();
-
-        let newText = wordData.translation;
-
-        const ref = this.popupManager.OpenDialog(<Textarea value={newText} onChanged={newValue => newText = newValue} />, {
-            title: "Edit translation"
-        });
-        ref.onAccept.Subscribe( async () => {
-            ref.waiting.Set(true);
-            await this.apiService.words.underived.put({
-                wordId: wordData.id,
-                translation: newText
-            });
-            ref.Close();
-
-            this.data = null;
-            this.LoadData();
-        });
-    }
-
     override OnInitiated(): void
     {
         this.LoadData();

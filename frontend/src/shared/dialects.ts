@@ -16,10 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Routes } from "acfrontend";
-import { EgpytianDialectComponent } from "./EgpytianDialectComponent";
+type DialectType = "msa" | "eg" | "sy";
 
-export const routes : Routes = [
-    { path: "egyptian", component: EgpytianDialectComponent },
-    { path: "", redirect: "egyptian" },
-];
+export const dialects: DialectType[] = ["msa", "eg", "sy"];
+
+export function DialectToEmoji(dialect: DialectType)
+{
+    switch(dialect)
+    {
+        case "eg":
+            return String.fromCodePoint(0x1F1EA, 0x1F1EC);
+        case "msa":
+            return String.fromCodePoint(0x1F319);
+        case "sy":
+            return String.fromCodePoint(0x1F1F8, 0x1F1FE);
+    }
+}

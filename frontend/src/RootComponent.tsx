@@ -27,7 +27,6 @@ export class RootComponent extends Component
                 <ul className="nav nav-pills">
                     <NavItem route="/roots">Roots</NavItem>
                     <NavItem route="/underived_words">Words not derived from verbs</NavItem>
-                    <NavItem route="/dialects">Dialects</NavItem>
                 </ul>
             </Navigation>
             <div className="container-fluid">

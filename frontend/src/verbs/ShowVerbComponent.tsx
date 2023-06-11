@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, PopupManager, ProgressSpinner, RouterButton, RouterState, Textarea } from "acfrontend";
-import { RootCreationData, VerbData, WordData, WordType } from "../../dist/api";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
+import { RootCreationData, VerbData, VerbDerivedWordData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
 import { CreateVerb, Stem1Context } from "arabdict-domain/src/CreateVerb";
@@ -25,11 +25,13 @@ import { RemoveTashkil } from "arabdict-domain/src/Util";
 import { Gender, Numerus, Person, Tense, VerbStem, Voice } from "arabdict-domain/src/VerbStem";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { ConjugationService } from "../ConjugationService";
+import { WordTypeToAbbreviationText } from "../shared/words";
+import { RenderTranslations } from "../shared/translations";
 
 @Injectable
 export class ShowVerbComponent extends Component
 {
-    constructor(private apiService: APIService, routerState: RouterState, private popupManager: PopupManager, private conjugationService: ConjugationService)
+    constructor(private apiService: APIService, routerState: RouterState, private conjugationService: ConjugationService)
     {
         super();
 
@@ -59,7 +61,7 @@ export class ShowVerbComponent extends Component
             <h2>{conjugated} <Anchor route={"/verbs/edit/" + verbData.id}><MatIcon>edit</MatIcon></Anchor></h2>
             {this.RenderProperties(verb, verbalNouns)}
             {this.RenderDerivedWords()}
-            {this.RenderConjugation(verb, stem1ctx)}
+            {this.RenderConjugation(stem1ctx)}
 
             <br />
             <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(conjugated)} target="_blank">See on Wiktionary</a>
@@ -70,7 +72,7 @@ export class ShowVerbComponent extends Component
     private verbId: number;
     private data: VerbData | null;
     private root: RootCreationData;
-    private derivedWords: WordData[] | null;
+    private derivedWords: VerbDerivedWordData[] | null;
 
     //Private methods
     private async LoadDerivedWords()
@@ -79,7 +81,7 @@ export class ShowVerbComponent extends Component
         this.derivedWords = response3.data;
     }
 
-    private RenderConjugation(verb: VerbStem, stem1ctx: Stem1Context)
+    private RenderConjugation(stem1ctx: Stem1Context)
     {
         const past = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "perfect", "active", "male", "third", "singular", stem1ctx);
         const present = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "present", "active", "male", "third", "singular", stem1ctx);
@@ -87,17 +89,17 @@ export class ShowVerbComponent extends Component
         return <div className="mt-2">
             <h4>Conjugation</h4>
             <h5>Past الْمَاضِي</h5>
-            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", verb, stem1ctx, "perfect", "active", past)}
-            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", verb, stem1ctx, "perfect", "passive", past)}
+            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", stem1ctx, "perfect", "active", past)}
+            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", stem1ctx, "perfect", "passive", past)}
 
             <h5>Present الْمُضَارِع الْمَرْفُوع</h5>
-            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", verb, stem1ctx, "present", "active", past)}
-            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", verb, stem1ctx, "present", "passive", present)}
-            {this.RenderConjugationTable("Imperative الْأَمْر", verb, stem1ctx, "imperative", "active", past)}
+            {this.RenderConjugationTable("Active voice الْفِعْل الْمَعْلُوم", stem1ctx, "present", "active", past)}
+            {this.RenderConjugationTable("Passive voice الْفِعْل الْمَجْهُول", stem1ctx, "present", "passive", present)}
+            {this.RenderConjugationTable("Imperative الْأَمْر", stem1ctx, "imperative", "active", past)}
         </div>;
     }
 
-    private RenderConjugationTable(tenseTitle: string, verb: VerbStem, stem1ctx: Stem1Context, tempus: Tense, voice: Voice, base: string)
+    private RenderConjugationTable(tenseTitle: string, stem1ctx: Stem1Context, tempus: Tense, voice: Voice, base: string)
     {
         const conjugate = (g: Gender, p: Person, n: Numerus) => this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, tempus, voice, g, p, n, stem1ctx);
         const renderEntry = (g: Gender, p: Person, n: Numerus) => RenderWithDiffHighlights(conjugate(g, p, n), base);
@@ -117,50 +119,50 @@ export class ShowVerbComponent extends Component
                 <tr>
                     <th rowSpan="2">singular الْمُفْرَد</th>
                     <th>Male</th>
-                    <td rowSpan="2">{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "first", "singular"), base)}</td>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "second", "singular"), base)}</td>
+                    <td rowSpan="2">{renderEntry("male", "first", "singular")}</td>
+                    <td>{renderEntry("male", "second", "singular")}</td>
                     <td>{renderEntry("male", "third", "singular")}</td>
                 </tr>
                 <tr>
                     <th>Female</th>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "second", "singular"), base)}</td>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "third", "singular"), base)}</td>
+                    <td>{renderEntry("female", "second", "singular")}</td>
+                    <td>{renderEntry("female", "third", "singular")}</td>
                 </tr>
                 <tr>
                     <th rowSpan="2">dual الْمُثَنَّى</th>
                     <th>Male</th>
                     <td rowSpan="2"> </td>
-                    <td rowSpan="2">{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "second", "dual"), base)}</td>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "dual"), base)}</td>
+                    <td rowSpan="2">{renderEntry("male", "second", "dual")}</td>
+                    <td>{renderEntry("male", "third", "dual")}</td>
                 </tr>
                 <tr>
                     <th>Female</th>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "third", "dual"), base)}</td>
+                    <td>{renderEntry("female", "third", "dual")}</td>
                 </tr>
                 <tr>
                     <th rowSpan="2">plural الْجَمْع</th>
                     <th>Male</th>
-                    <td rowSpan="2">{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "first", "plural"), base)}</td>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "second", "plural"), base)}</td>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "male", "third", "plural"), base)}</td>
+                    <td rowSpan="2">{renderEntry("male", "first", "plural")}</td>
+                    <td>{renderEntry("male", "second", "plural")}</td>
+                    <td>{renderEntry("male", "third", "plural")}</td>
                 </tr>
                 <tr>
                     <th>Female</th>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "second", "plural"), base)}</td>
-                    <td>{RenderWithDiffHighlights(verb.Conjugate(tempus, voice, "female", "third", "plural"), base)}</td>
+                    <td>{renderEntry("female", "second", "plural")}</td>
+                    <td>{renderEntry("female", "third", "plural")}</td>
                 </tr>
             </tbody>
         </table>
         </fragment>;
     }
 
-    private RenderDerivedWord(derivedWord: WordData)
+    private RenderDerivedWord(derivedWord: VerbDerivedWordData)
     {
         return <div className="row mb-2">
             <div className="col">
-                <h6 className="d-inline me-2">{derivedWord.word + " " + this.RenderWordType(derivedWord)}</h6>
-                {derivedWord.translation}
-                <a href="#" onclick={this.OnEditWordTranslation.bind(this, derivedWord)}><MatIcon>edit</MatIcon></a>
+                <h6 className="d-inline me-2">{derivedWord.word + " " + WordTypeToAbbreviationText(derivedWord.type)}</h6>
+                {RenderTranslations(derivedWord.translations)}
+                <Anchor route={"words/" + derivedWord.id + "/edit"}><MatIcon>edit</MatIcon></Anchor>
                 <a href="#" className="link-danger" onclick={this.OnDeleteWord.bind(this, derivedWord)}><BootstrapIcon>trash</BootstrapIcon></a>
             </div>
         </div>;
@@ -206,7 +208,7 @@ export class ShowVerbComponent extends Component
                 </tr>
                 <tr>
                     <th>Translation:</th>
-                    <td>{data.translation}</td>
+                    <td>{RenderTranslations(data.translations)}</td>
                 </tr>
             </tbody>
         </table>;
@@ -222,54 +224,17 @@ export class ShowVerbComponent extends Component
         </ul>;
     }
 
-    private RenderWordType(derivedWord: WordData)
-    {
-        switch(derivedWord.type)
-        {
-            case WordType.Noun:
-                return "";
-            case WordType.Preposition:
-                return "(prep.)";
-            case WordType.Adjective:
-                return "(adj.)";
-            case WordType.Conjunction:
-                return "(conj.)";
-        }
-    }
-
     //Event handlers
-    private async OnDeleteWord(derivedWord: WordData, event: Event)
+    private async OnDeleteWord(derivedWord: VerbDerivedWordData, event: Event)
     {
         event.preventDefault();
 
         if(confirm("Are you sure that you want to delete the word: " + derivedWord.word + "?"))
         {
             this.derivedWords = null;
-            await this.apiService.verbs.words.delete({ wordId: derivedWord.id });
+            await this.apiService.words._any_.delete(derivedWord.id);
             this.LoadDerivedWords();
         }
-    }
-
-    private OnEditWordTranslation(derivedWord: WordData, event: Event)
-    {
-        event.preventDefault();
-
-        let newText = derivedWord.translation;
-
-        const ref = this.popupManager.OpenDialog(<Textarea value={newText} onChanged={newValue => newText = newValue} />, {
-            title: "Edit translation"
-        });
-        ref.onAccept.Subscribe( async () => {
-            ref.waiting.Set(true);
-            await this.apiService.verbs.words.put({
-                wordId: derivedWord.id,
-                translation: newText
-            });
-            ref.Close();
-
-            this.derivedWords = null;
-            this.LoadDerivedWords();
-        });
     }
 
     override async OnInitiated(): Promise<void>

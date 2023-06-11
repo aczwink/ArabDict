@@ -19,10 +19,11 @@
 import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { CreateVerb } from "arabdict-domain/src/CreateVerb";
 import { KASRA } from "arabdict-domain/src/VerbStem";
-import { RootCreationData, VerbData, WordData } from "../../dist/api";
+import { RootCreationData, VerbData, VerbDerivedWordData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
+import { RenderTranslations } from "../shared/translations";
 
 @Injectable
 export class VerbComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
@@ -48,21 +49,21 @@ export class VerbComponent extends Component<{ root: RootCreationData; verbData:
                     {verbPresentation}
                 </Anchor>
             </h4>
-            {verbData.translation}
+            {RenderTranslations(verbData.translations)}
             {this.RenderNouns()}
         </div>;
     }
 
     //Private state
-    private derivedWords: WordData[] | null;
+    private derivedWords: VerbDerivedWordData[] | null;
 
     //Private methods
-    private RenderNoun(derivedWord: WordData)
+    private RenderNoun(derivedWord: VerbDerivedWordData)
     {
         return <div className="row">
             <div className="col">
                 <h6 className="d-inline me-2">{derivedWord.word}</h6>
-                {derivedWord.translation}
+                {RenderTranslations(derivedWord.translations)}
             </div>
         </div>;
     }

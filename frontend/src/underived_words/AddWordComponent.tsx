@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
+import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router } from "acfrontend";
 import { WordCreationData, WordType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { WordEditorComponent } from "../words/WordEditorComponent";
@@ -24,16 +24,17 @@ import { WordEditorComponent } from "../words/WordEditorComponent";
 @Injectable
 export class AddWordComponent extends Component
 {
-    constructor(private apiService: APIService, routerState: RouterState, private router: Router)
+    constructor(private apiService: APIService, private router: Router)
     {
         super();
 
-        this.verbId = parseInt(routerState.routeParams.verbId!);
         this.data = {
             type: WordType.Adjective,
             translations: [],
             word: "",
         };
+
+        this.word = "";
         this.loading = false;
     }
     
@@ -46,13 +47,13 @@ export class AddWordComponent extends Component
             <h1>Add word</h1>
             <WordEditorComponent data={this.data} onDataChanged={this.Update.bind(this)} />
 
-            <button type="button" className="btn btn-primary" disabled={this.data.word.trim().length === 0} onclick={this.OnCreateWord.bind(this)}>Add</button>
+            <button type="button" className="btn btn-primary" disabled={this.word.trim().length === 0} onclick={this.OnCreateWord.bind(this)}>Add</button>
         </fragment>;
     }
 
     //Private state
-    private verbId: number;
     private data: WordCreationData;
+    private word: string;
     private loading: boolean;
 
     private async OnCreateWord()
@@ -61,11 +62,10 @@ export class AddWordComponent extends Component
 
         await this.apiService.words.post({
             type: this.data.type,
-            word: this.data.word,
-            verbId: this.verbId,
-            translations: this.data.translations,
+            word: this.word,
+            translations: []
         });
 
-        this.router.RouteTo("/verbs/" + this.verbId);
+        this.router.RouteTo("/underived_words");
     }
 }

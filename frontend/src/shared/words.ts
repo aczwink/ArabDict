@@ -16,16 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Routes } from "acfrontend";
-import { routes as rootRoutes } from "./roots/routing";
-import { routes as underivedWordsRoutes } from "./underived_words/routing";
-import { routes as verbsRoutes } from "./verbs/routing";
-import { routes as wordsRoutes } from "./words/routing";
+import { WordType } from "../../dist/api";
 
-export const routes : Routes = [
-    { path: "roots", children: rootRoutes },
-    { path: "underived_words", children: underivedWordsRoutes },
-    { path: "verbs", children: verbsRoutes },
-    { path: "words", children: wordsRoutes },
-    { path: "*", redirect: "roots" },
-];
+export function WordTypeToAbbreviationText(wordType: WordType)
+{
+    switch(wordType)
+    {
+        case WordType.Noun:
+            return "";
+        case WordType.Preposition:
+            return "(prep.)";
+        case WordType.Adjective:
+            return "(adj.)";
+        case WordType.Conjunction:
+            return "(conj.)";
+    }
+}

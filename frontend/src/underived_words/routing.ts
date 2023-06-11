@@ -18,7 +18,9 @@
 
 import { Routes } from "acfrontend";
 import { SearchWordsComponent } from "./SearchWordsComponent";
+import { AddWordComponent } from "./AddWordComponent";
 
 export const routes : Routes = [
+    { path: "add", component: AddWordComponent },
     { path: "", component: SearchWordsComponent },
 ];

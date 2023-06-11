@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, BodyProp, Delete, Get, Post, Put, Query } from "acts-util-apilib";
+import { APIController, Body, BodyProp, Get, Post, Put, Query } from "acts-util-apilib";
 import { VerbCreationData, VerbUpdateData, VerbsController } from "../data-access/VerbsController";
-import { WordCreationData, WordsController } from "../data-access/WordsController";
+import { WordsController } from "../data-access/WordsController";
 
 @APIController("verbs")
 class _api_
 {
-    constructor(private verbsController: VerbsController)
+    constructor(private verbsController: VerbsController, private wordsController: WordsController)
     {
     }
 
@@ -43,40 +43,7 @@ class _api_
         return await this.verbsController.QueryVerb(verbId);
     }
 
-    @Put()
-    public async UpdateVerb(
-        @BodyProp verbId: number,
-        @BodyProp data: VerbUpdateData
-    )
-    {
-        await this.verbsController.UpdateVerb(verbId, data);
-    }
-}
-
-@APIController("verbs/words")
-class _api2_
-{
-    constructor(private wordsController: WordsController)
-    {
-    }
-
-    @Post()
-    public async CreateWord(
-        @Body data: WordCreationData
-    )
-    {
-        return await this.wordsController.CreateWord(data);
-    }
-
-    @Delete()
-    public async DeleteWord(
-        @BodyProp wordId: number,
-    )
-    {
-        await this.wordsController.DeleteWord(wordId);
-    }
-
-    @Get()
+    @Get("words")
     public async QueryVerbDerivedWords(
         @Query verbId: number
     )
@@ -85,11 +52,11 @@ class _api2_
     }
 
     @Put()
-    public async UpdateWordTranslation(
-        @BodyProp wordId: number,
-        @BodyProp translation: string
+    public async UpdateVerb(
+        @BodyProp verbId: number,
+        @BodyProp data: VerbUpdateData
     )
     {
-        return await this.wordsController.UpdateWordTranslation(wordId, translation);
+        await this.verbsController.UpdateVerb(verbId, data);
     }
 }

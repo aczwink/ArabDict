@@ -20,8 +20,7 @@ import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIco
 import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { VerbComponent } from "./VerbComponent";
-import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { CreateVerb } from "arabdict-domain/src/CreateVerb";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 interface ShowRootData
 {

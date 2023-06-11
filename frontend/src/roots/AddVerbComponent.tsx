@@ -20,8 +20,8 @@ import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, R
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
 import { CreateVerb } from "arabdict-domain/src/CreateVerb";
-import { RootCreationData } from "../../dist/api";
-import { Stem1ContextData, VerbEditorComponent } from "../verbs/VerbEditorComponent";
+import { RootCreationData, VerbUpdateData } from "../../dist/api";
+import { VerbEditorComponent } from "../verbs/VerbEditorComponent";
 
 @Injectable
 export class AddVerbComponent extends Component
@@ -32,11 +32,13 @@ export class AddVerbComponent extends Component
 
         this.rootId = parseInt(routerState.routeParams.rootId!);
         this.root = null;
-        this.stem = 1;
 
-        this.stem1Context = {
+        this.data = {
+            stem: 1,
             stem1MiddleRadicalTashkil: "\u064E",
-            stem1MiddleRadicalTashkilPresent: "\u064E"
+            stem1MiddleRadicalTashkilPresent: "\u064E",
+            translations: [],
+            verbalNounIds: []
         };
     }
     
@@ -47,15 +49,15 @@ export class AddVerbComponent extends Component
 
         const stems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-        const verb = CreateVerb(this.root.radicals, this.stem, { middleRadicalTashkil: this.stem1Context.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: this.stem1Context.stem1MiddleRadicalTashkilPresent });
+        const verb = CreateVerb(this.root.radicals, this.data.stem, { middleRadicalTashkil: this.data.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: this.data.stem1MiddleRadicalTashkilPresent });
 
         return <fragment>
             <FormField title="Stem">
-                <Select onChanged={newValue => this.stem = parseInt(newValue[0])}>
-                    {stems.map(x => <option value={x} selected={this.stem === x}><RomanNumberComponent num={x} /></option>)}
+                <Select onChanged={newValue => {this.data.stem = parseInt(newValue[0]); this.Update(); }}>
+                    {stems.map(x => <option value={x} selected={this.data.stem === x}><RomanNumberComponent num={x} /></option>)}
                 </Select>
             </FormField>
-            <VerbEditorComponent stem={this.stem} stem1Context={this.stem1Context} verb={verb} onChanged={this.Update.bind(this)} />
+            <VerbEditorComponent data={this.data} verb={verb} onChanged={this.Update.bind(this)} />
             
             <button className="btn btn-primary" type="button" onclick={this.OnCreateVerb.bind(this)}>Create</button>
         </fragment>;
@@ -64,17 +66,18 @@ export class AddVerbComponent extends Component
     //Private state
     private rootId: number;
     private root: RootCreationData | null;
-    private stem: number;
-    private stem1Context: Stem1ContextData;
+    private data: VerbUpdateData;
 
     //Event handlers
     private async OnCreateVerb()
     {
         await this.apiService.verbs.post({
             rootId: this.rootId,
-            stem: this.stem,
-            stem1MiddleRadicalTashkil: this.stem1Context.stem1MiddleRadicalTashkil,
-            stem1MiddleRadicalTashkilPresent: this.stem1Context.stem1MiddleRadicalTashkilPresent
+            stem: this.data.stem,
+            stem1MiddleRadicalTashkil: this.data.stem1MiddleRadicalTashkil,
+            stem1MiddleRadicalTashkilPresent: this.data.stem1MiddleRadicalTashkilPresent,
+            translations: this.data.translations,
+            verbalNounIds: this.data.verbalNounIds
         });
 
         this.router.RouteTo("/roots/" + this.rootId);

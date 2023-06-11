@@ -18,24 +18,23 @@
 
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
-
-export interface VerbCreationData
-{
-    rootId: number;
-    stem: number;
-    stem1MiddleRadicalTashkil: string;
-    stem1MiddleRadicalTashkilPresent: string;
-}
+import { TranslationEntry, TranslationsController } from "./TranslationsController";
 
 export interface VerbUpdateData
 {
+    stem: number;
     stem1MiddleRadicalTashkil: string;
     stem1MiddleRadicalTashkilPresent: string;
-    translation: string;
+    translations: TranslationEntry[];
     verbalNounIds: number[];
 }
 
-interface VerbData extends VerbCreationData, VerbUpdateData
+export interface VerbCreationData extends VerbUpdateData
+{
+    rootId: number;
+}
+
+interface VerbData extends VerbCreationData
 {
     id: number;
 }
@@ -43,7 +42,7 @@ interface VerbData extends VerbCreationData, VerbUpdateData
 @Injectable
 export class VerbsController
 {
-    constructor(private dbController: DatabaseController)
+    constructor(private dbController: DatabaseController, private translationsController: TranslationsController)
     {
     }
 
@@ -57,21 +56,25 @@ export class VerbsController
             stem: data.stem,
             stem1MiddleRadicalTashkil: (data.stem === 1) ? data.stem1MiddleRadicalTashkil : "",
             stem1MiddleRadicalTashkilPresent: (data.stem === 1) ? data.stem1MiddleRadicalTashkilPresent : "",
-            translation: ""
         });
+        const verbId = result.insertId;
 
-        return result.insertId;
+        await this.translationsController.UpdateVerbTranslations(verbId, data.translations);
+
+        return verbId;
     }
 
     public async QueryVerb(verbId: number)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const row = await conn.SelectOne<VerbData>("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, stem1MiddleRadicalTashkilPresent, translation FROM verbs WHERE id = ?", verbId);
+        const row = await conn.SelectOne<VerbData>("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, stem1MiddleRadicalTashkilPresent FROM verbs WHERE id = ?", verbId);
         if(row !== undefined)
         {
             const rows = await conn.Select("SELECT verbalNounId FROM verbs_verbalNouns WHERE verbId = ?", verbId);
             row.verbalNounIds = rows.map(x => x.verbalNounId);
+
+            row.translations = await this.translationsController.QueryVerbTranslations(row.id);
         }
 
         return row;
@@ -95,7 +98,6 @@ export class VerbsController
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
         await conn.UpdateRows("verbs", {
-            translation: data.translation,
             stem1MiddleRadicalTashkil: (verb.stem === 1) ? data.stem1MiddleRadicalTashkil : "",
             stem1MiddleRadicalTashkilPresent: (verb.stem === 1) ? data.stem1MiddleRadicalTashkilPresent : "",
         }, "id = ?", verbId);
@@ -105,5 +107,7 @@ export class VerbsController
         {    
             await conn.InsertRow("verbs_verbalNouns", { verbId, verbalNounId });
         }
+
+        await this.translationsController.UpdateVerbTranslations(verbId, data.translations);
     }
 }

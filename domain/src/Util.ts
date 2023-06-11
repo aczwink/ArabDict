@@ -17,11 +17,12 @@
  * */
 import "acts-util-core";
 import { FATHA, SHADDA, SUKUN } from "./Definitions";
-import { KASRA } from "./VerbStem";
+import { DHAMMA, KASRA } from "./VerbStem";
 
 export function RemoveTashkil(text: string)
 {
-    return text.ReplaceAll(FATHA, "")
+    return text.ReplaceAll(DHAMMA, "")
+        .ReplaceAll(FATHA, "")
         .ReplaceAll(KASRA, "")
         .ReplaceAll(SHADDA, "")
         .ReplaceAll(SUKUN, "");

@@ -18,14 +18,10 @@
 
 import { Component, FormField, JSX_CreateElement, SingleSelect } from "acfrontend";
 import { VerbStem } from "arabdict-domain/src/VerbStem";
+import { VerbUpdateData } from "../../dist/api";
+import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 
-export interface Stem1ContextData
-{
-    stem1MiddleRadicalTashkil: string;
-    stem1MiddleRadicalTashkilPresent: string;
-}
-
-export class VerbEditorComponent extends Component<{ verb: VerbStem; stem: number; stem1Context: Stem1ContextData; onChanged: () => void }>
+export class VerbEditorComponent extends Component<{ data: VerbUpdateData; verb: VerbStem; onChanged: () => void }>
 {    
     protected Render(): RenderValue
     {
@@ -35,21 +31,32 @@ export class VerbEditorComponent extends Component<{ verb: VerbStem; stem: numbe
 
         return <fragment>
             {this.RenderStem1TashkilSelect()}
-            
-            Preview: {past} / {present}
+            <div className="row">
+                <div className="col-auto">Preview:</div>
+                <div className="col-auto">{past}</div>
+                <div className="col-auto">/</div>
+                <div className="col-auto">{present}</div>
+            </div>
+
+            <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.input.onChanged} />
         </fragment>;
     }
 
     //Private methods
     private RenderStem1TashkilSelect()
     {
-        if(this.input.stem != 1)
+        if(this.input.data.stem != 1)
             return null;
 
-        return <fragment>
-            {this.RenderTashkilSelect("past", this.input.stem1Context.stem1MiddleRadicalTashkil, newValue => {this.input.stem1Context.stem1MiddleRadicalTashkil = newValue; this.input.onChanged();})}
-            {this.RenderTashkilSelect("present", this.input.stem1Context.stem1MiddleRadicalTashkilPresent, newValue => {this.input.stem1Context.stem1MiddleRadicalTashkilPresent = newValue; this.input.onChanged();})}
-        </fragment>;
+        const data = this.input.data;
+        return <div className="row">
+            <div className="col">
+                {this.RenderTashkilSelect("past", data.stem1MiddleRadicalTashkil, newValue => {data.stem1MiddleRadicalTashkil = newValue; this.input.onChanged();})}
+            </div>
+            <div className="col">
+                {this.RenderTashkilSelect("present", data.stem1MiddleRadicalTashkilPresent, newValue => {data.stem1MiddleRadicalTashkilPresent = newValue; this.input.onChanged();})}
+            </div>
+        </div>;
     }
 
     private RenderTashkilSelect(tense: string, value: string, onChanged: (newValue: string) => void)
