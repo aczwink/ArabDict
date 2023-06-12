@@ -34,11 +34,11 @@ export class VerbStem8 implements VerbStem
             case "imperative":
                 if(voice === "passive")
                     throw new Error("imperative and passive does not exist");
-                return this.ConjugateImperative(gender, person, numerus);
+                return "TODO";
             case "perfect":
                 return this.ConjugatePerfect(voice, gender, person, numerus);
             case "present":
-                return this.ConjugatePresent(voice, gender, person, numerus);
+                return "TODO";
         }
     }
 
@@ -58,16 +58,11 @@ export class VerbStem8 implements VerbStem
     }
 
     //Private methods
-    private ConjugateImperative(gender: Gender, person: Person, numerus: Numerus): string
-    {
-        return "TODO";
-    }
-
     private ConjugatePerfect(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
     {
         if(voice === "active")
             return this.ConjugatePerfectActive(gender, person, numerus);
-        return this.ConjugatePerfectPassive(gender, person, numerus);
+        return "TODO";
     }
 
     private ConjugatePerfectActive(gender: Gender, person: Person, numerus: Numerus)
@@ -104,27 +99,5 @@ export class VerbStem8 implements VerbStem
                         }
                 }
         }
-    }
-
-    private ConjugatePerfectPassive(gender: Gender, person: Person, numerus: Numerus)
-    {
-        return "TODO";
-    }
-
-    private ConjugatePresent(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
-    {
-        if(voice === "active")
-            return this.ConjugatePresentActive(gender, person, numerus);
-        return this.ConjugatePresentPassive(gender, person, numerus);
-    }
-
-    private ConjugatePresentActive(gender: Gender, person: Person, numerus: Numerus)
-    {
-        return "TODO";
-    }
-
-    private ConjugatePresentPassive(gender: Gender, person: Person, numerus: Numerus)
-    {
-        return "TODO";
     }
 }

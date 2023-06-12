@@ -16,13 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, FATHA } from "./Definitions";
+import { BASE_TASHKIL, FATHA, SHADDA } from "./Definitions";
 import { DHAMMA } from "./VerbStem";
 
 export interface Vocalized
 {
     letter: string;
     tashkil?: BASE_TASHKIL;
+    shadda: boolean;
 }
 
 export function ParseVocalizedText(text: string)
@@ -33,6 +34,7 @@ export function ParseVocalizedText(text: string)
     {
         const letter = text[i++];
         let tashkil: BASE_TASHKIL | undefined = undefined;
+        let shadda = false;
 
         let parseTashkil = true;
         while(parseTashkil)
@@ -51,6 +53,12 @@ export function ParseVocalizedText(text: string)
                     tashkil = FATHA;
                     i++;
                     break;
+                case SHADDA:
+                    if(shadda)
+                        throw new Error("Multiple shaddas are not allowed");
+                    shadda = true;
+                    i++;
+                    break;
                 default:
                     parseTashkil = false;
             }
@@ -58,7 +66,8 @@ export function ParseVocalizedText(text: string)
 
         result.push({
             letter,
-            tashkil
+            tashkil,
+            shadda
         });
     }
 
@@ -67,5 +76,10 @@ export function ParseVocalizedText(text: string)
 
 export function Vocalize(letter: string, tashkil: BASE_TASHKIL): Vocalized
 {
-    return { letter, tashkil };
+    return { letter, tashkil, shadda: false };
+}
+
+export function VocalizedToString(v: Vocalized)
+{
+    return v.letter + (v.shadda ? SHADDA : "") + (v.tashkil ? v.tashkil : "");
 }

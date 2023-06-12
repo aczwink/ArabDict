@@ -32,6 +32,11 @@ export class ConjugationService
     }
 
     //Public methods
+    public AnalyzeConjugation(conjugated: string)
+    {
+        return this.conjugator.AnalyzeConjugation(this.globalDialect, conjugated);
+    }
+
     public Conjugate(rootRadicals: string, stem: number, tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);

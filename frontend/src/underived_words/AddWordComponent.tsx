@@ -34,7 +34,6 @@ export class AddWordComponent extends Component
             word: "",
         };
 
-        this.word = "";
         this.loading = false;
     }
     
@@ -47,13 +46,12 @@ export class AddWordComponent extends Component
             <h1>Add word</h1>
             <WordEditorComponent data={this.data} onDataChanged={this.Update.bind(this)} />
 
-            <button type="button" className="btn btn-primary" disabled={this.word.trim().length === 0} onclick={this.OnCreateWord.bind(this)}>Add</button>
+            <button type="button" className="btn btn-primary" disabled={this.data.word.trim().length === 0} onclick={this.OnCreateWord.bind(this)}>Add</button>
         </fragment>;
     }
 
     //Private state
     private data: WordCreationData;
-    private word: string;
     private loading: boolean;
 
     private async OnCreateWord()
@@ -62,7 +60,7 @@ export class AddWordComponent extends Component
 
         await this.apiService.words.post({
             type: this.data.type,
-            word: this.word,
+            word: this.data.word,
             translations: []
         });
 

@@ -43,6 +43,14 @@ class _api_
         return await this.verbsController.QueryVerb(verbId);
     }
 
+    @Get("search")
+    public Search(
+        @Query byTranslation: string
+    )
+    {
+        return this.verbsController.SearchVerbs(byTranslation);
+    }
+
     @Get("words")
     public async QueryVerbDerivedWords(
         @Query verbId: number

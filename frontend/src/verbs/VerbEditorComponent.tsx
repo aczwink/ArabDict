@@ -16,18 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, JSX_CreateElement, SingleSelect } from "acfrontend";
-import { VerbStem } from "arabdict-domain/src/VerbStem";
+import { Component, FormField, Injectable, JSX_CreateElement, SingleSelect } from "acfrontend";
 import { VerbUpdateData } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
+import { ConjugationService } from "../ConjugationService";
+import { Stem1Context } from "arabdict-domain/src/CreateVerb";
 
-export class VerbEditorComponent extends Component<{ data: VerbUpdateData; verb: VerbStem; onChanged: () => void }>
-{    
+@Injectable
+export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootRadicals: string; stem1ctx: Stem1Context; onChanged: () => void }>
+{
+    constructor(private conjugatorService: ConjugationService)
+    {
+        super();
+    }
+
     protected Render(): RenderValue
     {
-        const verb = this.input.verb;
-        const past = verb.Conjugate("perfect", "active", "male", "third", "singular");
-        const present = verb.Conjugate("present", "active", "male", "third", "singular");
+        const past = this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, "perfect", "active", "male", "third", "singular", this.input.stem1ctx);
+        const present = this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, "present", "active", "male", "third", "singular", this.input.stem1ctx);
 
         return <fragment>
             {this.RenderStem1TashkilSelect()}

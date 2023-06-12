@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select, SingleSelect } from "acfrontend";
+import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
-import { CreateVerb } from "arabdict-domain/src/CreateVerb";
 import { RootCreationData, VerbUpdateData } from "../../dist/api";
 import { VerbEditorComponent } from "../verbs/VerbEditorComponent";
 
@@ -48,16 +47,14 @@ export class AddVerbComponent extends Component
             return <ProgressSpinner />;
 
         const stems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-        const verb = CreateVerb(this.root.radicals, this.data.stem, { middleRadicalTashkil: this.data.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: this.data.stem1MiddleRadicalTashkilPresent });
-
+        const stem1ctx = { middleRadicalTashkil: this.data.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: this.data.stem1MiddleRadicalTashkilPresent };
         return <fragment>
             <FormField title="Stem">
                 <Select onChanged={newValue => {this.data.stem = parseInt(newValue[0]); this.Update(); }}>
                     {stems.map(x => <option value={x} selected={this.data.stem === x}><RomanNumberComponent num={x} /></option>)}
                 </Select>
             </FormField>
-            <VerbEditorComponent data={this.data} verb={verb} onChanged={this.Update.bind(this)} />
+            <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} stem1ctx={stem1ctx} onChanged={this.Update.bind(this)} />
             
             <button className="btn btn-primary" type="button" onclick={this.OnCreateVerb.bind(this)}>Create</button>
         </fragment>;

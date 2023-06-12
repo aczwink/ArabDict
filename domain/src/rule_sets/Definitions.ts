@@ -19,10 +19,11 @@
 import { NumberDictionary } from "acts-util-core";
 import { Gender, Person, Numerus } from "../VerbStem";
 import { Stem1Context } from "../CreateVerb";
+import { VerbRoot } from "../VerbRoot";
 
 interface ConjugationRule
 {
-    condition?: (stem1Context: Stem1Context) => boolean;
+    condition?: (root: VerbRoot, stem1Context: Stem1Context) => boolean;
     gender: Gender;
     person: Person;
     numerus: Numerus;
@@ -44,7 +45,7 @@ interface StemTenseDefinition
 
 export interface StemDefinition
 {
-    imperative?: StemTenseDefinition;
+    imperative?: StemTenseVoiceDefinition;
     perfect?: StemTenseDefinition;
     present?: StemTenseDefinition;
 }

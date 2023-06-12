@@ -17,10 +17,12 @@
  * */
 
 import { StemDefinition } from "../../Definitions";
+import { stem1_imperative } from "./imperative";
 import { stem1_past_active } from "./past_active";
 import { stem1_present_active } from "./present_active";
 
 export const stem1: StemDefinition = {
+    imperative: stem1_imperative,
     perfect: {
         active: stem1_past_active
     },

@@ -23,7 +23,7 @@ import { StemTenseVoiceDefinition } from "../../Definitions";
 export const stem1_past_active: StemTenseVoiceDefinition = {
     [RootType.Assimilated]: {
         rules: [
-            { condition: ctx => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "وَعَلَ" }
+            { condition: (_, ctx) => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "وَعَلَ" }
         ]
     }
 };

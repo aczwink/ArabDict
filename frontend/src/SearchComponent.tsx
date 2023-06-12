@@ -16,15 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DialectDefinition } from "../Definitions";
-import { stem1 } from "./1/stem1";
-import { stem4 } from "./4/stem4";
-import { stem8 } from "./8/stem8";
+import { Component, JSX_CreateElement } from "acfrontend";
+import { SearchVerbsComponent } from "./verbs/SearchVerbsComponent";
+import { SearchWordsComponent } from "./underived_words/SearchWordsComponent";
+import { WordAnalysisComponent } from "./WordAnalysisComponent";
 
-export const definition: DialectDefinition = {
-    rules: {
-        1: stem1,
-        4: stem4,
-        8: stem8,
+export class SearchComponent extends Component
+{    
+    protected Render(): RenderValue
+    {
+        return <fragment>
+            <div className="row">
+                <div className="col"><SearchVerbsComponent /></div>
+                <div className="col"><SearchWordsComponent /></div>
+            </div>
+            <div className="row">
+                <WordAnalysisComponent />
+            </div>
+        </fragment>
     }
-};
+}

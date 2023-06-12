@@ -18,12 +18,18 @@
 
 import { FATHA } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
+import { DHAMMA } from "../../../VerbStem";
 import { StemTenseVoiceDefinition } from "../../Definitions";
 
 export const stem1_present_active: StemTenseVoiceDefinition = {
     [RootType.Assimilated]: {
         rules: [
-            { condition: ctx => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "يَعَلُ" }
+            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "يَعَلُ" }
+        ]
+    },
+    [RootType.SecondConsonantDoubled]: {
+        rules: [
+            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === DHAMMA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفُلُّ" }
         ]
     }
 };

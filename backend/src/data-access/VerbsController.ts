@@ -89,6 +89,15 @@ export class VerbsController
         return result.Values().NotUndefined().ToArray();
     }
 
+    public async SearchVerbs(byTranslation: string)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const rows = await conn.Select("SELECT DISTINCT verbId FROM verbs_translations WHERE text LIKE ?", "%" + byTranslation + "%");
+        const result = await rows.Values().Map(x => this.QueryVerb(x.verbId)).PromiseAll();
+        return result.Values().NotUndefined().ToArray();
+    }
+
     public async UpdateVerb(verbId: number, data: VerbUpdateData)
     {
         const verb = await this.QueryVerb(verbId);

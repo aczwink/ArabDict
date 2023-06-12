@@ -16,15 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DialectDefinition } from "../Definitions";
-import { stem1 } from "./1/stem1";
-import { stem4 } from "./4/stem4";
-import { stem8 } from "./8/stem8";
+import { RootType } from "../../../VerbRoot";
+import { StemTenseVoiceDefinition } from "../../Definitions";
 
-export const definition: DialectDefinition = {
-    rules: {
-        1: stem1,
-        4: stem4,
-        8: stem8,
-    }
+export const stem4_imperative: StemTenseVoiceDefinition = {
+    [RootType.Defective]: {
+        rules: [
+            { numerus: "singular", person: "second", gender: "male", conjugation: "أَفْعِ" }
+        ]
+    },
 };

@@ -16,15 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DialectDefinition } from "../Definitions";
-import { stem1 } from "./1/stem1";
-import { stem4 } from "./4/stem4";
-import { stem8 } from "./8/stem8";
+import { StemDefinition } from "../../Definitions";
+import { stem8_past_active } from "./past_active";
+import { stem8_present_active } from "./present_active";
 
-export const definition: DialectDefinition = {
-    rules: {
-        1: stem1,
-        4: stem4,
-        8: stem8,
+export const stem8: StemDefinition = {
+    perfect: {
+        active: stem8_past_active
+    },
+    present: {
+        active: stem8_present_active,
     }
 };

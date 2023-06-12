@@ -25,7 +25,11 @@ enum WordType
     Noun = 0,
     Preposition = 1,
     Adjective = 2,
-    Conjunction = 3
+    Conjunction = 3,
+    /**
+     * A verb that comes from an Arabic dialect or that was adopted by a foreign language and therefore does not base on a root, a stem etc.
+     */
+    ForeignVerb = 4
 }
 
 interface WordBaseData

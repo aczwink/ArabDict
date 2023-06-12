@@ -42,10 +42,11 @@ export class EditVerbComponent extends Component
             return <ProgressSpinner />;
 
         const verbData = this.data;
-        const verb = CreateVerb(this.root.radicals, verbData.stem, { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent });
+        const stem1ctx = { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent };
+        const verb = CreateVerb(this.root.radicals, verbData.stem, stem1ctx);
 
         return <fragment>
-            <VerbEditorComponent data={this.data} verb={verb} onChanged={this.Update.bind(this)} />
+            <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} stem1ctx={stem1ctx} onChanged={this.Update.bind(this)} />
 
             {this.RenderVerbalNouns(verb.GenerateAllPossibleVerbalNouns())}
 

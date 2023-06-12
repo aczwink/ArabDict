@@ -35,6 +35,7 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
         const wordTypes = [
             { key: WordType.Adjective, value: "Adjective" },
             { key: WordType.Conjunction, value: "Conjunction" },
+            { key: WordType.ForeignVerb, value: "Foreign Verb" },
             { key: WordType.Noun, value: "Noun" },
             { key: WordType.Preposition, value: "Preposition" }
         ];

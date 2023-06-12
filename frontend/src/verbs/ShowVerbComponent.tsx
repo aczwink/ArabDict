@@ -59,7 +59,7 @@ export class ShowVerbComponent extends Component
 
         return <fragment>
             <h2>{conjugated} <Anchor route={"/verbs/edit/" + verbData.id}><MatIcon>edit</MatIcon></Anchor></h2>
-            {this.RenderProperties(verb, verbalNouns)}
+            {this.RenderProperties(verb, verbalNouns, stem1ctx)}
             {this.RenderDerivedWords()}
             {this.RenderConjugation(stem1ctx)}
 
@@ -180,10 +180,11 @@ export class ShowVerbComponent extends Component
         </div>;
     }
 
-    private RenderProperties(verb: VerbStem, verbalNouns: string[])
+    private RenderProperties(verb: VerbStem, verbalNouns: string[], stem1ctx: Stem1Context)
     {
         const data = this.data!;
-        const past = verb.Conjugate("perfect", "active", "male", "third", "singular");
+        const past = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "perfect", "active", "male", "third", "singular", stem1ctx);
+        const present = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "present", "active", "male", "third", "singular", stem1ctx);
         return <table>
             <tbody>
                 <tr>
@@ -193,6 +194,10 @@ export class ShowVerbComponent extends Component
                 <tr>
                     <th>Stem:</th>
                     <td><RomanNumberComponent num={data.stem} /></td>
+                </tr>
+                <tr>
+                    <th>Present:</th>
+                    <td>{RenderWithDiffHighlights(present, past)}</td>
                 </tr>
                 <tr>
                     <th>Active participle اِسْم الْفَاعِل:</th>

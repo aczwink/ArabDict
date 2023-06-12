@@ -18,10 +18,9 @@
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton } from "acfrontend";
 import { APIService } from "../APIService";
-import { TranslationEntry, UnderivedWordData } from "../../dist/api";
+import { UnderivedWordData } from "../../dist/api";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
 import { WordTypeToAbbreviationText } from "../shared/words";
-import { DialectToEmoji } from "../shared/dialects";
 import { RenderTranslations } from "../shared/translations";
 
 @Injectable

@@ -26,7 +26,7 @@ import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { RenderTranslations } from "../shared/translations";
 
 @Injectable
-export class VerbComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
+export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
 {
     constructor(private apiService: APIService)
     {

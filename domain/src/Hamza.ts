@@ -17,7 +17,7 @@
  * */
 
 import { ALEF_HAMZA, FATHA, HAMZA } from "./Definitions";
-import { Vocalized } from "./Vocalization";
+import { Vocalized, VocalizedToString } from "./Vocalization";
 
 function FinalHamza(vocalized: Vocalized, prev: Vocalized): Vocalized
 {
@@ -26,7 +26,7 @@ function FinalHamza(vocalized: Vocalized, prev: Vocalized): Vocalized
         switch(prev.tashkil)
         {
             case FATHA:
-                return { letter: ALEF_HAMZA, tashkil: vocalized.tashkil };
+                return { letter: ALEF_HAMZA, tashkil: vocalized.tashkil, shadda: vocalized.shadda };
         }
     }
     return vocalized;
@@ -47,5 +47,5 @@ export function Hamzate(...vocalized: Vocalized[])
     //final hamza
     result.push(FinalHamza(vocalized[vocalized.length - 1], vocalized[vocalized.length - 2]));
 
-    return result.Values().Map(x => x.letter + x.tashkil).Join("");
+    return result.Values().Map(VocalizedToString).Join("");
 }

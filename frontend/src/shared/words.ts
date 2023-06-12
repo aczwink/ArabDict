@@ -30,5 +30,7 @@ export function WordTypeToAbbreviationText(wordType: WordType)
             return "(adj.)";
         case WordType.Conjunction:
             return "(conj.)";
+        case WordType.ForeignVerb:
+            return "(foreign verb)";
     }
 }
