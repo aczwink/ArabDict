@@ -1,0 +1,18 @@
+{
+  "name": "arabdict-domain-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "tsc",
+    "run": "node node_modules/acts-util-test/dist/runner.js dist"
+  },
+  "keywords": [],
+  "author": "Amir Czwink",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "acts-util-core": "*",
+    "acts-util-test": "*",
+    "arabdict-domain": "*"
+  }
+}

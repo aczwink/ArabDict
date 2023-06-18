@@ -24,11 +24,12 @@ import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { RenderTranslations } from "../shared/translations";
+import { ConjugationService } from "../ConjugationService";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
 {
-    constructor(private apiService: APIService)
+    constructor(private apiService: APIService, private conjugationService: ConjugationService)
     {
         super();
 
@@ -38,8 +39,7 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
     protected Render(): RenderValue
     {
         const verbData = this.input.verbData;
-        const verb = CreateVerb(this.input.root.radicals, verbData.stem, { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent });
-        const conjugated = verb.Conjugate("perfect", "active", "male", "third", "singular");
+        const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent });
         const verbPresentation = (verbData.stem === 1) ? conjugated : RenderWithDiffHighlights(conjugated, CreateVerb(this.input.root.radicals, 1, { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: "" }).Conjugate("perfect", "active", "male", "third", "singular"));
 
         return <div className="border border-3 rounded-2 p-2 my-2 shadow-sm">

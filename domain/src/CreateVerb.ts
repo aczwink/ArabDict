@@ -21,7 +21,6 @@ import { VerbStem } from "./VerbStem";
 import { VerbStem1 } from "./VerbStem1";
 import { VerbStem10 } from "./VerbStem10";
 import { VerbStem2 } from "./VerbStem2";
-import { VerbStem3 } from "./VerbStem3";
 import { VerbStem4 } from "./VerbStem4";
 import { VerbStem5 } from "./VerbStem5";
 import { VerbStem6 } from "./VerbStem6";
@@ -29,9 +28,13 @@ import { VerbStem7 } from "./VerbStem7";
 import { VerbStem8 } from "./VerbStem8";
 import { VerbStem9 } from "./VerbStem9";
 
-export interface Stem1Context
+export interface Stem1SingleContext
 {
     middleRadicalTashkil: string;
+}
+
+export interface Stem1Context extends Stem1SingleContext
+{
     middleRadicalTashkilPresent: string;
 }
 
@@ -46,8 +49,6 @@ export function CreateVerb(root: string, stem: number, stem1Context?: Stem1Conte
             return new VerbStem1(vRoot, stem1Context.middleRadicalTashkil, stem1Context.middleRadicalTashkilPresent);
         case 2:
             return new VerbStem2(vRoot);
-        case 3:
-            return new VerbStem3(vRoot);
         case 4:
             return new VerbStem4(vRoot);
         case 5:

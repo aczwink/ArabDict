@@ -21,9 +21,21 @@ import { RootType } from "../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../Definitions";
 
 export const stem8_present_active: StemTenseVoiceDefinition = {
+    [RootType.Assimilated]: {
+        rules: [
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يَتَّعِلُ" }
+        ]
+    },
+
     [RootType.Hollow]: {
         rules: [
             { condition: (root, _) => root.r1 === ZAY, numerus: "singular", person: "third", gender: "male", conjugation: "يَفْدَالُ" }
+        ]
+    },
+
+    [RootType.Regular]: {
+        rules: [
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يَفْتَعِلُ" }
         ]
     },
 };

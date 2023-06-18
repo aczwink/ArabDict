@@ -12,7 +12,8 @@
   "dependencies": {
     "acts-util-apilib": "*",
     "acts-util-core": "*",
-    "acts-util-node": "*"
+    "acts-util-node": "*",
+    "arabdict-domain": "*"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",

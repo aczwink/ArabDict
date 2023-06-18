@@ -52,6 +52,18 @@ export class ConjugationService
         });
     }
 
+    public ConjugateParticiple(rootRadicals: string, stem: number, voice: Voice, stem1Context?: Stem1Context)
+    {
+        const root = new VerbRoot(rootRadicals);
+        return this.conjugator.ConjugateParticiple(this.globalDialect, root, stem, voice, stem1Context);
+    }
+
+    public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: number)
+    {
+        const root = new VerbRoot(rootRadicals);
+        return this.conjugator.GenerateAllPossibleVerbalNouns(this.globalDialect, root, stem);
+    }
+
     //Private state
     private conjugator: Conjugator;
     private globalDialect: DialectType;

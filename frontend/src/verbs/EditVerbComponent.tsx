@@ -19,14 +19,14 @@
 import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
 import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
-import { CreateVerb } from "arabdict-domain/src/CreateVerb";
 import { VerbalNoun } from "arabdict-domain/src/VerbStem";
 import { VerbEditorComponent } from "./VerbEditorComponent";
+import { ConjugationService } from "../ConjugationService";
 
 @Injectable
 export class EditVerbComponent extends Component
 {
-    constructor(private apiService: APIService, routerState: RouterState, private router: Router)
+    constructor(private apiService: APIService, routerState: RouterState, private router: Router, private conjugationService: ConjugationService)
     {
         super();
 
@@ -43,12 +43,11 @@ export class EditVerbComponent extends Component
 
         const verbData = this.data;
         const stem1ctx = { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent };
-        const verb = CreateVerb(this.root.radicals, verbData.stem, stem1ctx);
 
         return <fragment>
             <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} stem1ctx={stem1ctx} onChanged={this.Update.bind(this)} />
 
-            {this.RenderVerbalNouns(verb.GenerateAllPossibleVerbalNouns())}
+            {this.RenderVerbalNouns(this.conjugationService.GenerateAllPossibleVerbalNouns(this.root.radicals, verbData.stem))}
 
             <button className="btn btn-primary" type="button" onclick={this.OnSave.bind(this)}>Save</button>
         </fragment>;

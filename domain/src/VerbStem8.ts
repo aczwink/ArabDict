@@ -32,8 +32,6 @@ export class VerbStem8 implements VerbStem
         switch(tense)
         {
             case "imperative":
-                if(voice === "passive")
-                    throw new Error("imperative and passive does not exist");
                 return "TODO";
             case "perfect":
                 return this.ConjugatePerfect(voice, gender, person, numerus);
@@ -91,8 +89,6 @@ export class VerbStem8 implements VerbStem
                                             return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + this.root.r2 + FATHA + ALEF_MAKSURA;
                                         case RootType.Hollow:
                                             return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + ALEF + this.root.r3 + FATHA;
-                                        case RootType.Regular:
-                                            return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + this.root.r2 + FATHA + this.root.r3 + FATHA;
                                     }
                                     return "TODO";
                             }

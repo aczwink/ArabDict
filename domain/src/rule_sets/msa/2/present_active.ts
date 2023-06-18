@@ -19,22 +19,22 @@
 import { RootType } from "../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../Definitions";
 
-export const stem4_present_active: StemTenseVoiceDefinition = {
-    [RootType.Defective]: {
+export const stem2_present_active: StemTenseVoiceDefinition = {
+    [RootType.Assimilated]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفْعِي" }
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يُوَعِّلُ" }
         ]
     },
 
     [RootType.Hollow]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفِيلُ" }
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَعِّلُ" }
         ]
     },
 
     [RootType.Regular]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفْعِلُ" }
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَعِّلُ" }
         ]
     }
 };

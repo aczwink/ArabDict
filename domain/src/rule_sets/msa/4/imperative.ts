@@ -25,4 +25,10 @@ export const stem4_imperative: StemTenseVoiceDefinition = {
             { numerus: "singular", person: "second", gender: "male", conjugation: "أَفْعِ" }
         ]
     },
+
+    [RootType.Hollow]: {
+        rules: [
+            { numerus: "singular", person: "second", gender: "male", conjugation: "أَفِلْ" }
+        ]
+    },
 };

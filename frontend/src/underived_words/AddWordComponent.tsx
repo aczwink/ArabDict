@@ -61,7 +61,7 @@ export class AddWordComponent extends Component
         await this.apiService.words.post({
             type: this.data.type,
             word: this.data.word,
-            translations: []
+            translations: this.data.translations
         });
 
         this.router.RouteTo("/underived_words");

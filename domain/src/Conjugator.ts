@@ -17,10 +17,10 @@
  * */
 
 import { CreateVerb, Stem1Context } from "./CreateVerb";
-import { A3EIN, FA, LAM, WAW } from "./Definitions";
+import { A3EIN, FA, LAM, QAF, WAW } from "./Definitions";
 import { Hamzate } from "./Hamza";
 import { RootType, VerbRoot } from "./VerbRoot";
-import { Tense, Voice, Gender, Person, Numerus } from "./VerbStem";
+import { Tense, Voice, Gender, Person, Numerus, VerbalNoun } from "./VerbStem";
 import { ParseVocalizedText } from "./Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "./rule_sets/Definitions";
 import { definition as msaDef } from "./rule_sets/msa/dialectDefinition";
@@ -50,11 +50,11 @@ export class Conjugator
         const dialectDef = this.GetDialectDefiniton(dialect);
         const letters = ParseVocalizedText(conjugated);
 
-        for (const stemNumber in dialectDef.rules)
+        for (const stemNumber in dialectDef.stems)
         {
-            if (Object.prototype.hasOwnProperty.call(dialectDef.rules, stemNumber))
+            if (Object.prototype.hasOwnProperty.call(dialectDef.stems, stemNumber))
             {
-                const stem = dialectDef.rules[stemNumber]!;
+                const stem = dialectDef.stems[stemNumber]!;
 
                 this.AnalyzeConjugationInStemTenseVoiceDefinition(stem.imperative);
                 this.AnalyzeConjugationInStemTenseVoiceDefinition(stem.perfect?.active);
@@ -67,34 +67,59 @@ export class Conjugator
 
     public Conjugate(root: VerbRoot, params: ConjugationParams)
     {
+        if( (params.tense === "imperative") && (params.voice === "passive") )
+            throw new Error("imperative and passive does not exist");
+        if( (params.tense === "imperative") && (params.person !== "second") )
+            return "";
+
         const dialectDef = this.GetDialectDefiniton(params.dialect);
         const rules = this.ExtractRules(dialectDef, params.stem, params.tense, params.voice, root.type);
         if(rules !== undefined)
         {
             const rule = rules.find(r => (r.gender === params.gender) && (r.numerus === params.numerus) && (r.person === params.person) && (r.condition ? r.condition(root, params.stem1Context!) : true) );
             if(rule !== undefined)
-            {
-                const patternRadicals = this.GetPatternRadicals(root.type);
-
-                const letters = ParseVocalizedText(rule.conjugation);
-
-                const replaced = letters.map(x => {
-                    const idx = patternRadicals.indexOf(x.letter);
-                    if(idx === -1)
-                        return x;
-                    return {
-                        letter: root.radicalsAsSeparateLetters[idx],
-                        tashkil: x.tashkil,
-                        shadda: x.shadda
-                    }
-                });
-                return Hamzate(...replaced);
-            }
+                return this.ApplyRootConjugationPattern(root, rule.conjugation);
         }
 
         //call legacy api
         const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), params.stem, params.stem1Context);
         return verb.Conjugate(params.tense, params.voice, params.gender, params.person, params.numerus);
+    }
+
+    public ConjugateParticiple(dialect: DialectType, root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): string
+    {
+        const dialectDef = this.GetDialectDefiniton(dialect);
+
+        const rules = dialectDef.stems[stem]?.participleRules[root.type];
+        if(rules !== undefined)
+        {
+            const rule = rules.find(r => (r.voice === voice) && (r.condition ? r.condition(stem1Context!) : true) );
+            if(rule !== undefined)
+                return this.ApplyRootConjugationPattern(root, rule.conjugation);
+        }
+
+        //call legacy api
+        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem, { middleRadicalTashkil: "", middleRadicalTashkilPresent: "" }); //stem1 ctx is not needed for participle
+        return verb.ConjugateParticiple(voice);
+    }
+
+    public GenerateAllPossibleVerbalNouns(dialect: DialectType, root: VerbRoot, stem: number): VerbalNoun[]
+    {
+        const dialectDef = this.GetDialectDefiniton(dialect);
+
+        const rules = dialectDef.stems[stem]?.verbalNounRules[root.type];
+        if(rules !== undefined)
+        {
+            return rules.map(r => ({
+                id: r.id,
+                text: this.ApplyRootConjugationPattern(root, r.text)
+                })
+            );
+        }
+
+        //call legacy api
+        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem, { middleRadicalTashkil: "", middleRadicalTashkilPresent: "" }); //stem1 ctx is not needed for verbal nouns
+        return verb.GenerateAllPossibleVerbalNouns();
     }
 
     //Private methods
@@ -117,9 +142,28 @@ export class Conjugator
         }
     }
 
+    private ApplyRootConjugationPattern(root: VerbRoot, conjugation: string)
+    {
+        const patternRadicals = this.GetPatternRadicals(root.type);
+
+        const letters = ParseVocalizedText(conjugation);
+
+        const replaced = letters.map(x => {
+            const idx = patternRadicals.indexOf(x.letter);
+            if(idx === -1)
+                return x;
+            return {
+                letter: root.radicalsAsSeparateLetters[idx],
+                tashkil: x.tashkil,
+                shadda: x.shadda
+            }
+        });
+        return Hamzate(...replaced);            
+    }
+
     private ExtractRules(dialectDef: DialectDefinition, stem: number, tense: Tense, voice: Voice, rootType: RootType)
     {
-        const stemData = dialectDef.rules[stem];
+        const stemData = dialectDef.stems[stem];
         if(stemData === undefined)
             return undefined;
         const tenseData = stemData[tense];
@@ -155,7 +199,11 @@ export class Conjugator
             case RootType.Defective:
                 return [FA, A3EIN];
             case RootType.Hollow:
-                return [FA, "", LAM];
+                return [FA, A3EIN, LAM];
+            case RootType.Quadriliteral:
+                return [FA, A3EIN, LAM, QAF];
+            case RootType.Regular:
+                return [FA, A3EIN, LAM];
             case RootType.SecondConsonantDoubled:
                 return [FA, LAM];
         }

@@ -19,22 +19,10 @@
 import { RootType } from "../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../Definitions";
 
-export const stem4_present_active: StemTenseVoiceDefinition = {
-    [RootType.Defective]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفْعِي" }
-        ]
-    },
-
+export const stem2_imperative: StemTenseVoiceDefinition = {
     [RootType.Hollow]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفِيلُ" }
+            { numerus: "singular", person: "second", gender: "male", conjugation: "فَعِّلْ" }
         ]
     },
-
-    [RootType.Regular]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفْعِلُ" }
-        ]
-    }
 };

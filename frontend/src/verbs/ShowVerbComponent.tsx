@@ -20,9 +20,9 @@ import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIco
 import { RootCreationData, VerbData, VerbDerivedWordData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { RomanNumberComponent } from "../shared/RomanNumberComponent";
-import { CreateVerb, Stem1Context } from "arabdict-domain/src/CreateVerb";
+import { Stem1Context } from "arabdict-domain/src/CreateVerb";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
-import { Gender, Numerus, Person, Tense, VerbStem, Voice } from "arabdict-domain/src/VerbStem";
+import { Gender, Numerus, Person, Tense, Voice } from "arabdict-domain/src/VerbStem";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { ConjugationService } from "../ConjugationService";
 import { WordTypeToAbbreviationText } from "../shared/words";
@@ -50,16 +50,14 @@ export class ShowVerbComponent extends Component
         const stem1ctx = { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent };
         const conjugated = this.conjugationService.Conjugate(this.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", stem1ctx);
 
-        const verb = CreateVerb(this.root.radicals, verbData.stem, { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent });
-
-        const allVerbalNouns = verb.GenerateAllPossibleVerbalNouns();
+        const allVerbalNouns = this.conjugationService.GenerateAllPossibleVerbalNouns(this.root.radicals, verbData.stem);
         const verbalNouns = (allVerbalNouns.length === 1)
             ? allVerbalNouns.map(x => x.text)
             : verbData.verbalNounIds.Values().Map(x => allVerbalNouns.find(y => y.id === x)).NotUndefined().Map(x => x.text).ToArray();
 
         return <fragment>
             <h2>{conjugated} <Anchor route={"/verbs/edit/" + verbData.id}><MatIcon>edit</MatIcon></Anchor></h2>
-            {this.RenderProperties(verb, verbalNouns, stem1ctx)}
+            {this.RenderProperties(verbalNouns, stem1ctx)}
             {this.RenderDerivedWords()}
             {this.RenderConjugation(stem1ctx)}
 
@@ -180,7 +178,7 @@ export class ShowVerbComponent extends Component
         </div>;
     }
 
-    private RenderProperties(verb: VerbStem, verbalNouns: string[], stem1ctx: Stem1Context)
+    private RenderProperties(verbalNouns: string[], stem1ctx: Stem1Context)
     {
         const data = this.data!;
         const past = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "perfect", "active", "male", "third", "singular", stem1ctx);
@@ -201,11 +199,11 @@ export class ShowVerbComponent extends Component
                 </tr>
                 <tr>
                     <th>Active participle اِسْم الْفَاعِل:</th>
-                    <td>{RenderWithDiffHighlights(verb.ConjugateParticiple("active"), past)}</td>
+                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.root.radicals, data.stem, "active", stem1ctx), past)}</td>
                 </tr>
                 <tr>
                     <th>Passive participle اِسْم الْمَفْعُول:</th>
-                    <td>{RenderWithDiffHighlights(verb.ConjugateParticiple("passive"), past)}</td>
+                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.root.radicals, data.stem, "passive", stem1ctx), past)}</td>
                 </tr>
                 <tr>
                     <th>Verbal noun(s) الْمَصَادِر:</th>

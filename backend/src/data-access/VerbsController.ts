@@ -19,6 +19,8 @@
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { TranslationEntry, TranslationsController } from "./TranslationsController";
+import { RootsController } from "./RootsController";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 export interface VerbUpdateData
 {
@@ -42,20 +44,22 @@ interface VerbData extends VerbCreationData
 @Injectable
 export class VerbsController
 {
-    constructor(private dbController: DatabaseController, private translationsController: TranslationsController)
+    constructor(private dbController: DatabaseController, private translationsController: TranslationsController, private rootsController: RootsController)
     {
     }
 
     //Public methods
     public async CreateVerb(data: VerbCreationData)
     {
+        await this.ValidateStem1Context(data, data.rootId);
+        
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
         const result = await conn.InsertRow("verbs", {
             rootId: data.rootId,
             stem: data.stem,
-            stem1MiddleRadicalTashkil: (data.stem === 1) ? data.stem1MiddleRadicalTashkil : "",
-            stem1MiddleRadicalTashkilPresent: (data.stem === 1) ? data.stem1MiddleRadicalTashkilPresent : "",
+            stem1MiddleRadicalTashkil: data.stem1MiddleRadicalTashkil,
+            stem1MiddleRadicalTashkilPresent: data.stem1MiddleRadicalTashkilPresent,
         });
         const verbId = result.insertId;
 
@@ -104,11 +108,14 @@ export class VerbsController
         if(verb === undefined)
             return;
 
+        await this.ValidateStem1Context(data, verb.rootId);
+
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
         await conn.UpdateRows("verbs", {
-            stem1MiddleRadicalTashkil: (verb.stem === 1) ? data.stem1MiddleRadicalTashkil : "",
-            stem1MiddleRadicalTashkilPresent: (verb.stem === 1) ? data.stem1MiddleRadicalTashkilPresent : "",
+            stem: data.stem,
+            stem1MiddleRadicalTashkil: data.stem1MiddleRadicalTashkil,
+            stem1MiddleRadicalTashkilPresent: data.stem1MiddleRadicalTashkilPresent,
         }, "id = ?", verbId);
 
         await conn.DeleteRows("verbs_verbalNouns", "verbId = ?", verbId);
@@ -118,5 +125,26 @@ export class VerbsController
         }
 
         await this.translationsController.UpdateVerbTranslations(verbId, data.translations);
+    }
+
+    //Private methods
+    private async ValidateStem1Context(data: VerbUpdateData, rootId: number)
+    {
+        if(data.stem !== 1)
+        {
+            data.stem1MiddleRadicalTashkil = "";
+            data.stem1MiddleRadicalTashkilPresent = "";
+            return;
+        }
+
+        const rootData = await this.rootsController.QueryRoot(rootId);
+        if(rootData === undefined)
+            throw new Error("Root not found");
+
+        const root = new VerbRoot(rootData.radicals);
+        if(!root.RequiresSecondStem1ContextParameter(data.stem1MiddleRadicalTashkil))
+        {
+            data.stem1MiddleRadicalTashkilPresent = "";
+        }
     }
 }

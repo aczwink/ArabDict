@@ -96,8 +96,6 @@ export class VerbStem4 implements VerbStem
                                     {
                                         case RootType.Hollow:
                                             return ALEF_HAMZA + FATHA + this.root.r1 + FATHA + ALEF + this.root.r3 + FATHA;
-                                        case RootType.Regular:
-                                            return Hamzate( Vocalize(ALEF_HAMZA, FATHA), Vocalize(this.root.r1, SUKUN), Vocalize(this.root.r2, FATHA), Vocalize(this.root.r3, FATHA) );
                                     }
                                     return "TODO";
                             }
@@ -112,18 +110,6 @@ export class VerbStem4 implements VerbStem
     }
 
     private ConjugatePresent(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
-    {
-        if(voice === "active")
-            return this.ConjugatePresentActive(gender, person, numerus);
-        return this.ConjugatePresentPassive(gender, person, numerus);
-    }
-
-    private ConjugatePresentActive(gender: Gender, person: Person, numerus: Numerus)
-    {
-        return "TODO";
-    }
-
-    private ConjugatePresentPassive(gender: Gender, person: Person, numerus: Numerus)
     {
         return "TODO";
     }

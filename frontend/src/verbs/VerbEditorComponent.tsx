@@ -16,11 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, SingleSelect } from "acfrontend";
+import { Component, FormField, Injectable, JSX_CreateElement, Select, SingleSelect } from "acfrontend";
 import { VerbUpdateData } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 import { ConjugationService } from "../ConjugationService";
 import { Stem1Context } from "arabdict-domain/src/CreateVerb";
+import { RomanNumberComponent } from "../shared/RomanNumberComponent";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 @Injectable
 export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootRadicals: string; stem1ctx: Stem1Context; onChanged: () => void }>
@@ -35,7 +37,15 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
         const past = this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, "perfect", "active", "male", "third", "singular", this.input.stem1ctx);
         const present = this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, "present", "active", "male", "third", "singular", this.input.stem1ctx);
 
+        const stems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
         return <fragment>
+            <FormField title="Stem">
+                <Select onChanged={newValue => {this.input.data.stem = parseInt(newValue[0]); this.input.onChanged(); }}>
+                    {stems.map(x => <option value={x} selected={this.input.data.stem === x}><RomanNumberComponent num={x} /></option>)}
+                </Select>
+            </FormField>
+            
             {this.RenderStem1TashkilSelect()}
             <div className="row">
                 <div className="col-auto">Preview:</div>
@@ -49,19 +59,27 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
     }
 
     //Private methods
+    private RenderPresentSelect()
+    {
+        const data = this.input.data;
+        return <div className="col">
+            {this.RenderTashkilSelect("present", data.stem1MiddleRadicalTashkilPresent, newValue => {data.stem1MiddleRadicalTashkilPresent = newValue; this.input.onChanged();})}
+        </div>;
+    }
+
     private RenderStem1TashkilSelect()
     {
         if(this.input.data.stem != 1)
             return null;
 
         const data = this.input.data;
+        const root = new VerbRoot(this.input.rootRadicals);
+
         return <div className="row">
             <div className="col">
                 {this.RenderTashkilSelect("past", data.stem1MiddleRadicalTashkil, newValue => {data.stem1MiddleRadicalTashkil = newValue; this.input.onChanged();})}
             </div>
-            <div className="col">
-                {this.RenderTashkilSelect("present", data.stem1MiddleRadicalTashkilPresent, newValue => {data.stem1MiddleRadicalTashkilPresent = newValue; this.input.onChanged();})}
-            </div>
+            {root.RequiresSecondStem1ContextParameter(data.stem1MiddleRadicalTashkil) ? this.RenderPresentSelect() : null}
         </div>;
     }
 

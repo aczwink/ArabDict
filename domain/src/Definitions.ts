@@ -22,6 +22,7 @@ export const ALEF_MAKSURA = "\u0649";
 export const ZAY = "\u0632";
 export const A3EIN = "\u0639";
 export const FA = "\u0641";
+export const QAF = "\u0642";
 export const LAM = "\u0644";
 export const MIM = "\u0645";
 export const WAW = "\u0648";

@@ -16,8 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { Stem1SingleContext } from "../../../CreateVerb";
 import { FATHA } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
+import { DHAMMA, KASRA } from "../../../VerbStem";
 import { StemTenseVoiceDefinition } from "../../Definitions";
 
 export const stem1_past_active: StemTenseVoiceDefinition = {
@@ -25,5 +27,37 @@ export const stem1_past_active: StemTenseVoiceDefinition = {
         rules: [
             { condition: (_, ctx) => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "وَعَلَ" }
         ]
-    }
+    },
+
+    [RootType.Defective]: {
+        rules: [
+            { condition: (_, ctx: Stem1SingleContext) => ctx.middleRadicalTashkil === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعَى" }
+        ]
+    },
+
+    [RootType.Hollow]: {
+        rules: [
+            { condition: (_, ctx) => ctx.middleRadicalTashkil === DHAMMA, numerus: "singular", person: "first", gender: "male", conjugation: "فُلْتُ" },
+            { numerus: "singular", person: "third", gender: "male", conjugation: "فَالَ" },
+        ]
+    },
+
+    [RootType.Quadriliteral]: {
+        rules: [
+            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعْلَقَ" }
+        ]
+    },
+
+    [RootType.Regular]: {
+        rules: [
+            { condition: (_, ctx) => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعَلَ" }
+        ]
+    },
+
+    [RootType.SecondConsonantDoubled]: {
+        rules: [
+            { condition: (_, ctx) => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "first", gender: "male", conjugation: "فَلَلْتُ" },
+            { numerus: "singular", person: "third", gender: "male", conjugation: "فَلَّ" }
+        ]
+    },
 };

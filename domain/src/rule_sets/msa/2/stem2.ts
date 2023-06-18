@@ -16,25 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { RootType } from "../../../VerbRoot";
-import { StemTenseVoiceDefinition } from "../../Definitions";
+import { StemDefinition } from "../../Definitions";
+import { stem2_imperative } from "./imperative";
+import { stem2_past_active } from "./past_active";
+import { stem2_present_active } from "./present_active";
 
-export const stem4_present_active: StemTenseVoiceDefinition = {
-    [RootType.Defective]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفْعِي" }
-        ]
+export const stem2: StemDefinition = {
+    imperative: stem2_imperative,
+    perfect: {
+        active: stem2_past_active
+    },
+    present: {
+        active: stem2_present_active
     },
 
-    [RootType.Hollow]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفِيلُ" }
-        ]
-    },
-
-    [RootType.Regular]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفْعِلُ" }
-        ]
-    }
+    participleRules: {},
+    verbalNounRules: {}
 };

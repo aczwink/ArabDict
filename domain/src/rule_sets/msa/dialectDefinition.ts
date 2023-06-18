@@ -18,12 +18,16 @@
 
 import { DialectDefinition } from "../Definitions";
 import { stem1 } from "./1/stem1";
+import { stem2 } from "./2/stem2";
+import { stem3 } from "./3/stem3";
 import { stem4 } from "./4/stem4";
 import { stem8 } from "./8/stem8";
 
 export const definition: DialectDefinition = {
-    rules: {
+    stems: {
         1: stem1,
+        2: stem2,
+        3: stem3,
         4: stem4,
         8: stem8,
     }

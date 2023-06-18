@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
+import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
 import { APIService } from "../APIService";
-import { RomanNumberComponent } from "../shared/RomanNumberComponent";
 import { RootCreationData, VerbUpdateData } from "../../dist/api";
 import { VerbEditorComponent } from "../verbs/VerbEditorComponent";
 
@@ -46,14 +45,8 @@ export class AddVerbComponent extends Component
         if(this.root === null)
             return <ProgressSpinner />;
 
-        const stems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         const stem1ctx = { middleRadicalTashkil: this.data.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: this.data.stem1MiddleRadicalTashkilPresent };
         return <fragment>
-            <FormField title="Stem">
-                <Select onChanged={newValue => {this.data.stem = parseInt(newValue[0]); this.Update(); }}>
-                    {stems.map(x => <option value={x} selected={this.data.stem === x}><RomanNumberComponent num={x} /></option>)}
-                </Select>
-            </FormField>
             <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} stem1ctx={stem1ctx} onChanged={this.Update.bind(this)} />
             
             <button className="btn btn-primary" type="button" onclick={this.OnCreateVerb.bind(this)}>Create</button>

@@ -19,22 +19,28 @@
 import { RootType } from "../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../Definitions";
 
-export const stem4_present_active: StemTenseVoiceDefinition = {
+export const stem3_imperative: StemTenseVoiceDefinition = {
     [RootType.Defective]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفْعِي" }
-        ]
-    },
+            { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
 
-    [RootType.Hollow]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفِيلُ" }
+            { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
+
+            { numerus: "plural", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "plural", person: "second", gender: "female", conjugation: "TODO" },
         ]
     },
 
     [RootType.Regular]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفْعِلُ" }
+            { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
+
+            { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
+
+            { numerus: "plural", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "plural", person: "second", gender: "female", conjugation: "TODO" },
         ]
     }
 };

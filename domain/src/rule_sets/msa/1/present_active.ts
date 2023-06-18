@@ -16,9 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { Stem1SingleContext } from "../../../CreateVerb";
 import { FATHA } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
-import { DHAMMA } from "../../../VerbStem";
+import { DHAMMA, KASRA } from "../../../VerbStem";
 import { StemTenseVoiceDefinition } from "../../Definitions";
 
 export const stem1_present_active: StemTenseVoiceDefinition = {
@@ -27,9 +28,35 @@ export const stem1_present_active: StemTenseVoiceDefinition = {
             { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "يَعَلُ" }
         ]
     },
+
+    [RootType.Defective]: {
+        rules: [
+            { condition: (_, ctx: Stem1SingleContext) => ctx.middleRadicalTashkil === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفْعِي" }
+        ]
+    },
+
+    [RootType.Hollow]: {
+        rules: [
+            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === DHAMMA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفُولُ" }
+        ]
+    },
+
+    [RootType.Quadriliteral]: {
+        rules: [
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَعْلِقُ" }
+        ]
+    },
+
+    [RootType.Regular]: {
+        rules: [
+            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفْعَلُ" }
+        ]
+    },
+
     [RootType.SecondConsonantDoubled]: {
         rules: [
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === DHAMMA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفُلُّ" }
+            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === DHAMMA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفُلُّ" },
+            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفِلُّ" }
         ]
     }
 };

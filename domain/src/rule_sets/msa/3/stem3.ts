@@ -18,29 +18,47 @@
 
 import { RootType } from "../../../VerbRoot";
 import { StemDefinition } from "../../Definitions";
-import { stem8_past_active } from "./past_active";
-import { stem8_present_active } from "./present_active";
+import { stem3_imperative } from "./imperative";
+import { stem3_past_active } from "./past_active";
+import { stem3_past_passive } from "./past_passive";
+import { stem3_present_active } from "./present_active";
+import { stem3_present_passive } from "./present_passive";
 
-export const stem8: StemDefinition = {
+export const stem3: StemDefinition = {
+    imperative: stem3_imperative,
     perfect: {
-        active: stem8_past_active
+        active: stem3_past_active,
+        passive: stem3_past_passive,
     },
     present: {
-        active: stem8_present_active,
+        active: stem3_present_active,
+        passive: stem3_present_passive,
     },
 
-    participleRules: {},
-    
+    participleRules: {
+        [RootType.Defective]: [
+            { voice: "active", conjugation: "TODO" },
+            { voice: "passive", conjugation: "TODO" },
+        ],
+
+        [RootType.Regular]: [
+            { voice: "active", conjugation: "TODO" },
+            { voice: "passive", conjugation: "TODO" },
+        ]
+    },
     verbalNounRules: {
-        [RootType.Assimilated]: [
-            {
-                id: 1,
-                text: "إتِّعال"
-            },
+        [RootType.Defective]: [
             {
                 id: 0,
                 text: "TODO"
             }
         ],
+
+        [RootType.Regular]: [
+            {
+                id: 0,
+                text: "TODO"
+            }
+        ]
     }
 };

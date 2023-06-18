@@ -17,7 +17,7 @@
  * */
 
 import { NumberDictionary } from "acts-util-core";
-import { Gender, Person, Numerus } from "../VerbStem";
+import { Gender, Person, Numerus, Voice, VerbalNoun } from "../VerbStem";
 import { Stem1Context } from "../CreateVerb";
 import { VerbRoot } from "../VerbRoot";
 
@@ -43,14 +43,24 @@ interface StemTenseDefinition
     passive?: StemTenseVoiceDefinition;
 }
 
+interface ParticipleRule
+{
+    condition?: (stem1Context: Stem1Context) => boolean;
+    voice: Voice;
+    conjugation: string;
+}
+
 export interface StemDefinition
 {
     imperative?: StemTenseVoiceDefinition;
     perfect?: StemTenseDefinition;
     present?: StemTenseDefinition;
+
+    participleRules: NumberDictionary<ParticipleRule[]>;
+    verbalNounRules: NumberDictionary<VerbalNoun[]>;
 }
 
 export interface DialectDefinition
 {
-    rules: NumberDictionary<StemDefinition>;
+    stems: NumberDictionary<StemDefinition>;
 }

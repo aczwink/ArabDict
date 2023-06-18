@@ -96,12 +96,30 @@ export class VerbRoot
             return RootType.SecondConsonantDoubled;
         if((this.r1 === WAW) || (this.r1 === YA))
             return RootType.Assimilated;
+
         if((this.r2 === WAW) || (this.r2 === YA))
+        {
+            if((this.r3 === WAW) || (this.r3 === YA))
+                return RootType.Defective;
             return RootType.Hollow;
+        }
+
         if((this.r3 === WAW) || (this.r3 === YA))
             return RootType.Defective;
         if(this.r1 === HAMZA)
             return RootType.HamzaOnR1;
         return RootType.Regular;
+    }
+
+    //Public methods
+    public RequiresSecondStem1ContextParameter(stem1MiddleRadicalTashkil: string)
+    {
+        switch(this.type)
+        {
+            case RootType.Defective:
+                return false;
+        }
+        
+        return true;
     }
 }

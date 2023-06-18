@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { RootType } from "../../../VerbRoot";
 import { StemDefinition } from "../../Definitions";
 import { stem4_imperative } from "./imperative";
 import { stem4_past_active } from "./past_active";
@@ -28,5 +29,14 @@ export const stem4: StemDefinition = {
     },
     present: {
         active: stem4_present_active
-    }
+    },
+
+    participleRules: {
+        [RootType.Hollow]: [
+            { voice: "active", conjugation: "مُفِيل" },
+            { voice: "passive", conjugation: "مُفَال" }
+        ]
+    },
+    
+    verbalNounRules: {}
 };
