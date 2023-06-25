@@ -20,19 +20,41 @@ import { JSX_CreateElement } from "acfrontend";
 
 export function RenderWithDiffHighlights(word: string, reference: string)
 {
-    const result = [];
+    const result: any[] = [];
+    let red = false;
+    let current = "";
+
+    function FinishBlock()
+    {
+        if(red)
+                result.push(<span className="text-danger">{current}</span>);
+            else
+                result.push(current);
+    }
+
+    function Add(c: string, r: boolean)
+    {
+        if(r !== red)
+        {
+            FinishBlock();
+            current = "";
+            red = r;
+        }
+
+        current += c;
+    }
 
     while( (word.length > 0) || (reference.length > 0) )
     {
         if(word[0] === reference[0])
         {
-            result.push(word[0]);
+            Add(word[0], false);
             word = word.substring(1);
             reference = reference.substring(1);
         }
         else if(word.length > reference.length)
         {
-            result.push(<span className="text-danger">{word[0]}</span>);
+            Add(word[0], true);
             word = word.substring(1);
         }
         else
@@ -40,6 +62,8 @@ export function RenderWithDiffHighlights(word: string, reference: string)
             reference = reference.substring(1);
         }
     }
+
+    FinishBlock();
 
     return result;
 }

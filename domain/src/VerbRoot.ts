@@ -16,11 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { HAMZA, WAW, YA } from "./Definitions";
+import { Stem1Context } from "./CreateVerb";
+import { DHAMMA, FATHA, HAMZA, KASRA, LETTER_RA, PRIMARY_TASHKIL, WAW, YA } from "./Definitions";
 
 export enum RootType
 {
-    Regular,
+    Sound,
 
     /**
      * First radical is waw or ya
@@ -42,6 +43,15 @@ export enum RootType
     HamzaOnR1,
 
     Quadriliteral,
+
+    DoublyWeak_WawOnR1_WawOrYaOnR3,
+}
+
+interface Stem1ContextChoice
+{
+    past: PRIMARY_TASHKIL[];
+    present: PRIMARY_TASHKIL[];
+    soundOverride: boolean[];
 }
 
 export class VerbRoot
@@ -78,10 +88,11 @@ export class VerbRoot
             case RootType.Quadriliteral:
                 return [this.r1, this.r2, this.r3, this.r4];
             case RootType.Assimilated:
-            case RootType.Regular:
+            case RootType.Sound:
             case RootType.Hollow:
             case RootType.Defective:
             case RootType.HamzaOnR1:
+            case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 return [this.r1, this.r2, this.r3];
             case RootType.SecondConsonantDoubled:
                 return [this.r1, this.r2, this.r2];
@@ -94,6 +105,10 @@ export class VerbRoot
             return RootType.Quadriliteral;
         if(this.r2 === this.r3)
             return RootType.SecondConsonantDoubled;
+
+        if( (this.r1 === WAW) && ( (this.r3 === WAW) || (this.r3 === YA) ) )
+            return RootType.DoublyWeak_WawOnR1_WawOrYaOnR3;
+
         if((this.r1 === WAW) || (this.r1 === YA))
             return RootType.Assimilated;
 
@@ -108,18 +123,48 @@ export class VerbRoot
             return RootType.Defective;
         if(this.r1 === HAMZA)
             return RootType.HamzaOnR1;
-        return RootType.Regular;
+        return RootType.Sound;
     }
 
     //Public methods
-    public RequiresSecondStem1ContextParameter(stem1MiddleRadicalTashkil: string)
+    public GetStem1ContextChoices(stem1Context: Stem1Context): Stem1ContextChoice
     {
         switch(this.type)
         {
             case RootType.Defective:
-                return false;
+                //special cases
+                if(this.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]))
+                {
+                    return {
+                        past: [],
+                        present: [KASRA],
+                        soundOverride: [false]
+                    };
+                }
+                
+                return {
+                    past: [],
+                    present: [FATHA, DHAMMA, KASRA],
+                    soundOverride: [false]
+                };
+            case RootType.Hollow:
+                {
+                    let past: PRIMARY_TASHKIL[] = [];
+                    if(stem1Context.middleRadicalTashkilPresent === KASRA)
+                        past = [KASRA];
+                    else if(stem1Context.middleRadicalTashkilPresent === DHAMMA)
+                        past = [DHAMMA];
+                    else
+                        past = [DHAMMA, KASRA];
+
+                    return {
+                        past,
+                        present: [FATHA, DHAMMA, KASRA],
+                        soundOverride: [false, true]
+                    };
+                }
+            default:
+                throw new Error("TODO: implement me");
         }
-        
-        return true;
     }
 }

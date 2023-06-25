@@ -21,6 +21,11 @@ import { Gender, Person, Numerus, Voice, VerbalNoun } from "../VerbStem";
 import { Stem1Context } from "../CreateVerb";
 import { VerbRoot } from "../VerbRoot";
 
+export interface Stem1DefectiveContext
+{
+    middleRadicalTashkilPresent: string;
+}
+
 interface ConjugationRule
 {
     condition?: (root: VerbRoot, stem1Context: Stem1Context) => boolean;

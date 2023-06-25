@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, FATHA, SHADDA } from "./Definitions";
-import { DHAMMA } from "./VerbStem";
+import { BASE_TASHKIL, DHAMMA, FATHA, SHADDA } from "./Definitions";
 
 export interface Vocalized
 {

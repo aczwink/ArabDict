@@ -47,7 +47,7 @@ export class ShowVerbComponent extends Component
             return <ProgressSpinner />;
 
         const verbData = this.data;
-        const stem1ctx = { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent };
+        const stem1ctx = verbData.stem1Context;
         const conjugated = this.conjugationService.Conjugate(this.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", stem1ctx);
 
         const allVerbalNouns = this.conjugationService.GenerateAllPossibleVerbalNouns(this.root.radicals, verbData.stem);
@@ -79,7 +79,7 @@ export class ShowVerbComponent extends Component
         this.derivedWords = response3.data;
     }
 
-    private RenderConjugation(stem1ctx: Stem1Context)
+    private RenderConjugation(stem1ctx?: Stem1Context)
     {
         const past = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "perfect", "active", "male", "third", "singular", stem1ctx);
         const present = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "present", "active", "male", "third", "singular", stem1ctx);
@@ -97,7 +97,7 @@ export class ShowVerbComponent extends Component
         </div>;
     }
 
-    private RenderConjugationTable(tenseTitle: string, stem1ctx: Stem1Context, tempus: Tense, voice: Voice, base: string)
+    private RenderConjugationTable(tenseTitle: string, stem1ctx: Stem1Context | undefined, tempus: Tense, voice: Voice, base: string)
     {
         const conjugate = (g: Gender, p: Person, n: Numerus) => this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, tempus, voice, g, p, n, stem1ctx);
         const renderEntry = (g: Gender, p: Person, n: Numerus) => RenderWithDiffHighlights(conjugate(g, p, n), base);
@@ -178,7 +178,7 @@ export class ShowVerbComponent extends Component
         </div>;
     }
 
-    private RenderProperties(verbalNouns: string[], stem1ctx: Stem1Context)
+    private RenderProperties(verbalNouns: string[], stem1ctx?: Stem1Context)
     {
         const data = this.data!;
         const past = this.conjugationService.Conjugate(this.root.radicals, this.data!.stem, "perfect", "active", "male", "third", "singular", stem1ctx);

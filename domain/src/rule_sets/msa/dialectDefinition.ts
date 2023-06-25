@@ -23,6 +23,8 @@ import { stem3 } from "./3/stem3";
 import { stem4 } from "./4/stem4";
 import { stem8 } from "./8/stem8";
 
+//Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
+
 export const definition: DialectDefinition = {
     stems: {
         1: stem1,

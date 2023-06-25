@@ -24,10 +24,12 @@ import { Tense, Voice, Gender, Person, Numerus, VerbalNoun } from "./VerbStem";
 import { ParseVocalizedText } from "./Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "./rule_sets/Definitions";
 import { definition as msaDef } from "./rule_sets/msa/dialectDefinition";
+import { definition as apcDef } from "./rule_sets/apc/dialectDefinition";
 
 export enum DialectType
 {
-    ModernStandardArabic
+    ModernStandardArabic,
+    NorthLevantineArabic
 }
 
 interface ConjugationParams
@@ -73,12 +75,13 @@ export class Conjugator
             return "";
 
         const dialectDef = this.GetDialectDefiniton(params.dialect);
-        const rules = this.ExtractRules(dialectDef, params.stem, params.tense, params.voice, root.type);
+        const rootType = params.stem1Context?.soundOverride ? RootType.Sound : root.type;
+        const rules = this.ExtractRules(dialectDef, params.stem, params.tense, params.voice, rootType);
         if(rules !== undefined)
         {
             const rule = rules.find(r => (r.gender === params.gender) && (r.numerus === params.numerus) && (r.person === params.person) && (r.condition ? r.condition(root, params.stem1Context!) : true) );
             if(rule !== undefined)
-                return this.ApplyRootConjugationPattern(root, rule.conjugation);
+                return this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, rootType, rule.conjugation);
         }
 
         //call legacy api
@@ -95,11 +98,11 @@ export class Conjugator
         {
             const rule = rules.find(r => (r.voice === voice) && (r.condition ? r.condition(stem1Context!) : true) );
             if(rule !== undefined)
-                return this.ApplyRootConjugationPattern(root, rule.conjugation);
+                return this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, root.type, rule.conjugation);
         }
 
         //call legacy api
-        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem, { middleRadicalTashkil: "", middleRadicalTashkilPresent: "" }); //stem1 ctx is not needed for participle
+        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem, { middleRadicalTashkil: "", middleRadicalTashkilPresent: "", soundOverride: false }); //stem1 ctx is not needed for participle
         return verb.ConjugateParticiple(voice);
     }
 
@@ -112,13 +115,13 @@ export class Conjugator
         {
             return rules.map(r => ({
                 id: r.id,
-                text: this.ApplyRootConjugationPattern(root, r.text)
+                text: this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, root.type, r.text)
                 })
             );
         }
 
         //call legacy api
-        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem, { middleRadicalTashkil: "", middleRadicalTashkilPresent: "" }); //stem1 ctx is not needed for verbal nouns
+        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem, { middleRadicalTashkil: "", middleRadicalTashkilPresent: "", soundOverride: false }); //stem1 ctx is not needed for verbal nouns
         return verb.GenerateAllPossibleVerbalNouns();
     }
 
@@ -142,9 +145,9 @@ export class Conjugator
         }
     }
 
-    private ApplyRootConjugationPattern(root: VerbRoot, conjugation: string)
+    private ApplyRootConjugationPattern(rootRadicals: string[], rootType: RootType, conjugation: string)
     {
-        const patternRadicals = this.GetPatternRadicals(root.type);
+        const patternRadicals = this.GetPatternRadicals(rootType);
 
         const letters = ParseVocalizedText(conjugation);
 
@@ -153,12 +156,12 @@ export class Conjugator
             if(idx === -1)
                 return x;
             return {
-                letter: root.radicalsAsSeparateLetters[idx],
+                letter: rootRadicals[idx],
                 tashkil: x.tashkil,
                 shadda: x.shadda
             }
         });
-        return Hamzate(...replaced);            
+        return Hamzate(replaced);            
     }
 
     private ExtractRules(dialectDef: DialectDefinition, stem: number, tense: Tense, voice: Voice, rootType: RootType)
@@ -187,6 +190,8 @@ export class Conjugator
         {
             case DialectType.ModernStandardArabic:
                 return msaDef;
+            case DialectType.NorthLevantineArabic:
+                return apcDef;
         }
     }
 
@@ -202,10 +207,12 @@ export class Conjugator
                 return [FA, A3EIN, LAM];
             case RootType.Quadriliteral:
                 return [FA, A3EIN, LAM, QAF];
-            case RootType.Regular:
+            case RootType.Sound:
                 return [FA, A3EIN, LAM];
             case RootType.SecondConsonantDoubled:
                 return [FA, LAM];
+            case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+                return [FA, A3EIN];
         }
         throw new Error("Method not implemented.");
     }

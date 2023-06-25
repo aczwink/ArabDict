@@ -41,7 +41,7 @@ export const stem3: StemDefinition = {
             { voice: "passive", conjugation: "TODO" },
         ],
 
-        [RootType.Regular]: [
+        [RootType.Sound]: [
             { voice: "active", conjugation: "TODO" },
             { voice: "passive", conjugation: "TODO" },
         ]
@@ -54,7 +54,7 @@ export const stem3: StemDefinition = {
             }
         ],
 
-        [RootType.Regular]: [
+        [RootType.Sound]: [
             {
                 id: 0,
                 text: "TODO"

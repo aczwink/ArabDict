@@ -19,9 +19,6 @@ export const TA = "\u062A";
 export const SIIN = "\u0633";
 export const NUN = "\u0646";
 
-export const DHAMMA = "\u064F";
-export const KASRA = "\u0650";
-
 export type Tense = "imperative" | "perfect" | "present";
 export type Voice = "active" | "passive";
 export type Gender = "male" | "female";

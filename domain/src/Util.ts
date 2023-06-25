@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import "acts-util-core";
-import { FATHA, SHADDA, SUKUN } from "./Definitions";
-import { DHAMMA, KASRA } from "./VerbStem";
+import { DHAMMA, FATHA, KASRA, SHADDA, SUKUN } from "./Definitions";
 
 export function RemoveTashkil(text: string)
 {

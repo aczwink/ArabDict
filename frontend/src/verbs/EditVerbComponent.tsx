@@ -41,13 +41,10 @@ export class EditVerbComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        const verbData = this.data;
-        const stem1ctx = { middleRadicalTashkil: verbData.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: verbData.stem1MiddleRadicalTashkilPresent };
-
         return <fragment>
-            <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} stem1ctx={stem1ctx} onChanged={this.Update.bind(this)} />
+            <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} onChanged={this.Update.bind(this)} />
 
-            {this.RenderVerbalNouns(this.conjugationService.GenerateAllPossibleVerbalNouns(this.root.radicals, verbData.stem))}
+            {this.RenderVerbalNouns(this.conjugationService.GenerateAllPossibleVerbalNouns(this.root.radicals, this.data.stem))}
 
             <button className="btn btn-primary" type="button" onclick={this.OnSave.bind(this)}>Save</button>
         </fragment>;
@@ -130,8 +127,7 @@ export class EditVerbComponent extends Component
                 stem: data.stem,
                 translations: data.translations,
                 verbalNounIds: data.verbalNounIds,
-                stem1MiddleRadicalTashkil: data.stem1MiddleRadicalTashkil,
-                stem1MiddleRadicalTashkilPresent: data.stem1MiddleRadicalTashkilPresent
+                stem1Context: data.stem1Context,
             }
         });
         

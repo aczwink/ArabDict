@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, ALEF_HAMZA, ALEF_MAKSURA, FATHA, MIM, SHADDA, SUKUN, WAW, YA } from "./Definitions";
+import { ALEF, ALEF_HAMZA, DHAMMA, FATHA, KASRA, MIM, SHADDA, SUKUN, WAW, YA } from "./Definitions";
 import { RootType, VerbRoot } from "./VerbRoot";
-import { DHAMMA, Gender, KASRA, NUN, Numerus, Person, TA, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
+import { Gender, NUN, Numerus, Person, TA, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
 
 export class VerbStem1 implements VerbStem
 {
@@ -48,7 +48,7 @@ export class VerbStem1 implements VerbStem
         {
             switch(this.root.type)
             {
-                case RootType.Regular:
+                case RootType.Sound:
                     return this.root.r1 + FATHA + ALEF + this.root.r2 + KASRA + this.root.r3;
                 default:
                     return "TODO";
@@ -57,7 +57,7 @@ export class VerbStem1 implements VerbStem
 
         switch(this.root.type)
         {
-            case RootType.Regular:
+            case RootType.Sound:
                 return MIM + FATHA + this.root.r1 + SUKUN + this.root.r2 + DHAMMA + WAW + this.root.r3;
             default:
                 return "TODO";
@@ -135,7 +135,7 @@ export class VerbStem1 implements VerbStem
                                         {
                                             switch(this.root.type)
                                             {
-                                                case RootType.Regular:
+                                                case RootType.Sound:
                                                     return ALEF + ((this.stem1MiddleRadicalTashkil === DHAMMA) ? DHAMMA : KASRA) + this.root.r1 + SUKUN + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN;
                                             }
                                         }
@@ -166,7 +166,7 @@ export class VerbStem1 implements VerbStem
                     case "second":
                         switch(this.root.type)
                         {
-                            case RootType.Regular:
+                            case RootType.Sound:
                                 return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA + MIM + FATHA + ALEF;
                             default:
                                 return "TODO";
@@ -177,7 +177,7 @@ export class VerbStem1 implements VerbStem
                             case "female":
                                 switch(this.root.type)
                                 {
-                                    case RootType.Regular:
+                                    case RootType.Sound:
                                         return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA + TA + FATHA + ALEF;
                                     default:
                                         return "TODO";
@@ -185,7 +185,7 @@ export class VerbStem1 implements VerbStem
                             case "male":
                                 switch(this.root.type)
                                 {
-                                    case RootType.Regular:
+                                    case RootType.Sound:
                                         return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA + ALEF;
                                     default:
                                         return "TODO";
@@ -199,7 +199,7 @@ export class VerbStem1 implements VerbStem
                     case "first":
                         switch(this.root.type)
                         {
-                            case RootType.Regular:
+                            case RootType.Sound:
                                 return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + NUN + FATHA + ALEF;
                             default:
                                 return "TODO";
@@ -210,7 +210,7 @@ export class VerbStem1 implements VerbStem
                             case "female":
                                 switch(this.root.type)
                                 {
-                                    case RootType.Regular:
+                                    case RootType.Sound:
                                         return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA + NUN + SHADDA + FATHA;
                                     default:
                                         return "TODO";
@@ -218,7 +218,7 @@ export class VerbStem1 implements VerbStem
                             case "male":
                                 switch(this.root.type)
                                 {
-                                    case RootType.Regular:
+                                    case RootType.Sound:
                                         return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA + MIM + SUKUN;
                                     default:
                                         return "TODO";
@@ -230,7 +230,7 @@ export class VerbStem1 implements VerbStem
                             case "female":
                                 switch(this.root.type)
                                 {
-                                    case RootType.Regular:
+                                    case RootType.Sound:
                                         return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + NUN + FATHA;
                                     default:
                                         return "TODO";
@@ -238,7 +238,7 @@ export class VerbStem1 implements VerbStem
                             case "male":
                                 switch(this.root.type)
                                 {
-                                    case RootType.Regular:
+                                    case RootType.Sound:
                                         return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + DHAMMA + WAW + ALEF;
                                     default:
                                         return "TODO";
@@ -252,7 +252,7 @@ export class VerbStem1 implements VerbStem
                     case "first":
                         switch(this.root.type)
                         {
-                            case RootType.Regular:
+                            case RootType.Sound:
                                 return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA;
                             default:
                                 return "TODO";
@@ -263,7 +263,7 @@ export class VerbStem1 implements VerbStem
                             case "female":
                                 switch(this.root.type)
                                 {
-                                    case RootType.Regular:
+                                    case RootType.Sound:
                                         return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + KASRA;
                                     default:
                                         return "TODO";
@@ -271,7 +271,7 @@ export class VerbStem1 implements VerbStem
                             case "male":
                                 switch(this.root.type)
                                 {
-                                    case RootType.Regular:
+                                    case RootType.Sound:
                                         return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + FATHA;
                                     default:
                                         return "TODO";
@@ -283,7 +283,7 @@ export class VerbStem1 implements VerbStem
                             case "female":
                                 switch(this.root.type)
                                 {
-                                    case RootType.Regular:
+                                    case RootType.Sound:
                                         return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA + TA + SUKUN;
                                     default:
                                         return "TODO";
@@ -327,7 +327,7 @@ export class VerbStem1 implements VerbStem
                                     case "singular":
                                         switch(this.root.type)
                                         {
-                                            case RootType.Regular:
+                                            case RootType.Sound:
                                                 return this.root.r1 + DHAMMA + this.root.r2 + KASRA + this.root.r3 + FATHA;
                                             default:
                                                 return "TODO";
@@ -407,7 +407,7 @@ export class VerbStem1 implements VerbStem
                                     case "singular":
                                         switch(this.root.type)
                                         {
-                                            case RootType.Regular:
+                                            case RootType.Sound:
                                                 return YA + DHAMMA + this.root.r1 + SUKUN + this.root.r2 + FATHA + this.root.r3 + DHAMMA;
                                         }
                                         return "TODO";

@@ -16,11 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Stem1SingleContext } from "../../../CreateVerb";
-import { FATHA } from "../../../Definitions";
+import { DHAMMA, FATHA, KASRA } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
-import { DHAMMA, KASRA } from "../../../VerbStem";
-import { StemTenseVoiceDefinition } from "../../Definitions";
+import { Stem1DefectiveContext, StemTenseVoiceDefinition } from "../../Definitions";
 
 export const stem1_past_active: StemTenseVoiceDefinition = {
     [RootType.Assimilated]: {
@@ -31,7 +29,7 @@ export const stem1_past_active: StemTenseVoiceDefinition = {
 
     [RootType.Defective]: {
         rules: [
-            { condition: (_, ctx: Stem1SingleContext) => ctx.middleRadicalTashkil === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعَى" }
+            { condition: (_, ctx: Stem1DefectiveContext) => ctx.middleRadicalTashkilPresent === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعَى" }
         ]
     },
 
@@ -48,9 +46,10 @@ export const stem1_past_active: StemTenseVoiceDefinition = {
         ]
     },
 
-    [RootType.Regular]: {
+    [RootType.Sound]: {
         rules: [
-            { condition: (_, ctx) => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعَلَ" }
+            { condition: (_, ctx) => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعَلَ" },
+            { condition: (_, ctx) => ctx.middleRadicalTashkil === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعِلَ" }
         ]
     },
 
@@ -58,6 +57,12 @@ export const stem1_past_active: StemTenseVoiceDefinition = {
         rules: [
             { condition: (_, ctx) => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "first", gender: "male", conjugation: "فَلَلْتُ" },
             { numerus: "singular", person: "third", gender: "male", conjugation: "فَلَّ" }
+        ]
+    },
+
+    [RootType.DoublyWeak_WawOnR1_WawOrYaOnR3]: {
+        rules: [
+            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعَى" }
         ]
     },
 };

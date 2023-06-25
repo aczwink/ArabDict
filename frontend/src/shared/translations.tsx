@@ -22,7 +22,10 @@ import { DialectToEmoji } from "./dialects";
 
 function RenderTranslationEntry(translationEntry: TranslationEntry)
 {
-    return DialectToEmoji(translationEntry.dialect) + " " + translationEntry.text;
+    return <fragment>
+        {DialectToEmoji(translationEntry.dialect)}
+        <span style="white-space: pre;">{translationEntry.text}</span>
+    </fragment>;
 }
 
 export function RenderTranslations(translations: TranslationEntry[])

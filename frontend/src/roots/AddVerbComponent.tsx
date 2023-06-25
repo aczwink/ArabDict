@@ -33,8 +33,6 @@ export class AddVerbComponent extends Component
 
         this.data = {
             stem: 1,
-            stem1MiddleRadicalTashkil: "\u064E",
-            stem1MiddleRadicalTashkilPresent: "\u064E",
             translations: [],
             verbalNounIds: []
         };
@@ -45,9 +43,8 @@ export class AddVerbComponent extends Component
         if(this.root === null)
             return <ProgressSpinner />;
 
-        const stem1ctx = { middleRadicalTashkil: this.data.stem1MiddleRadicalTashkil, middleRadicalTashkilPresent: this.data.stem1MiddleRadicalTashkilPresent };
         return <fragment>
-            <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} stem1ctx={stem1ctx} onChanged={this.Update.bind(this)} />
+            <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} onChanged={this.Update.bind(this)} />
             
             <button className="btn btn-primary" type="button" onclick={this.OnCreateVerb.bind(this)}>Create</button>
         </fragment>;
@@ -64,8 +61,7 @@ export class AddVerbComponent extends Component
         await this.apiService.verbs.post({
             rootId: this.rootId,
             stem: this.data.stem,
-            stem1MiddleRadicalTashkil: this.data.stem1MiddleRadicalTashkil,
-            stem1MiddleRadicalTashkilPresent: this.data.stem1MiddleRadicalTashkilPresent,
+            stem1Context: this.data.stem1Context,
             translations: this.data.translations,
             verbalNounIds: this.data.verbalNounIds
         });

@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Stem1SingleContext } from "../../../CreateVerb";
+import { DHAMMA } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
-import { DHAMMA } from "../../../VerbStem";
-import { StemDefinition } from "../../Definitions";
+import { Stem1DefectiveContext, StemDefinition } from "../../Definitions";
 import { stem1_imperative } from "./imperative";
 import { stem1_past_active } from "./past_active";
 import { stem1_present_active } from "./present_active";
@@ -36,7 +35,7 @@ export const stem1: StemDefinition = {
     participleRules: {
         [RootType.Defective]: [
             { voice: "active", conjugation: "فَاعٍ" },
-            { condition: (ctx: Stem1SingleContext) => ctx.middleRadicalTashkil === DHAMMA, voice: "passive", conjugation: "مَفْعُوّ" },
+            { condition: (ctx: Stem1DefectiveContext) => ctx.middleRadicalTashkilPresent === DHAMMA, voice: "passive", conjugation: "مَفْعُوّ" },
         ],
 
         [RootType.Hollow]: [

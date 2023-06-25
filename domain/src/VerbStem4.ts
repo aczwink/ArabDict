@@ -16,11 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, ALEF_HAMZA, FATHA, SUKUN } from "./Definitions";
-import { Hamzate } from "./Hamza";
+import { ALEF, ALEF_HAMZA, FATHA } from "./Definitions";
 import { RootType, VerbRoot } from "./VerbRoot";
 import { Gender, Numerus, Person, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
-import { Vocalize } from "./Vocalization";
 
 export class VerbStem4 implements VerbStem
 {

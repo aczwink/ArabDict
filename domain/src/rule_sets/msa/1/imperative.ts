@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { FATHA } from "../../../Definitions";
+import { DHAMMA, FATHA } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
-import { DHAMMA } from "../../../VerbStem";
 import { StemTenseVoiceDefinition } from "../../Definitions";
 
 export const stem1_imperative: StemTenseVoiceDefinition = {

@@ -20,13 +20,13 @@ import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { TranslationEntry, TranslationsController } from "./TranslationsController";
 import { RootsController } from "./RootsController";
+import { Stem1Context } from "arabdict-domain/src/CreateVerb";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 export interface VerbUpdateData
 {
     stem: number;
-    stem1MiddleRadicalTashkil: string;
-    stem1MiddleRadicalTashkilPresent: string;
+    stem1Context?: Stem1Context;
     translations: TranslationEntry[];
     verbalNounIds: number[];
 }
@@ -58,8 +58,9 @@ export class VerbsController
         const result = await conn.InsertRow("verbs", {
             rootId: data.rootId,
             stem: data.stem,
-            stem1MiddleRadicalTashkil: data.stem1MiddleRadicalTashkil,
-            stem1MiddleRadicalTashkilPresent: data.stem1MiddleRadicalTashkilPresent,
+            stem1MiddleRadicalTashkil: data.stem1Context?.middleRadicalTashkil,
+            stem1MiddleRadicalTashkilPresent: data.stem1Context?.middleRadicalTashkilPresent,
+            soundOverride: data.stem1Context?.soundOverride
         });
         const verbId = result.insertId;
 
@@ -68,20 +69,28 @@ export class VerbsController
         return verbId;
     }
 
-    public async QueryVerb(verbId: number)
+    public async QueryVerb(verbId: number): Promise<VerbData | undefined>
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const row = await conn.SelectOne<VerbData>("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, stem1MiddleRadicalTashkilPresent FROM verbs WHERE id = ?", verbId);
-        if(row !== undefined)
-        {
-            const rows = await conn.Select("SELECT verbalNounId FROM verbs_verbalNouns WHERE verbId = ?", verbId);
-            row.verbalNounIds = rows.map(x => x.verbalNounId);
+        const row = await conn.SelectOne("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, stem1MiddleRadicalTashkilPresent, soundOverride FROM verbs WHERE id = ?", verbId);
+        if(row === undefined)
+            return undefined;
+            
+        const rows = await conn.Select("SELECT verbalNounId FROM verbs_verbalNouns WHERE verbId = ?", verbId);
 
-            row.translations = await this.translationsController.QueryVerbTranslations(row.id);
-        }
-
-        return row;
+        return {
+            id: row.id,
+            rootId: row.rootId,
+            stem: row.stem,
+            translations: await this.translationsController.QueryVerbTranslations(row.id),
+            verbalNounIds: rows.map(x => x.verbalNounId),
+            stem1Context: (row.stem === 1) ? {
+                middleRadicalTashkil: row.stem1MiddleRadicalTashkil,
+                middleRadicalTashkilPresent: row.stem1MiddleRadicalTashkilPresent,
+                soundOverride: row.soundOverride !== 0
+            } : undefined
+        };
     }
 
     public async QueryVerbs(rootId: number)
@@ -114,8 +123,9 @@ export class VerbsController
 
         await conn.UpdateRows("verbs", {
             stem: data.stem,
-            stem1MiddleRadicalTashkil: data.stem1MiddleRadicalTashkil,
-            stem1MiddleRadicalTashkilPresent: data.stem1MiddleRadicalTashkilPresent,
+            stem1MiddleRadicalTashkil: data.stem1Context?.middleRadicalTashkil,
+            stem1MiddleRadicalTashkilPresent: data.stem1Context?.middleRadicalTashkilPresent,
+            soundOverride: data.stem1Context?.soundOverride
         }, "id = ?", verbId);
 
         await conn.DeleteRows("verbs_verbalNouns", "verbId = ?", verbId);
@@ -132,19 +142,21 @@ export class VerbsController
     {
         if(data.stem !== 1)
         {
-            data.stem1MiddleRadicalTashkil = "";
-            data.stem1MiddleRadicalTashkilPresent = "";
+            data.stem1Context = undefined;
             return;
         }
+        if(data.stem1Context === undefined)
+        throw new Error("Missing context for stem 1");
 
         const rootData = await this.rootsController.QueryRoot(rootId);
         if(rootData === undefined)
             throw new Error("Root not found");
 
         const root = new VerbRoot(rootData.radicals);
-        if(!root.RequiresSecondStem1ContextParameter(data.stem1MiddleRadicalTashkil))
-        {
-            data.stem1MiddleRadicalTashkilPresent = "";
-        }
+        const choices = root.GetStem1ContextChoices(data.stem1Context);
+        if(choices.past.length === 0)
+            data.stem1Context.middleRadicalTashkil = "";
+        else if(choices.present.length === 0)
+            data.stem1Context.middleRadicalTashkilPresent = "";
     }
 }

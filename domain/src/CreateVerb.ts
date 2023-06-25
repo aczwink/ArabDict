@@ -20,7 +20,6 @@ import { VerbRoot } from "./VerbRoot";
 import { VerbStem } from "./VerbStem";
 import { VerbStem1 } from "./VerbStem1";
 import { VerbStem10 } from "./VerbStem10";
-import { VerbStem2 } from "./VerbStem2";
 import { VerbStem4 } from "./VerbStem4";
 import { VerbStem5 } from "./VerbStem5";
 import { VerbStem6 } from "./VerbStem6";
@@ -28,14 +27,24 @@ import { VerbStem7 } from "./VerbStem7";
 import { VerbStem8 } from "./VerbStem8";
 import { VerbStem9 } from "./VerbStem9";
 
-export interface Stem1SingleContext
+export interface Stem1Context
 {
+    /**
+     * -For hollow, only used when the present tense tashkil is fatha.
+     * -Not used for defective.
+     */
     middleRadicalTashkil: string;
-}
 
-export interface Stem1Context extends Stem1SingleContext
-{
+    /**
+     * -For hollow, the tashkil of the middle radical in present tense.
+     * -For defective it defines the tashkil of the present tense. The past can be then mapped accordingly.
+     */
     middleRadicalTashkilPresent: string;
+
+    /**
+     * Some hollow verbs like لَيسَ are actually conjugated as if they were sound, although the root is hollow.
+     */
+    soundOverride: boolean;
 }
 
 export function CreateVerb(root: string, stem: number, stem1Context?: Stem1Context): VerbStem
@@ -47,8 +56,6 @@ export function CreateVerb(root: string, stem: number, stem1Context?: Stem1Conte
             if(stem1Context === undefined)
                 throw new Error("Missing context for verb in stem 1");
             return new VerbStem1(vRoot, stem1Context.middleRadicalTashkil, stem1Context.middleRadicalTashkilPresent);
-        case 2:
-            return new VerbStem2(vRoot);
         case 4:
             return new VerbStem4(vRoot);
         case 5:

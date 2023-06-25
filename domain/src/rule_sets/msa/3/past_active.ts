@@ -60,7 +60,7 @@ export const stem3_past_active: StemTenseVoiceDefinition = {
         ]
     },
 
-    [RootType.Regular]: {
+    [RootType.Sound]: {
         rules: [
             { numerus: "singular", person: "first", gender: "male", conjugation: "TODO" },
             { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },

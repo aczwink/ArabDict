@@ -85,7 +85,7 @@ export class VerbStem5 implements VerbStem
                                         {
                                             case RootType.Defective:
                                                 return TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + ALEF_MAKSURA;
-                                            case RootType.Regular:
+                                            case RootType.Sound:
                                                 return TA + FATHA + this.root.r1 + FATHA + this.root.r2 + SHADDA + FATHA + this.root.r3 + FATHA;
                                         }
                                 }

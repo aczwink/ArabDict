@@ -16,26 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ZAY } from "../../../Definitions";
-import { RootType } from "../../../VerbRoot";
-import { StemTenseVoiceDefinition } from "../../Definitions";
+import { DialectDefinition } from "../Definitions";
+import { stem1 } from "./1/stem1";
 
-export const stem8_past_active: StemTenseVoiceDefinition = {
-    [RootType.Assimilated]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "اِتَّعَلَ" }
-        ]
-    },
+//Source is mostly: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar
 
-    [RootType.Hollow]: {
-        rules: [
-            { condition: (root, _) => root.r1 === ZAY, numerus: "singular", person: "third", gender: "male", conjugation: "اِفْدَالَ" }
-        ]
-    },
-
-    [RootType.Sound]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "اِفْتَعَلَ" }
-        ]
-    },
+export const definition: DialectDefinition = {
+    stems: {
+        1: stem1,
+    }
 };

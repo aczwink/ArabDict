@@ -26,15 +26,49 @@ export const stem2_present_active: StemTenseVoiceDefinition = {
         ]
     },
 
+    [RootType.Defective]: {
+        rules: [
+            { numerus: "singular", person: "first", gender: "male", conjugation: "TODO" },
+            { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَعِّي" },
+            { numerus: "singular", person: "third", gender: "female", conjugation: "TODO" },
+
+            { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "dual", person: "third", gender: "male", conjugation: "TODO" },
+            { numerus: "dual", person: "third", gender: "female", conjugation: "TODO" },
+
+            { numerus: "plural", person: "first", gender: "male", conjugation: "TODO" },
+            { numerus: "plural", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "plural", person: "second", gender: "female", conjugation: "TODO" },
+            { numerus: "plural", person: "third", gender: "male", conjugation: "TODO" },
+            { numerus: "plural", person: "third", gender: "female", conjugation: "TODO" },
+        ]
+    },
+
     [RootType.Hollow]: {
         rules: [
             { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَعِّلُ" }
         ]
     },
 
-    [RootType.Regular]: {
+    [RootType.Sound]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَعِّلُ" }
+            { numerus: "singular", person: "first", gender: "male", conjugation: "TODO" },
+            { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَعِّلُ" },
+            { numerus: "singular", person: "third", gender: "female", conjugation: "TODO" },
+
+            { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "dual", person: "third", gender: "male", conjugation: "TODO" },
+            { numerus: "dual", person: "third", gender: "female", conjugation: "TODO" },
+
+            { numerus: "plural", person: "first", gender: "male", conjugation: "TODO" },
+            { numerus: "plural", person: "second", gender: "male", conjugation: "TODO" },
+            { numerus: "plural", person: "second", gender: "female", conjugation: "TODO" },
+            { numerus: "plural", person: "third", gender: "male", conjugation: "TODO" },
+            { numerus: "plural", person: "third", gender: "female", conjugation: "TODO" },
         ]
-    }
+    },
 };

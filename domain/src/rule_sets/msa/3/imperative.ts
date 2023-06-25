@@ -32,7 +32,7 @@ export const stem3_imperative: StemTenseVoiceDefinition = {
         ]
     },
 
-    [RootType.Regular]: {
+    [RootType.Sound]: {
         rules: [
             { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
             { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },

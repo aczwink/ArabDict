@@ -16,26 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ZAY } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../Definitions";
 
-export const stem8_past_active: StemTenseVoiceDefinition = {
-    [RootType.Assimilated]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "اِتَّعَلَ" }
-        ]
-    },
-
-    [RootType.Hollow]: {
-        rules: [
-            { condition: (root, _) => root.r1 === ZAY, numerus: "singular", person: "third", gender: "male", conjugation: "اِفْدَالَ" }
-        ]
-    },
-
+export const stem1_imperative: StemTenseVoiceDefinition = {
     [RootType.Sound]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "اِفْتَعَلَ" }
+            { numerus: "singular", person: "second", gender: "male", conjugation: "فْعُولْ" },
+            { numerus: "singular", person: "second", gender: "female", conjugation: "فْعِلِي" },
+
+            { numerus: "dual", person: "second", gender: "male", conjugation: "" },
+
+            { numerus: "plural", person: "second", gender: "male", conjugation: "فْعِلو" },
+            { numerus: "plural", person: "second", gender: "female", conjugation: "" },
         ]
-    },
+    }
 };

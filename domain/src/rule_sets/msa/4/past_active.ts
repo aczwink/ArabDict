@@ -26,7 +26,7 @@ export const stem4_past_active: StemTenseVoiceDefinition = {
         ]
     },
 
-    [RootType.Regular]: {
+    [RootType.Sound]: {
         rules: [
             { numerus: "singular", person: "third", gender: "male", conjugation: "أَفْعَلَ" }
         ]

@@ -16,26 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ZAY } from "../../../Definitions";
-import { RootType } from "../../../VerbRoot";
-import { StemTenseVoiceDefinition } from "../../Definitions";
+import { StemDefinition } from "../../Definitions";
+import { stem1_imperative } from "./imperative";
+import { stem1_past_active } from "./past_active";
+import { stem1_present_active } from "./present_active";
 
-export const stem8_past_active: StemTenseVoiceDefinition = {
-    [RootType.Assimilated]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "اِتَّعَلَ" }
-        ]
+export const stem1: StemDefinition = {
+    imperative: stem1_imperative,
+    perfect: {
+        active: stem1_past_active
+    },
+    present: {
+        active: stem1_present_active,
     },
 
-    [RootType.Hollow]: {
-        rules: [
-            { condition: (root, _) => root.r1 === ZAY, numerus: "singular", person: "third", gender: "male", conjugation: "اِفْدَالَ" }
-        ]
-    },
+    participleRules: {},
 
-    [RootType.Sound]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "اِفْتَعَلَ" }
-        ]
-    },
+    verbalNounRules: {}
 };
