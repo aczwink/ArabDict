@@ -31,8 +31,6 @@ export class VerbStem8 implements VerbStem
     {
         switch(tense)
         {
-            case "imperative":
-                return "TODO";
             case "perfect":
                 return this.ConjugatePerfect(voice, gender, person, numerus);
             case "present":

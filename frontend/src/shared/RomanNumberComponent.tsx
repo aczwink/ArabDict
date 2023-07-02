@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component } from "acfrontend";
+import { Component, JSX_CreateElement } from "acfrontend";
+import { RootType } from "arabdict-domain/src/VerbRoot";
 
 export class RomanNumberComponent extends Component<{ num: number; }>
 {
@@ -48,5 +49,16 @@ export class RomanNumberComponent extends Component<{ num: number; }>
                 return "X";
         }
         throw new Error("not implemented for number: " + num);
+    }
+}
+
+export class StemNumberComponent extends Component<{ rootType: RootType; stem: number; }>
+{
+    protected Render(): RenderValue
+    {
+        const suffix = (this.input.rootType === RootType.Quadriliteral) ? "q" : "";
+        return <fragment>
+            <RomanNumberComponent num={this.input.stem} />{suffix}
+        </fragment>;
     }
 }

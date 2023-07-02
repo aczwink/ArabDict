@@ -59,24 +59,4 @@ export const stem3_past_active: StemTenseVoiceDefinition = {
             { numerus: "plural", person: "third", gender: "female", conjugation: "TODO" },
         ]
     },
-
-    [RootType.Sound]: {
-        rules: [
-            { numerus: "singular", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "singular", person: "third", gender: "male", conjugation: "فاعَلَ" },
-            { numerus: "singular", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "plural", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "female", conjugation: "TODO" },
-        ]
-    }
 };

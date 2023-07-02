@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, DHAMMA, FATHA, SHADDA } from "./Definitions";
+import { BASE_TASHKIL, DHAMMA, FATHA, KASRA, SHADDA } from "./Definitions";
 
 export interface Vocalized
 {
@@ -50,6 +50,12 @@ export function ParseVocalizedText(text: string)
                     if(tashkil !== undefined)
                         throw new Error("Doubled tashkil");
                     tashkil = FATHA;
+                    i++;
+                    break;
+                case KASRA:
+                    if(tashkil !== undefined)
+                        throw new Error("Doubled tashkil");
+                    tashkil = KASRA;
                     i++;
                     break;
                 case SHADDA:

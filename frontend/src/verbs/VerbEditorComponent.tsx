@@ -20,11 +20,11 @@ import { CheckBox, Component, FormField, Injectable, JSX_CreateElement, Select, 
 import { VerbUpdateData } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 import { ConjugationService } from "../ConjugationService";
-import { RomanNumberComponent } from "../shared/RomanNumberComponent";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { DHAMMA, FATHA, KASRA, PRIMARY_TASHKIL } from "arabdict-domain/src/Definitions";
 import { Tense } from "arabdict-domain/src/VerbStem";
 import { Stem1Context } from "arabdict-domain/src/CreateVerb";
+import { StemNumberComponent } from "../shared/RomanNumberComponent";
 
 @Injectable
 export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootRadicals: string; onChanged: () => void }>
@@ -36,21 +36,47 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
 
     protected Render(): RenderValue
     {
-        const stems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        const root = new VerbRoot(this.input.rootRadicals);
+        const stems = root.type === RootType.Quadriliteral ? [1, 2] : [1, 2, 3, 4, 5, 6, 7, 8, 10];
 
         return <fragment>
             <FormField title="Stem">
                 <Select onChanged={this.OnStemChanged.bind(this)}>
-                    {stems.map(x => <option value={x} selected={this.input.data.stem === x}><RomanNumberComponent num={x} /></option>)}
+                    {stems.map(x => <option value={x} selected={this.input.data.stem === x}><StemNumberComponent rootType={root.type} stem={x} /></option>)}
                 </Select>
             </FormField>
             
-            {this.RenderStem1ContextEditor()}
+            <div className="row">
+                <div className="col">{this.RenderTashkilChoice("past")}</div>
+                <div className="col">{this.RenderTashkilChoice("present")}</div>
+                <div className="col">{this.RenderAdditionalContext()}</div>
+            </div>
             <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.input.onChanged} />
         </fragment>;
     }
 
     //Private methods
+    private RenderAdditionalContext()
+    {
+        const root = new VerbRoot(this.input.rootRadicals);
+
+        if( (root.type === RootType.SecondConsonantDoubled) && (this.input.data.stem === 1) )
+        {
+            return <FormField title="Perfect 1st person male singular">
+                <div>{this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, "perfect", "active", "male", "first", "singular", "indicative", this.input.data.stem1Context)}</div>
+            </FormField>;
+        }
+
+        if(this.input.data.stem === 1)
+        {
+            const choices = root.GetStem1ContextChoices(this.input.data.stem1Context!);
+            if(choices.soundOverride.length > 1)
+                return this.RenderSoundOverride();
+        }
+
+        return null;
+    }
+
     private RenderChoice(tashkil: PRIMARY_TASHKIL, tense: Tense)
     {
         const tashkilDisplayName = {
@@ -65,42 +91,27 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
             soundOverride: this.input.data.stem1Context!.soundOverride
         };
 
-        return tashkilDisplayName[tashkil] + "  " + tashkil + " : " + this.RenderConjugation(stem1Ctx, tense);
+        return tashkilDisplayName[tashkil] + "  " + tashkil + " : " + this.RenderConjugation(tense, stem1Ctx);
     }
 
-    private RenderConjugation(stem1Ctx: Stem1Context, tense: Tense)
+    private RenderConjugation(tense: Tense, stem1Ctx?: Stem1Context)
     {
-        const conjugation = this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, tense, "active", "male", "third", "singular", stem1Ctx);
+        const conjugation = this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, tense, "active", "male", "third", "singular", "indicative", stem1Ctx);
         return conjugation;
     }
 
     private RenderSoundOverride()
     {
-        const root = new VerbRoot(this.input.rootRadicals);
-        const choices = root.GetStem1ContextChoices(this.input.data.stem1Context!);
-
-        if(choices.soundOverride.length === 1)
-            return null;
-
         return <FormField title="Sound override" description="Some hollow verbs are actually conjugated as if they were strong verbs">
             <CheckBox value={this.input.data.stem1Context!.soundOverride} onChanged={newValue => { this.input.data.stem1Context!.soundOverride = newValue; this.input.onChanged(); }} />
         </FormField>;
     }
 
-    private RenderStem1ContextEditor()
-    {
-        if(this.input.data.stem != 1)
-            return null;
-
-        return <div className="row">
-            <div className="col">{this.RenderTashkilChoice("past")}</div>
-            <div className="col">{this.RenderTashkilChoice("present")}</div>
-            <div className="col">{this.RenderSoundOverride()}</div>
-        </div>;
-    }
-
     private RenderTashkilChoice(tense: "past" | "present")
     {
+        if(this.input.data.stem !== 1)
+            return this.RenderTashkilField(tense, [], "", () => null);
+
         const root = new VerbRoot(this.input.rootRadicals);
         const choices = root.GetStem1ContextChoices(this.input.data.stem1Context!);
 
@@ -124,7 +135,7 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
     private RenderTashkilSelect(choices: PRIMARY_TASHKIL[], tense: Tense, value: string, onChanged: (newValue: string) => void)
     {
         if(choices.length === 0)
-            return <div>{this.RenderConjugation(this.input.data.stem1Context!, tense)}</div>;
+            return <div>{this.RenderConjugation(tense, this.input.data.stem1Context!)}</div>;
         if(choices.length === 1)
             return <div>{this.RenderChoice(choices[0], tense)}</div>
 

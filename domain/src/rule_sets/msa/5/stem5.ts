@@ -16,13 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DialectDefinition } from "../Definitions";
-import { stem1 } from "./1/stem1";
+import { RootType } from "../../../VerbRoot";
+import { StemDefinition } from "../../Definitions";
+import { stem5_past_active } from "./past_active";
+import { stem5_present_active } from "./present_active";
 
-//Source is mostly: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar
+export const stem5: StemDefinition = {
+    perfect: {
+        active: stem5_past_active
+    },
+    present: {
+        active: stem5_present_active,
+    },
+    
+    participleRules: {
+        [RootType.Sound]: [
+            { voice: "active", conjugation: "TODO" },
+            { voice: "passive", conjugation: "TODO" }
+        ]
+    },
 
-export const definition: DialectDefinition = {    
-    stems: {
-        1: stem1,
+    verbalNounRules: {
+        [RootType.Sound]: [
+            {
+                id: 0,
+                text: "TODO"
+            }
+        ]
     }
 };

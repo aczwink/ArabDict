@@ -21,9 +21,8 @@ import { stem1 } from "./1/stem1";
 import { stem2 } from "./2/stem2";
 import { stem3 } from "./3/stem3";
 import { stem4 } from "./4/stem4";
+import { stem5 } from "./5/stem5";
 import { stem8 } from "./8/stem8";
-
-//Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
 export const definition: DialectDefinition = {
     stems: {
@@ -31,6 +30,7 @@ export const definition: DialectDefinition = {
         2: stem2,
         3: stem3,
         4: stem4,
+        5: stem5,
         8: stem8,
     }
 };

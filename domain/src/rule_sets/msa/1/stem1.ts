@@ -26,10 +26,10 @@ import { stem1_present_active } from "./present_active";
 export const stem1: StemDefinition = {
     imperative: stem1_imperative,
     perfect: {
-        active: stem1_past_active
+        active: stem1_past_active,
     },
     present: {
-        active: stem1_present_active
+        active: stem1_present_active,
     },
 
     participleRules: {

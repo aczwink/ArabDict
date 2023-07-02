@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DHAMMA, FATHA, HAMZA, KASRA, LETTER_RA, YA } from "../../../Definitions";
+import { DHAMMA, FATHA, HAMZA, KASRA, LETTER_RA, SUKUN, WAW, YA } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
 import { Stem1DefectiveContext, StemTenseVoiceDefinition } from "../../Definitions";
 
@@ -32,6 +32,7 @@ export const stem1_present_active: StemTenseVoiceDefinition = {
             //special cases
             { condition: (root, _) => root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]), numerus: "singular", person: "third", gender: "male", conjugation: "يَرَى" },
 
+            { condition: (_, ctx: Stem1DefectiveContext) => ctx.middleRadicalTashkilPresent === DHAMMA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفْعُو" },
             { condition: (_, ctx: Stem1DefectiveContext) => ctx.middleRadicalTashkilPresent === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفْعِي" }
         ]
     },
@@ -49,29 +50,9 @@ export const stem1_present_active: StemTenseVoiceDefinition = {
         ]
     },
 
-    [RootType.Sound]: {
-        rules: [
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "singular", person: "first", gender: "male", conjugation: "أَفْعَلُ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "singular", person: "second", gender: "male", conjugation: "تَفْعَلُ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "singular", person: "second", gender: "female", conjugation: "تَفْعَلِينَ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفْعَلُ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === DHAMMA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفْعُلُ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "singular", person: "third", gender: "female", conjugation: "تَفْعَلُ" },
-
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "dual", person: "second", gender: "male", conjugation: "تَفْعَلَانِ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "dual", person: "third", gender: "male", conjugation: "يَفْعَلَانِ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "dual", person: "third", gender: "female", conjugation: "تَفْعَلَانِ" },
-
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "plural", person: "first", gender: "male", conjugation: "نَفْعَلُ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "plural", person: "second", gender: "male", conjugation: "تَفْعَلُونَ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "plural", person: "second", gender: "female", conjugation: "تَفْعَلْنَ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "plural", person: "third", gender: "male", conjugation: "يَفْعَلُونَ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "plural", person: "third", gender: "female", conjugation: "يَفْعَلْنَ" },
-        ]
-    },
-
     [RootType.SecondConsonantDoubled]: {
         rules: [
+            { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفَلُّ" },
             { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === DHAMMA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفُلُّ" },
             { condition: (_, ctx) => ctx.middleRadicalTashkilPresent === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "يَفِلُّ" }
         ]

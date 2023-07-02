@@ -20,7 +20,7 @@ import { Injectable } from "acfrontend";
 import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
 import { Stem1Context } from "arabdict-domain/src/CreateVerb";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { Gender, Numerus, Person, Tense, Voice } from "arabdict-domain/src/VerbStem";
+import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/VerbStem";
 
 @Injectable
 export class ConjugationService
@@ -37,19 +37,19 @@ export class ConjugationService
         return this.conjugator.AnalyzeConjugation(this.globalDialect, conjugated);
     }
 
-    public Conjugate(rootRadicals: string, stem: number, tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus, stem1Context?: Stem1Context)
+    public Conjugate(rootRadicals: string, stem: number, tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus, mood: Mood, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
         return this.conjugator.Conjugate(root, {
-            dialect: this.globalDialect,
             stem,
             tense,
             voice,
             gender,
             person,
             numerus,
+            mood,
             stem1Context
-        });
+        }, this.globalDialect);
     }
 
     public ConjugateParticiple(rootRadicals: string, stem: number, voice: Voice, stem1Context?: Stem1Context)

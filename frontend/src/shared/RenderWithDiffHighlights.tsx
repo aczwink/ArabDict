@@ -17,6 +17,8 @@
  * */
 
 import { JSX_CreateElement } from "acfrontend";
+import { SHADDA } from "arabdict-domain/src/Definitions";
+import { ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
 
 export function RenderWithDiffHighlights(word: string, reference: string)
 {
@@ -26,10 +28,15 @@ export function RenderWithDiffHighlights(word: string, reference: string)
 
     function FinishBlock()
     {
+        if(current.length == 0)
+            return;
+
         if(red)
-                result.push(<span className="text-danger">{current}</span>);
-            else
-                result.push(current);
+            result.push(<span className="text-danger">{current}</span>);
+        else
+            result.push(current);
+
+        current = "";
     }
 
     function Add(c: string, r: boolean)
@@ -37,30 +44,43 @@ export function RenderWithDiffHighlights(word: string, reference: string)
         if(r !== red)
         {
             FinishBlock();
-            current = "";
             red = r;
         }
 
         current += c;
     }
 
-    while( (word.length > 0) || (reference.length > 0) )
+    const parsedWord = ParseVocalizedText(word);
+    const parsedRef = ParseVocalizedText(reference);
+
+    while( parsedWord.length > 0 )
     {
-        if(word[0] === reference[0])
+        if(parsedWord[0].letter === parsedRef[0]?.letter)
         {
-            Add(word[0], false);
-            word = word.substring(1);
-            reference = reference.substring(1);
+            Add(parsedWord[0].letter, false);
+            if(parsedWord[0].shadda)
+                Add(SHADDA, !parsedRef[0].shadda);
+            if(parsedWord[0].tashkil !== undefined)
+                Add(parsedWord[0].tashkil, parsedWord[0].tashkil !== parsedRef[0].tashkil);
+
+            parsedWord.Remove(0);
+            parsedRef.Remove(0);
         }
-        else if(word.length > reference.length)
+        else if(parsedWord.length > parsedRef.length)
         {
-            Add(word[0], true);
-            word = word.substring(1);
+            Add(VocalizedToString(parsedWord[0]), true);
+            parsedWord.Remove(0);
         }
         else
         {
-            reference = reference.substring(1);
+            parsedRef.Remove(0);
         }
+    }
+
+    if(parsedRef.length > 0)
+    {
+        FinishBlock();
+        result.unshift(<span className="text-danger">{"\u2610"}</span>);
     }
 
     FinishBlock();

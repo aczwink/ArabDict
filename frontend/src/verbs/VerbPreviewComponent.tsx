@@ -20,11 +20,12 @@ import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } fro
 import { CreateVerb } from "arabdict-domain/src/CreateVerb";
 import { RootCreationData, VerbData, VerbDerivedWordData } from "../../dist/api";
 import { APIService } from "../APIService";
-import { RomanNumberComponent } from "../shared/RomanNumberComponent";
+import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { RenderTranslations } from "../shared/translations";
 import { ConjugationService } from "../ConjugationService";
 import { KASRA } from "arabdict-domain/src/Definitions";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
@@ -39,13 +40,14 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
     protected Render(): RenderValue
     {
         const verbData = this.input.verbData;
-        const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", verbData.stem1Context);
+        const root = new VerbRoot(this.input.root.radicals);
+        const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", "indicative", verbData.stem1Context);
         const verbPresentation = (verbData.stem === 1) ? conjugated : RenderWithDiffHighlights(conjugated, CreateVerb(this.input.root.radicals, 1, { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: "", soundOverride: false }).Conjugate("perfect", "active", "male", "third", "singular"));
 
         return <div className="border border-3 rounded-2 p-2 my-2 shadow-sm">
             <h4>
                 <Anchor route={"/verbs/" + verbData.id}>
-                    <RomanNumberComponent num={verbData.stem} />:
+                    <StemNumberComponent rootType={root.type} stem={verbData.stem} />:
                     {verbPresentation}
                 </Anchor>
             </h4>

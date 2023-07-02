@@ -149,7 +149,7 @@ export class VerbRoot
                 };
             case RootType.Hollow:
                 {
-                    let past: PRIMARY_TASHKIL[] = [];
+                    let past: PRIMARY_TASHKIL[];
                     if(stem1Context.middleRadicalTashkilPresent === KASRA)
                         past = [KASRA];
                     else if(stem1Context.middleRadicalTashkilPresent === DHAMMA)
@@ -162,6 +162,36 @@ export class VerbRoot
                         present: [FATHA, DHAMMA, KASRA],
                         soundOverride: [false, true]
                     };
+                }
+            case RootType.Quadriliteral:
+                return {
+                    past: [],
+                    present: [],
+                    soundOverride: []
+                };
+            case RootType.SecondConsonantDoubled:
+                {
+                    return {
+                        past: [FATHA, KASRA],
+                        present: (stem1Context.middleRadicalTashkil === KASRA) ? [FATHA] : [FATHA, DHAMMA, KASRA],
+                        soundOverride: [false]
+                    };
+                }
+            case RootType.Sound:
+                {
+                    let present: PRIMARY_TASHKIL[];
+                    if(stem1Context.middleRadicalTashkil === DHAMMA)
+                        present = [DHAMMA];
+                    else if(stem1Context.middleRadicalTashkil === KASRA)
+                        present = [FATHA, KASRA];
+                    else
+                        present = [FATHA, DHAMMA, KASRA];
+
+                    return {
+                        past: [FATHA, DHAMMA, KASRA],
+                        present,
+                        soundOverride: [false]
+                    }
                 }
             default:
                 throw new Error("TODO: implement me");

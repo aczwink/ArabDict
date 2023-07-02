@@ -41,6 +41,11 @@ export const stem2: StemDefinition = {
             { voice: "passive", conjugation: "TODO" },
         ],
 
+        [RootType.Quadriliteral]: [
+            { voice: "active", conjugation: "TODO" },
+            { voice: "passive", conjugation: "TODO" },
+        ],
+
         [RootType.Sound]: [
             { voice: "active", conjugation: "مُفَعِّل" },
             { voice: "passive", conjugation: "مُفَعَّل" },
@@ -49,6 +54,13 @@ export const stem2: StemDefinition = {
 
     verbalNounRules: {
         [RootType.Defective]: [
+            {
+                id: 0,
+                text: "TODO"
+            }
+        ],
+
+        [RootType.Quadriliteral]: [
             {
                 id: 0,
                 text: "TODO"

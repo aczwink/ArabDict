@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DialectDefinition } from "../Definitions";
-import { stem1 } from "./1/stem1";
+import { RootType } from "../../../VerbRoot";
+import { StemTenseVoiceDefinition } from "../../Definitions";
 
-//Source is mostly: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar
-
-export const definition: DialectDefinition = {    
-    stems: {
-        1: stem1,
+export const stem5_present_active: StemTenseVoiceDefinition = {
+    [RootType.Defective]: {
+        rules: [
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يَتَفَعَّى" }
+        ]
     }
 };

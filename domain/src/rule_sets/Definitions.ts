@@ -20,6 +20,7 @@ import { NumberDictionary } from "acts-util-core";
 import { Gender, Person, Numerus, Voice, VerbalNoun } from "../VerbStem";
 import { Stem1Context } from "../CreateVerb";
 import { VerbRoot } from "../VerbRoot";
+import { BASE_TASHKIL } from "../Definitions";
 
 export interface Stem1DefectiveContext
 {
@@ -35,10 +36,12 @@ interface ConjugationRule
     conjugation: string;
 }
 
-interface StemTenseVoiceRootTypeDefinition
+interface StemTenseVoiceRootTypeDefinitionWithFullRules
 {
     rules: ConjugationRule[];
 }
+
+type StemTenseVoiceRootTypeDefinition = StemTenseVoiceRootTypeDefinitionWithFullRules;
 
 export type StemTenseVoiceDefinition = NumberDictionary<StemTenseVoiceRootTypeDefinition>;
 

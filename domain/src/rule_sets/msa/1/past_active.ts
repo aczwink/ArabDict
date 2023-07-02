@@ -29,6 +29,7 @@ export const stem1_past_active: StemTenseVoiceDefinition = {
 
     [RootType.Defective]: {
         rules: [
+            { condition: (_, ctx: Stem1DefectiveContext) => ctx.middleRadicalTashkilPresent === DHAMMA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعَا" },
             { condition: (_, ctx: Stem1DefectiveContext) => ctx.middleRadicalTashkilPresent === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعَى" }
         ]
     },
@@ -46,16 +47,10 @@ export const stem1_past_active: StemTenseVoiceDefinition = {
         ]
     },
 
-    [RootType.Sound]: {
-        rules: [
-            { condition: (_, ctx) => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعَلَ" },
-            { condition: (_, ctx) => ctx.middleRadicalTashkil === KASRA, numerus: "singular", person: "third", gender: "male", conjugation: "فَعِلَ" }
-        ]
-    },
-
     [RootType.SecondConsonantDoubled]: {
         rules: [
             { condition: (_, ctx) => ctx.middleRadicalTashkil === FATHA, numerus: "singular", person: "first", gender: "male", conjugation: "فَلَلْتُ" },
+            { condition: (_, ctx) => ctx.middleRadicalTashkil === KASRA, numerus: "singular", person: "first", gender: "male", conjugation: "فَلِلْتُ" },
             { numerus: "singular", person: "third", gender: "male", conjugation: "فَلَّ" }
         ]
     },

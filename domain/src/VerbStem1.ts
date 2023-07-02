@@ -31,10 +31,6 @@ export class VerbStem1 implements VerbStem
     {
         switch(tense)
         {
-            case "imperative":
-                if(voice === "passive")
-                    throw new Error("imperative and passive does not exist");
-                return this.ConjugateImperative(gender, person, numerus);
             case "perfect":
                 return this.ConjugatePerfect(voice, gender, person, numerus);
             case "present":
@@ -116,37 +112,6 @@ export class VerbStem1 implements VerbStem
     }
 
     //Private methods
-    private ConjugateImperative(gender: Gender, person: Person, numerus: Numerus): string
-    {
-        switch(person)
-        {
-            case "first":
-            case "third":
-                return "";
-            case "second":
-                {
-                    switch(numerus)
-                    {
-                        case "singular":
-                            {
-                                switch(gender)
-                                {
-                                    case "male":
-                                        {
-                                            switch(this.root.type)
-                                            {
-                                                case RootType.Sound:
-                                                    return ALEF + ((this.stem1MiddleRadicalTashkil === DHAMMA) ? DHAMMA : KASRA) + this.root.r1 + SUKUN + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN;
-                                            }
-                                        }
-                                }
-                            }
-                    }
-                }
-        }
-        return "TODO";
-    }
-
     private ConjugatePerfect(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
     {
         if(voice === "active")
@@ -158,136 +123,12 @@ export class VerbStem1 implements VerbStem
     {
         switch(numerus)
         {
-            case "dual":
-                switch(person)
-                {
-                    case "first":
-                        throw new Error("Dual first person does not exist");
-                    case "second":
-                        switch(this.root.type)
-                        {
-                            case RootType.Sound:
-                                return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA + MIM + FATHA + ALEF;
-                            default:
-                                return "TODO";
-                        }
-                    case "third":
-                        switch(gender)
-                        {
-                            case "female":
-                                switch(this.root.type)
-                                {
-                                    case RootType.Sound:
-                                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA + TA + FATHA + ALEF;
-                                    default:
-                                        return "TODO";
-                                }
-                            case "male":
-                                switch(this.root.type)
-                                {
-                                    case RootType.Sound:
-                                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA + ALEF;
-                                    default:
-                                        return "TODO";
-                                }
-                        }
-                }
-
-            case "plural":
-                switch(person)
-                {
-                    case "first":
-                        switch(this.root.type)
-                        {
-                            case RootType.Sound:
-                                return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + NUN + FATHA + ALEF;
-                            default:
-                                return "TODO";
-                        }
-                    case "second":
-                        switch(gender)
-                        {
-                            case "female":
-                                switch(this.root.type)
-                                {
-                                    case RootType.Sound:
-                                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA + NUN + SHADDA + FATHA;
-                                    default:
-                                        return "TODO";
-                                }
-                            case "male":
-                                switch(this.root.type)
-                                {
-                                    case RootType.Sound:
-                                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA + MIM + SUKUN;
-                                    default:
-                                        return "TODO";
-                                }
-                        }
-                    case "third":
-                        switch(gender)
-                        {
-                            case "female":
-                                switch(this.root.type)
-                                {
-                                    case RootType.Sound:
-                                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + NUN + FATHA;
-                                    default:
-                                        return "TODO";
-                                }
-                            case "male":
-                                switch(this.root.type)
-                                {
-                                    case RootType.Sound:
-                                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + DHAMMA + WAW + ALEF;
-                                    default:
-                                        return "TODO";
-                                }
-                        }
-                }
-
             case "singular":
                 switch(person)
                 {
-                    case "first":
-                        switch(this.root.type)
-                        {
-                            case RootType.Sound:
-                                return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + DHAMMA;
-                            default:
-                                return "TODO";
-                        }
-                    case "second":
-                        switch(gender)
-                        {
-                            case "female":
-                                switch(this.root.type)
-                                {
-                                    case RootType.Sound:
-                                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + KASRA;
-                                    default:
-                                        return "TODO";
-                                }
-                            case "male":
-                                switch(this.root.type)
-                                {
-                                    case RootType.Sound:
-                                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + SUKUN + TA + FATHA;
-                                    default:
-                                        return "TODO";
-                                }
-                        }
                     case "third":
                         switch(gender)
                         {
-                            case "female":
-                                switch(this.root.type)
-                                {
-                                    case RootType.Sound:
-                                        return this.root.r1 + FATHA + this.root.r2 + this.stem1MiddleRadicalTashkil + this.root.r3 + FATHA + TA + SUKUN;
-                                    default:
-                                        return "TODO";
-                                }
                             case "male":
                                 switch(this.root.type)
                                 {
@@ -341,9 +182,7 @@ export class VerbStem1 implements VerbStem
 
     private ConjugatePresent(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
     {
-        if(voice === "active")
-            return this.ConjugatePresentActive(gender, person, numerus);
-        return this.ConjugatePresentPassive(gender, person, numerus);
+        return this.ConjugatePresentActive(gender, person, numerus);
     }
 
     private ConjugatePresentActive(gender: Gender, person: Person, numerus: Numerus)
@@ -375,40 +214,6 @@ export class VerbStem1 implements VerbStem
                                                 return "TODO";
                                             case RootType.HamzaOnR1:
                                                 return YA + FATHA + ALEF_HAMZA + SUKUN + this.root.r2 + this.stem1MiddleRadicalTashkilPresent + this.root.r3 + DHAMMA;
-                                        }
-                                        return "TODO";
-                                }
-                            }
-                    }
-                }
-        }
-    }
-
-    private ConjugatePresentPassive(gender: Gender, person: Person, numerus: Numerus)
-    {
-        switch(gender)
-        {
-            case "female":
-                return "TODO";
-            case "male":
-                {
-                    switch(person)
-                    {
-                        case "first":
-                        case "second":
-                            return "TODO";
-                        case "third":
-                            {
-                                switch(numerus)
-                                {
-                                    case "dual":
-                                    case "plural":
-                                        return "TODO";
-                                    case "singular":
-                                        switch(this.root.type)
-                                        {
-                                            case RootType.Sound:
-                                                return YA + DHAMMA + this.root.r1 + SUKUN + this.root.r2 + FATHA + this.root.r3 + DHAMMA;
                                         }
                                         return "TODO";
                                 }

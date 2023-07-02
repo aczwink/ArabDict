@@ -16,13 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DialectDefinition } from "../Definitions";
-import { stem1 } from "./1/stem1";
+import { Stem1Context } from "./CreateVerb";
+import { VerbRoot } from "./VerbRoot";
+import { Tense, Voice, Gender, Person, Numerus, Mood, VerbalNoun } from "./VerbStem";
+import { Vocalized } from "./Vocalization";
 
-//Source is mostly: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar
+export interface ConjugationParams
+{
+    tense: Tense;
+    voice: Voice;
+    gender: Gender;
+    person: Person;
+    numerus: Numerus;
+    mood: Mood;
+    stem: number;
+    stem1Context?: Stem1Context;
+}
 
-export const definition: DialectDefinition = {    
-    stems: {
-        1: stem1,
-    }
-};
+export interface DialectConjugator
+{
+    Conjugate(root: VerbRoot, params: ConjugationParams): Vocalized[];
+    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): string;
+    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): VerbalNoun[];
+}

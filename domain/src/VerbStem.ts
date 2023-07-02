@@ -19,11 +19,12 @@ export const TA = "\u062A";
 export const SIIN = "\u0633";
 export const NUN = "\u0646";
 
-export type Tense = "imperative" | "perfect" | "present";
+export type Tense = "perfect" | "present";
 export type Voice = "active" | "passive";
 export type Gender = "male" | "female";
 export type Person = "first" | "second" | "third";
 export type Numerus = "singular" | "dual" | "plural";
+export type Mood = "indicative" | "subjunctive" | "jussive" | "imperative";
 
 export interface VerbalNoun
 {

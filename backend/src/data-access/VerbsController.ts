@@ -58,9 +58,9 @@ export class VerbsController
         const result = await conn.InsertRow("verbs", {
             rootId: data.rootId,
             stem: data.stem,
-            stem1MiddleRadicalTashkil: data.stem1Context?.middleRadicalTashkil,
-            stem1MiddleRadicalTashkilPresent: data.stem1Context?.middleRadicalTashkilPresent,
-            soundOverride: data.stem1Context?.soundOverride
+            stem1MiddleRadicalTashkil: data.stem1Context?.middleRadicalTashkil ?? "",
+            stem1MiddleRadicalTashkilPresent: data.stem1Context?.middleRadicalTashkilPresent ?? "",
+            soundOverride: data.stem1Context?.soundOverride ?? false
         });
         const verbId = result.insertId;
 
@@ -146,7 +146,7 @@ export class VerbsController
             return;
         }
         if(data.stem1Context === undefined)
-        throw new Error("Missing context for stem 1");
+            throw new Error("Missing context for stem 1");
 
         const rootData = await this.rootsController.QueryRoot(rootId);
         if(rootData === undefined)

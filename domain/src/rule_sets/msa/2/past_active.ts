@@ -52,12 +52,12 @@ export const stem2_past_active: StemTenseVoiceDefinition = {
         ]
     },
 
-    [RootType.Sound]: {
+    [RootType.Quadriliteral]: {
         rules: [
             { numerus: "singular", person: "first", gender: "male", conjugation: "TODO" },
             { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
             { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعَّلَ" },
+            { numerus: "singular", person: "third", gender: "male", conjugation: "تَفَعْلَقَ" },
             { numerus: "singular", person: "third", gender: "female", conjugation: "TODO" },
 
             { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
