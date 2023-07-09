@@ -30,21 +30,6 @@ CREATE TABLE `roots` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `underived_words`
---
-
-DROP TABLE IF EXISTS `underived_words`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `underived_words` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `word` text NOT NULL,
-  `translation` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `verbs`
 --
 
@@ -57,10 +42,27 @@ CREATE TABLE `verbs` (
   `stem` tinyint(3) unsigned NOT NULL,
   `stem1MiddleRadicalTashkil` char(1) NOT NULL,
   `stem1MiddleRadicalTashkilPresent` char(1) NOT NULL,
-  `translation` text NOT NULL,
+  `soundOverride` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `rootId` (`rootId`,`stem`,`stem1MiddleRadicalTashkil`),
   CONSTRAINT `verbs_rootId` FOREIGN KEY (`rootId`) REFERENCES `roots` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `verbs_translations`
+--
+
+DROP TABLE IF EXISTS `verbs_translations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `verbs_translations` (
+  `verbId` int(10) unsigned NOT NULL,
+  `ordering` tinyint(3) unsigned NOT NULL,
+  `dialect` char(3) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `text` text NOT NULL,
+  PRIMARY KEY (`verbId`,`ordering`),
+  CONSTRAINT `verbs_translations_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -88,13 +90,43 @@ DROP TABLE IF EXISTS `words`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `words` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `verbId` int(10) unsigned NOT NULL,
   `type` tinyint(3) unsigned NOT NULL,
   `word` text NOT NULL,
-  `translation` text NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `nouns_verbId` (`verbId`),
-  CONSTRAINT `nouns_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`)
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `words_translations`
+--
+
+DROP TABLE IF EXISTS `words_translations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `words_translations` (
+  `wordId` int(10) unsigned NOT NULL,
+  `ordering` tinyint(3) unsigned NOT NULL,
+  `dialect` char(3) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `text` text NOT NULL,
+  PRIMARY KEY (`wordId`,`ordering`),
+  CONSTRAINT `words_translations_wordId` FOREIGN KEY (`wordId`) REFERENCES `words` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `words_verbs`
+--
+
+DROP TABLE IF EXISTS `words_verbs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `words_verbs` (
+  `wordId` int(10) unsigned NOT NULL,
+  `verbId` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`wordId`),
+  KEY `words_verbs_verbId` (`verbId`),
+  CONSTRAINT `words_verbs_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`),
+  CONSTRAINT `words_verbs_wordId` FOREIGN KEY (`wordId`) REFERENCES `words` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -107,4 +139,4 @@ CREATE TABLE `words` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-17 22:37:24
+-- Dump completed on 2023-07-06 13:15:31

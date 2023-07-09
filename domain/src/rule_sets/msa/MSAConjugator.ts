@@ -20,9 +20,11 @@ import { WAW, A3EIN, LAM, FA, QAF, DHAMMA, BASE_TASHKIL, SUKUN, FATHA, KASRA, AL
 import { ConjugationParams, DialectConjugator } from "../../DialectConjugator";
 import { Hamzate } from "../../Hamza";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { NUN, TA, Tense, VerbalNoun, Voice } from "../../VerbStem";
+import { NUN, SIIN, TA, Tense, VerbalNoun, Voice } from "../../VerbStem";
 import { ParseVocalizedText, Vocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
+import { AugmentedRoot } from "./AugmentedRoot";
+import { RootAugmentor } from "./RootAugmentor";
 import { definition as msaDef } from "./dialectDefinition";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
@@ -32,28 +34,17 @@ export class MSAConjugator implements DialectConjugator
     //Public methods
     public Conjugate(root: VerbRoot, params: ConjugationParams): Vocalized[]
     {
-        const augmentedRoot = this.AugmentRoot(params.stem, root.type, params);
+        const augmentedRoot = new RootAugmentor().AugmentAndTashkilizeRoot(root, params);
         if(augmentedRoot !== undefined)
         {
-            const tashkil = this.DeriveRootTashkil(params);
-            this.ApplyTashkil(augmentedRoot, 1, tashkil.r1);
-            this.ApplyTashkil(augmentedRoot, 2, tashkil.r2);
-
-            this.ApplyRootAugmentationTashkil(augmentedRoot, params);
-
             const suffix = this.DeriveSuffix(params);
-            this.ApplyTashkil(augmentedRoot, root.radicalsAsSeparateLetters.length, suffix.preSuffixTashkil);
+            augmentedRoot.ApplyTashkil(root.radicalsAsSeparateLetters.length, suffix.preSuffixTashkil);
 
-            //replace root letters
-            for (const v of augmentedRoot)
-            {
-                if(v.letter.startsWith("r"))
-                {
-                    const n = parseInt(v.letter.substring(1));
-                    v.letter = root.radicalsAsSeparateLetters[n-1];
-                }
-            }
-            return this.DerivePrefix(params).concat(augmentedRoot, suffix.suffix);
+            if(root.type === RootType.SecondConsonantDoubled)
+                this.GeminateDoubledConsonant(augmentedRoot, params);
+
+            augmentedRoot.ApplyRootLetters();
+            return this.DerivePrefix(augmentedRoot.vocalized[0].tashkil!, params).concat(augmentedRoot.vocalized, suffix.suffix);
         }
 
         return this.ConjugateLegacy(root, params);
@@ -63,8 +54,24 @@ export class MSAConjugator implements DialectConjugator
     {
         switch(stem)
         {
+            case 4:
+                switch(root.type)
+                {
+                    case RootType.Sound:
+                        if(voice === "active")
+                        {
+                            return Hamzate([
+                                { letter: MIM, shadda: false, tashkil: DHAMMA },
+                                { letter: root.r1, shadda: false, tashkil: SUKUN },
+                                { letter: root.r2, shadda: false, tashkil: KASRA },
+                                { letter: root.r3, shadda: false },
+                            ]);
+                        }
+                }
+                return "TODO";
             case 6:
             case 7:
+            case 10:
                 return "TODO";
         }
 
@@ -95,6 +102,32 @@ export class MSAConjugator implements DialectConjugator
                         text: "TODO"
                     }
                 ];
+            case 10:
+                switch(root.type)
+                {
+                    case RootType.SecondConsonantDoubled:
+                        return [
+                            {
+                                id: 1,
+                                text: Hamzate([
+                                    { letter: ALEF, shadda: false, tashkil: KASRA },
+                                    { letter: SIIN, shadda: false, tashkil: SUKUN },
+                                    { letter: TA, shadda: false, tashkil: KASRA },
+                                    { letter: root.r1, shadda: false, tashkil: SUKUN },
+                                    { letter: root.r2, shadda: false, },
+                                    { letter: ALEF, shadda: false, },
+                                    { letter: root.r2, shadda: false, },
+                                ])
+                            }
+                        ];
+                }
+
+                return [
+                    {
+                        id: 0,
+                        text: "TODO"
+                    }
+                ];
         }
 
         const dialectDef = this.GetDialectDefiniton();
@@ -115,141 +148,7 @@ export class MSAConjugator implements DialectConjugator
     }
 
     //Private methods
-    private ApplyRootAugmentationTashkil(augmentedRoot: Vocalized[], params: ConjugationParams)
-    {
-        switch(params.stem)
-        {
-            case 4:
-                if(params.tense === "perfect")
-                    augmentedRoot[0].tashkil = (params.voice === "active") ? FATHA : DHAMMA;
-                break;
-            case 5:
-            case 6:
-                augmentedRoot[0].tashkil = (params.voice === "passive" && params.tense === "perfect") ? DHAMMA : FATHA;
-                break;
-            case 7:
-                if(params.tense === "perfect")
-                {
-                    augmentedRoot[0].tashkil = (params.voice === "active") ? KASRA : DHAMMA;
-                    augmentedRoot[1].tashkil = SUKUN;
-                }
-                else
-                {
-                    augmentedRoot[0].tashkil = SUKUN;
-                }
-                break;
-        }
-    }
-
-    private ApplyTashkil(vocalized: Vocalized[], radical: number, taskil: BASE_TASHKIL)
-    {
-        const v = vocalized.find( x => x.letter === ("r" + radical));
-        v!.tashkil = taskil;
-    }
-
-    private AugmentRoot(stem: number, rootType: RootType, params: ConjugationParams): Vocalized[] | undefined
-    {
-        switch(stem)
-        {
-            case 1:
-            {
-                switch(rootType)
-                {
-                    case RootType.Sound:
-                        return [
-                            { letter: "r1", shadda: false },
-                            { letter: "r2", shadda: false },
-                            { letter: "r3", shadda: false },
-                        ];
-                }
-            }
-            case 2:
-            {
-                switch(rootType)
-                {
-                    case RootType.Sound:
-                        return [
-                            { letter: "r1", shadda: false },
-                            { letter: "r2", shadda: true },
-                            { letter: "r3", shadda: false },
-                        ];
-                }
-            }
-            case 3:
-            {
-                switch(rootType)
-                {
-                    case RootType.Sound:
-                        return [
-                            { letter: "r1", shadda: false },
-                            { letter: ((params.tense === "perfect") && (params.voice === "passive")) ? WAW : ALEF, shadda: false },
-                            { letter: "r2", shadda: false },
-                            { letter: "r3", shadda: false },
-                        ];
-                }
-            }
-            case 4:
-            {
-                switch(rootType)
-                {
-                    case RootType.Sound:
-                        const x = [
-                            { letter: "r1", shadda: false },
-                            { letter: "r2", shadda: false },
-                            { letter: "r3", shadda: false },
-                        ];
-                        if(params.tense === "perfect")
-                            x.unshift({ letter: ALEF_HAMZA, shadda: false });
-                        return x;
-                }
-            }
-            case 5:
-            {
-                switch(rootType)
-                {
-                    case RootType.Sound:
-                        return [
-                            { letter: TA, shadda: false },
-                            { letter: "r1", shadda: false },
-                            { letter: "r2", shadda: true },
-                            { letter: "r3", shadda: false },
-                        ];
-                }
-            }
-            case 6:
-            {
-                switch(rootType)
-                {
-                    case RootType.Sound:
-                        return [
-                            { letter: TA, shadda: false },
-                            { letter: "r1", shadda: false },
-                            { letter: ((params.tense === "perfect") && (params.voice === "passive")) ? WAW : ALEF, shadda: false },
-                            { letter: "r2", shadda: false },
-                            { letter: "r3", shadda: false },
-                        ];
-                }
-            }
-            case 7:
-            {
-                switch(rootType)
-                {
-                    case RootType.Sound:
-                        const x = [
-                            { letter: NUN, shadda: false },
-                            { letter: "r1", shadda: false },
-                            { letter: "r2", shadda: false },
-                            { letter: "r3", shadda: false },
-                        ];
-                        if(params.tense === "perfect")
-                            x.unshift({ letter: ALEF, shadda: false });
-                        return x;
-                }
-            }
-        }
-    }
-
-    private DerivePrefix(params: ConjugationParams): Vocalized[]
+    private DerivePrefix(prevTashkil: BASE_TASHKIL, params: ConjugationParams): Vocalized[]
     {
         if(params.tense === "perfect")
             return [];
@@ -258,11 +157,8 @@ export class MSAConjugator implements DialectConjugator
         {
             if(params.stem === 4)
                 return [{ letter: ALEF_HAMZA, shadda: false, tashkil: FATHA}];
-            if(params.stem === 7) //insert hamzat al wasl
-                return [{ letter: ALEF, shadda: false, tashkil: KASRA }];
 
-            const rootTashkil = this.DeriveRootTashkil(params);
-            if(rootTashkil.r1 === SUKUN) //TODO: this should not check r1 tashkil but the first tashkil of the augmented root. Then the stem === 7 check would be unnecessary
+            if(prevTashkil === SUKUN)
             {
                 //insert hamzat al wasl
                 return [{ letter: ALEF, shadda: false, tashkil: (params.stem1Context?.middleRadicalTashkilPresent === DHAMMA) ? DHAMMA : KASRA}];
@@ -304,48 +200,14 @@ export class MSAConjugator implements DialectConjugator
             case 5:
             case 6:
             case 7:
+            case 8:
+            case 10:
                 return (params.voice === "active") ? FATHA : DHAMMA;
             case 2:
             case 3:
             case 4:
                 return DHAMMA;
         }
-    }
-
-    private DeriveRootTashkil(params: ConjugationParams): { r1: BASE_TASHKIL; r2: BASE_TASHKIL; }
-    {
-        if(params.tense === "perfect")
-        {
-            const r1stem = (params.stem === 4) ? SUKUN : ((params.voice === "active") ? FATHA : DHAMMA);
-            const r2active = (params.stem === 1) ? (params.stem1Context!.middleRadicalTashkil as any) : FATHA;
-            return {
-                r1: r1stem,
-                r2: (params.voice === "active") ? r2active : KASRA
-            };
-        }
-
-        function R2Active(): BASE_TASHKIL
-        {
-            switch(params.stem)
-            {
-                case 1:
-                    return params.stem1Context!.middleRadicalTashkilPresent as any;
-                case 2:
-                case 3:
-                case 4:
-                case 7:
-                    return KASRA;
-                case 5:
-                case 6:
-                    return FATHA;
-            }
-            throw new Error("Unknown stem");
-        }
-
-        return {
-            r1: ((params.stem === 1) || (params.stem === 4)) ? SUKUN : FATHA,
-            r2: (params.voice === "active") ? R2Active() : FATHA
-        };
     }
 
     private DeriveSuffix(params: ConjugationParams): { suffix: Vocalized[]; preSuffixTashkil: BASE_TASHKIL}
@@ -653,6 +515,17 @@ export class MSAConjugator implements DialectConjugator
         if(voice !== "active")
             throw new Error("Imperative can only be active");
         return (tenseData as StemTenseVoiceDefinition)[rootType];
+    }
+
+    private GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+    {
+        if(augmentedRoot.r3.tashkil !== SUKUN)
+        {
+            const cond = ((params.tense === "perfect") && (params.voice === "active")) || (((params.tense === "present") && (params.voice === "passive")));
+            augmentedRoot.r1.tashkil = cond ? FATHA : KASRA; //two sukuns after each other are forbidden
+            augmentedRoot.r3.shadda = true;
+            augmentedRoot.vocalized.Remove(augmentedRoot.vocalized.length - 2); //assimilate r2
+        }
     }
     
     private GetDialectDefiniton()

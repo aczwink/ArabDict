@@ -32,10 +32,4 @@ export const stem8_past_active: StemTenseVoiceDefinition = {
             { condition: (root, _) => root.r1 === ZAY, numerus: "singular", person: "third", gender: "male", conjugation: "اِفْدَالَ" }
         ]
     },
-
-    [RootType.Sound]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "اِفْتَعَلَ" }
-        ]
-    },
 };

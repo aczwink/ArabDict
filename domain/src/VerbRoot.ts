@@ -147,6 +147,12 @@ export class VerbRoot
                     present: [FATHA, DHAMMA, KASRA],
                     soundOverride: [false]
                 };
+            case RootType.HamzaOnR1:
+                return {
+                    past: [],
+                    present: [],
+                    soundOverride: []
+                };
             case RootType.Hollow:
                 {
                     let past: PRIMARY_TASHKIL[];
