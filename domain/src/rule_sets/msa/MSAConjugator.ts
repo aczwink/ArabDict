@@ -57,6 +57,23 @@ export class MSAConjugator implements DialectConjugator
             case 4:
                 switch(root.type)
                 {
+                    case RootType.Hollow:
+                        if(voice === "active")
+                        {
+                            return Hamzate([
+                                { letter: MIM, shadda: false, tashkil: DHAMMA },
+                                { letter: root.r1, shadda: false, tashkil: KASRA },
+                                { letter: YA, shadda: false },
+                                { letter: root.r3, shadda: false },
+                            ]);
+                        }
+                        return Hamzate([
+                            { letter: MIM, shadda: false, tashkil: DHAMMA },
+                            { letter: root.r1, shadda: false, tashkil: FATHA },
+                            { letter: ALEF, shadda: false },
+                            { letter: root.r3, shadda: false },
+                        ]);
+
                     case RootType.Sound:
                         if(voice === "active")
                         {

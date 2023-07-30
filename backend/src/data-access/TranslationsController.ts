@@ -19,7 +19,7 @@
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 
-type DialectType = "msa" | "eg" | "sy";
+type DialectType = "apc" | "msa" | "eg" | "tn";
 
 export interface TranslationEntry
 {

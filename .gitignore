@@ -4,6 +4,7 @@ backend/node_modules/
 backend/package-lock.json
 domain/dist/
 domain/node_modules/
+domain/package-lock.json
 domain-tests/dist/
 domain-tests/node_modules/
 frontend/.env

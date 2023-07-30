@@ -16,19 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-type DialectType = "msa" | "eg" | "sy";
+import { DialectType } from "../../dist/api";
 
-export const dialects: DialectType[] = ["msa", "eg", "sy"];
+export const dialects: DialectType[] = ["apc", "eg", "msa", "tn"];
+
+export function DialectToDisplayName(dialect: DialectType)
+{
+    switch(dialect)
+    {
+        case "apc":
+            return "North Levantine Arabic";
+        case "eg":
+            return "Egyptian Arabic";
+        case "msa":
+            return "Modern Standard Arabic";
+        case "tn":
+            return "Tunisian Arabic";
+    }
+}
 
 export function DialectToEmoji(dialect: DialectType)
 {
     switch(dialect)
     {
+        case "apc":
+            return String.fromCodePoint(0x1F1F8, 0x1F1FE);
         case "eg":
             return String.fromCodePoint(0x1F1EA, 0x1F1EC);
         case "msa":
             return String.fromCodePoint(0x1F319);
-        case "sy":
-            return String.fromCodePoint(0x1F1F8, 0x1F1FE);
+        case "tn":
+            return String.fromCodePoint(0x1F1F9, 0x1F1F3);
     }
 }

@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, Component, FormField, JSX_CreateElement, LineEdit, Select, SingleSelect, Textarea } from "acfrontend";
+import { Component, FormField, JSX_CreateElement, LineEdit, Select } from "acfrontend";
 import { TranslationEntry, WordType } from "../../dist/api";
-import { DialectToEmoji, dialects } from "../shared/dialects";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 
 interface WordBaseData

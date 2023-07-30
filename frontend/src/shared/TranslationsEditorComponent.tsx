@@ -18,7 +18,7 @@
 
 import { BootstrapIcon, Component, FormField, JSX_CreateElement, SingleSelect, Textarea } from "acfrontend";
 import { TranslationEntry } from "../../dist/api";
-import { DialectToEmoji, dialects } from "./dialects";
+import { DialectToDisplayName, DialectToEmoji, dialects } from "./dialects";
 
 export class TranslationsEditorComponent extends Component<{ translations: TranslationEntry[]; onDataChanged: () => void; }>
 {;
@@ -38,7 +38,7 @@ export class TranslationsEditorComponent extends Component<{ translations: Trans
         return <div className="row mb-2">
             <div className="col-auto">
                 <SingleSelect selectedIndex={dialects.indexOf(translationEntry.dialect)} onSelectionChanged={this.OnTranslationDialectChanged.bind(this, translationEntry)}>
-                    {dialects.map(x => DialectToEmoji(x) + x)}
+                    {dialects.map(x => DialectToEmoji(x) + DialectToDisplayName(x))}
                 </SingleSelect>
             </div>
             <div className="col">
