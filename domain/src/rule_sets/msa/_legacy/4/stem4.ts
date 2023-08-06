@@ -16,25 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WordType } from "../../dist/api";
+import { RootType } from "../../../../VerbRoot";
+import { StemDefinition } from "../../../Definitions";
+import { stem4_imperative } from "./imperative";
+import { stem4_past_active } from "./past_active";
+import { stem4_present_active } from "./present_active";
 
-export function WordTypeToAbbreviationText(wordType: WordType)
-{
-    switch(wordType)
-    {
-        case WordType.Noun:
-            return "";
-        case WordType.Preposition:
-            return "(prep.)";
-        case WordType.Adjective:
-            return "(adj.)";
-        case WordType.Conjunction:
-            return "(conj.)";
-        case WordType.ForeignVerb:
-            return "(foreign verb)";
-        case WordType.Adverb:
-            return "(adv.)";
-        case WordType.Pronoun:
-            return "(pronoun)";
-    }
-}
+export const stem4: StemDefinition = {
+    imperative: stem4_imperative,
+    perfect: {
+        active: stem4_past_active
+    },
+    present: {
+        active: stem4_present_active
+    },
+
+    participleRules: {
+        [RootType.Hollow]: [
+            { voice: "active", conjugation: "مُفِيل" },
+            { voice: "passive", conjugation: "مُفَال" }
+        ]
+    },
+    
+    verbalNounRules: {}
+};

@@ -20,8 +20,8 @@ import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { TranslationEntry, TranslationsController } from "./TranslationsController";
 import { RootsController } from "./RootsController";
-import { Stem1Context } from "arabdict-domain/src/CreateVerb";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
 
 export interface VerbUpdateData
 {

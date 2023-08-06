@@ -16,25 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WordType } from "../../dist/api";
+import { RootType } from "../../../../VerbRoot";
+import { StemTenseVoiceDefinition } from "../../../Definitions";
 
-export function WordTypeToAbbreviationText(wordType: WordType)
-{
-    switch(wordType)
-    {
-        case WordType.Noun:
-            return "";
-        case WordType.Preposition:
-            return "(prep.)";
-        case WordType.Adjective:
-            return "(adj.)";
-        case WordType.Conjunction:
-            return "(conj.)";
-        case WordType.ForeignVerb:
-            return "(foreign verb)";
-        case WordType.Adverb:
-            return "(adv.)";
-        case WordType.Pronoun:
-            return "(pronoun)";
-    }
-}
+export const stem4_present_active: StemTenseVoiceDefinition = {
+    [RootType.Defective]: {
+        rules: [
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفْعِي" }
+        ]
+    },
+
+    [RootType.Hollow]: {
+        rules: [
+            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفِيلُ" }
+        ]
+    },
+};

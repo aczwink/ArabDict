@@ -29,7 +29,9 @@ enum WordType
     /**
      * A verb that comes from an Arabic dialect or that was adopted by a foreign language and therefore does not base on a root, a stem etc.
      */
-    ForeignVerb = 4
+    ForeignVerb = 4,
+    Adverb = 5,
+    Pronoun = 6,
 }
 
 interface WordBaseData

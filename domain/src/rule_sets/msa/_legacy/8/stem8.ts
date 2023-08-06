@@ -16,25 +16,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WordType } from "../../dist/api";
+import { RootType } from "../../../../VerbRoot";
+import { StemDefinition } from "../../../Definitions";
+import { stem8_past_active } from "./past_active";
+import { stem8_present_active } from "./present_active";
 
-export function WordTypeToAbbreviationText(wordType: WordType)
-{
-    switch(wordType)
-    {
-        case WordType.Noun:
-            return "";
-        case WordType.Preposition:
-            return "(prep.)";
-        case WordType.Adjective:
-            return "(adj.)";
-        case WordType.Conjunction:
-            return "(conj.)";
-        case WordType.ForeignVerb:
-            return "(foreign verb)";
-        case WordType.Adverb:
-            return "(adv.)";
-        case WordType.Pronoun:
-            return "(pronoun)";
+export const stem8: StemDefinition = {
+    perfect: {
+        active: stem8_past_active
+    },
+    present: {
+        active: stem8_present_active,
+    },
+
+    participleRules: {},
+    
+    verbalNounRules: {
+        [RootType.Assimilated]: [
+            {
+                id: 1,
+                text: "إتِّعال"
+            },
+            {
+                id: 0,
+                text: "TODO"
+            }
+        ],
     }
-}
+};

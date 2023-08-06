@@ -17,17 +17,16 @@
  * */
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
-import { RootCreationData, VerbData, VerbDerivedWordData } from "../../dist/api";
+import { RootCreationData, Stem1Context, VerbData, VerbDerivedWordData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
-import { Stem1Context } from "arabdict-domain/src/CreateVerb";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
-import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/VerbStem";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { ConjugationService } from "../ConjugationService";
 import { WordTypeToAbbreviationText } from "../shared/words";
 import { RenderTranslations } from "../shared/translations";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Tense, Voice, Mood, Gender, Person, Numerus } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 
 @Injectable
 export class ShowVerbComponent extends Component

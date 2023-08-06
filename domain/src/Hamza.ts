@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, DHAMMA, WAW_HAMZA } from "./Definitions";
+import { ALEF_MADDA, BASE_TASHKIL, DHAMMA, WAW_HAMZA } from "./Definitions";
 import { ALEF_HAMZA, FATHA, HAMZA } from "./Definitions";
 import { Vocalized, VocalizedToString } from "./Vocalization";
 
@@ -24,8 +24,6 @@ import { Vocalized, VocalizedToString } from "./Vocalization";
 
 function InitialHamza(vocalized: Vocalized, next: Vocalized)
 {
-    //TODO: check next for alef for alef maddah
-
     if(vocalized.letter === HAMZA)
     {
         const alefHamza: Vocalized = {
@@ -37,6 +35,20 @@ function InitialHamza(vocalized: Vocalized, next: Vocalized)
             vocalized: alefHamza,
             count: 1
         };
+    }
+    else if(vocalized.letter === ALEF_HAMZA)
+    {
+        if(next.letter === HAMZA)
+        {
+            const alefMadda: Vocalized = {
+                letter: ALEF_MADDA,
+                shadda: vocalized.shadda,
+            };
+            return {
+                vocalized: alefMadda,
+                count: 2,
+            }
+        }
     }
 
     return {

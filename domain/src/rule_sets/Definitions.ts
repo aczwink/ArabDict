@@ -17,8 +17,8 @@
  * */
 
 import { NumberDictionary } from "acts-util-core";
-import { Gender, Person, Numerus, Voice, VerbalNoun } from "../VerbStem";
-import { Stem1Context } from "../CreateVerb";
+import { Gender, Person, Numerus, Voice, VerbalNoun } from "./msa/_legacy/VerbStem";
+import { Stem1Context } from "./msa/_legacy/CreateVerb";
 import { VerbRoot } from "../VerbRoot";
 import { BASE_TASHKIL } from "../Definitions";
 

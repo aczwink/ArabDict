@@ -18,9 +18,9 @@
 
 import { Injectable } from "acfrontend";
 import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
-import { Stem1Context } from "arabdict-domain/src/CreateVerb";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/VerbStem";
+import { Tense, Voice, Gender, Person, Numerus, Mood } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
+import { Stem1Context } from "../dist/api";
 
 @Injectable
 export class ConjugationService

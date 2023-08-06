@@ -60,15 +60,36 @@ export class AugmentedRoot
         }
     }
 
-    public ApplyTashkil(radical: number, taskil: BASE_TASHKIL)
+    public ApplyTashkil(radical: number, taskil: BASE_TASHKIL | undefined)
     {
         const v = this.GetRadical(radical);
         v!.tashkil = taskil;
+    }
+
+    public AssimilateRadical(radical: number)
+    {
+        const idx = this.GetRadicalIndedx(radical);
+
+        this._vocalized[idx - 1].tashkil = this._vocalized[idx].tashkil;
+        this._vocalized.Remove(idx);
+    }
+
+    public ReplaceRadical(radical: number, replacement: Vocalized)
+    {
+        const v = this.GetRadical(radical);
+        v!.letter = replacement.letter;
+        v!.shadda = replacement.shadda;
+        v!.tashkil = replacement.tashkil;
     }
 
     //Private methods
     private GetRadical(n: number)
     {
         return this._vocalized.find( x => x.letter === ("r" + n));
+    }
+
+    private GetRadicalIndedx(n: number)
+    {
+        return this._vocalized.findIndex( x => x.letter === ("r" + n));
     }
 }

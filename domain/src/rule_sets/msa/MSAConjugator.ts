@@ -15,17 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { CreateVerb, Stem1Context } from "../../CreateVerb";
-import { WAW, A3EIN, LAM, FA, QAF, DHAMMA, BASE_TASHKIL, SUKUN, FATHA, KASRA, ALEF, MIM, ALEF_HAMZA, YA } from "../../Definitions";
+import { CreateVerb, Stem1Context } from "./_legacy/CreateVerb";
+import { WAW, A3EIN, LAM, FA, QAF, DHAMMA, SUKUN, FATHA, KASRA, ALEF, MIM, YA, KASRATAN } from "../../Definitions";
 import { ConjugationParams, DialectConjugator } from "../../DialectConjugator";
 import { Hamzate } from "../../Hamza";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { NUN, SIIN, TA, Tense, VerbalNoun, Voice } from "../../VerbStem";
+import { SIIN, TA, Tense, VerbalNoun, Voice } from "./_legacy/VerbStem";
 import { ParseVocalizedText, Vocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
 import { AugmentedRoot } from "./AugmentedRoot";
-import { RootAugmentor } from "./RootAugmentor";
 import { definition as msaDef } from "./dialectDefinition";
+import { DeriveSuffix } from "./conjugation/suffix";
+import { DerivePrefix } from "./conjugation/prefix";
+import { AugmentRoot } from "./conjugation/rootAugmentation";
+import { ApplyRootAugmentationTashkil, DeriveRootTashkil } from "./conjugation/rootTashkil";
+import { ShortenOrAlefizeR2 } from "./conjugation/hollow";
+import { GeminateDoubledConsonant } from "./conjugation/doubled";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -34,17 +39,32 @@ export class MSAConjugator implements DialectConjugator
     //Public methods
     public Conjugate(root: VerbRoot, params: ConjugationParams): Vocalized[]
     {
-        const augmentedRoot = new RootAugmentor().AugmentAndTashkilizeRoot(root, params);
-        if(augmentedRoot !== undefined)
+        const maybeAugmentedRoot = AugmentRoot(params.stem, root.type, params);
+        if(maybeAugmentedRoot !== undefined)
         {
-            const suffix = this.DeriveSuffix(params);
+            const augmentedRoot = new AugmentedRoot(maybeAugmentedRoot, root);
+
+            const tashkil = DeriveRootTashkil(params);
+            augmentedRoot.ApplyTashkil(1, tashkil.r1);
+            augmentedRoot.ApplyTashkil(2, tashkil.r2);
+
+            ApplyRootAugmentationTashkil(augmentedRoot.vocalized, params);
+
+            const suffix = DeriveSuffix(params);
             augmentedRoot.ApplyTashkil(root.radicalsAsSeparateLetters.length, suffix.preSuffixTashkil);
 
-            if(root.type === RootType.SecondConsonantDoubled)
-                this.GeminateDoubledConsonant(augmentedRoot, params);
+            switch(root.type)
+            {
+                case RootType.Hollow:
+                    ShortenOrAlefizeR2(augmentedRoot, params);
+                break;
+                case RootType.SecondConsonantDoubled:
+                    GeminateDoubledConsonant(augmentedRoot, params);
+                break;
+            }
 
             augmentedRoot.ApplyRootLetters();
-            return this.DerivePrefix(augmentedRoot.vocalized[0].tashkil!, params).concat(augmentedRoot.vocalized, suffix.suffix);
+            return DerivePrefix(augmentedRoot.vocalized[0].tashkil!, params).concat(augmentedRoot.vocalized, suffix.suffix);
         }
 
         return this.ConjugateLegacy(root, params);
@@ -54,6 +74,27 @@ export class MSAConjugator implements DialectConjugator
     {
         switch(stem)
         {
+            case 1:
+                switch(root.type)
+                {
+                    case RootType.Defective:
+                    case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+                        if(voice === "active")
+                        {
+                            return Hamzate([
+                                { letter: root.r1, shadda: false, tashkil: FATHA },
+                                { letter: ALEF, shadda: false },
+                                { letter: root.r2, shadda: false, tashkil: KASRATAN as any },
+                            ]);
+                        }
+                        return Hamzate([
+                            { letter: MIM, shadda: false, tashkil: FATHA },
+                            { letter: root.r1, shadda: false, tashkil: SUKUN },
+                            { letter: root.r2, shadda: false, tashkil: (stem1Context?.middleRadicalTashkilPresent === DHAMMA) ? DHAMMA : KASRA },
+                            { letter: (stem1Context?.middleRadicalTashkilPresent === DHAMMA) ? WAW : YA, shadda: true },
+                        ]);
+                }
+                break;
             case 4:
                 switch(root.type)
                 {
@@ -164,317 +205,6 @@ export class MSAConjugator implements DialectConjugator
         return verb.GenerateAllPossibleVerbalNouns();
     }
 
-    //Private methods
-    private DerivePrefix(prevTashkil: BASE_TASHKIL, params: ConjugationParams): Vocalized[]
-    {
-        if(params.tense === "perfect")
-            return [];
-
-        if(params.mood === "imperative")
-        {
-            if(params.stem === 4)
-                return [{ letter: ALEF_HAMZA, shadda: false, tashkil: FATHA}];
-
-            if(prevTashkil === SUKUN)
-            {
-                //insert hamzat al wasl
-                return [{ letter: ALEF, shadda: false, tashkil: (params.stem1Context?.middleRadicalTashkilPresent === DHAMMA) ? DHAMMA : KASRA}];
-            }
-            return [];
-        }
-
-        const tashkil = this.DerivePrefixTashkil(params);
-        switch(params.person)
-        {
-            case "first":
-            {
-                switch(params.numerus)
-                {
-                    case "singular":
-                        return [{ letter: ALEF_HAMZA, shadda: false, tashkil }];
-                    case "plural":
-                        return [{ letter: NUN, shadda: false, tashkil }];
-                }
-            }
-            case "second":
-                return [{ letter: TA, shadda: false, tashkil }];
-            case "third":
-                switch(params.gender)
-                {
-                    case "male":
-                        return [{ letter: YA, shadda: false, tashkil }];
-                    case "female":
-                        return [{ letter: TA, shadda: false, tashkil }];
-                }
-        }
-    }
-
-    private DerivePrefixTashkil(params: ConjugationParams)
-    {
-        switch(params.stem)
-        {
-            case 1:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 10:
-                return (params.voice === "active") ? FATHA : DHAMMA;
-            case 2:
-            case 3:
-            case 4:
-                return DHAMMA;
-        }
-    }
-
-    private DeriveSuffix(params: ConjugationParams): { suffix: Vocalized[]; preSuffixTashkil: BASE_TASHKIL}
-    {
-        if(params.tense === "perfect")
-        {
-            switch(params.numerus)
-            {
-                case "singular":
-                {
-                    switch(params.person)
-                    {
-                        case "first":
-                            return {
-                                preSuffixTashkil: SUKUN,
-                                suffix: [{ letter: TA, shadda: false, tashkil: DHAMMA }]
-                            };
-                        case "second":
-                        {
-                            switch(params.gender)
-                            {
-                                case "male":
-                                    return {
-                                        preSuffixTashkil: SUKUN,
-                                        suffix: [{ letter: TA, shadda: false, tashkil: FATHA },]
-                                    };
-                                case "female":
-                                    return {
-                                        preSuffixTashkil: SUKUN,
-                                        suffix: [{ letter: TA, shadda: false, tashkil: KASRA },]
-                                    };
-                            }
-                        }
-                        case "third":
-                        {
-                            switch(params.gender)
-                            {
-                                case "male":
-                                    return {
-                                        preSuffixTashkil: FATHA,
-                                        suffix: [],
-                                    };
-                                case "female":
-                                    return {
-                                        preSuffixTashkil: FATHA,
-                                        suffix: [{ letter: TA, shadda: false, tashkil: SUKUN },],
-                                    };
-                            }
-                        }
-                    }
-                }
-
-                case "dual":
-                {
-                    switch(params.person)
-                    {
-                        case "second":
-                            return {
-                                preSuffixTashkil: SUKUN,
-                                suffix: [
-                                    { letter: TA, shadda: false, tashkil: DHAMMA },
-                                    { letter: MIM, shadda: false, tashkil: FATHA },
-                                    { letter: ALEF, shadda: false },
-                                ],
-                            };
-                        case "third":
-                        {
-                            switch(params.gender)
-                            {
-                                case "male":
-                                    return {
-                                        preSuffixTashkil: FATHA,
-                                        suffix: [
-                                            { letter: ALEF, shadda: false },
-                                        ],
-                                    };
-                                case "female":
-                                    return {
-                                        preSuffixTashkil: FATHA,
-                                        suffix: [
-                                            { letter: TA, shadda: false, tashkil: FATHA },
-                                            { letter: ALEF, shadda: false },
-                                        ],
-                                    };
-                            }
-                        }
-                    }
-                }
-
-                case "plural":
-                {
-                    switch(params.person)
-                    {
-                        case "first":
-                            return {
-                                preSuffixTashkil: SUKUN,
-                                suffix: [
-                                    { letter: NUN, shadda: false, tashkil: FATHA },
-                                    { letter: ALEF, shadda: false },
-                                ],
-                            };
-                        case "second":
-                        {
-                            switch(params.gender)
-                            {
-                                case "male":
-                                    return {
-                                        preSuffixTashkil: SUKUN,
-                                        suffix: [
-                                            { letter: TA, shadda: false, tashkil: DHAMMA },
-                                            { letter: MIM, shadda: false, tashkil: SUKUN },
-                                        ],
-                                    };
-                                case "female":
-                                    return {
-                                        preSuffixTashkil: SUKUN,
-                                        suffix: [
-                                            { letter: TA, shadda: false, tashkil: DHAMMA },
-                                            { letter: NUN, shadda: true, tashkil: FATHA },
-                                        ],
-                                    };
-                            }
-                        }
-                        case "third":
-                        {
-                            switch(params.gender)
-                            {
-                                case "male":
-                                    return {
-                                        preSuffixTashkil: DHAMMA,
-                                        suffix: [
-                                            { letter: WAW, shadda: false },
-                                            { letter: ALEF, shadda: false },
-                                        ],
-                                    };
-                                case "female":
-                                    return {
-                                        preSuffixTashkil: SUKUN,
-                                        suffix: [
-                                            { letter: NUN, shadda: false, tashkil: FATHA },
-                                        ],
-                                    };
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-
-            let defTashkil: BASE_TASHKIL = DHAMMA;
-            if(params.mood === "subjunctive")
-                defTashkil = FATHA;
-            else if(params.mood === "jussive")
-                defTashkil = SUKUN;
-            else if(params.mood === "imperative")
-                defTashkil = SUKUN;
-
-            switch(params.numerus)
-            {
-                case "singular":
-                {
-                    if((params.person === "second") && (params.gender === "female"))
-                    {
-                        if((params.mood === "subjunctive") || (params.mood === "jussive") || (params.mood === "imperative"))
-                        {
-                            return {
-                                preSuffixTashkil: KASRA,
-                                suffix: [
-                                    { letter: YA, shadda: false },
-                                ]
-                            };
-                        }
-                        return {
-                            preSuffixTashkil: KASRA,
-                            suffix: [
-                                { letter: YA, shadda: false },
-                                { letter: NUN, shadda: false, tashkil: FATHA }
-                            ]
-                        };
-                    }
-
-                    return {
-                        preSuffixTashkil: defTashkil,
-                        suffix: []
-                    };
-                }
-
-                case "dual":
-                {
-                    if((params.mood === "subjunctive") || (params.mood === "jussive") || (params.mood === "imperative"))
-                    {
-                        return {
-                            preSuffixTashkil: FATHA,
-                            suffix: [
-                                { letter: ALEF, shadda: false },
-                            ]
-                        };
-                    }
-
-                    return {
-                        preSuffixTashkil: FATHA,
-                        suffix: [
-                            { letter: ALEF, shadda: false },
-                            { letter: NUN, shadda: false, tashkil: KASRA }
-                        ]
-                    };
-                }
-
-                case "plural":
-                {
-                    if(params.person === "first")
-                        return {
-                            preSuffixTashkil: defTashkil,
-                            suffix: []
-                        };
-
-                    if(params.gender === "male")
-                    {
-                        if((params.mood === "subjunctive") || (params.mood === "jussive") || (params.mood === "imperative"))
-                        {
-                            return {
-                                preSuffixTashkil: DHAMMA,
-                                suffix: [
-                                    { letter: WAW, shadda: false },
-                                    { letter: ALEF, shadda: false }
-                                ]
-                            };
-                        }
-                        return {
-                            preSuffixTashkil: DHAMMA,
-                            suffix: [
-                                { letter: WAW, shadda: false },
-                                { letter: NUN, shadda: false, tashkil: FATHA }
-                            ]
-                        };
-                    }
-
-                    return {
-                        preSuffixTashkil: SUKUN,
-                        suffix: [
-                            { letter: NUN, shadda: false, tashkil: FATHA }
-                        ]
-                    };
-                }
-            }
-        }
-    }
-
     //Legacy private methods    
     private ApplyRootConjugationPattern(rootRadicals: string[], rootType: RootType, conjugation: string)
     {
@@ -532,17 +262,6 @@ export class MSAConjugator implements DialectConjugator
         if(voice !== "active")
             throw new Error("Imperative can only be active");
         return (tenseData as StemTenseVoiceDefinition)[rootType];
-    }
-
-    private GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: ConjugationParams)
-    {
-        if(augmentedRoot.r3.tashkil !== SUKUN)
-        {
-            const cond = ((params.tense === "perfect") && (params.voice === "active")) || (((params.tense === "present") && (params.voice === "passive")));
-            augmentedRoot.r1.tashkil = cond ? FATHA : KASRA; //two sukuns after each other are forbidden
-            augmentedRoot.r3.shadda = true;
-            augmentedRoot.vocalized.Remove(augmentedRoot.vocalized.length - 2); //assimilate r2
-        }
     }
     
     private GetDialectDefiniton()

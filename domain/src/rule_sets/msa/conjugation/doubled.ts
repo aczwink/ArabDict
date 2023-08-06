@@ -16,26 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
-import { VerbRoot } from "./VerbRoot";
-import { Tense, Voice, Gender, Person, Numerus, Mood, VerbalNoun } from "./rule_sets/msa/_legacy/VerbStem";
-import { Vocalized } from "./Vocalization";
+import { SUKUN, FATHA, KASRA } from "../../../Definitions";
+import { ConjugationParams } from "../../../DialectConjugator";
+import { AugmentedRoot } from "../AugmentedRoot";
 
-export interface ConjugationParams
+export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    tense: Tense;
-    voice: Voice;
-    gender: Gender;
-    person: Person;
-    numerus: Numerus;
-    mood: Mood;
-    stem: number;
-    stem1Context?: Stem1Context;
-}
-
-export interface DialectConjugator
-{
-    Conjugate(root: VerbRoot, params: ConjugationParams): Vocalized[];
-    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): string;
-    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): VerbalNoun[];
+    if(augmentedRoot.r3.tashkil !== SUKUN)
+    {
+        const cond = ((params.tense === "perfect") && (params.voice === "active")) || (((params.tense === "present") && (params.voice === "passive")));
+        augmentedRoot.r1.tashkil = cond ? FATHA : KASRA; //two sukuns after each other are forbidden
+        augmentedRoot.r3.shadda = true;
+        augmentedRoot.vocalized.Remove(augmentedRoot.vocalized.length - 2); //assimilate r2
+    }
 }

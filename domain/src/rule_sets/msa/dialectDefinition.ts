@@ -17,12 +17,12 @@
  * */
 
 import { DialectDefinition } from "../Definitions";
-import { stem1 } from "./1/stem1";
-import { stem2 } from "./2/stem2";
-import { stem3 } from "./3/stem3";
-import { stem4 } from "./4/stem4";
-import { stem5 } from "./5/stem5";
-import { stem8 } from "./8/stem8";
+import { stem1 } from "./_legacy/1/stem1";
+import { stem2 } from "./_legacy/2/stem2";
+import { stem3 } from "./_legacy/3/stem3";
+import { stem4 } from "./_legacy/4/stem4";
+import { stem5 } from "./_legacy/5/stem5";
+import { stem8 } from "./_legacy/8/stem8";
 
 export const definition: DialectDefinition = {
     stems: {

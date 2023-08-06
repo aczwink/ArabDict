@@ -16,25 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WordType } from "../../dist/api";
+import { ZAY } from "../../../../Definitions";
+import { RootType } from "../../../../VerbRoot";
+import { StemTenseVoiceDefinition } from "../../../Definitions";
 
-export function WordTypeToAbbreviationText(wordType: WordType)
-{
-    switch(wordType)
-    {
-        case WordType.Noun:
-            return "";
-        case WordType.Preposition:
-            return "(prep.)";
-        case WordType.Adjective:
-            return "(adj.)";
-        case WordType.Conjunction:
-            return "(conj.)";
-        case WordType.ForeignVerb:
-            return "(foreign verb)";
-        case WordType.Adverb:
-            return "(adv.)";
-        case WordType.Pronoun:
-            return "(pronoun)";
-    }
-}
+
+export const stem8_past_active: StemTenseVoiceDefinition = {
+    [RootType.Assimilated]: {
+        rules: [
+            { numerus: "singular", person: "third", gender: "male", conjugation: "اِتَّعَلَ" }
+        ]
+    },
+
+    [RootType.Hollow]: {
+        rules: [
+            { condition: (root, _) => root.r1 === ZAY, numerus: "singular", person: "third", gender: "male", conjugation: "اِفْدَالَ" }
+        ]
+    },
+};

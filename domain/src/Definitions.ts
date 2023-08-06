@@ -20,6 +20,7 @@
 
 export const ALEF = "\u0627";
 export const ALEF_HAMZA = "\u0623";
+export const ALEF_MADDA = "\u0622";
 export const ALEF_MAKSURA = "\u0649";
 export const LETTER_RA = "\u0631";
 export const ZAY = "\u0632";
@@ -37,6 +38,7 @@ export const HAMZA = "\u0621";
 export const FATHA = "\u064E";
 export const DHAMMA = "\u064F";
 export const KASRA = "\u0650";
+export const KASRATAN = "\u064D";
 export const SHADDA = "\u0651";
 export const SUKUN = "\u0652";
 

@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Stem1Context } from "./CreateVerb";
+import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { Hamzate } from "./Hamza";
 import { VerbRoot } from "./VerbRoot";
-import { Voice, VerbalNoun } from "./VerbStem";
+import { Voice, VerbalNoun } from "./rule_sets/msa/_legacy/VerbStem";
 import { StemTenseVoiceDefinition } from "./rule_sets/Definitions";
 import { ConjugationParams } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";

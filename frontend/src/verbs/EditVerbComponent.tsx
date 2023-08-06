@@ -19,9 +19,9 @@
 import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
 import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
-import { VerbalNoun } from "arabdict-domain/src/VerbStem";
 import { VerbEditorComponent } from "./VerbEditorComponent";
 import { ConjugationService } from "../ConjugationService";
+import { VerbalNoun } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 
 @Injectable
 export class EditVerbComponent extends Component

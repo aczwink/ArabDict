@@ -17,14 +17,13 @@
  * */
 
 import { CheckBox, Component, FormField, Injectable, JSX_CreateElement, Select, SingleSelect } from "acfrontend";
-import { VerbUpdateData } from "../../dist/api";
+import { Stem1Context, VerbUpdateData } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 import { ConjugationService } from "../ConjugationService";
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { DHAMMA, FATHA, KASRA, PRIMARY_TASHKIL } from "arabdict-domain/src/Definitions";
-import { Tense } from "arabdict-domain/src/VerbStem";
-import { Stem1Context } from "arabdict-domain/src/CreateVerb";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
+import { Tense } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 
 @Injectable
 export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootRadicals: string; onChanged: () => void }>

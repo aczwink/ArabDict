@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Stem1Context } from "./CreateVerb";
+import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { DHAMMA, FATHA, HAMZA, KASRA, LETTER_RA, PRIMARY_TASHKIL, WAW, YA } from "./Definitions";
 
 export enum RootType
@@ -149,9 +149,9 @@ export class VerbRoot
                 };
             case RootType.HamzaOnR1:
                 return {
-                    past: [],
-                    present: [],
-                    soundOverride: []
+                    past: [DHAMMA],
+                    present: [DHAMMA],
+                    soundOverride: [false]
                 };
             case RootType.Hollow:
                 {
@@ -199,6 +199,12 @@ export class VerbRoot
                         soundOverride: [false]
                     }
                 }
+            case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+                return {
+                    past: [],
+                    present: [],
+                    soundOverride: []
+                };
             default:
                 throw new Error("TODO: implement me");
         }

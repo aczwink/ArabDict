@@ -17,7 +17,6 @@
  * */
 
 import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
-import { CreateVerb } from "arabdict-domain/src/CreateVerb";
 import { RootCreationData, VerbData, VerbDerivedWordData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
@@ -26,6 +25,7 @@ import { RenderTranslations } from "../shared/translations";
 import { ConjugationService } from "../ConjugationService";
 import { KASRA } from "arabdict-domain/src/Definitions";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { CreateVerb } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
