@@ -23,6 +23,8 @@ import { Voice, VerbalNoun } from "./rule_sets/msa/_legacy/VerbStem";
 import { StemTenseVoiceDefinition } from "./rule_sets/Definitions";
 import { ConjugationParams } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
+import { Vocalized } from "./Vocalization";
+import { DHAMMA, KASRA, SUKUN, WAW, YA } from "./Definitions";
 
 export enum DialectType
 {
@@ -59,9 +61,13 @@ export class Conjugator
             throw new Error("imperative and passive does not exist");
         if( (params.mood === "imperative") && (params.person !== "second") )
             return "";
+        if( (params.stem === 1) && (params.stem1Context === undefined) )
+            throw new Error("missing context for stem 1 conjugation");
 
         const dialectConjugator = this.CreateDialectConjugator(dialect);
         const pattern = dialectConjugator.Conjugate(root, params);
+        this.CheckShaddaPattern(pattern);
+        this.RemoveRedundantTashkil(pattern);
         return Hamzate(pattern);
     }
 
@@ -98,6 +104,22 @@ export class Conjugator
         }
     }
 
+    private CheckShaddaPattern(vocalized: Vocalized[])
+    {
+        for(let i = 0; i < vocalized.length - 1; i++)
+        {
+            const current = vocalized[i];
+            const next = vocalized[i + 1];
+
+            if((current.letter === next.letter) && (current.shadda === next.shadda) && (current.shadda === false) && (current.tashkil === SUKUN))
+            {
+                next.shadda = true;
+                vocalized.Remove(i);
+                i--;
+            }
+        }
+    }
+
     private CreateDialectConjugator(dialect: DialectType)
     {
         switch(dialect)
@@ -106,6 +128,19 @@ export class Conjugator
                 return new MSAConjugator;
             case DialectType.NorthLevantineArabic:
                 throw new Error("implement me");
+        }
+    }
+
+    private RemoveRedundantTashkil(vocalized: Vocalized[])
+    {
+        //don't alter first char because word can't start with vowel
+        for(let i = 1; i < vocalized.length; i++)
+        {
+            const v = vocalized[i];
+            if( (v.letter === WAW) && (v.tashkil === DHAMMA) )
+                v.tashkil = undefined;
+            else if( (v.letter === YA) && (v.tashkil === KASRA) )
+                v.tashkil = undefined;
         }
     }
 }

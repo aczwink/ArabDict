@@ -163,6 +163,16 @@ export class WordsController
         return row;
     }
 
+    public async QueryWordsCount()
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const row = await conn.SelectOne("SELECT COUNT(*) AS cnt FROM words");
+        if(row === undefined)
+            return 0;
+        return row.cnt as number;
+    }
+
     public async UpdateWord(wordId: number, data: WordCreationData)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();

@@ -20,12 +20,25 @@ import { ALEF, DHAMMA, FATHA, KASRA, WAW, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { AugmentedRoot } from "../AugmentedRoot";
 
+function DoesPresentSuffixStartWithVowel(params: ConjugationParams)
+{
+    if( (params.numerus === "singular") && (params.person === "second") && (params.gender === "female") )
+        return true;
+    if(params.numerus === "dual")
+        return true;
+    if( (params.numerus === "plural") && (params.person !== "first") && (params.gender === "male") )
+        return true;
+    return false;
+}
+
 export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
     switch(params.stem)
     {
         case 1:
         {
+            const vowelTashkil = (augmentedRoot.root.r2 === WAW) ? DHAMMA : KASRA;
+
             if(params.tense === "perfect")
             {
                 if((params.person === "third") && !((params.numerus === "plural") && (params.gender === "female")))
@@ -39,32 +52,27 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
                     }
                 }
                 else
-                    augmentedRoot.AssimilateRadical(2);
-            }
-            else if((params.mood === "jussive") || (params.mood === "imperative"))
-            {
-                const dontAssimilate = ((params.numerus === "singular") && (params.person === "second") && (params.gender === "female")) || (params.numerus === "dual") || ((params.numerus === "plural") && (params.person !== "first") && (params.gender === "male"));
-                if(dontAssimilate)
                 {
-                    augmentedRoot.ApplyTashkil(2, undefined);
-                    if(params.voice === "passive")
-                        augmentedRoot.ReplaceRadical(2, { letter: ALEF, shadda: false });
-                }
-                else
+                    //shorten vowel
+                    augmentedRoot.ApplyTashkil(2, (params.voice === "active") ? vowelTashkil : KASRA);
                     augmentedRoot.AssimilateRadical(2);
-
-                augmentedRoot.ApplyTashkil(1, (params.voice === "active") ? DHAMMA : FATHA);
+                }
             }
             else
             {
-                if((params.numerus === "plural") && (params.gender === "female"))
+                let shortenVowel = (params.numerus === "plural") && (params.gender === "female");
+
+                if((params.mood === "jussive") || (params.mood === "imperative"))
+                {
+                    shortenVowel = !DoesPresentSuffixStartWithVowel(params);
+                }
+
+                if(shortenVowel)
                     augmentedRoot.AssimilateRadical(2);
-                else if(params.voice === "active")
-                    augmentedRoot.ReplaceRadical(2, { letter: WAW, shadda: false });
-                else
+                else if(params.voice === "passive")
                     augmentedRoot.ReplaceRadical(2, { letter: ALEF, shadda: false });
 
-                augmentedRoot.ApplyTashkil(1, (params.voice === "active") ? DHAMMA : FATHA);
+                augmentedRoot.ApplyTashkil(1, (params.voice === "active") ? vowelTashkil : FATHA);
             }
         }
         break;

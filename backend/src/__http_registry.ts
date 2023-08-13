@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import "./api/random";
 import "./api/roots";
 import "./api/verbs";
 import "./api/words";

@@ -22,8 +22,10 @@ import { routes as underivedWordsRoutes } from "./underived_words/routing";
 import { routes as verbsRoutes } from "./verbs/routing";
 import { routes as wordsRoutes } from "./words/routing";
 import { SearchComponent } from "./SearchComponent";
+import { LearnComponent } from "./LearnComponent";
 
 export const routes : Routes = [
+    { path: "learn", component: LearnComponent },
     { path: "roots", children: rootRoutes },
     { path: "underived_words", children: underivedWordsRoutes },
     { path: "verbs", children: verbsRoutes },

@@ -102,17 +102,11 @@ export function ApplyRootAugmentationTashkil(augmentedRoot: Vocalized[], params:
             }
             break;
         case 10:
+            augmentedRoot[0].tashkil = SUKUN;
             if(params.tense === "perfect")
-            {
-                augmentedRoot[0].tashkil = (params.voice === "active") ? KASRA : DHAMMA;
-                augmentedRoot[1].tashkil = SUKUN;
-                augmentedRoot[2].tashkil = (params.voice === "active") ? FATHA : DHAMMA;
-            }
+                augmentedRoot[1].tashkil = (params.voice === "active") ? FATHA : DHAMMA;
             else
-            {
-                augmentedRoot[0].tashkil = SUKUN;
                 augmentedRoot[1].tashkil = FATHA;
-            }
         break;
     }
 }

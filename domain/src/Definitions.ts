@@ -22,6 +22,7 @@ export const ALEF = "\u0627";
 export const ALEF_HAMZA = "\u0623";
 export const ALEF_MADDA = "\u0622";
 export const ALEF_MAKSURA = "\u0649";
+export const TA_MARBUTA = "\u0629";
 export const LETTER_RA = "\u0631";
 export const ZAY = "\u0632";
 export const A3EIN = "\u0639";
@@ -32,6 +33,7 @@ export const MIM = "\u0645";
 export const WAW = "\u0648";
 export const WAW_HAMZA = "\u0624";
 export const YA = "\u064A";
+export const YA_HAMZA = "\u0626";
 
 export const HAMZA = "\u0621";
 

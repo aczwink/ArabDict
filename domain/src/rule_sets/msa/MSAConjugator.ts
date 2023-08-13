@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { CreateVerb, Stem1Context } from "./_legacy/CreateVerb";
-import { WAW, A3EIN, LAM, FA, QAF, DHAMMA, SUKUN, FATHA, KASRA, ALEF, MIM, YA, KASRATAN } from "../../Definitions";
+import { WAW, A3EIN, LAM, FA, QAF, DHAMMA, SUKUN, FATHA, KASRA, ALEF, MIM, YA, KASRATAN, ALEF_HAMZA, YA_HAMZA, TA_MARBUTA, SHADDA } from "../../Definitions";
 import { ConjugationParams, DialectConjugator } from "../../DialectConjugator";
 import { Hamzate } from "../../Hamza";
 import { RootType, VerbRoot } from "../../VerbRoot";
@@ -31,6 +31,8 @@ import { AugmentRoot } from "./conjugation/rootAugmentation";
 import { ApplyRootAugmentationTashkil, DeriveRootTashkil } from "./conjugation/rootTashkil";
 import { ShortenOrAlefizeR2 } from "./conjugation/hollow";
 import { GeminateDoubledConsonant } from "./conjugation/doubled";
+import { AlterDefectiveEnding } from "./conjugation/defective";
+import { DropOutR1 } from "./conjugation/assimilated";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -53,8 +55,15 @@ export class MSAConjugator implements DialectConjugator
             const suffix = DeriveSuffix(params);
             augmentedRoot.ApplyTashkil(root.radicalsAsSeparateLetters.length, suffix.preSuffixTashkil);
 
-            switch(root.type)
+            const rootType = params.stem1Context?.soundOverride ? RootType.Sound : root.type;
+            switch(rootType)
             {
+                case RootType.Assimilated:
+                    DropOutR1(augmentedRoot, params);
+                break;
+                case RootType.Defective:
+                    AlterDefectiveEnding(augmentedRoot, params);
+                break;
                 case RootType.Hollow:
                     ShortenOrAlefizeR2(augmentedRoot, params);
                 break;
@@ -92,6 +101,42 @@ export class MSAConjugator implements DialectConjugator
                             { letter: root.r1, shadda: false, tashkil: SUKUN },
                             { letter: root.r2, shadda: false, tashkil: (stem1Context?.middleRadicalTashkilPresent === DHAMMA) ? DHAMMA : KASRA },
                             { letter: (stem1Context?.middleRadicalTashkilPresent === DHAMMA) ? WAW : YA, shadda: true },
+                        ]);
+                    case RootType.Hollow:
+                        if(voice === "active")
+                        {
+                            return Hamzate([
+                                { letter: root.r1, shadda: false, tashkil: FATHA },
+                                { letter: ALEF, shadda: false },
+                                { letter: YA_HAMZA, shadda: false, tashkil: KASRA },
+                                { letter: root.r3, shadda: false },
+                            ]);
+                        }
+                        return Hamzate([
+                            { letter: MIM, shadda: false, tashkil: FATHA },
+                            { letter: root.r1, shadda: false, tashkil: (stem1Context?.middleRadicalTashkil === KASRA) ? KASRA : DHAMMA },
+                            { letter: (stem1Context?.middleRadicalTashkil === KASRA) ? YA : WAW, shadda: false },
+                            { letter: root.r3, shadda: false },
+                        ]);
+                    case RootType.SecondConsonantDoubled:
+                        return "TODO";
+                    case RootType.Sound:
+                        if(voice === "active")
+                            return root.r1 + FATHA + ALEF + root.r2 + KASRA + root.r3;
+                        return MIM + FATHA + root.r1 + SUKUN + root.r2 + DHAMMA + WAW + root.r3;
+                }
+                break;
+            case 2:
+                switch(root.type)
+                {
+                    case RootType.HamzaOnR1:
+                        return "TODO";
+                    case RootType.Sound:
+                        return Hamzate([
+                            { letter: MIM, shadda: false, tashkil: DHAMMA },
+                            { letter: root.r1, shadda: false, tashkil: FATHA },
+                            { letter: root.r2, shadda: true, tashkil: (voice === "active") ? KASRA : FATHA },
+                            { letter: root.r3, shadda: false },
                         ]);
                 }
                 break;
@@ -144,7 +189,7 @@ export class MSAConjugator implements DialectConjugator
         }
 
         //call legacy api
-        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem, { middleRadicalTashkil: "", middleRadicalTashkilPresent: "", soundOverride: false }); //stem1 ctx is not needed for participle
+        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem);
         return verb.ConjugateParticiple(voice);
     }
 
@@ -152,6 +197,79 @@ export class MSAConjugator implements DialectConjugator
     {
         switch(stem)
         {
+            case 1:
+                switch(root.type)
+                {
+                    case RootType.Defective:
+                        return [
+                            {
+                                id: 1,
+                                text: root.r1 + KASRA + root.r2 + FATHA + ALEF + YA + FATHA + TA_MARBUTA
+                            },
+                            {
+                                id: 0,
+                                text: "TODO"
+                            }
+                        ];
+                    case RootType.HamzaOnR1:
+                        return [
+                            {
+                                id: 1,
+                                text: ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3
+                            },
+                            {
+                                id: 0,
+                                text: "TODO"
+                            }
+                        ];
+                    case RootType.Hollow:
+                        return [
+                            {
+                                id: 2,
+                                text: root.r1 + FATHA + WAW + SUKUN + root.r3,
+                            },
+                            {
+                                id: 1,
+                                text: MIM + FATHA + root.r1 + FATHA + ALEF + root.r3
+                            }
+                        ];
+                    case RootType.SecondConsonantDoubled:
+                        return [
+                            {
+                                id: 2,
+                                text: root.r1 + KASRA + root.r2 + SHADDA,
+                            },
+                            {
+                                id: 1,
+                                text: root.r1 + FATHA + root.r2 + KASRA + YA + root.r3
+                            }
+                        ];
+                    case RootType.Sound:
+                        return [
+                            {
+                                id: 1,
+                                text: root.r1 + FATHA + root.r2 + FATHA + root.r3
+                            },
+                            {
+                                id: 0,
+                                text: "TODO"
+                            }
+                        ];
+                }
+                break;
+            case 2:
+                switch(root.type)
+                {
+                    case RootType.HamzaOnR1:
+                    case RootType.Sound:
+                        return [
+                            {
+                                id: 0,
+                                text: "TODO"
+                            }
+                        ];
+                }
+                break;
             case 6:
             case 7:
                 return [
@@ -176,7 +294,7 @@ export class MSAConjugator implements DialectConjugator
                                     { letter: ALEF, shadda: false, },
                                     { letter: root.r2, shadda: false, },
                                 ])
-                            }
+                            },
                         ];
                 }
 
@@ -201,7 +319,7 @@ export class MSAConjugator implements DialectConjugator
         }
 
         //call legacy api
-        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem, { middleRadicalTashkil: "", middleRadicalTashkilPresent: "", soundOverride: false }); //stem1 ctx is not needed for verbal nouns
+        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem);
         return verb.GenerateAllPossibleVerbalNouns();
     }
 
@@ -239,7 +357,7 @@ export class MSAConjugator implements DialectConjugator
         }
 
         //call legacy api
-        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), params.stem, params.stem1Context);
+        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), params.stem);
         const x = verb.Conjugate(params.tense, params.voice, params.gender, params.person, params.numerus);
         return ParseVocalizedText(x);
     }

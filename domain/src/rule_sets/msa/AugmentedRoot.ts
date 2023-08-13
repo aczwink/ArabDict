@@ -22,7 +22,7 @@ import { Vocalized } from "../../Vocalization";
 
 export class AugmentedRoot
 {
-    constructor(private _vocalized: Vocalized[], private root: VerbRoot)
+    constructor(private _vocalized: Vocalized[], private _root: VerbRoot)
     {
     }
 
@@ -42,6 +42,11 @@ export class AugmentedRoot
         return this.GetRadical(3)!;
     }
 
+    public get root()
+    {
+        return this._root;
+    }
+
     public get vocalized()
     {
         return this._vocalized;
@@ -55,7 +60,7 @@ export class AugmentedRoot
             if(v.letter.startsWith("r"))
             {
                 const n = parseInt(v.letter.substring(1));
-                v.letter = this.root.radicalsAsSeparateLetters[n-1];
+                v.letter = this._root.radicalsAsSeparateLetters[n-1];
             }
         }
     }
@@ -71,6 +76,12 @@ export class AugmentedRoot
         const idx = this.GetRadicalIndedx(radical);
 
         this._vocalized[idx - 1].tashkil = this._vocalized[idx].tashkil;
+        this._vocalized.Remove(idx);
+    }
+
+    public DropRadial(radical: number)
+    {
+        const idx = this.GetRadicalIndedx(radical);
         this._vocalized.Remove(idx);
     }
 

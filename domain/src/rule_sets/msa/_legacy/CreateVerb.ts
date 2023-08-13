@@ -18,22 +18,12 @@
 
 import { VerbRoot } from "../../../VerbRoot";
 import { VerbStem } from "./VerbStem";
-import { VerbStem1 } from "./VerbStem1";
 import { VerbStem4 } from "./VerbStem4";
 import { VerbStem8 } from "./VerbStem8";
 
 export interface Stem1Context
 {
-    /**
-     * -For hollow, only used when the present tense tashkil is fatha.
-     * -Not used for defective.
-     */
     middleRadicalTashkil: string;
-
-    /**
-     * -For hollow, the tashkil of the middle radical in present tense.
-     * -For defective it defines the tashkil of the present tense. The past can be then mapped accordingly.
-     */
     middleRadicalTashkilPresent: string;
 
     /**
@@ -42,19 +32,19 @@ export interface Stem1Context
     soundOverride: boolean;
 }
 
-export function CreateVerb(root: string, stem: number, stem1Context?: Stem1Context): VerbStem
+export function CreateVerb(root: string, stem: number): VerbStem
 {
     const vRoot = new VerbRoot(root);
     switch(stem)
     {
-        case 1:
-            if(stem1Context === undefined)
-                throw new Error("Missing context for verb in stem 1");
-            return new VerbStem1(vRoot, stem1Context.middleRadicalTashkil);
         case 4:
             return new VerbStem4(vRoot);
         case 8:
             return new VerbStem8(vRoot);
     }
-    throw new Error("not implemented");
+    return {
+        Conjugate: () => "TODO",
+        ConjugateParticiple: () => "TODO",
+        GenerateAllPossibleVerbalNouns: () => []
+    };
 }

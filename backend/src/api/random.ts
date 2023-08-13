@@ -16,19 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { RootType } from "../../../../VerbRoot";
-import { StemTenseVoiceDefinition } from "../../../Definitions";
+import { APIController, Get } from "acts-util-apilib";
+import { RandomizationController } from "../data-access/RandomizationController";
 
-export const stem1_past_active: StemTenseVoiceDefinition = {
-    [RootType.Quadriliteral]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعْلَقَ" }
-        ]
-    },
+@APIController("random")
+class _api_
+{
+    constructor(private randomizationController: RandomizationController)
+    {
+    }
+    
+    @Get()
+    public async QueryRandomWord()
+    {
+        const verbOrWord = Math.round(Math.random());
 
-    [RootType.DoublyWeak_WawOnR1_WawOrYaOnR3]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعَى" }
-        ]
-    },
-};
+        if(verbOrWord === 0)
+        {
+            return {
+                type: "verb",
+                id: await this.randomizationController.QueryRandomVerbId()
+            };
+        }
+        else
+        {
+            return {
+                type: "word",
+                id: await this.randomizationController.QueryRandomWordId()
+            };
+        }
+    }
+}

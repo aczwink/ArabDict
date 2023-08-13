@@ -28,6 +28,7 @@ export class RootComponent extends Component
                     <NavItem route="/">Search</NavItem>
                     <NavItem route="/roots">Roots</NavItem>
                     <NavItem route="/underived_words">Words not derived from verbs</NavItem>
+                    <NavItem route="/learn">Learn</NavItem>
                 </ul>
             </Navigation>
             <div className="container-fluid">

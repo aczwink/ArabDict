@@ -102,6 +102,16 @@ export class VerbsController
         return result.Values().NotUndefined().ToArray();
     }
 
+    public async QueryVerbsCount()
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const row = await conn.SelectOne("SELECT COUNT(*) AS cnt FROM verbs");
+        if(row === undefined)
+            return 0;
+        return row.cnt as number;
+    }
+
     public async SearchVerbs(byTranslation: string)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();

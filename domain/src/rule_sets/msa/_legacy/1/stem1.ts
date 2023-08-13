@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DHAMMA } from "../../../../Definitions";
-import { RootType } from "../../../../VerbRoot";
 import { StemDefinition } from "../../../Definitions";
 import { stem1_imperative } from "./imperative";
 import { stem1_past_active } from "./past_active";
@@ -32,12 +30,6 @@ export const stem1: StemDefinition = {
         active: stem1_present_active,
     },
 
-    participleRules: {
-        [RootType.Hollow]: [
-            { voice: "active", conjugation: "فَائِل" },
-            { condition: ctx => ctx.middleRadicalTashkil === DHAMMA, voice: "passive", conjugation: "مَفُول" },
-        ],
-    },
-
+    participleRules: {},
     verbalNounRules: {}
 };

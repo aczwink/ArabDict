@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
+    "dev": "nodemon --exec \"npm run compile && npm run run\"",
     "run": "node node_modules/acts-util-test/dist/runner.js dist"
   },
   "keywords": [],
@@ -14,5 +15,9 @@
     "acts-util-core": "*",
     "acts-util-test": "*",
     "arabdict-domain": "*"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "typescript": "^5.1.6"
   }
 }

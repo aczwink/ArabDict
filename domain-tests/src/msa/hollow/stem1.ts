@@ -16,12 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { RunBasicConjugationTest } from "../shared";
+import { DHAMMA, KASRA } from "arabdict-domain/dist/Definitions";
+import { RunConjugationTest } from "../../shared";
 
-It("Stem4 basic conjugation test", () => {
-    const conjugations = [
-        { root: "ت-ل-ف", past: "أَتْلَفَ", present: "يُتْلِفُ" }
-    ];
+It("Hollow stem1", () => {
+    RunConjugationTest("ف-و-ت", { middleRadicalTashkil: DHAMMA, middleRadicalTashkilPresent: DHAMMA, soundOverride: false }, [
+        { expected: "فِتُّ", person: "first", voice: "passive" },
+    ]);
 
-    RunBasicConjugationTest(conjugations, 4);
+    RunConjugationTest("ل-و-م", { middleRadicalTashkil: DHAMMA, middleRadicalTashkilPresent: DHAMMA, soundOverride: false }, [
+        { expected: "لِمْتُ", person: "first", voice: "passive" },
+    ]);
+
+    RunConjugationTest("ز-ي-ح", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, [
+        { expected: "زِحْتُ", person: "first", voice: "passive" },
+    ]);
 });

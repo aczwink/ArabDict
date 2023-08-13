@@ -30,8 +30,11 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.Assimilated:
+                case RootType.Defective:
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:
+                case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
                         { letter: "r1", shadda: false },
@@ -45,6 +48,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.HamzaOnR1:
                 case RootType.Sound:
                     return [
                         { letter: "r1", shadda: false },
@@ -151,21 +155,17 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.Defective:
                 case RootType.HamzaOnR1:
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
-                {
-                    const x = [
+                    return [
                         { letter: SIIN, shadda: false },
                         { letter: TA, shadda: false },
                         { letter: "r1", shadda: false },
                         { letter: "r2", shadda: false },
                         { letter: "r3", shadda: false },
                     ];
-                    if(params.tense === "perfect")
-                        x.unshift({ letter: ALEF, shadda: false });
-                    return x;
-                }
             }
         }
         break;

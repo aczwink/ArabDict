@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, BodyProp, Get, Post, Put, Query } from "acts-util-apilib";
+import { APIController, Body, BodyProp, Get, NotFound, Post, Put, Query } from "acts-util-apilib";
 import { VerbCreationData, VerbUpdateData, VerbsController } from "../data-access/VerbsController";
 import { WordsController } from "../data-access/WordsController";
 
@@ -40,7 +40,10 @@ class _api_
         @Query verbId: number
     )
     {
-        return await this.verbsController.QueryVerb(verbId);
+        const verb = await this.verbsController.QueryVerb(verbId);
+        if(verb === undefined)
+            return NotFound("verb not found");
+        return verb;
     }
 
     @Get("search")

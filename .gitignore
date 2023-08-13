@@ -7,6 +7,7 @@ domain/node_modules/
 domain/package-lock.json
 domain-tests/dist/
 domain-tests/node_modules/
+domain-tests/package-lock.json
 frontend/.env
 frontend/.env.production
 frontend/dist/

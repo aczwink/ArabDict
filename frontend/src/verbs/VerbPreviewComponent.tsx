@@ -25,7 +25,6 @@ import { RenderTranslations } from "../shared/translations";
 import { ConjugationService } from "../ConjugationService";
 import { KASRA } from "arabdict-domain/src/Definitions";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { CreateVerb } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
@@ -42,7 +41,8 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
         const verbData = this.input.verbData;
         const root = new VerbRoot(this.input.root.radicals);
         const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", "indicative", verbData.stem1Context);
-        const verbPresentation = (verbData.stem === 1) ? conjugated : RenderWithDiffHighlights(conjugated, CreateVerb(this.input.root.radicals, 1, { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: "", soundOverride: false }).Conjugate("perfect", "active", "male", "third", "singular"));
+        const conjugationReference = this.conjugationService.Conjugate(this.input.root.radicals, 1, "perfect", "active", "male", "third", "singular", "indicative", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: "", soundOverride: false });
+        const verbPresentation = (verbData.stem === 1) ? conjugated : RenderWithDiffHighlights(conjugated, conjugationReference);
 
         return <div className="border border-3 rounded-2 p-2 my-2 shadow-sm">
             <h4>

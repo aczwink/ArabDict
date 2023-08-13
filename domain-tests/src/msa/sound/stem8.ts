@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { RunBasicConjugationTest } from "../shared";
+import { RunBasicConjugationTest } from "../../shared";
 
-It("Stem2 basic conjugation test", () => {
+It("Stem8 basic conjugation test", () => {
     const conjugations = [
-        { root: "ق-د-م", past: "قَدَّمَ", present: "يُقَدِّمُ" }
+        { root: "ج-م-ع", past: "اِجْتَمَعَ", present: "يَجْتَمِعُ" }
     ];
 
-    RunBasicConjugationTest(conjugations, 2);
+    RunBasicConjugationTest(conjugations, 8);
 });

@@ -20,6 +20,8 @@ import { Expect } from "acts-util-test";
 import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
 import { VerbRoot } from "arabdict-domain/dist/VerbRoot";
 import { ParseVocalizedText } from "arabdict-domain/dist/Vocalization";
+import { Stem1Context } from "arabdict-domain/dist/rule_sets/msa/_legacy/CreateVerb";
+import { Mood, Person, Tense, Voice } from "arabdict-domain/dist/rule_sets/msa/_legacy/VerbStem";
 
 function Test(expected: string, got: string)
 {
@@ -28,18 +30,19 @@ function Test(expected: string, got: string)
 
     if(!a.Equals(b))
     {
+        console.log("expected:", a, "got:", b);
         Expect(expected).Equals(got);
     }
 }
 
-interface ConjugationTest
+interface BasicConjugationTest
 {
     root: string;
     past: string;
     present: string;
 }
 
-export function RunBasicConjugationTest(conjugations: ConjugationTest[], stem: number)
+export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], stem: number)
 {
     const conjugator = new Conjugator();
     
@@ -48,25 +51,55 @@ export function RunBasicConjugationTest(conjugations: ConjugationTest[], stem: n
         const root = new VerbRoot(test.root.split("-").join(""));
 
         const pastResult = conjugator.Conjugate(root, {
-            dialect: DialectType.ModernStandardArabic,
             gender: "male",
             numerus: "singular",
             person: "third",
             stem,
             tense: "perfect",
-            voice: "active"
-        });
-        Test(pastResult, test.past);
+            voice: "active",
+            mood: "indicative"
+        }, DialectType.ModernStandardArabic);
+        Test(test.past, pastResult);
 
         const presentResult = conjugator.Conjugate(root, {
-            dialect: DialectType.ModernStandardArabic,
             gender: "male",
             numerus: "singular",
             person: "third",
             stem,
             tense: "present",
-            voice: "active"
-        });
-        Test(presentResult, test.present);
+            voice: "active",
+            mood: "indicative"
+        }, DialectType.ModernStandardArabic);
+        Test(test.present, presentResult);
+    }
+}
+
+export interface ConjugationTest
+{
+    expected: string;
+    tense?: Tense;
+    person?: Person;
+    mood?: Mood;
+    voice?: Voice;
+}
+export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Context, conjugations: ConjugationTest[])
+{
+    const conjugator = new Conjugator();
+    
+    for (const test of conjugations)
+    {
+        const root = new VerbRoot(rootRadicals.split("-").join(""));
+
+        const pastResult = conjugator.Conjugate(root, {
+            gender: "male",
+            numerus: "singular",
+            person: test.person ?? "third",
+            stem: (typeof stem === "number") ? stem : 1,
+            stem1Context: (typeof stem === "number") ? undefined : stem,
+            tense: test.tense ?? "perfect",
+            voice: test.voice ?? "active",
+            mood: test.mood ?? "indicative"
+        }, DialectType.ModernStandardArabic);
+        Test(test.expected, pastResult);
     }
 }

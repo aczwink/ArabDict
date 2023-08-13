@@ -42,7 +42,14 @@ function DerivePrefixTashkil(params: ConjugationParams)
 export function DerivePrefix(prevTashkil: BASE_TASHKIL, params: ConjugationParams): Vocalized[]
 {
     if(params.tense === "perfect")
+    {
+        if(prevTashkil === SUKUN)
+        {
+            //insert hamzat al wasl
+            return [{ letter: ALEF, shadda: false, tashkil: (params.voice === "active") ? KASRA : DHAMMA}];
+        }
         return [];
+    }
 
     if(params.mood === "imperative")
     {

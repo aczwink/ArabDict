@@ -15,20 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { It } from "acts-util-test";
+import { RunBasicConjugationTest } from "../../shared";
 
-import { RootType } from "../../../../VerbRoot";
-import { StemTenseVoiceDefinition } from "../../../Definitions";
+It("Stem4 basic conjugation test", () => {
+    const conjugations = [
+        { root: "ت-ل-ف", past: "أَتْلَفَ", present: "يُتْلِفُ" }
+    ];
 
-export const stem1_past_active: StemTenseVoiceDefinition = {
-    [RootType.Quadriliteral]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعْلَقَ" }
-        ]
-    },
-
-    [RootType.DoublyWeak_WawOnR1_WawOrYaOnR3]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعَى" }
-        ]
-    },
-};
+    RunBasicConjugationTest(conjugations, 4);
+});

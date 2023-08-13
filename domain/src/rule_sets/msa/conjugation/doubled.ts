@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { SUKUN, FATHA, KASRA } from "../../../Definitions";
+import { SUKUN, FATHA, KASRA, DHAMMA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { AugmentedRoot } from "../AugmentedRoot";
 
@@ -24,8 +24,16 @@ export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: C
 {
     if(augmentedRoot.r3.tashkil !== SUKUN)
     {
-        const cond = ((params.tense === "perfect") && (params.voice === "active")) || (((params.tense === "present") && (params.voice === "passive")));
-        augmentedRoot.r1.tashkil = cond ? FATHA : KASRA; //two sukuns after each other are forbidden
+        if(params.stem === 1)
+        {
+            //does happen in stem 1 only in present
+            augmentedRoot.r1.tashkil = ((params.voice === "active") || ((params.tense === "present") && (params.voice === "passive"))) ? params.stem1Context!.middleRadicalTashkilPresent as any : DHAMMA;
+        }
+        else
+        {
+            const cond = ((params.tense === "perfect") && (params.voice === "active")) || (((params.tense === "present") && (params.voice === "passive")));
+            augmentedRoot.r1.tashkil = cond ? FATHA : KASRA; //two sukuns after each other are forbidden
+        }
         augmentedRoot.r3.shadda = true;
         augmentedRoot.vocalized.Remove(augmentedRoot.vocalized.length - 2); //assimilate r2
     }

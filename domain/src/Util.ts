@@ -20,9 +20,13 @@ import { DHAMMA, FATHA, KASRA, SHADDA, SUKUN } from "./Definitions";
 
 export function RemoveTashkil(text: string)
 {
+    return RemoveTashkilButKeepShadda(text).ReplaceAll(SHADDA, "");
+}
+
+export function RemoveTashkilButKeepShadda(text: string)
+{
     return text.ReplaceAll(DHAMMA, "")
         .ReplaceAll(FATHA, "")
         .ReplaceAll(KASRA, "")
-        .ReplaceAll(SHADDA, "")
         .ReplaceAll(SUKUN, "");
 }

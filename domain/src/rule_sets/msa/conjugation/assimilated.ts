@@ -15,13 +15,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { It } from "acts-util-test";
-import { RunBasicConjugationTest } from "../shared";
 
-It("Stem8 basic conjugation test", () => {
-    const conjugations = [
-        { root: "ج-م-ع", past: "اِجْتَمَعَ", present: "يَجْتَمِعُ" }
-    ];
+import { ConjugationParams } from "../../../DialectConjugator";
+import { AugmentedRoot } from "../AugmentedRoot";
 
-    RunBasicConjugationTest(conjugations, 8);
-});
+export function DropOutR1(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+{
+    switch(params.stem)
+    {
+        case 1:
+        {
+            if(params.tense === "present")
+            {
+                if(params.voice === "active")
+                    augmentedRoot.DropRadial(1);
+                else
+                    augmentedRoot.ApplyTashkil(1, undefined);
+            }
+        }
+        break;
+    }
+};

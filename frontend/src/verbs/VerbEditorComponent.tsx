@@ -48,23 +48,34 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
             <div className="row">
                 <div className="col">{this.RenderTashkilChoice("past")}</div>
                 <div className="col">{this.RenderTashkilChoice("present")}</div>
-                <div className="col">{this.RenderAdditionalContext()}</div>
+                <div className="col">{this.RenderTashkilHelp()}</div>
+                <div className="col">{this.RenderStem1Context()}</div>
             </div>
             <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.input.onChanged} />
         </fragment>;
     }
 
     //Private methods
-    private RenderAdditionalContext()
+    private RenderTashkilHelp()
     {
         const root = new VerbRoot(this.input.rootRadicals);
 
-        if( (root.type === RootType.SecondConsonantDoubled) && (this.input.data.stem === 1) )
+        const cond = ((root.type === RootType.Hollow) && (this.input.data.stem === 1))
+            || ((root.type === RootType.SecondConsonantDoubled) && (this.input.data.stem === 1));
+
+        if( cond )
         {
             return <FormField title="Perfect 1st person male singular">
                 <div>{this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, "perfect", "active", "male", "first", "singular", "indicative", this.input.data.stem1Context)}</div>
             </FormField>;
         }
+
+        return null;
+    }
+
+    private RenderStem1Context()
+    {
+        const root = new VerbRoot(this.input.rootRadicals);
 
         if(this.input.data.stem === 1)
         {

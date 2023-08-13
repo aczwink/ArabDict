@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, Delete, Get, Path, Post, Put, Query } from "acts-util-apilib";
+import { APIController, Body, Delete, Get, NotFound, Path, Post, Put, Query } from "acts-util-apilib";
 import { WordCreationData, WordsController } from "../data-access/WordsController";
 
 @APIController("words")
@@ -64,7 +64,10 @@ class _api2_
         @Path wordId: number,
     )
     {
-        return await this.wordsController.QueryWord(wordId);
+        const word = await this.wordsController.QueryWord(wordId);
+        if(word === undefined)
+            return NotFound("word not found");
+        return word;
     }
 
     @Put()
