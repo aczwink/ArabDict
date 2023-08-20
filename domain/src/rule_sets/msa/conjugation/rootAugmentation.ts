@@ -49,6 +49,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             switch(rootType)
             {
                 case RootType.HamzaOnR1:
+                case RootType.Hollow:
                 case RootType.Sound:
                     return [
                         { letter: "r1", shadda: false },

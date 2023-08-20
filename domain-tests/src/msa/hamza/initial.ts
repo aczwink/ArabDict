@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest } from "../shared";
+import { ConjugationTest, RunConjugationTest } from "../../shared";
 import { DHAMMA } from "arabdict-domain/dist/Definitions";
 
 It("Double hamza initially", () => {

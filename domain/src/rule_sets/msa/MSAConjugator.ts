@@ -218,9 +218,9 @@ export class MSAConjugator implements DialectConjugator
                                 text: ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3
                             },
                             {
-                                id: 0,
-                                text: "TODO"
-                            }
+                                id: 2,
+                                text: ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3 + FATHA + TA_MARBUTA
+                            },
                         ];
                     case RootType.Hollow:
                         return [
@@ -236,13 +236,17 @@ export class MSAConjugator implements DialectConjugator
                     case RootType.SecondConsonantDoubled:
                         return [
                             {
+                                id: 1,
+                                text: root.r1 + FATHA + root.r2 + KASRA + YA + root.r3
+                            },
+                            {
                                 id: 2,
                                 text: root.r1 + KASRA + root.r2 + SHADDA,
                             },
                             {
-                                id: 1,
-                                text: root.r1 + FATHA + root.r2 + KASRA + YA + root.r3
-                            }
+                                id: 3,
+                                text: MIM + FATHA + root.r1 + FATHA + root.r2 + SHADDA + FATHA + TA_MARBUTA
+                            },
                         ];
                     case RootType.Sound:
                         return [

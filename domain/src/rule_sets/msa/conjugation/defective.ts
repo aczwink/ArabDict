@@ -16,15 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF_MAKSURA, FATHA, KASRA } from "../../../Definitions";
+import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, KASRA, WAW, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { AugmentedRoot } from "../AugmentedRoot";
 
 export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
+    let ending = ALEF_MAKSURA;
+    const vowelTashkil = (augmentedRoot.root.r3 === WAW) ? DHAMMA : KASRA;
+
     switch(params.stem)
     {
         case 1:
+            if(params.stem1Context?.middleRadicalTashkilPresent === DHAMMA)
+                ending = ALEF;
         case 10:
         {
             if(params.voice === "passive")
@@ -33,6 +38,10 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
                 {
                     if((params.gender === "male") && (params.numerus === "plural") && (params.person === "third"))
                         augmentedRoot.AssimilateRadical(3);
+                    else if((params.gender === "female") && (params.numerus === "plural") && (params.person === "third"))
+                        augmentedRoot.ReplaceRadical(3, { letter: YA, shadda: false, tashkil: KASRA});
+                    else
+                        augmentedRoot.ReplaceRadical(3, { letter: YA, shadda: false, tashkil: (params.person === "third") ? FATHA : KASRA});
                 }
                 else
                 {
@@ -43,16 +52,23 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
                             augmentedRoot.AssimilateRadical(3);
                             augmentedRoot.ApplyTashkil(2, FATHA);
                         }
+                        else
+                            augmentedRoot.r3.letter = YA;
                     }
                     else
                     {
                         if((params.person === "second") && (params.numerus === "singular") && (params.gender === "female"))
+                        {
                             augmentedRoot.AssimilateRadical(3);
+                            augmentedRoot.ApplyTashkil(2, FATHA);
+                        }
                         else if(params.numerus === "dual")
                         {
+                            augmentedRoot.r3.letter = YA;
                         }
                         else if((params.numerus === "plural") && (params.gender === "female"))
                         {
+                            augmentedRoot.r3.letter = YA;
                         }
                         else if((params.person !== "first") && (params.numerus === "plural") && (params.gender === "male"))
                         {
@@ -73,7 +89,7 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
                     if(params.numerus === "singular")
                     {
                         if(params.gender === "male")
-                            augmentedRoot.ReplaceRadical(3, { letter: ALEF_MAKSURA, shadda: false });
+                            augmentedRoot.ReplaceRadical(3, { letter: ending, shadda: false });
                         else
                             augmentedRoot.AssimilateRadical(3);
                     }
@@ -120,14 +136,17 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
                 if(params.numerus === "singular")
                 {
                     augmentedRoot.AssimilateRadical(3);
-                    augmentedRoot.ApplyTashkil(2, KASRA);
+                    if((params.person === "second") && (params.gender === "female"))
+                        augmentedRoot.ApplyTashkil(2, KASRA);
+                    else
+                        augmentedRoot.ApplyTashkil(2, vowelTashkil);
                 }
                 else if(params.numerus === "plural")
                 {
                     if(params.person === "first")
                     {
                         augmentedRoot.AssimilateRadical(3);
-                        augmentedRoot.ApplyTashkil(2, KASRA);
+                        augmentedRoot.ApplyTashkil(2, vowelTashkil);
                     }
                     else if(params.gender === "male")
                         augmentedRoot.AssimilateRadical(3);

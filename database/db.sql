@@ -1,8 +1,8 @@
--- MariaDB dump 10.19  Distrib 10.6.12-MariaDB, for debian-linux-gnu (x86_64)
+-- MariaDB dump 10.19  Distrib 10.11.2-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: arabdict
 -- ------------------------------------------------------
--- Server version	10.6.12-MariaDB-0ubuntu0.22.10.1
+-- Server version	10.11.2-MariaDB-1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -44,7 +44,7 @@ CREATE TABLE `verbs` (
   `stem1MiddleRadicalTashkilPresent` char(1) NOT NULL,
   `soundOverride` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `rootId` (`rootId`,`stem`,`stem1MiddleRadicalTashkil`),
+  UNIQUE KEY `rootId` (`rootId`,`stem`,`stem1MiddleRadicalTashkil`,`stem1MiddleRadicalTashkilPresent`) USING BTREE,
   CONSTRAINT `verbs_rootId` FOREIGN KEY (`rootId`) REFERENCES `roots` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -139,4 +139,4 @@ CREATE TABLE `words_verbs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-06 13:15:31
+-- Dump completed on 2023-08-20 22:16:52

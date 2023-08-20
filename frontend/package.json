@@ -6,7 +6,7 @@
   "scripts": {
     "generate-api": "npx acts-util-apilib",
     "start-dev": "webpack serve --open",
-    "build": "npx webpack --config webpack.production.config.js && (cd dist && ln -s ../static static && zip -r -9 arabdict-frontend-release.zip bundle.js static && rm static)"
+    "build": "npx webpack --config webpack.production.config.js && (cd dist && ln -s ../static static && zip -j -r -9 arabdict-frontend-release.zip bundle.js static && rm static)"
   },
   "keywords": [],
   "author": "Amir Czwink",

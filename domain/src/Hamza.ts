@@ -16,35 +16,87 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF_MADDA, BASE_TASHKIL, DHAMMA, SUKUN, WAW_HAMZA } from "./Definitions";
+import { ALEF, ALEF_MADDA, BASE_TASHKIL, DHAMMA, KASRA, SUKUN, WAW, WAW_HAMZA, YA, YA_HAMZA } from "./Definitions";
 import { ALEF_HAMZA, FATHA, HAMZA } from "./Definitions";
 import { Vocalized, VocalizedToString } from "./Vocalization";
 
 //Source: https://en.wikipedia.org/wiki/Hamza#Detailed_description
 
-function DetermineHamzaSeat(followingVowel: BASE_TASHKIL, preceedingVowel?: BASE_TASHKIL): Vocalized
+function DetermineHamzaSeat(isFinal: boolean, followingVowel?: BASE_TASHKIL, predecessor?: Vocalized): Vocalized
 {
     function MaxPrecedence(t1: BASE_TASHKIL, t2: BASE_TASHKIL): BASE_TASHKIL
     {
-        /*if( (t1 === KASRA) || (t2 === KASRA) )
-            return KASRA;*/
+        if( (t1 === KASRA) || (t2 === KASRA) )
+            return KASRA;
         if( (t1 === DHAMMA) || (t2 === DHAMMA) )
             return DHAMMA;
         return FATHA;
     }
+    function MaxPrecedenceWithFallback(t1?: BASE_TASHKIL, t2?: BASE_TASHKIL): BASE_TASHKIL
+    {
+        if(t1 === undefined)
+        {
+            if(t2 === undefined)
+                return FATHA;
+            return t2;
+        }
+        else if(t2 === undefined)
+            return t1;
+        return MaxPrecedence(t1, t2);
+    }
 
-    const tashkil = (preceedingVowel === undefined) ? followingVowel : MaxPrecedence(followingVowel, preceedingVowel);
-    switch(tashkil)
+    function VowelToTashkil(vowel: string)
+    {
+        switch(vowel)
+        {
+            case ALEF:
+                return FATHA;
+            case WAW:
+                return DHAMMA;
+            case YA:
+                return KASRA;
+        }
+        throw new Error("Should never happen");
+    }
+
+    const predecessorIsLongVowel = (predecessor?.letter === ALEF) || (predecessor?.letter === WAW) || (predecessor?.letter === YA);
+    let decidingTashkil;
+
+    if(isFinal)
+    {
+        if(predecessorIsLongVowel)
+            decidingTashkil = undefined;
+        else
+            decidingTashkil = predecessor?.tashkil;
+    }
+    else if(predecessorIsLongVowel)
+    {
+        decidingTashkil = MaxPrecedenceWithFallback(followingVowel, VowelToTashkil(predecessor.letter));
+        if(decidingTashkil === FATHA)
+        {
+            if(predecessor.letter === YA)
+                throw new Error("TODO: in this case it should be written over ya. check this case and write test");
+            else
+                decidingTashkil = undefined;
+        }
+    }
+    else
+    {
+        decidingTashkil = MaxPrecedenceWithFallback(predecessor?.tashkil, followingVowel);
+    }
+
+    switch(decidingTashkil)
     {
         case DHAMMA:
             return { letter: WAW_HAMZA, shadda: false, tashkil: followingVowel };
         case FATHA:
         case SUKUN: //the article doesn't talk about sukun but this was found through tests
             return { letter: ALEF_HAMZA, tashkil: followingVowel, shadda: false };
+        case KASRA:
+            return { letter: YA_HAMZA, shadda: false, tashkil: followingVowel };
+        case undefined:
+            return { letter: HAMZA, shadda: false, tashkil: followingVowel };
     }
-
-    console.log("HERE DetermineHamzaSeat", tashkil, followingVowel, preceedingVowel);
-    throw new Error("TODO: NOT IMPLEMENTED");
 }
 
 function MaddahCheck(seat: Vocalized, prev?: Vocalized)
@@ -73,7 +125,7 @@ export function Hamzate(vocalized: Vocalized[])
         if(vocalized[i].letter === HAMZA)
         {
             const prev = result[result.length - 1];
-            const seat = DetermineHamzaSeat(vocalized[i].tashkil!, prev?.tashkil);
+            const seat = DetermineHamzaSeat(i === (vocalized.length - 1), vocalized[i].tashkil, prev);
             if(MaddahCheck(seat, prev))
                 result[result.length - 1] = { letter: ALEF_MADDA, shadda: false };
             else

@@ -26,8 +26,12 @@ export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: C
     {
         if(params.stem === 1)
         {
-            //does happen in stem 1 only in present
-            augmentedRoot.r1.tashkil = ((params.voice === "active") || ((params.tense === "present") && (params.voice === "passive"))) ? params.stem1Context!.middleRadicalTashkilPresent as any : DHAMMA;
+            if(params.voice === "passive")
+                augmentedRoot.r1.tashkil = DHAMMA;
+            else if(params.tense === "perfect")
+                augmentedRoot.r1.tashkil = params.stem1Context!.middleRadicalTashkil as any;
+            else
+                augmentedRoot.r1.tashkil = params.stem1Context!.middleRadicalTashkilPresent as any;
         }
         else
         {
