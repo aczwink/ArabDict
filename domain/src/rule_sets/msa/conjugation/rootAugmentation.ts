@@ -41,6 +41,13 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                         { letter: "r2", shadda: false },
                         { letter: "r3", shadda: false },
                     ];
+                case RootType.Quadriliteral:
+                    return [
+                        { letter: "r1", shadda: false },
+                        { letter: "r2", shadda: false },
+                        { letter: "r3", shadda: false },
+                        { letter: "r4", shadda: false },
+                    ];
             }
         }
         break;
@@ -63,6 +70,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.HamzaOnR1:
                 case RootType.Sound:
                     return [
                         { letter: "r1", shadda: false },

@@ -18,11 +18,18 @@
 
 import { BASE_TASHKIL, ALEF_HAMZA, FATHA, SUKUN, ALEF, DHAMMA, KASRA, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
+import { RootType } from "../../../VerbRoot";
 import { Vocalized } from "../../../Vocalization";
 import { NUN, TA } from "../_legacy/VerbStem";
 
-function DerivePrefixTashkil(params: ConjugationParams)
+function DerivePrefixTashkil(rootType: RootType, params: ConjugationParams)
 {
+    if(rootType === RootType.Quadriliteral)
+    {
+        if(params.stem === 1)
+            return DHAMMA;
+    }
+    
     switch(params.stem)
     {
         case 1:
@@ -39,7 +46,7 @@ function DerivePrefixTashkil(params: ConjugationParams)
     }
 }
 
-export function DerivePrefix(prevTashkil: BASE_TASHKIL, params: ConjugationParams): Vocalized[]
+export function DerivePrefix(prevTashkil: BASE_TASHKIL, rootType: RootType, params: ConjugationParams): Vocalized[]
 {
     if(params.tense === "perfect")
     {
@@ -64,7 +71,7 @@ export function DerivePrefix(prevTashkil: BASE_TASHKIL, params: ConjugationParam
         return [];
     }
 
-    const tashkil = DerivePrefixTashkil(params);
+    const tashkil = DerivePrefixTashkil(rootType, params);
     switch(params.person)
     {
         case "first":

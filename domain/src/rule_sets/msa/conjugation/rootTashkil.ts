@@ -18,7 +18,9 @@
 
 import { BASE_TASHKIL, KASRA, FATHA, SUKUN, DHAMMA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
+import { RootType } from "../../../VerbRoot";
 import { Vocalized } from "../../../Vocalization";
+import { AugmentedRoot } from "../AugmentedRoot";
 
 interface RootTashkil
 {
@@ -36,7 +38,7 @@ function DerivePastRootTashkil(params: ConjugationParams): RootTashkil
     };
 }
 
-export function DeriveRootTashkil(params: ConjugationParams): RootTashkil
+function Derive3RadicalRootTashkil(params: ConjugationParams): RootTashkil
 {
     if(params.tense === "perfect")
         return DerivePastRootTashkil(params);
@@ -67,7 +69,22 @@ export function DeriveRootTashkil(params: ConjugationParams): RootTashkil
     };
 }
 
-export function ApplyRootAugmentationTashkil(augmentedRoot: Vocalized[], params: ConjugationParams)
+function Derive4RadicalRootTashkil(params: ConjugationParams): RootTashkil & { r3: BASE_TASHKIL }
+{
+    let r3: BASE_TASHKIL;
+    if(params.voice === "active")
+        r3 = (params.tense === "perfect") ? FATHA : KASRA;
+    else
+        r3 = (params.tense === "perfect") ? KASRA : FATHA;
+
+    return {
+        r1: ( (params.tense === "perfect") && (params.voice === "passive") ) ? DHAMMA : FATHA,
+        r2: SUKUN,
+        r3
+    };
+}
+
+function ApplyRootAugmentationTashkil(augmentedRoot: Vocalized[], params: ConjugationParams)
 {
     switch(params.stem)
     {
@@ -108,5 +125,24 @@ export function ApplyRootAugmentationTashkil(augmentedRoot: Vocalized[], params:
             else
                 augmentedRoot[1].tashkil = FATHA;
         break;
+    }
+}
+
+export function ApplyRootTashkil(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+{
+    if(augmentedRoot.root.type === RootType.Quadriliteral)
+    {
+        const tashkil = Derive4RadicalRootTashkil(params);
+        augmentedRoot.ApplyTashkil(1, tashkil.r1);
+        augmentedRoot.ApplyTashkil(2, tashkil.r2);
+        augmentedRoot.ApplyTashkil(3, tashkil.r3);
+    }
+    else
+    {
+        const tashkil = Derive3RadicalRootTashkil(params);
+        augmentedRoot.ApplyTashkil(1, tashkil.r1);
+        augmentedRoot.ApplyTashkil(2, tashkil.r2);
+        
+        ApplyRootAugmentationTashkil(augmentedRoot.vocalized, params);
     }
 }

@@ -36,5 +36,7 @@ export function WordTypeToAbbreviationText(wordType: WordType)
             return "(adv.)";
         case WordType.Pronoun:
             return "(pronoun)";
+        case WordType.Phrase:
+            return "(phrase)";
     }
 }

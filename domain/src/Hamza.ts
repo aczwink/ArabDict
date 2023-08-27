@@ -22,7 +22,7 @@ import { Vocalized, VocalizedToString } from "./Vocalization";
 
 //Source: https://en.wikipedia.org/wiki/Hamza#Detailed_description
 
-function DetermineHamzaSeat(isFinal: boolean, followingVowel?: BASE_TASHKIL, predecessor?: Vocalized): Vocalized
+function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingVowel?: BASE_TASHKIL, predecessor?: Vocalized): Vocalized
 {
     function MaxPrecedence(t1: BASE_TASHKIL, t2: BASE_TASHKIL): BASE_TASHKIL
     {
@@ -62,7 +62,13 @@ function DetermineHamzaSeat(isFinal: boolean, followingVowel?: BASE_TASHKIL, pre
     const predecessorIsLongVowel = (predecessor?.letter === ALEF) || (predecessor?.letter === WAW) || (predecessor?.letter === YA);
     let decidingTashkil;
 
-    if(isFinal)
+    if(isInitial)
+    {
+        if(followingVowel === KASRA)
+            throw new Error("Should be hamza under alif");
+        return { letter: ALEF_HAMZA, tashkil: followingVowel, shadda: false };
+    }
+    else if(isFinal)
     {
         if(predecessorIsLongVowel)
             decidingTashkil = undefined;
@@ -71,7 +77,7 @@ function DetermineHamzaSeat(isFinal: boolean, followingVowel?: BASE_TASHKIL, pre
     }
     else if(predecessorIsLongVowel)
     {
-        decidingTashkil = MaxPrecedenceWithFallback(followingVowel, VowelToTashkil(predecessor.letter));
+        decidingTashkil = MaxPrecedenceWithFallback(followingVowel, predecessor.tashkil ?? VowelToTashkil(predecessor.letter));
         if(decidingTashkil === FATHA)
         {
             if(predecessor.letter === YA)
@@ -99,15 +105,26 @@ function DetermineHamzaSeat(isFinal: boolean, followingVowel?: BASE_TASHKIL, pre
     }
 }
 
-function MaddahCheck(seat: Vocalized, prev?: Vocalized)
+function MaddahCheck(current: Vocalized, prev?: Vocalized)
 {
-    if( (seat.letter === ALEF_HAMZA) && (prev?.letter === ALEF_HAMZA))
+    if(prev?.letter === ALEF_HAMZA)
     {
-        if( (seat.tashkil === SUKUN) && (prev.tashkil === FATHA))
-            return true; //this case was not documented anywhere but was found through tests
+        if(current.letter === ALEF_HAMZA)
+        {
+            if( (current.tashkil === SUKUN) && (prev.tashkil === FATHA))
+                return true; //this case was not documented anywhere but was found through tests
 
-        console.log("HERE MaddahCheck", seat.tashkil, prev.tashkil);
-        throw new Error("TODO: NOT IMPLEMENTED");
+            console.log("HERE MaddahCheck", current.tashkil, prev.tashkil);
+            throw new Error("TODO: NOT IMPLEMENTED");
+        }
+        else if(current.letter === ALEF)
+        {
+            if(current.tashkil === undefined)
+                return true;
+
+            console.log("HERE MaddahCheck 2", current.tashkil, prev.tashkil);
+            throw new Error("TODO: NOT IMPLEMENTED");
+        }
     }
 
     return false;
@@ -122,17 +139,13 @@ export function Hamzate(vocalized: Vocalized[])
     const result: Vocalized[] = [];
     for(let i = 0; i < vocalized.length; i++)
     {
-        if(vocalized[i].letter === HAMZA)
-        {
-            const prev = result[result.length - 1];
-            const seat = DetermineHamzaSeat(i === (vocalized.length - 1), vocalized[i].tashkil, prev);
-            if(MaddahCheck(seat, prev))
-                result[result.length - 1] = { letter: ALEF_MADDA, shadda: false };
-            else
-                result.push(seat);
-        }
+        const prev = result[result.length - 1];
+        const next = (vocalized[i].letter === HAMZA) ? DetermineHamzaSeat(i === 0, i === (vocalized.length - 1), vocalized[i].tashkil, prev) : vocalized[i];
+
+        if(MaddahCheck(next, prev))
+            result[result.length - 1] = { letter: ALEF_MADDA, shadda: false };
         else
-            result.push(vocalized[i]);
+            result.push(next);
     }
 
     return result.Values().Map(VocalizedToString).Join("");

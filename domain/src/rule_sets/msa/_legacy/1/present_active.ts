@@ -19,12 +19,6 @@ import { RootType } from "../../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../../Definitions";
 
 export const stem1_present_active: StemTenseVoiceDefinition = {
-    [RootType.Quadriliteral]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَعْلِقُ" }
-        ]
-    },
-
     [RootType.DoublyWeak_WawOnR1_WawOrYaOnR3]: {
         rules: [
             { numerus: "singular", person: "third", gender: "male", conjugation: "يَعِي" }

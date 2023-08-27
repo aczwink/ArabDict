@@ -38,3 +38,11 @@ It("Alif madda initially", () => {
         soundOverride: false
     }, conjugations);
 });
+
+It("Alif madda stem 3 with hamza on r1", () => {
+    const conjugations: ConjugationTest[] = [
+        { expected: "آخَذَ" }
+    ];
+
+    RunConjugationTest("ء-خ-ذ", 3, conjugations);
+});

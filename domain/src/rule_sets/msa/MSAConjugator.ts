@@ -28,11 +28,11 @@ import { definition as msaDef } from "./dialectDefinition";
 import { DeriveSuffix } from "./conjugation/suffix";
 import { DerivePrefix } from "./conjugation/prefix";
 import { AugmentRoot } from "./conjugation/rootAugmentation";
-import { ApplyRootAugmentationTashkil, DeriveRootTashkil } from "./conjugation/rootTashkil";
 import { ShortenOrAlefizeR2 } from "./conjugation/hollow";
 import { GeminateDoubledConsonant } from "./conjugation/doubled";
 import { AlterDefectiveEnding } from "./conjugation/defective";
 import { DropOutR1 } from "./conjugation/assimilated";
+import { ApplyRootTashkil } from "./conjugation/rootTashkil";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -46,11 +46,7 @@ export class MSAConjugator implements DialectConjugator
         {
             const augmentedRoot = new AugmentedRoot(maybeAugmentedRoot, root);
 
-            const tashkil = DeriveRootTashkil(params);
-            augmentedRoot.ApplyTashkil(1, tashkil.r1);
-            augmentedRoot.ApplyTashkil(2, tashkil.r2);
-
-            ApplyRootAugmentationTashkil(augmentedRoot.vocalized, params);
+            ApplyRootTashkil(augmentedRoot, params);
 
             const suffix = DeriveSuffix(params);
             augmentedRoot.ApplyTashkil(root.radicalsAsSeparateLetters.length, suffix.preSuffixTashkil);
@@ -73,7 +69,7 @@ export class MSAConjugator implements DialectConjugator
             }
 
             augmentedRoot.ApplyRootLetters();
-            return DerivePrefix(augmentedRoot.vocalized[0].tashkil!, params).concat(augmentedRoot.vocalized, suffix.suffix);
+            return DerivePrefix(augmentedRoot.vocalized[0].tashkil!, root.type, params).concat(augmentedRoot.vocalized, suffix.suffix);
         }
 
         return this.ConjugateLegacy(root, params);
