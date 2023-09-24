@@ -46,10 +46,7 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
                     if(params.voice === "active")
                         augmentedRoot.ReplaceRadical(2, { letter: ALEF, shadda: false });
                     else
-                    {
-                        augmentedRoot.ReplaceRadical(2, { letter: YA, shadda: false });
-                        augmentedRoot.ApplyTashkil(1, KASRA);
-                    }
+                        augmentedRoot.InsertLongVowel(2, YA);
                 }
                 else
                 {
@@ -73,6 +70,31 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
                     augmentedRoot.ReplaceRadical(2, { letter: ALEF, shadda: false });
 
                 augmentedRoot.ApplyTashkil(1, (params.voice === "active") ? vowelTashkil : FATHA);
+            }
+        }
+        break;
+        case 10:
+        {
+            if(params.tense === "perfect")
+            {
+                if((params.person === "third") && !((params.numerus === "plural") && (params.gender === "female")))
+                    augmentedRoot.InsertLongVowel(2, (params.voice === "active") ? ALEF : YA);
+                else
+                    augmentedRoot.InsertShortVowel(2, (params.voice === "active") ? FATHA : KASRA);
+            }
+            else
+            {
+                let shortenVowel = (params.numerus === "plural") && (params.gender === "female");
+
+                if((params.mood === "jussive") || (params.mood === "imperative"))
+                {
+                    shortenVowel = !DoesPresentSuffixStartWithVowel(params);
+                }
+
+                if(shortenVowel)
+                    augmentedRoot.AssimilateRadical(2);
+                else if(params.voice === "passive")
+                    augmentedRoot.InsertLongVowel(2, (params.voice === "passive") ? ALEF : YA);
             }
         }
         break;

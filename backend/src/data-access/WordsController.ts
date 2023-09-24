@@ -32,7 +32,8 @@ enum WordType
     ForeignVerb = 4,
     Adverb = 5,
     Pronoun = 6,
-    Phrase = 7
+    Phrase = 7,
+    Particle = 8
 }
 
 interface WordBaseData

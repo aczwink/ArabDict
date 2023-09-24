@@ -166,6 +166,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             {
                 case RootType.Defective:
                 case RootType.HamzaOnR1:
+                case RootType.Hollow:
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [

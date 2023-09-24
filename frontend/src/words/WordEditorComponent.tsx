@@ -40,6 +40,7 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
             { key: WordType.Adverb, value: "Adverb" },
             { key: WordType.Pronoun, value: "Pronoun" },
             { key: WordType.Phrase, value: "Phrase" },
+            { key: WordType.Particle, value: "Particle" },
         ];
 
         return <fragment>

@@ -46,3 +46,4 @@ export const SUKUN = "\u0652";
 
 export type PRIMARY_TASHKIL = "\u064E" | "\u064F" | "\u0650";
 export type BASE_TASHKIL = PRIMARY_TASHKIL | "\u0652";
+export type LONG_VOWEL = "\u0627" | "\u064A";

@@ -136,6 +136,19 @@ export class MSAConjugator implements DialectConjugator
                         ]);
                 }
                 break;
+            case 3:
+                switch(root.type)
+                {
+                    case RootType.Sound:
+                        return Hamzate([
+                            { letter: MIM, shadda: false, tashkil: DHAMMA },
+                            { letter: root.r1, shadda: false, tashkil: FATHA },
+                            { letter: ALEF, shadda: false },
+                            { letter: root.r2, shadda: false, tashkil: (voice === "active") ? KASRA : FATHA },
+                            { letter: root.r3, shadda: false },
+                        ]);
+                }
+                break;
             case 4:
                 switch(root.type)
                 {
@@ -221,13 +234,17 @@ export class MSAConjugator implements DialectConjugator
                     case RootType.Hollow:
                         return [
                             {
+                                id: 1,
+                                text: MIM + FATHA + root.r1 + FATHA + ALEF + root.r3
+                            },
+                            {
                                 id: 2,
                                 text: root.r1 + FATHA + WAW + SUKUN + root.r3,
                             },
                             {
-                                id: 1,
-                                text: MIM + FATHA + root.r1 + FATHA + ALEF + root.r3
-                            }
+                                id: 3,
+                                text: root.r1 + FATHA + WAW + FATHA + ALEF + root.r3,
+                            },
                         ];
                     case RootType.SecondConsonantDoubled:
                         return [
@@ -266,6 +283,22 @@ export class MSAConjugator implements DialectConjugator
                             {
                                 id: 0,
                                 text: "TODO"
+                            }
+                        ];
+                }
+                break;
+            case 3:
+                switch(root.type)
+                {
+                    case RootType.Sound:
+                        return [
+                            {
+                                id: 0,
+                                text: "TODO"
+                            },
+                            {
+                                id: 1,
+                                text: MIM + DHAMMA + root.r1 + FATHA + ALEF + root.r2 + FATHA + root.r3 + FATHA + TA_MARBUTA
                             }
                         ];
                 }

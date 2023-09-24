@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL } from "../../Definitions";
+import { ALEF, BASE_TASHKIL, FATHA, KASRA, LONG_VOWEL, PRIMARY_TASHKIL, YA } from "../../Definitions";
 import { VerbRoot } from "../../VerbRoot";
 import { Vocalized } from "../../Vocalization";
 
@@ -83,6 +83,29 @@ export class AugmentedRoot
     {
         const idx = this.GetRadicalIndedx(radical);
         this._vocalized.Remove(idx);
+    }
+
+    public InsertLongVowel(radical: number, vowel: LONG_VOWEL)
+    {
+        function LongVowelToShortVowel(vowel: LONG_VOWEL)
+        {
+            switch(vowel)
+            {
+                case ALEF:
+                    return FATHA;
+                case YA:
+                    return KASRA;
+            }
+        }
+
+        this.ReplaceRadical(radical, { letter: vowel, shadda: false });
+        this.ApplyTashkil(radical - 1, LongVowelToShortVowel(vowel));
+    }
+
+    public InsertShortVowel(radical: number, shortVowel: PRIMARY_TASHKIL)
+    {
+        this.DropRadial(radical);
+        this.ApplyTashkil(radical - 1, shortVowel);
     }
 
     public ReplaceRadical(radical: number, replacement: Vocalized)

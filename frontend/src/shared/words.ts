@@ -38,5 +38,7 @@ export function WordTypeToAbbreviationText(wordType: WordType)
             return "(pronoun)";
         case WordType.Phrase:
             return "(phrase)";
+        case WordType.Particle:
+            return "(particle)";
     }
 }
