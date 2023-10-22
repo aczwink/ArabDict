@@ -28,7 +28,6 @@ export interface VerbUpdateData
     stem: number;
     stem1Context?: Stem1Context;
     translations: TranslationEntry[];
-    verbalNounIds: number[];
 }
 
 export interface VerbCreationData extends VerbUpdateData
@@ -76,15 +75,12 @@ export class VerbsController
         const row = await conn.SelectOne("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, stem1MiddleRadicalTashkilPresent, soundOverride FROM verbs WHERE id = ?", verbId);
         if(row === undefined)
             return undefined;
-            
-        const rows = await conn.Select("SELECT verbalNounId FROM verbs_verbalNouns WHERE verbId = ?", verbId);
 
         return {
             id: row.id,
             rootId: row.rootId,
             stem: row.stem,
             translations: await this.translationsController.QueryVerbTranslations(row.id),
-            verbalNounIds: rows.map(x => x.verbalNounId),
             stem1Context: (row.stem === 1) ? {
                 middleRadicalTashkil: row.stem1MiddleRadicalTashkil,
                 middleRadicalTashkilPresent: row.stem1MiddleRadicalTashkilPresent,
@@ -137,12 +133,6 @@ export class VerbsController
             stem1MiddleRadicalTashkilPresent: data.stem1Context?.middleRadicalTashkilPresent,
             soundOverride: data.stem1Context?.soundOverride
         }, "id = ?", verbId);
-
-        await conn.DeleteRows("verbs_verbalNouns", "verbId = ?", verbId);
-        for (const verbalNounId of data.verbalNounIds)
-        {    
-            await conn.InsertRow("verbs_verbalNouns", { verbId, verbalNounId });
-        }
 
         await this.translationsController.UpdateVerbTranslations(verbId, data.translations);
     }

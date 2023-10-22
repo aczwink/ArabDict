@@ -18,7 +18,9 @@
 
 import { Routes } from "acfrontend";
 import { EditWordComponent } from "./EditWordComponent";
+import { ShowWordComponent } from "./ShowWordComponent";
 
 export const routes : Routes = [
     { path: ":wordId/edit", component: EditWordComponent },
+    { path: ":wordId", component: ShowWordComponent },
 ];

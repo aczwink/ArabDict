@@ -26,15 +26,7 @@ export type Person = "first" | "second" | "third";
 export type Numerus = "singular" | "dual" | "plural";
 export type Mood = "indicative" | "subjunctive" | "jussive" | "imperative";
 
-export interface VerbalNoun
-{
-    id: number;
-    text: string;
-}
-
 export interface VerbStem
 {
     Conjugate(tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus): string;
-    ConjugateParticiple(voice: Voice): string;
-    GenerateAllPossibleVerbalNouns(): VerbalNoun[];
 }

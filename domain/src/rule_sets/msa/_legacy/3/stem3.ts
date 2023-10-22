@@ -44,19 +44,5 @@ export const stem3: StemDefinition = {
             { voice: "passive", conjugation: "TODO" },
         ]
     },
-    verbalNounRules: {
-        [RootType.Defective]: [
-            {
-                id: 0,
-                text: "TODO"
-            }
-        ],
-
-        [RootType.Sound]: [
-            {
-                id: 0,
-                text: "TODO"
-            }
-        ]
-    }
+    verbalNounRules: {}
 };

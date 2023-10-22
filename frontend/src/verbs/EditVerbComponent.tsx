@@ -16,12 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
+import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
 import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { VerbEditorComponent } from "./VerbEditorComponent";
 import { ConjugationService } from "../ConjugationService";
-import { VerbalNoun } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 
 @Injectable
 export class EditVerbComponent extends Component
@@ -33,7 +32,6 @@ export class EditVerbComponent extends Component
         this.verbId = parseInt(routerState.routeParams.verbId!);
         this.root = { radicals: "" };
         this.data = null;
-        this.addVerbalNounSelection = null;
     }
     
     protected Render(): RenderValue
@@ -44,8 +42,6 @@ export class EditVerbComponent extends Component
         return <fragment>
             <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} onChanged={this.Update.bind(this)} />
 
-            {this.RenderVerbalNouns(this.conjugationService.GenerateAllPossibleVerbalNouns(this.root.radicals, this.data.stem))}
-
             <button className="btn btn-primary" type="button" onclick={this.OnSave.bind(this)}>Save</button>
         </fragment>;
     }
@@ -54,54 +50,8 @@ export class EditVerbComponent extends Component
     private verbId: number;
     private data: VerbData | null;
     private root: RootCreationData;
-    private addVerbalNounSelection: number | null;
-
-    //Private methods
-    private RenderVerbalNouns(allVerbalNouns: VerbalNoun[])
-    {
-        if(allVerbalNouns.length === 1)
-        {
-            this.data!.verbalNounIds = [];
-            return null;
-        }
-
-        return <FormField title="Verbal nouns">
-            <div>
-                <ul>
-                    {this.data!.verbalNounIds.map(x => <li>
-                        {allVerbalNouns.find(y => y.id === x)?.text}
-                        <button type="button" className="btn btn-danger" onclick={this.OnDeleteVerbalNoun.bind(this, x)}><BootstrapIcon>trash</BootstrapIcon></button>
-                    </li>)}
-                </ul>
-                <div className="row">
-                    <div className="col">
-                        <Select onChanged={newValue => this.addVerbalNounSelection = parseInt(newValue[0])}>
-                            {allVerbalNouns.map(x => <option selected={x.id === this.addVerbalNounSelection} value={x.id}>{x.text}</option>)}
-                        </Select>
-                    </div>
-                    <div className="col">
-                        <button disabled={this.addVerbalNounSelection === null} className="btn btn-primary" type="button" onclick={this.OnAddVerbalNoun.bind(this)}><BootstrapIcon>plus</BootstrapIcon></button>
-                    </div>
-                </div>
-            </div>
-        </FormField>;
-    }
 
     //Event handlers
-    private OnAddVerbalNoun()
-    {
-        this.data?.verbalNounIds.push(this.addVerbalNounSelection!);
-        this.addVerbalNounSelection = null;
-        this.Update();
-    }
-
-    private OnDeleteVerbalNoun(verbalNounId: number)
-    {
-        const idx = this.data!.verbalNounIds.findIndex(x => x === verbalNounId);
-        this.data?.verbalNounIds.Remove(idx);
-        this.Update();
-    }
-
     override async OnInitiated(): Promise<void>
     {
         const response1 = await this.apiService.verbs.get({ verbId: this.verbId });
@@ -126,7 +76,6 @@ export class EditVerbComponent extends Component
             data: {
                 stem: data.stem,
                 translations: data.translations,
-                verbalNounIds: data.verbalNounIds,
                 stem1Context: data.stem1Context,
             }
         });

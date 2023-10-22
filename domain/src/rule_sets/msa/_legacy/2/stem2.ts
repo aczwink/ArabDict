@@ -47,19 +47,5 @@ export const stem2: StemDefinition = {
         ],
     },
 
-    verbalNounRules: {
-        [RootType.Defective]: [
-            {
-                id: 0,
-                text: "TODO"
-            }
-        ],
-
-        [RootType.Quadriliteral]: [
-            {
-                id: 0,
-                text: "TODO"
-            }
-        ],
-    }
+    verbalNounRules: {}
 };

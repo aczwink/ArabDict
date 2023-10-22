@@ -22,6 +22,9 @@ import { AugmentedRoot } from "../AugmentedRoot";
 
 export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
+    if(params.stem === 2)
+        return;
+    
     if(augmentedRoot.r3.tashkil !== SUKUN)
     {
         if(params.stem === 1)

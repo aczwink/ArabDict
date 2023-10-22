@@ -17,12 +17,16 @@
  * */
 
 import { Component, FormField, JSX_CreateElement, LineEdit, Select } from "acfrontend";
-import { TranslationEntry, WordType } from "../../dist/api";
+import { TranslationEntry, WordRelation, WordType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
+import { WordMayHavePlural, WordTypeToText } from "../shared/words";
+import { WordRelationsEditorComponent } from "./WordRelationsEditorComponent";
 
 interface WordBaseData
 {
     word: string;
+    isMale: boolean | null;
+    outgoingRelations: WordRelation[];
     type: WordType;
     translations: TranslationEntry[];
 }
@@ -32,21 +36,21 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     protected Render(): RenderValue
     {
         const wordTypes = [
-            { key: WordType.Adjective, value: "Adjective" },
-            { key: WordType.Conjunction, value: "Conjunction" },
-            { key: WordType.ForeignVerb, value: "Foreign Verb" },
-            { key: WordType.Noun, value: "Noun" },
-            { key: WordType.Preposition, value: "Preposition" },
-            { key: WordType.Adverb, value: "Adverb" },
-            { key: WordType.Pronoun, value: "Pronoun" },
-            { key: WordType.Phrase, value: "Phrase" },
-            { key: WordType.Particle, value: "Particle" },
+            WordType.Adjective,
+            WordType.Conjunction,
+            WordType.ForeignVerb,
+            WordType.Noun,
+            WordType.Preposition,
+            WordType.Adverb,
+            WordType.Pronoun,
+            WordType.Phrase,
+            WordType.Particle,
         ];
 
         return <fragment>
             <FormField title="Type">
                 <Select onChanged={this.OnWordTypeChanged.bind(this)}>
-                    {wordTypes.map(x => <option selected={x.key === this.input.data.type} value={x.key}>{x.value}</option>)}
+                    {wordTypes.map(x => <option selected={x === this.input.data.type} value={x}>{WordTypeToText(x)}</option>)}
                 </Select>
             </FormField>
 
@@ -54,11 +58,34 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
                 <LineEdit value={this.input.data.word} onChanged={this.OnWordChanged.bind(this)} />
             </FormField>
 
+            {this.RenderGender()}
+
             <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.input.onDataChanged} />
+            <WordRelationsEditorComponent relations={this.input.data.outgoingRelations} onDataChanged={this.input.onDataChanged} />
         </fragment>;
     }
 
+    //Private methods
+    private RenderGender()
+    {
+        if(!WordMayHavePlural(this.input.data.type))
+            return null;
+
+        return <FormField title="Gender">
+            <div className="row">
+                <div className="col-auto"><label><input type="radio" checked={this.input.data.isMale === true} onclick={this.OnGenderChanged.bind(this, true)} /> Male</label></div>
+                <div className="col-auto"><label><input type="radio" checked={this.input.data.isMale === false} onclick={this.OnGenderChanged.bind(this, false)} /> Female</label></div>
+            </div>
+        </FormField>;
+    }
+
     //Event handlers
+    private OnGenderChanged(newValue: boolean)
+    {
+        this.input.data.isMale = newValue;
+        this.input.onDataChanged();
+    }
+
     private OnWordChanged(newValue: string)
     {
         this.input.data.word = newValue;
@@ -68,6 +95,10 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     private OnWordTypeChanged(newValue: string[])
     {
         this.input.data.type = parseInt(newValue[0]);
+        if(this.input.data.type === WordType.Noun)
+            this.input.data.isMale = true;
+        else
+            this.input.data.isMale = null;
         this.input.onDataChanged();
     }
 }

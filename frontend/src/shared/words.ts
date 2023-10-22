@@ -18,6 +18,30 @@
 
 import { WordType } from "../../dist/api";
 
+export function WordMayHavePlural(wordType: WordType)
+{
+    switch(wordType)
+    {
+        case WordType.Adjective:
+        case WordType.Noun:
+            return true;
+    }
+
+    return false;
+}
+
+export function WordGenderToAbbreviation(wordType: WordType, isMale: boolean | null)
+{
+    if(!WordMayHavePlural(wordType))
+        return "";
+
+    if(isMale === true)
+        return "m";
+    else if(isMale === false)
+        return "f";
+    return "?";
+}
+
 export function WordTypeToAbbreviationText(wordType: WordType)
 {
     switch(wordType)
@@ -40,5 +64,30 @@ export function WordTypeToAbbreviationText(wordType: WordType)
             return "(phrase)";
         case WordType.Particle:
             return "(particle)";
+    }
+}
+
+export function WordTypeToText(wordType: WordType)
+{
+    switch(wordType)
+    {
+        case WordType.Noun:
+            return "Noun";
+        case WordType.Preposition:
+            return "Preposition";
+        case WordType.Adjective:
+            return "Adjective";
+        case WordType.Conjunction:
+            return "Conjunction";
+        case WordType.ForeignVerb:
+            return "Foreign Verb";
+        case WordType.Adverb:
+            return "Adverb";
+        case WordType.Pronoun:
+            return "Pronoun";
+        case WordType.Phrase:
+            return "Phrase";
+        case WordType.Particle:
+            return "Particle";
     }
 }

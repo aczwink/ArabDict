@@ -17,7 +17,7 @@
  * */
 
 import { NumberDictionary } from "acts-util-core";
-import { Gender, Person, Numerus, Voice, VerbalNoun } from "./msa/_legacy/VerbStem";
+import { Gender, Person, Numerus, Voice } from "./msa/_legacy/VerbStem";
 import { Stem1Context } from "./msa/_legacy/CreateVerb";
 import { VerbRoot } from "../VerbRoot";
 import { BASE_TASHKIL } from "../Definitions";
@@ -65,7 +65,7 @@ export interface StemDefinition
     present?: StemTenseDefinition;
 
     participleRules: NumberDictionary<ParticipleRule[]>;
-    verbalNounRules: NumberDictionary<VerbalNoun[]>;
+    verbalNounRules: NumberDictionary<string[]>;
 }
 
 export interface DialectDefinition

@@ -23,10 +23,10 @@ import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { ConjugationService } from "../ConjugationService";
-import { WordTypeToAbbreviationText } from "../shared/words";
 import { RenderTranslations } from "../shared/translations";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Tense, Voice, Mood, Gender, Person, Numerus } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
+import { WordOverviewComponent } from "../words/WordOverviewComponent";
 
 @Injectable
 export class ShowVerbComponent extends Component
@@ -50,14 +50,9 @@ export class ShowVerbComponent extends Component
         const stem1ctx = verbData.stem1Context;
         const conjugated = this.conjugationService.Conjugate(this.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", "indicative", stem1ctx);
 
-        const allVerbalNouns = this.conjugationService.GenerateAllPossibleVerbalNouns(this.root.radicals, verbData.stem);
-        const verbalNouns = (allVerbalNouns.length === 1)
-            ? allVerbalNouns.map(x => x.text)
-            : verbData.verbalNounIds.Values().Map(x => allVerbalNouns.find(y => y.id === x)).NotUndefined().Map(x => x.text).ToArray();
-
         return <fragment>
             <h2>{conjugated} <Anchor route={"/verbs/edit/" + verbData.id}><MatIcon>edit</MatIcon></Anchor></h2>
-            {this.RenderProperties(verbalNouns, stem1ctx)}
+            {this.RenderProperties(stem1ctx)}
             <br />
             <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(conjugated)} target="_blank">See on Wiktionary</a>
             <br />
@@ -157,18 +152,6 @@ export class ShowVerbComponent extends Component
         </fragment>;
     }
 
-    private RenderDerivedWord(derivedWord: VerbDerivedWordData)
-    {
-        return <div className="row mb-2">
-            <div className="col">
-                <h6 className="d-inline me-2">{derivedWord.word + " " + WordTypeToAbbreviationText(derivedWord.type)}</h6>
-                {RenderTranslations(derivedWord.translations)}
-                <Anchor route={"words/" + derivedWord.id + "/edit"}><MatIcon>edit</MatIcon></Anchor>
-                <a href="#" className="link-danger" onclick={this.OnDeleteWord.bind(this, derivedWord)}><BootstrapIcon>trash</BootstrapIcon></a>
-            </div>
-        </div>;
-    }
-
     private RenderDerivedWords()
     {
         if(this.derivedWords === null)
@@ -176,12 +159,24 @@ export class ShowVerbComponent extends Component
 
         return <div className="mt-2">
             <h5>Derived words</h5>
-            {this.derivedWords.map(this.RenderDerivedWord.bind(this))}
+            <table className="table table-striped table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th>Word</th>
+                        <th>Translation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {this.derivedWords.map(x => <WordOverviewComponent word={x} />)}
+                </tbody>
+            </table>
+
             <RouterButton className="btn btn-primary" route={"/verbs/addword/" + this.verbId}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
+            <RouterButton className="btn btn-primary" route={"/verbs/addverbalnoun/" + this.verbId}><BootstrapIcon>plus</BootstrapIcon> verbal noun</RouterButton>
         </div>;
     }
 
-    private RenderProperties(verbalNouns: string[], stem1ctx?: Stem1Context)
+    private RenderProperties(stem1ctx?: Stem1Context)
     {
         const data = this.data!;
         const root = new VerbRoot(this.root.radicals);
@@ -210,10 +205,6 @@ export class ShowVerbComponent extends Component
                     <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.root.radicals, data.stem, "passive", stem1ctx), past)}</td>
                 </tr>
                 <tr>
-                    <th>Verbal noun(s) الْمَصَادِر:</th>
-                    <td>{this.RenderVerbalNouns(verbalNouns, past)}</td>
-                </tr>
-                <tr>
                     <th>Translation:</th>
                     <td>{RenderTranslations(data.translations)}</td>
                 </tr>
@@ -221,29 +212,7 @@ export class ShowVerbComponent extends Component
         </table>;
     }
 
-    private RenderVerbalNouns(verbalNouns: string[], past: string)
-    {
-        if(verbalNouns.length === 1)
-            return RenderWithDiffHighlights(verbalNouns[0], past);
-
-        return <ul>
-            {verbalNouns.map(x => <li>{RenderWithDiffHighlights(x, past)}</li>)}
-        </ul>;
-    }
-
     //Event handlers
-    private async OnDeleteWord(derivedWord: VerbDerivedWordData, event: Event)
-    {
-        event.preventDefault();
-
-        if(confirm("Are you sure that you want to delete the word: " + derivedWord.word + "?"))
-        {
-            this.derivedWords = null;
-            await this.apiService.words._any_.delete(derivedWord.id);
-            this.LoadDerivedWords();
-        }
-    }
-
     override async OnInitiated(): Promise<void>
     {
         const response1 = await this.apiService.verbs.get({ verbId: this.verbId });

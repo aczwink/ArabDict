@@ -32,6 +32,8 @@ export class AddWordComponent extends Component
             type: WordType.Adjective,
             translations: [],
             word: "",
+            isMale: null,
+            outgoingRelations: [],
         };
 
         this.loading = false;
@@ -61,7 +63,9 @@ export class AddWordComponent extends Component
         await this.apiService.words.post({
             type: this.data.type,
             word: this.data.word,
-            translations: this.data.translations
+            translations: this.data.translations,
+            isMale: this.data.isMale,
+            outgoingRelations: this.data.outgoingRelations
         });
 
         this.router.RouteTo("/underived_words");

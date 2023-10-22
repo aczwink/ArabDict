@@ -20,6 +20,7 @@
 
 export const ALEF = "\u0627";
 export const ALEF_HAMZA = "\u0623";
+export const ALEF_HAMZA_BELOW = "\u0625";
 export const ALEF_MADDA = "\u0622";
 export const ALEF_MAKSURA = "\u0649";
 export const TA_MARBUTA = "\u0629";

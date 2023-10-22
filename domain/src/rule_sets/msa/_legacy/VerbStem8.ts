@@ -18,7 +18,7 @@
 
 import { ALEF, KASRA, SUKUN, FATHA, ALEF_MAKSURA } from "../../../Definitions";
 import { VerbRoot, RootType } from "../../../VerbRoot";
-import { Gender, Numerus, Person, TA, Tense, VerbStem, VerbalNoun, Voice } from "./VerbStem";
+import { Gender, Numerus, Person, TA, Tense, VerbStem, Voice } from "./VerbStem";
 
 export class VerbStem8 implements VerbStem
 {
@@ -36,21 +36,6 @@ export class VerbStem8 implements VerbStem
             case "present":
                 return "TODO";
         }
-    }
-
-    public ConjugateParticiple(voice: Voice): string
-    {
-        return "TODO";
-    }
-
-    public GenerateAllPossibleVerbalNouns(): VerbalNoun[]
-    {
-        return [
-            {
-                id: 0,
-                text: "TODO"
-            }
-        ];
     }
 
     //Private methods

@@ -19,7 +19,7 @@
 import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { Hamzate } from "./Hamza";
 import { VerbRoot } from "./VerbRoot";
-import { Voice, VerbalNoun } from "./rule_sets/msa/_legacy/VerbStem";
+import { Voice } from "./rule_sets/msa/_legacy/VerbStem";
 import { StemTenseVoiceDefinition } from "./rule_sets/Definitions";
 import { ConjugationParams } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
@@ -77,7 +77,7 @@ export class Conjugator
         return dialectConjugator.ConjugateParticiple(root, stem, voice, stem1Context);
     }
 
-    public GenerateAllPossibleVerbalNouns(dialect: DialectType, root: VerbRoot, stem: number): VerbalNoun[]
+    public GenerateAllPossibleVerbalNouns(dialect: DialectType, root: VerbRoot, stem: number): string[]
     {
         const dialectConjugator = this.CreateDialectConjugator(dialect);
         return dialectConjugator.GenerateAllPossibleVerbalNouns(root, stem);

@@ -67,21 +67,6 @@ CREATE TABLE `verbs_translations` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `verbs_verbalNouns`
---
-
-DROP TABLE IF EXISTS `verbs_verbalNouns`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `verbs_verbalNouns` (
-  `verbId` int(10) unsigned NOT NULL,
-  `verbalNounId` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`verbId`,`verbalNounId`),
-  CONSTRAINT `verbs_verbalNouns_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `words`
 --
 
@@ -92,7 +77,26 @@ CREATE TABLE `words` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type` tinyint(3) unsigned NOT NULL,
   `word` text NOT NULL,
+  `isMale` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `words_relations`
+--
+
+DROP TABLE IF EXISTS `words_relations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `words_relations` (
+  `fromWordId` int(10) unsigned NOT NULL,
+  `toWordId` int(10) unsigned NOT NULL,
+  `relationship` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY (`fromWordId`,`toWordId`),
+  KEY `words_relations_toWordId` (`toWordId`),
+  CONSTRAINT `words_relations_fromWordId` FOREIGN KEY (`fromWordId`) REFERENCES `words` (`id`),
+  CONSTRAINT `words_relations_toWordId` FOREIGN KEY (`toWordId`) REFERENCES `words` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -123,6 +127,7 @@ DROP TABLE IF EXISTS `words_verbs`;
 CREATE TABLE `words_verbs` (
   `wordId` int(10) unsigned NOT NULL,
   `verbId` int(10) unsigned NOT NULL,
+  `isVerbalNoun` tinyint(1) NOT NULL,
   PRIMARY KEY (`wordId`),
   KEY `words_verbs_verbId` (`verbId`),
   CONSTRAINT `words_verbs_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`),
@@ -139,4 +144,4 @@ CREATE TABLE `words_verbs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-08-20 22:16:52
+-- Dump completed on 2023-10-22 22:39:23

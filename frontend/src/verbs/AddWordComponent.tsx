@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
+import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
 import { WordCreationData, WordType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { WordEditorComponent } from "../words/WordEditorComponent";
@@ -33,6 +33,8 @@ export class AddWordComponent extends Component
             type: WordType.Adjective,
             translations: [],
             word: "",
+            isMale: null,
+            outgoingRelations: []
         };
         this.loading = false;
     }
@@ -62,8 +64,13 @@ export class AddWordComponent extends Component
         await this.apiService.words.post({
             type: this.data.type,
             word: this.data.word,
-            verbId: this.verbId,
             translations: this.data.translations,
+            isMale: this.data.isMale,
+            verbData: {
+                isVerbalNoun: false,
+                verbId: this.verbId,
+            },
+            outgoingRelations: this.data.outgoingRelations
         });
 
         this.router.RouteTo("/verbs/" + this.verbId);

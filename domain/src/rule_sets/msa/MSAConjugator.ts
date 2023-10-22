@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { CreateVerb, Stem1Context } from "./_legacy/CreateVerb";
-import { WAW, A3EIN, LAM, FA, QAF, DHAMMA, SUKUN, FATHA, KASRA, ALEF, MIM, YA, KASRATAN, ALEF_HAMZA, YA_HAMZA, TA_MARBUTA, SHADDA } from "../../Definitions";
+import { WAW, A3EIN, LAM, FA, QAF, DHAMMA, SUKUN, FATHA, KASRA, ALEF, MIM, YA, KASRATAN, ALEF_HAMZA, YA_HAMZA, TA_MARBUTA, SHADDA, ALEF_HAMZA_BELOW } from "../../Definitions";
 import { ConjugationParams, DialectConjugator } from "../../DialectConjugator";
 import { Hamzate } from "../../Hamza";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { SIIN, TA, Tense, VerbalNoun, Voice } from "./_legacy/VerbStem";
+import { SIIN, TA, Tense, Voice } from "./_legacy/VerbStem";
 import { ParseVocalizedText, Vocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
 import { AugmentedRoot } from "./AugmentedRoot";
@@ -197,12 +197,10 @@ export class MSAConjugator implements DialectConjugator
                 return Hamzate(this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, root.type, rule.conjugation));
         }
 
-        //call legacy api
-        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem);
-        return verb.ConjugateParticiple(voice);
+        return "TODO";
     }
 
-    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): VerbalNoun[]
+    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): string[]
     {
         switch(stem)
         {
@@ -211,79 +209,38 @@ export class MSAConjugator implements DialectConjugator
                 {
                     case RootType.Defective:
                         return [
-                            {
-                                id: 1,
-                                text: root.r1 + KASRA + root.r2 + FATHA + ALEF + YA + FATHA + TA_MARBUTA
-                            },
-                            {
-                                id: 0,
-                                text: "TODO"
-                            }
+                            root.r1 + KASRA + root.r2 + FATHA + ALEF + YA + FATHA + TA_MARBUTA
                         ];
                     case RootType.HamzaOnR1:
                         return [
-                            {
-                                id: 1,
-                                text: ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3
-                            },
-                            {
-                                id: 2,
-                                text: ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3 + FATHA + TA_MARBUTA
-                            },
+                            ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3,
+                            ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3 + FATHA + TA_MARBUTA
                         ];
                     case RootType.Hollow:
                         return [
-                            {
-                                id: 1,
-                                text: MIM + FATHA + root.r1 + FATHA + ALEF + root.r3
-                            },
-                            {
-                                id: 2,
-                                text: root.r1 + FATHA + WAW + SUKUN + root.r3,
-                            },
-                            {
-                                id: 3,
-                                text: root.r1 + FATHA + WAW + FATHA + ALEF + root.r3,
-                            },
+                            MIM + FATHA + root.r1 + FATHA + ALEF + root.r3,
+                            root.r1 + FATHA + WAW + SUKUN + root.r3,
+                            root.r1 + FATHA + WAW + FATHA + ALEF + root.r3,
                         ];
                     case RootType.SecondConsonantDoubled:
                         return [
-                            {
-                                id: 1,
-                                text: root.r1 + FATHA + root.r2 + KASRA + YA + root.r3
-                            },
-                            {
-                                id: 2,
-                                text: root.r1 + KASRA + root.r2 + SHADDA,
-                            },
-                            {
-                                id: 3,
-                                text: MIM + FATHA + root.r1 + FATHA + root.r2 + SHADDA + FATHA + TA_MARBUTA
-                            },
+                            root.r1 + FATHA + root.r2 + KASRA + YA + root.r3,
+                            root.r1 + KASRA + root.r2 + SHADDA,
+                            MIM + FATHA + root.r1 + FATHA + root.r2 + SHADDA + FATHA + TA_MARBUTA
                         ];
                     case RootType.Sound:
                         return [
-                            {
-                                id: 1,
-                                text: root.r1 + FATHA + root.r2 + FATHA + root.r3
-                            },
-                            {
-                                id: 0,
-                                text: "TODO"
-                            }
+                            root.r1 + FATHA + root.r2 + FATHA + root.r3,
                         ];
                 }
                 break;
             case 2:
                 switch(root.type)
                 {
-                    case RootType.HamzaOnR1:
+                    case RootType.SecondConsonantDoubled:
                     case RootType.Sound:
                         return [
-                            {
-                                id: 0,
-                                text: "TODO"
-                            }
+                            TA + FATHA + root.r1 + SUKUN + root.r2 + KASRA + YA + root.r3
                         ];
                 }
                 break;
@@ -292,51 +249,36 @@ export class MSAConjugator implements DialectConjugator
                 {
                     case RootType.Sound:
                         return [
-                            {
-                                id: 0,
-                                text: "TODO"
-                            },
-                            {
-                                id: 1,
-                                text: MIM + DHAMMA + root.r1 + FATHA + ALEF + root.r2 + FATHA + root.r3 + FATHA + TA_MARBUTA
-                            }
+                            MIM + DHAMMA + root.r1 + FATHA + ALEF + root.r2 + FATHA + root.r3 + FATHA + TA_MARBUTA,
                         ];
                 }
                 break;
-            case 6:
-            case 7:
-                return [
-                    {
-                        id: 0,
-                        text: "TODO"
-                    }
-                ];
+            case 4:
+                switch(root.type)
+                {
+                    case RootType.Sound:
+                        return [
+                            ALEF_HAMZA_BELOW + KASRA + root.r1 + SUKUN + root.r2 + FATHA + ALEF + root.r3,
+                        ];
+                }
+                break;
             case 10:
                 switch(root.type)
                 {
                     case RootType.SecondConsonantDoubled:
                         return [
-                            {
-                                id: 1,
-                                text: Hamzate([
-                                    { letter: ALEF, shadda: false, tashkil: KASRA },
-                                    { letter: SIIN, shadda: false, tashkil: SUKUN },
-                                    { letter: TA, shadda: false, tashkil: KASRA },
-                                    { letter: root.r1, shadda: false, tashkil: SUKUN },
-                                    { letter: root.r2, shadda: false, },
-                                    { letter: ALEF, shadda: false, },
-                                    { letter: root.r2, shadda: false, },
-                                ])
-                            },
+                            Hamzate([
+                                { letter: ALEF, shadda: false, tashkil: KASRA },
+                                { letter: SIIN, shadda: false, tashkil: SUKUN },
+                                { letter: TA, shadda: false, tashkil: KASRA },
+                                { letter: root.r1, shadda: false, tashkil: SUKUN },
+                                { letter: root.r2, shadda: false, },
+                                { letter: ALEF, shadda: false, },
+                                { letter: root.r2, shadda: false, },
+                            ])
                         ];
                 }
-
-                return [
-                    {
-                        id: 0,
-                        text: "TODO"
-                    }
-                ];
+                break;
         }
 
         const dialectDef = this.GetDialectDefiniton();
@@ -344,16 +286,10 @@ export class MSAConjugator implements DialectConjugator
         const rules = dialectDef.stems[stem]?.verbalNounRules[root.type];
         if(rules !== undefined)
         {
-            return rules.map(r => ({
-                id: r.id,
-                text: Hamzate(this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, root.type, r.text))
-                })
-            );
+            return rules.map(r => Hamzate(this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, root.type, r)) );
         }
 
-        //call legacy api
-        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), stem);
-        return verb.GenerateAllPossibleVerbalNouns();
+        return ["TODO"];
     }
 
     //Legacy private methods    

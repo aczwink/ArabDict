@@ -16,12 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton } from "acfrontend";
+import { BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterButton } from "acfrontend";
 import { APIService } from "../APIService";
 import { UnderivedWordData } from "../../dist/api";
-import { RemoveTashkil } from "arabdict-domain/src/Util";
-import { WordTypeToAbbreviationText } from "../shared/words";
-import { RenderTranslations } from "../shared/translations";
+import { WordOverviewComponent } from "../words/WordOverviewComponent";
 
 @Injectable
 export class SearchWordsComponent extends Component
@@ -61,21 +59,10 @@ export class SearchWordsComponent extends Component
                 <tr>
                     <th>Word</th>
                     <th>Translation</th>
-                    <th> </th>
                 </tr>
             </thead>
             <tbody>
-                {this.data!.map(x => <tr>
-                    <td>{x.word + " " + WordTypeToAbbreviationText(x.type)}</td>
-                    <td>
-                        {RenderTranslations(x.translations)}
-                    </td>
-                    <td>
-                        <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(x.word)} target="_blank">See on Wiktionary</a>
-                        {" | "}
-                        <Anchor route={"words/" + x.id + "/edit"}><MatIcon>edit</MatIcon></Anchor>
-                    </td>
-                </tr>)}
+                {this.data!.map(x => <WordOverviewComponent word={x} />)}
             </tbody>
         </table>;
     }

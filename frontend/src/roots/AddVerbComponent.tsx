@@ -34,7 +34,6 @@ export class AddVerbComponent extends Component
         this.data = {
             stem: 1,
             translations: [],
-            verbalNounIds: []
         };
     }
     
@@ -63,7 +62,6 @@ export class AddVerbComponent extends Component
             stem: this.data.stem,
             stem1Context: this.data.stem1Context,
             translations: this.data.translations,
-            verbalNounIds: this.data.verbalNounIds
         });
 
         this.router.RouteTo("/roots/" + this.rootId);

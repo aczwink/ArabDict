@@ -36,12 +36,5 @@ export const stem5: StemDefinition = {
         ]
     },
 
-    verbalNounRules: {
-        [RootType.Sound]: [
-            {
-                id: 0,
-                text: "TODO"
-            }
-        ]
-    }
+    verbalNounRules: {}
 };

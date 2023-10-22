@@ -16,22 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { RootType } from "../../../../VerbRoot";
-import { StemDefinition } from "../../../Definitions";
-import { stem8_past_active } from "./past_active";
-import { stem8_present_active } from "./present_active";
+import { Component, Injectable, JSX_CreateElement } from "acfrontend";
+import { UnderivedWordData, VerbDerivedWordData } from "../../dist/api";
+import { RenderTranslations } from "../shared/translations";
+import { WordReferenceComponent } from "./WordReferenceComponent";
 
-export const stem8: StemDefinition = {
-    perfect: {
-        active: stem8_past_active
-    },
-    present: {
-        active: stem8_present_active,
-    },
-
-    participleRules: {},
-    
-    verbalNounRules: {
-        [RootType.Assimilated]: ["إتِّعال"],
+@Injectable
+export class WordOverviewComponent extends Component<{ word: UnderivedWordData | VerbDerivedWordData; }>
+{
+    protected Render(): RenderValue
+    {
+        return <tr>
+            <td><WordReferenceComponent word={this.input.word} /></td>
+            <td>
+                {RenderTranslations(this.input.word.translations)}
+            </td>
+        </tr>;
     }
-};
+}

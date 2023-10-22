@@ -44,7 +44,5 @@ export function CreateVerb(root: string, stem: number): VerbStem
     }
     return {
         Conjugate: () => "TODO",
-        ConjugateParticiple: () => "TODO",
-        GenerateAllPossibleVerbalNouns: () => []
     };
 }
