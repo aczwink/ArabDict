@@ -24,27 +24,7 @@ import { Vocalized, VocalizedToString } from "./Vocalization";
 
 function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingVowel?: BASE_TASHKIL, predecessor?: Vocalized): Vocalized
 {
-    function MaxPrecedence(t1: BASE_TASHKIL, t2: BASE_TASHKIL): BASE_TASHKIL
-    {
-        if( (t1 === KASRA) || (t2 === KASRA) )
-            return KASRA;
-        if( (t1 === DHAMMA) || (t2 === DHAMMA) )
-            return DHAMMA;
-        return FATHA;
-    }
-    function MaxPrecedenceWithFallback(t1?: BASE_TASHKIL, t2?: BASE_TASHKIL): BASE_TASHKIL
-    {
-        if(t1 === undefined)
-        {
-            if(t2 === undefined)
-                return FATHA;
-            return t2;
-        }
-        else if(t2 === undefined)
-            return t1;
-        return MaxPrecedence(t1, t2);
-    }
-
+    /*
     function VowelToTashkil(vowel: string)
     {
         switch(vowel)
@@ -58,9 +38,29 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingVowel
         }
         throw new Error("Should never happen");
     }
+    */
 
-    const predecessorIsLongVowel = (predecessor?.letter === ALEF) || (predecessor?.letter === WAW) || (predecessor?.letter === YA);
-    let decidingTashkil;
+    function MaxPrecedence(t1: BASE_TASHKIL, t2: BASE_TASHKIL): BASE_TASHKIL
+    {
+        if( (t1 === KASRA) || (t2 === KASRA) )
+            return KASRA;
+        if( (t1 === DHAMMA) || (t2 === DHAMMA) )
+            return DHAMMA;
+        return FATHA;
+    }
+
+    function MaxPrecedenceWithFallback(t1?: BASE_TASHKIL, t2?: BASE_TASHKIL): BASE_TASHKIL
+    {
+        if(t1 === undefined)
+        {
+            if(t2 === undefined)
+                return FATHA;
+            return t2;
+        }
+        else if(t2 === undefined)
+            return t1;
+        return MaxPrecedence(t1, t2);
+    }
 
     if(isInitial)
     {
@@ -68,7 +68,13 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingVowel
             throw new Error("Should be hamza under alif");
         return { letter: ALEF_HAMZA, tashkil: followingVowel, shadda: false };
     }
-    else if(isFinal)
+
+    const predecessorIsLongVowel = ( (predecessor?.letter === ALEF) && (predecessor.tashkil === FATHA) )
+        || ( (predecessor?.letter === WAW) && (predecessor.tashkil === DHAMMA) )
+        || ( (predecessor?.letter === YA) && (predecessor.tashkil === KASRA)) ;
+
+    let decidingTashkil;
+    if(isFinal)
     {
         if(predecessorIsLongVowel)
             decidingTashkil = undefined;
@@ -77,14 +83,22 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingVowel
     }
     else if(predecessorIsLongVowel)
     {
-        decidingTashkil = MaxPrecedenceWithFallback(followingVowel, predecessor.tashkil ?? VowelToTashkil(predecessor.letter));
+        /*
+        -if i or u follows, write over ya or waw
+        -if ya preceedes, write over ya
+        -write on line
+        */
+        throw new Error("TODO: implement me and write test!!!!");
+        /*decidingTashkil = MaxPrecedenceWithFallback(followingVowel, predecessor.tashkil ?? VowelToTashkil(predecessor.letter));
         if(decidingTashkil === FATHA)
         {
             if(predecessor.letter === YA)
+            {
                 throw new Error("TODO: in this case it should be written over ya. check this case and write test");
+            }
             else
                 decidingTashkil = undefined;
-        }
+        }*/
     }
     else
     {

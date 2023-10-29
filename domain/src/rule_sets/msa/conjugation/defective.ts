@@ -18,18 +18,81 @@
 
 import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, KASRA, WAW, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
+import { Vocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
+
+function AlterDefectiveEndingActivePerfect(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+{
+    if(params.stem1Context?.middleRadicalTashkilPresent === FATHA)
+    {
+        //past tense is for type 3 quite regular
+        if(params.person !== "third")
+            augmentedRoot.ApplyTashkil(3, undefined);
+
+        if( (params.numerus === "plural") && (params.person === "third") && (params.gender === "male"))
+        {
+            augmentedRoot.DropRadial(3);
+            augmentedRoot.ApplyTashkil(2, DHAMMA);
+        }
+
+        return;
+    }
+
+    let ending: Vocalized = { letter: ALEF_MAKSURA, shadda: false };
+    if(params.stem1Context?.middleRadicalTashkilPresent === DHAMMA)
+        ending = { letter: ALEF, shadda: false };
+
+    if(params.person === "third")
+    {
+        if(params.numerus === "singular")
+        {
+            if(params.gender === "male")
+                augmentedRoot.ReplaceRadical(3, ending);
+            else
+                augmentedRoot.AssimilateRadical(3);
+        }
+        else if(params.numerus === "dual")
+        {
+            if(params.gender === "female")
+                augmentedRoot.AssimilateRadical(3);
+        }
+        else if(params.numerus === "plural")
+        {
+            if(params.gender === "male")
+            {
+                augmentedRoot.AssimilateRadical(3);
+                augmentedRoot.ApplyTashkil(2, FATHA);
+            }
+        }
+    }
+}
+
+function AlterDefectiveEndingActivePresentIndicative(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+{
+    if((params.person === "second") && (params.numerus === "singular") && (params.gender === "female"))
+        augmentedRoot.AssimilateRadical(3);
+    else if(params.numerus === "dual")
+    {
+    }
+    else if((params.person !== "first") && (params.numerus === "plural") && (params.gender === "male"))
+    {
+        augmentedRoot.AssimilateRadical(3);
+    }
+    else if(params.stem1Context?.middleRadicalTashkilPresent === FATHA)
+    {
+        augmentedRoot.ReplaceRadical(3, { letter: ALEF_MAKSURA, shadda: false });
+    }
+    else
+        augmentedRoot.ApplyTashkil(3, undefined);
+}
 
 export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    let ending = ALEF_MAKSURA;
     const vowelTashkil = (augmentedRoot.root.r3 === WAW) ? DHAMMA : KASRA;
 
     switch(params.stem)
     {
         case 1:
-            if(params.stem1Context?.middleRadicalTashkilPresent === DHAMMA)
-                ending = ALEF;
         case 10:
         {
             if(params.voice === "passive")
@@ -83,45 +146,9 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
             }
 
             if(params.tense === "perfect")
-            {
-                if(params.person === "third")
-                {
-                    if(params.numerus === "singular")
-                    {
-                        if(params.gender === "male")
-                            augmentedRoot.ReplaceRadical(3, { letter: ending, shadda: false });
-                        else
-                            augmentedRoot.AssimilateRadical(3);
-                    }
-                    else if(params.numerus === "dual")
-                    {
-                        if(params.gender === "female")
-                            augmentedRoot.AssimilateRadical(3);
-                    }
-                    else if(params.numerus === "plural")
-                    {
-                        if(params.gender === "male")
-                        {
-                            augmentedRoot.AssimilateRadical(3);
-                            augmentedRoot.ApplyTashkil(2, FATHA);
-                        }
-                    }
-                }
-            }
+                AlterDefectiveEndingActivePerfect(augmentedRoot, params);
             else if(params.mood === "indicative")
-            {
-                if((params.person === "second") && (params.numerus === "singular") && (params.gender === "female"))
-                    augmentedRoot.AssimilateRadical(3);
-                else if(params.numerus === "dual")
-                {
-                }
-                else if((params.person !== "first") && (params.numerus === "plural") && (params.gender === "male"))
-                {
-                    augmentedRoot.AssimilateRadical(3);
-                }
-                else
-                    augmentedRoot.ApplyTashkil(3, undefined);
-            }
+                AlterDefectiveEndingActivePresentIndicative(augmentedRoot, params);
             else if(params.mood === "subjunctive")
             {
                 if((params.person === "second") && (params.numerus === "singular") && (params.gender === "female"))

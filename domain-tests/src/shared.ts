@@ -18,10 +18,57 @@
 import "acts-util-core";
 import { Expect } from "acts-util-test";
 import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
+import { ALEF_MAKSURA, BASE_TASHKIL, FATHA, KASRA, MIM, SUKUN, YA, YA_HAMZA } from "arabdict-domain/dist/Definitions";
 import { VerbRoot } from "arabdict-domain/dist/VerbRoot";
-import { ParseVocalizedText } from "arabdict-domain/dist/Vocalization";
+import { ParseVocalizedText, Vocalized } from "arabdict-domain/dist/Vocalization";
 import { Stem1Context } from "arabdict-domain/dist/rule_sets/msa/_legacy/CreateVerb";
-import { Mood, Person, Tense, Voice } from "arabdict-domain/dist/rule_sets/msa/_legacy/VerbStem";
+import { Gender, Mood, NUN, Numerus, Person, SIIN, Tense, Voice } from "arabdict-domain/dist/rule_sets/msa/_legacy/VerbStem";
+
+function ToDisplayVersion(v: Vocalized[])
+{
+    function conv_letter(c: string)
+    {
+        switch(c)
+        {
+            case ALEF_MAKSURA:
+                return "alef_maksura";
+            case SIIN:
+                return "siin";
+            case MIM:
+                return "mim";
+            case NUN:
+                return "nun";
+            case YA:
+                return "ya";
+        }
+        return "TODO: " + c + " " + c.codePointAt(0);
+    }
+
+    function conv_tashkil(t: BASE_TASHKIL | undefined)
+    {
+        if(t === undefined)
+            return "";
+        switch(t)
+        {
+            case FATHA:
+                return "/fatha";
+            case KASRA:
+                return "/kasra";
+            case SUKUN:
+                return "/sukun";
+        }
+        return t.codePointAt(0);
+    }
+
+    function conv(v: Vocalized)
+    {
+        const l = conv_letter(v.letter);
+
+        return l + conv_tashkil(v.tashkil) + (v.shadda ? "shadda" : "");
+    }
+
+    return v.map(conv);
+}
 
 function Test(expected: string, got: string)
 {
@@ -30,7 +77,7 @@ function Test(expected: string, got: string)
 
     if(!a.Equals(b))
     {
-        console.log("expected:", a, "got:", b);
+        console.log("expected:", a, "(" + ToDisplayVersion(a) + ")", "got:", b, "(" + ToDisplayVersion(b) + ")");
         Expect(expected).Equals(got);
     }
 }
@@ -77,9 +124,11 @@ export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], st
 export interface ConjugationTest
 {
     expected: string;
-    tense?: Tense;
-    person?: Person;
+    gender?: Gender;
     mood?: Mood;
+    numerus?: Numerus;
+    person?: Person;
+    tense?: Tense;
     voice?: Voice;
 }
 export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Context, conjugations: ConjugationTest[])
@@ -91,8 +140,8 @@ export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Con
         const root = new VerbRoot(rootRadicals.split("-").join(""));
 
         const pastResult = conjugator.Conjugate(root, {
-            gender: "male",
-            numerus: "singular",
+            gender: test.gender ?? "male",
+            numerus: test.numerus ?? "singular",
             person: test.person ?? "third",
             stem: (typeof stem === "number") ? stem : 1,
             stem1Context: (typeof stem === "number") ? undefined : stem,
