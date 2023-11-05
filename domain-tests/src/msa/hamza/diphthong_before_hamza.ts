@@ -15,25 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { It } from "acts-util-test";
+import { ConjugationTest, RunConjugationTest } from "../../shared";
+import { FATHA, KASRA } from "arabdict-domain/dist/Definitions";
 
-import { WAW } from "../../../Definitions";
-import { ConjugationParams } from "../../../DialectConjugator";
-import { AugmentedRoot } from "../AugmentedRoot";
+It("Diphthong before hamza", () => {
+    const conjugations: ConjugationTest[] = [
+        { expected: "يَيْئَسُ", tense: "present" }
+    ];
 
-export function DropOutR1(augmentedRoot: AugmentedRoot, params: ConjugationParams)
-{
-    switch(params.stem)
-    {
-        case 1:
-        {
-            if( (params.tense === "present") && (augmentedRoot.r1.letter === WAW))
-            {
-                if(params.voice === "active")
-                    augmentedRoot.DropRadial(1);
-                else
-                    augmentedRoot.ApplyTashkil(1, undefined);
-            }
-        }
-        break;
-    }
-};
+    RunConjugationTest("ي-ء-س", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: FATHA, soundOverride: false }, conjugations);
+});

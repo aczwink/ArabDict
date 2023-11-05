@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, NavItem, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
-import { RootData } from "../../dist/api";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
 import { APIService } from "../APIService";
+import { RootOverviewData } from "../../dist/api";
 
 interface AlphabetRange
 {
@@ -58,7 +58,7 @@ export class ListRootsComponent extends Component
 
     //Private state
     private queryChar: string | null;
-    private data: RootData[] | null;
+    private data: RootOverviewData[] | null;
 
     //Private methods
     private RenderRange(range: AlphabetRange)

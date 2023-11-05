@@ -18,7 +18,7 @@
 
 import { CheckBox, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "./APIService";
-import { AnyWordData, RootCreationData, VerbData } from "../dist/api";
+import { AnyWordData, VerbData } from "../dist/api";
 import { ConjugationService } from "./ConjugationService";
 import { RemoveTashkilButKeepShadda } from "arabdict-domain/src/Util";
 import { RenderTranslations } from "./shared/translations";
@@ -31,9 +31,7 @@ export class LearnComponent extends Component
         super();
 
         this.data = null;
-        this.root = {
-            radicals: ""
-        };
+        this.rootRadicals = "";
         this.showTashkil = false;
         this.resolve = false;
     }
@@ -43,7 +41,7 @@ export class LearnComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        const title = ("rootId" in this.data) ? this.conjugationService.Conjugate(this.root.radicals, this.data.stem, "perfect", "active", "male", "third", "singular", "indicative", this.data.stem1Context) : this.data.word;
+        const title = ("rootId" in this.data) ? this.conjugationService.Conjugate(this.rootRadicals, this.data.stem, "perfect", "active", "male", "third", "singular", "indicative", this.data.stem1Context) : this.data.word;
 
         if(this.resolve)
         {
@@ -75,7 +73,7 @@ export class LearnComponent extends Component
 
     //Private state
     private data: VerbData | AnyWordData | null;
-    private root: RootCreationData;
+    private rootRadicals: string;
     private showTashkil: boolean;
     private resolve: boolean;
 
@@ -96,7 +94,7 @@ export class LearnComponent extends Component
             const response3 = await this.apiService.roots._any_.get(response2.data.rootId);
             if(response3.statusCode !== 200)
                 throw new Error("TODO: implement me");
-            this.root = response3.data;
+            this.rootRadicals = response3.data.radicals;
 
 
             this.data = response2.data;

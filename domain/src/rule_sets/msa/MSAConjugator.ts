@@ -127,6 +127,7 @@ export class MSAConjugator implements DialectConjugator
                 {
                     case RootType.HamzaOnR1:
                         return "TODO";
+                    case RootType.Hollow:
                     case RootType.Sound:
                         return Hamzate([
                             { letter: MIM, shadda: false, tashkil: DHAMMA },
@@ -207,6 +208,14 @@ export class MSAConjugator implements DialectConjugator
             case 1:
                 switch(root.type)
                 {
+                    case RootType.Assimilated:
+                        return [
+                            Hamzate([
+                                { letter: root.r1, shadda: false, tashkil: FATHA },
+                                { letter: root.r2, shadda: false, tashkil: SUKUN },
+                                { letter: root.r3, shadda: false },
+                            ])
+                        ];
                     case RootType.Defective:
                         return [
                             root.r1 + KASRA + root.r2 + FATHA + ALEF + YA + FATHA + TA_MARBUTA
@@ -221,16 +230,20 @@ export class MSAConjugator implements DialectConjugator
                             MIM + FATHA + root.r1 + FATHA + ALEF + root.r3,
                             root.r1 + FATHA + WAW + SUKUN + root.r3,
                             root.r1 + FATHA + WAW + FATHA + ALEF + root.r3,
+                            root.r1 + FATHA + YA + SUKUN + root.r3 + FATHA + TA_MARBUTA,
+                            root.r1 + KASRA + YA + FATHA + ALEF + root.r3,
                         ];
                     case RootType.SecondConsonantDoubled:
                         return [
                             root.r1 + FATHA + root.r2 + KASRA + YA + root.r3,
+                            root.r1 + KASRA + root.r2 + FATHA + ALEF + root.r3,
                             root.r1 + KASRA + root.r2 + SHADDA,
                             MIM + FATHA + root.r1 + FATHA + root.r2 + SHADDA + FATHA + TA_MARBUTA
                         ];
                     case RootType.Sound:
                         return [
                             root.r1 + FATHA + root.r2 + FATHA + root.r3,
+                            root.r1 + FATHA + root.r2 + SUKUN + root.r3,
                         ];
                 }
                 break;
@@ -259,6 +272,15 @@ export class MSAConjugator implements DialectConjugator
                     case RootType.Sound:
                         return [
                             ALEF_HAMZA_BELOW + KASRA + root.r1 + SUKUN + root.r2 + FATHA + ALEF + root.r3,
+                        ];
+                }
+                break;
+            case 6:
+                switch(root.type)
+                {
+                    case RootType.Sound:
+                        return [
+                            TA + FATHA + root.r1 + FATHA + ALEF + root.r2 + DHAMMA + root.r3
                         ];
                 }
                 break;

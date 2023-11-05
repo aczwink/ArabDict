@@ -48,7 +48,7 @@ export class AddRootComponent extends Component
     //Event handlers
     private async OnCreateRoot()
     {
-        const response = await this.apiService.roots.post({ radicals: this.radicals });
+        const response = await this.apiService.roots.post({ radicals: this.radicals, description: "" });
         this.router.RouteTo("/roots/" + response.data);
     }
 }

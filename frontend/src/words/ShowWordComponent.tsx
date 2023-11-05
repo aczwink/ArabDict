@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterState, TitleService } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
 import { APIService } from "../APIService";
 import { AnyWordData, VerbData, WordRelation, WordRelationType, WordVerbReferenceData } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
@@ -74,6 +74,8 @@ export class ShowWordComponent extends Component
             {this.RenderIncomingRelations()}
 
             <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(this.data.word)} target="_blank">See on Wiktionary</a>
+            <br />
+            <RouterButton className="btn btn-primary" route={"/underived_words/add?relatedWordId=" + this.wordId}><BootstrapIcon>plus</BootstrapIcon> Add related word</RouterButton>
         </fragment>;
     }
 

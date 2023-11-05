@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner, Router, RouterState } from "acfrontend";
+import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner, Router, RouterState, Textarea } from "acfrontend";
 import { APIService } from "../APIService";
+import { RootCreationData } from "../../dist/api";
 
 @Injectable
 export class EditRootComponent extends Component
@@ -27,20 +28,24 @@ export class EditRootComponent extends Component
         super();
 
         this.rootId = parseInt(routerState.routeParams.rootId!);
-        this.radicals = null;
+        this.data = null;
     }
     
     protected Render(): RenderValue
     {
-        if(this.radicals === null)
+        if(this.data === null)
             return <ProgressSpinner />;
 
         return <fragment>
             <FormField title="Radicals" description="The radicals that make up the root">
-                <LineEdit value={this.radicals} onChanged={newValue => this.radicals = newValue} />
+                <LineEdit value={this.data.radicals} onChanged={newValue => {this.data!.radicals = newValue; this.Update();}} />
             </FormField>
 
-            Root: {this.radicals.split("").join("-")}
+            <FormField title="Description" description="Descriptive text about the root">
+                <Textarea value={this.data.description} onChanged={newValue => {this.data!.description = newValue; this.Update();}} />
+            </FormField>
+
+            Root: {this.data.radicals.split("").join("-")}
 
             <button className="btn btn-primary" type="button" onclick={this.OnSaveRoot.bind(this)}>Save</button>
         </fragment>;
@@ -48,7 +53,7 @@ export class EditRootComponent extends Component
 
     //Private state
     private rootId: number;
-    private radicals: string | null;
+    private data: RootCreationData | null;
 
     //Event handlers
     override async OnInitiated(): Promise<void>
@@ -57,12 +62,12 @@ export class EditRootComponent extends Component
 
         if(response.statusCode != 200)
             throw new Error("TODO: implement me");
-        this.radicals = response.data.radicals;
+        this.data = response.data;
     }
 
     private async OnSaveRoot()
     {
-        await this.apiService.roots._any_.put(this.rootId, { radicals: this.radicals! });
+        await this.apiService.roots._any_.put(this.rootId, this.data!);
         this.router.RouteTo("/roots/" + this.rootId);
     }
 }

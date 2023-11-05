@@ -47,6 +47,7 @@ export class ShowRootComponent extends Component
         const root = new VerbRoot(this.data!.root.radicals);
         return <fragment>
             <h2>Root: {root.radicalsAsSeparateLetters.join("-")} <Anchor route={"/roots/" + this.rootId + "/edit"}><MatIcon>edit</MatIcon></Anchor></h2>
+            {this.data!.root.description}
             {this.data.verbs.map(x => <VerbPreviewComponent root={this.data!.root} verbData={x} />)}
             <RouterButton className="btn btn-primary" route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </fragment>;

@@ -17,7 +17,7 @@
  * */
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router } from "acfrontend";
-import { WordCreationData, WordType } from "../../dist/api";
+import { WordCreationData, WordRelationType, WordType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { WordEditorComponent } from "../words/WordEditorComponent";
 
@@ -35,6 +35,13 @@ export class AddWordComponent extends Component
             isMale: null,
             outgoingRelations: [],
         };
+        if(router.state.Get().queryParams.relatedWordId !== undefined)
+        {
+            this.data.outgoingRelations.push({
+                refWordId: parseInt(router.state.Get().queryParams.relatedWordId!),
+                relationType: WordRelationType.Feminine
+            });
+        }
 
         this.loading = false;
     }

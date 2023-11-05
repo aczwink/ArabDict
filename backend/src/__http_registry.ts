@@ -18,5 +18,6 @@
 
 import "./api/random";
 import "./api/roots";
+import "./api/stats";
 import "./api/verbs";
 import "./api/words";

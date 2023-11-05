@@ -42,6 +42,11 @@ It("Wikipedia assimilated stem1", () => {
         { expected: "يَوْجَلُ", tense: "present" },
         { expected: "إيجَلْ", tense: "present", mood: "imperative", person: "second" },
     ]);
+    RunConjugationTest("ي-س-ر", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, [
+        { expected: "يَسَرَ" },
+        { expected: "يَيْسِرُ", tense: "present" },
+        { expected: "إيسِرْ", tense: "present", mood: "imperative", person: "second" },
+    ]);
 
     //TODO: rest
 });

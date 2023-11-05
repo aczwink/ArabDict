@@ -16,24 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WAW } from "../../../Definitions";
-import { ConjugationParams } from "../../../DialectConjugator";
-import { AugmentedRoot } from "../AugmentedRoot";
+import { APIController, Get } from "acts-util-apilib";
+import { StatisticsController } from "../data-access/StatisticsController";
 
-export function DropOutR1(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+@APIController("statistics")
+class _api_
 {
-    switch(params.stem)
+    constructor(private statisticsController: StatisticsController)
     {
-        case 1:
-        {
-            if( (params.tense === "present") && (augmentedRoot.r1.letter === WAW))
-            {
-                if(params.voice === "active")
-                    augmentedRoot.DropRadial(1);
-                else
-                    augmentedRoot.ApplyTashkil(1, undefined);
-            }
-        }
-        break;
     }
-};
+
+    @Get()
+    public async QueryStatistics()
+    {
+        return await this.statisticsController.QueryStatistics();
+    }
+}

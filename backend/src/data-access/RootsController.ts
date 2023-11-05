@@ -22,11 +22,13 @@ import { DatabaseController } from "./DatabaseController";
 export interface RootCreationData
 {
     radicals: string;
+    description: string;
 }
 
-interface RootData extends RootCreationData
+interface RootOverviewData
 {
     id: number;
+    radicals: string;
 }
 
 @Injectable
@@ -50,7 +52,7 @@ export class RootsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const row = await conn.SelectOne<RootCreationData>("SELECT radicals FROM roots WHERE id = ?", id);
+        const row = await conn.SelectOne<RootCreationData>("SELECT radicals, description FROM roots WHERE id = ?", id);
 
         return row;
     }
@@ -59,7 +61,7 @@ export class RootsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const rows = await conn.Select<RootData>("SELECT id, radicals FROM roots WHERE radicals LIKE ? ORDER BY radicals", prefix + "%");
+        const rows = await conn.Select<RootOverviewData>("SELECT id, radicals FROM roots WHERE radicals LIKE ? ORDER BY radicals", prefix + "%");
 
         return rows;
     }
@@ -68,6 +70,6 @@ export class RootsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        await conn.UpdateRows("roots", { radicals: data.radicals }, "id = ?", rootId);
+        await conn.UpdateRows("roots", { radicals: data.radicals, description: data.description }, "id = ?", rootId);
     }
 }

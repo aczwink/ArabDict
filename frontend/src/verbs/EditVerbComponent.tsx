@@ -30,7 +30,7 @@ export class EditVerbComponent extends Component
         super();
 
         this.verbId = parseInt(routerState.routeParams.verbId!);
-        this.root = { radicals: "" };
+        this.rootRadicals = "";
         this.data = null;
     }
     
@@ -40,7 +40,7 @@ export class EditVerbComponent extends Component
             return <ProgressSpinner />;
 
         return <fragment>
-            <VerbEditorComponent data={this.data} rootRadicals={this.root.radicals} onChanged={this.Update.bind(this)} />
+            <VerbEditorComponent data={this.data} rootRadicals={this.rootRadicals} onChanged={this.Update.bind(this)} />
 
             <button className="btn btn-primary" type="button" onclick={this.OnSave.bind(this)}>Save</button>
         </fragment>;
@@ -49,7 +49,7 @@ export class EditVerbComponent extends Component
     //Private state
     private verbId: number;
     private data: VerbData | null;
-    private root: RootCreationData;
+    private rootRadicals: string;
 
     //Event handlers
     override async OnInitiated(): Promise<void>
@@ -62,7 +62,7 @@ export class EditVerbComponent extends Component
         if(response2.statusCode !== 200)
             throw new Error("TODO implement me");
 
-        this.root = response2.data;
+        this.rootRadicals = response2.data.radicals;
         this.data = response1.data;
     }
 
