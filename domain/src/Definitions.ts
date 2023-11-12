@@ -39,6 +39,7 @@ export const YA_HAMZA = "\u0626";
 export const HAMZA = "\u0621";
 
 export const FATHA = "\u064E";
+export const FATHATAN = "\u064B";
 export const DHAMMA = "\u064F";
 export const KASRA = "\u0650";
 export const KASRATAN = "\u064D";

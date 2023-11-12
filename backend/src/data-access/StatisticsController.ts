@@ -18,12 +18,22 @@
 
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
+import { DialectType } from "./TranslationsController";
+
+interface DialectStatistics
+{
+    dialect: DialectType;
+    wordsCount: number;
+    verbsCount: number;
+}
 
 interface DictionaryStatistics
 {
     rootsCount: number;
     verbsCount: number;
     wordsCount: number;
+
+    dialectCounts: DialectStatistics[];
 }
 
 @Injectable
@@ -53,6 +63,31 @@ export class StatisticsController
             rootsCount: ExtractCount(r1),
             verbsCount: ExtractCount(r2),
             wordsCount: ExtractCount(r3),
+            dialectCounts: await this.QueryDialectCounts()
         };
+    }
+
+    //Private methods
+    private async QueryDialectCounts()
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const verbs = await conn.Select("SELECT COUNT(DISTINCT verbId) as cnt, dialect FROM `verbs_translations` GROUP BY dialect");
+        const words = await conn.Select("SELECT COUNT(DISTINCT wordId) as cnt, dialect FROM `words_translations` GROUP BY dialect");
+
+        const dialectCounts: DialectStatistics[] = [];
+        for (const row of verbs)
+            dialectCounts.push({ dialect: row.dialect, verbsCount: row.cnt, wordsCount: 0});
+
+        for (const row of words)
+        {
+            const entry = dialectCounts.find(x => x.dialect === row.dialect);
+            if(entry === undefined)
+                dialectCounts.push({ dialect: row.dialect, verbsCount: 0, wordsCount: row.cnt });
+            else
+                entry.wordsCount = row.cnt;
+        }
+
+        return dialectCounts;
     }
 }

@@ -18,7 +18,8 @@
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "./APIService";
-import { DictionaryStatistics } from "../dist/api";
+import { DialectStatistics, DictionaryStatistics } from "../dist/api";
+import { DialectToDisplayName, DialectToEmoji } from "./shared/dialects";
 
 @Injectable
 export class StatisticsComponent extends Component
@@ -49,6 +50,7 @@ export class StatisticsComponent extends Component
                     <th>Number of words (excluding verbs):</th>
                     <td>{this.data.wordsCount}</td>
                 </tr>
+                {...this.data.dialectCounts.map(this.RenderDialectCounts.bind(this))}
             </tbody>
         </table>;
     }
@@ -56,10 +58,26 @@ export class StatisticsComponent extends Component
     //Private state
     private data: DictionaryStatistics | null;
 
+    //Private methods
+    private RenderDialectCounts(dialectCounts: DialectStatistics)
+    {
+        return <fragment>
+            <tr>
+                <th>Number of verbs in dialect "{DialectToDisplayName(dialectCounts.dialect)}" {DialectToEmoji(dialectCounts.dialect)}:</th>
+                <td>{dialectCounts.verbsCount}</td>
+            </tr>
+            <tr>
+                <th>Number of words (excluding verbs) in dialect "{DialectToDisplayName(dialectCounts.dialect)}" {DialectToEmoji(dialectCounts.dialect)}:</th>
+                <td>{dialectCounts.wordsCount}</td>
+            </tr>
+        </fragment>
+    }
+
     //Event handlers
     override async OnInitiated(): Promise<void>
     {
         const response = await this.apiService.statistics.get();
         this.data = response.data;
+        this.data.dialectCounts.SortBy(x => x.dialect);
     }
 }

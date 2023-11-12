@@ -17,6 +17,7 @@
  * */
 
 import { Component, JSX_CreateElement, Navigation, NavItem, RouterComponent } from "acfrontend";
+import { DialectSelectionComponent } from "./DialectSelectionComponent";
 
 export class RootComponent extends Component
 {
@@ -31,6 +32,7 @@ export class RootComponent extends Component
                     <NavItem route="/learn">Learn</NavItem>
                     <NavItem route="/statistics">Statistics</NavItem>
                 </ul>
+                <DialectSelectionComponent />
             </Navigation>
             <div className="container-fluid">
                 <RouterComponent />

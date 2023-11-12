@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { RootType } from "../../../../VerbRoot";
 import { StemDefinition } from "../../../Definitions";
 import { stem5_past_active } from "./past_active";
 import { stem5_present_active } from "./present_active";
@@ -30,10 +29,6 @@ export const stem5: StemDefinition = {
     },
     
     participleRules: {
-        [RootType.Sound]: [
-            { voice: "active", conjugation: "TODO" },
-            { voice: "passive", conjugation: "TODO" }
-        ]
     },
 
     verbalNounRules: {}

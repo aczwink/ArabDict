@@ -28,13 +28,24 @@ export class ConjugationService
     constructor()
     {
         this.conjugator = new Conjugator;
-        this.globalDialect = DialectType.ModernStandardArabic;
+        this._globalDialect = DialectType.ModernStandardArabic;
+    }
+
+    //Properties
+    public get globalDialect()
+    {
+        return this._globalDialect;
+    }
+
+    public set globalDialect(newValue: DialectType)
+    {
+        this._globalDialect = newValue;
     }
 
     //Public methods
     public AnalyzeConjugation(conjugated: string)
     {
-        return this.conjugator.AnalyzeConjugation(this.globalDialect, conjugated);
+        return this.conjugator.AnalyzeConjugation(this._globalDialect, conjugated);
     }
 
     public Conjugate(rootRadicals: string, stem: number, tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus, mood: Mood, stem1Context?: Stem1Context)
@@ -49,22 +60,22 @@ export class ConjugationService
             numerus,
             mood,
             stem1Context
-        }, this.globalDialect);
+        }, this._globalDialect);
     }
 
     public ConjugateParticiple(rootRadicals: string, stem: number, voice: Voice, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
-        return this.conjugator.ConjugateParticiple(this.globalDialect, root, stem, voice, stem1Context);
+        return this.conjugator.ConjugateParticiple(this._globalDialect, root, stem, voice, stem1Context);
     }
 
     public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: number)
     {
         const root = new VerbRoot(rootRadicals);
-        return this.conjugator.GenerateAllPossibleVerbalNouns(this.globalDialect, root, stem);
+        return this.conjugator.GenerateAllPossibleVerbalNouns(this._globalDialect, root, stem);
     }
 
     //Private state
     private conjugator: Conjugator;
-    private globalDialect: DialectType;
+    private _globalDialect: DialectType;
 }

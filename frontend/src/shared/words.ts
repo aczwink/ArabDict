@@ -18,12 +18,13 @@
 
 import { WordType } from "../../dist/api";
 
-export function WordMayHavePlural(wordType: WordType)
+export function WordMayHaveGender(wordType: WordType)
 {
     switch(wordType)
     {
         case WordType.Adjective:
         case WordType.Noun:
+        case WordType.Pronoun:
             return true;
     }
 
@@ -32,7 +33,7 @@ export function WordMayHavePlural(wordType: WordType)
 
 export function WordGenderToAbbreviation(wordType: WordType, isMale: boolean | null)
 {
-    if(!WordMayHavePlural(wordType))
+    if(!WordMayHaveGender(wordType))
         return "";
 
     if(isMale === true)

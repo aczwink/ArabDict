@@ -19,7 +19,7 @@
 import { Component, FormField, JSX_CreateElement, LineEdit, Select } from "acfrontend";
 import { TranslationEntry, WordRelation, WordType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
-import { WordMayHavePlural, WordTypeToText } from "../shared/words";
+import { WordMayHaveGender, WordTypeToText } from "../shared/words";
 import { WordRelationsEditorComponent } from "./WordRelationsEditorComponent";
 
 interface WordBaseData
@@ -68,7 +68,7 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     //Private methods
     private RenderGender()
     {
-        if(!WordMayHavePlural(this.input.data.type))
+        if(!WordMayHaveGender(this.input.data.type))
             return null;
 
         return <FormField title="Gender">
