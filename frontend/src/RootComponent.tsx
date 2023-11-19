@@ -26,9 +26,10 @@ export class RootComponent extends Component
         return <fragment>
             <Navigation>
                 <ul className="nav nav-pills">
-                    <NavItem route="/">Search</NavItem>
+                    <NavItem route="/verbs">Verbs</NavItem>
+                    <NavItem route="/words">Words</NavItem>
                     <NavItem route="/roots">Roots</NavItem>
-                    <NavItem route="/underived_words">Words not derived from verbs</NavItem>
+                    <NavItem route="/analysis">Verb analysis</NavItem>
                     <NavItem route="/learn">Learn</NavItem>
                     <NavItem route="/statistics">Statistics</NavItem>
                 </ul>

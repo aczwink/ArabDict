@@ -24,6 +24,8 @@ export const ALEF_HAMZA_BELOW = "\u0625";
 export const ALEF_MADDA = "\u0622";
 export const ALEF_MAKSURA = "\u0649";
 export const TA_MARBUTA = "\u0629";
+export const HHA = "\u062D";
+export const DAL = "\u062F";
 export const LETTER_RA = "\u0631";
 export const ZAY = "\u0632";
 export const A3EIN = "\u0639";
@@ -48,4 +50,5 @@ export const SUKUN = "\u0652";
 
 export type PRIMARY_TASHKIL = "\u064E" | "\u064F" | "\u0650";
 export type BASE_TASHKIL = PRIMARY_TASHKIL | "\u0652";
+export type FULL_TASHKIL = BASE_TASHKIL | "\u064B" | "\u064D";
 export type LONG_VOWEL = "\u0627" | "\u064A";

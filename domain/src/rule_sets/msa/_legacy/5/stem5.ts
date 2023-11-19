@@ -27,9 +27,4 @@ export const stem5: StemDefinition = {
     present: {
         active: stem5_present_active,
     },
-    
-    participleRules: {
-    },
-
-    verbalNounRules: {}
 };

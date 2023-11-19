@@ -129,6 +129,7 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
         return this.RenderTashkilField(tense, choices[tense], this.input.data.stem1Context![key], newValue =>
             {
                 this.input.data.stem1Context![key] = newValue;
+                this.ValidateStem1Context();
                 this.input.onChanged();
             }
         );

@@ -19,8 +19,9 @@
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { TranslationEntry, TranslationsController } from "./TranslationsController";
+import { RemoveTashkil } from "arabdict-domain/src/Util";
 
-enum WordType
+export enum WordType
 {
     Noun = 0,
     Preposition = 1,
@@ -75,16 +76,20 @@ interface VerbDerivedWordData extends WordBaseData, WordVerbReferenceData
     id: number;
 }
 
-interface UnderivedWordData extends WordBaseData
-{
-    id: number;
-}
-
 interface AnyWordData extends WordBaseData
 {
     id: number;
     verbData?: WordVerbReferenceData;
     incomingRelations: WordRelation[];
+}
+
+export interface WordFilterCriteria
+{
+    includeRelated: boolean;
+    translation: string;
+    type: WordType | null;
+    verbDerivedOrNot: boolean | null;
+    word: string;
 }
 
 @Injectable
@@ -127,29 +132,29 @@ export class WordsController
         await conn.DeleteRows("words", "id = ?", wordId);
     }
 
-    public async QueryUnderivedWords(offset: number, limit: number)
+    public async FindWords(filterCriteria: WordFilterCriteria, offset: number, limit: number)
     {
-        const query = `
-        SELECT w.id, w.word, w.type, w.isMale
-        FROM words w
-        LEFT JOIN words_verbs wv
-            ON wv.wordId = w.id
-        LEFT JOIN words_relations wr
-            ON wr.fromWordId = w.id
-        WHERE (wv.verbId IS NULL) AND (wr.toWordId IS NULL)
-        LIMIT ?
-        OFFSET ?
-        `;
+        const builder = this.CreateQueryBuilder(filterCriteria);
+        builder.offset = offset;
+        builder.limit = limit;
+
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const rows = await conn.Select<UnderivedWordData>(query, limit, offset);
-        for (const row of rows)
-        {
-            row.isMale = (typeof row.isMale === "number") ? (row.isMale != 0) : null;
-            row.translations = await this.translationsController.QueryWordTranslations(row.id);
-        }
+        const rows = await conn.Select(builder.CreateSQLQuery());
+        return rows.Values().Map(this.QueryFullWordData.bind(this)).PromiseAll();
+    }
 
-        return rows;
+    public async FindWordsCount(filterCriteria: WordFilterCriteria)
+    {
+        const builder = this.CreateQueryBuilder(filterCriteria);
+        const query = "SELECT COUNT(*) as cnt FROM (" + builder.CreateSQLQuery() + ") tbl";
+
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const row = await conn.SelectOne(query);
+
+        if(row === undefined)
+            return 0;
+        return row.cnt as number;
     }
 
     public async QueryVerbDerivedWords(verbId: number)
@@ -196,26 +201,7 @@ export class WordsController
 
         const row = await conn.SelectOne(query, wordId);
         if(row !== undefined)
-        {
-            const result: AnyWordData = {
-                id: row.id,
-                isMale: (row.isMale === null) ? null : (row.isMale !== 0),
-                translations: await this.translationsController.QueryWordTranslations(row.id),
-                type: row.type,
-                word: row.word,
-                outgoingRelations: await this.QueryRelationsOf(row.id),
-                incomingRelations: await this.QueryRelationsTo(row.id),
-            };
-            if(typeof row.verbId === "number")
-            {
-                result.verbData = {
-                    isVerbalNoun: row.isVerbalNoun !== 0,
-                    verbId: row.verbId,
-                };
-            }
-
-            return result;
-        }
+            return await this.QueryFullWordData(row);
 
         return undefined;
     }
@@ -249,6 +235,122 @@ export class WordsController
     }
 
     //Private methods
+    private CreateQueryBuilder(filterCriteria: WordFilterCriteria)
+    {
+        const builder = this.dbController.CreateQueryBuilder();
+        const wordsTable = builder.SetPrimaryTable("words");
+
+        const wordsVerbsTable = builder.AddJoin({
+            type: (filterCriteria.verbDerivedOrNot === true) ? "INNER" : "LEFT",
+            tableName: "words_verbs",
+            conditions: [
+                {
+                    column: "wordId",
+                    joinTable: wordsTable,
+                    joinTableColumn: "id",
+                    operator: "="
+                }
+            ]
+        });
+
+        builder.SetColumns([
+            { table: wordsTable, column: "id" },
+            { table: wordsTable, column: "word" },
+            { table: wordsTable, column: "type" },
+            { table: wordsTable, column: "isMale" },
+            { table: wordsVerbsTable, column: "verbId" },
+            { table: wordsVerbsTable, column: "isVerbalNoun" },
+        ]);
+
+        builder.AddCondition({
+            operand: {
+                function: "AR_TRIM",
+                args: [{
+                    table: wordsTable,
+                    column: "word",
+                }]
+            },
+            operator: "LIKE",
+            constant: "%" + this.MapWordToSearchVariant(filterCriteria.word) + "%"
+        });
+
+        if(filterCriteria.translation.trim().length > 0)
+        {
+            const wordsTranslationsTable = builder.AddJoin({
+                type: "INNER",
+                tableName: "words_translations",
+                conditions: [
+                    {
+                        column: "wordId",
+                        joinTable: wordsTable,
+                        joinTableColumn: "id",
+                        operator: "="
+                    }
+                ]
+            });
+
+            builder.AddCondition({
+                operand: {
+                    table: wordsTranslationsTable,
+                    column: "text",
+                },
+                operator: "LIKE",
+                constant: "%" + filterCriteria.translation + "%"
+            });
+        }
+
+        if(filterCriteria.type !== null)
+        {
+            builder.AddCondition({
+                operand: {
+                    table: wordsTable,
+                    column: "type",
+                },
+                operator: "=",
+                constant: filterCriteria.type
+            });
+        }
+
+        if(filterCriteria.verbDerivedOrNot === false)
+        {
+            builder.AddCondition({
+                operand: {
+                    table: wordsVerbsTable,
+                    column: "verbId",
+                },
+                operator: "IS",
+                constant: null
+            });
+        }
+
+        if(!filterCriteria.includeRelated)
+        {
+            const wordsRelationsTable = builder.AddJoin({
+                type: "LEFT",
+                tableName: "words_relations",
+                conditions: [
+                    {
+                        column: "fromWordId",
+                        joinTable: wordsTable,
+                        joinTableColumn: "id",
+                        operator: "="
+                    },
+                ]
+            });
+
+            builder.AddCondition({
+                operand: {
+                    table: wordsRelationsTable,
+                    column: "toWordId",
+                },
+                operator: "IS",
+                constant: null
+            });
+        }
+
+        return builder;
+    }
+
     private async InsertRelations(wordId: number, relations: WordRelation[])
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
@@ -257,6 +359,40 @@ export class WordsController
         {
             await conn.InsertRow("words_relations", { fromWordId: wordId, toWordId: relation.refWordId, relationship: relation.relationType });
         }
+    }
+
+    private MapWordToSearchVariant(word: string)
+    {
+        const trimmed = RemoveTashkil(word);
+
+        //map all chars to their basic form
+        const alif = trimmed.replace(/[\u0622\u0623\u0625]/g, "\u0627");
+        const waw = alif.replace(/[\u0624]/g, "\u0648");
+        const ya = waw.replace(/[\u0626\u0649]/g, "\u064A");
+
+        return ya;
+    }
+
+    private async QueryFullWordData(row: any)
+    {
+        const result: AnyWordData = {
+            id: row.id,
+            isMale: (row.isMale === null) ? null : (row.isMale !== 0),
+            translations: await this.translationsController.QueryWordTranslations(row.id),
+            type: row.type,
+            word: row.word,
+            outgoingRelations: await this.QueryRelationsOf(row.id),
+            incomingRelations: await this.QueryRelationsTo(row.id),
+        };
+        if(typeof row.verbId === "number")
+        {
+            result.verbData = {
+                isVerbalNoun: row.isVerbalNoun !== 0,
+                verbId: row.verbId,
+            };
+        }
+
+        return result;
     }
 
     private async QueryRelationsOf(wordId: number)

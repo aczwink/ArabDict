@@ -18,19 +18,19 @@
 
 import { Routes } from "acfrontend";
 import { routes as rootRoutes } from "./roots/routing";
-import { routes as underivedWordsRoutes } from "./underived_words/routing";
 import { routes as verbsRoutes } from "./verbs/routing";
 import { routes as wordsRoutes } from "./words/routing";
-import { SearchComponent } from "./SearchComponent";
 import { LearnComponent } from "./LearnComponent";
 import { StatisticsComponent } from "./StatisticsComponent";
+import { WordAnalysisComponent } from "./WordAnalysisComponent";
 
 export const routes : Routes = [
+    { path: "analysis", component: WordAnalysisComponent },
     { path: "learn", component: LearnComponent },
     { path: "roots", children: rootRoutes },
     { path: "statistics", component: StatisticsComponent },
-    { path: "underived_words", children: underivedWordsRoutes },
     { path: "verbs", children: verbsRoutes },
     { path: "words", children: wordsRoutes },
-    { path: "", component: SearchComponent },
+    { path: "", redirect: "verbs" },
+    //{ path: "*", component: } 404
 ];

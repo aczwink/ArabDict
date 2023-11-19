@@ -15,26 +15,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { APIServiceBase, HTTPService, Injectable } from "acfrontend";
-import { API } from "../dist/api";
-import { APIServiceInterceptor } from "./shared/APIServiceInterceptor";
 
-export const g_backendHostname = process.env.ARABDICT_BACKEND_HOSTNAME!;
-export const g_backendPort = parseInt(process.env.ARABDICT_BACKEND_PORT!);
-export const g_backendProtocol = "http";
+import { Injectable, HTTPInterceptor, InfoMessageManager } from "acfrontend";
+import { ResponseData } from "acfrontend/dist/Services/HTTPService";
 
 @Injectable
-export class APIService extends API
+export class APIServiceInterceptor implements HTTPInterceptor
 {
-    constructor(httpService: HTTPService, apiServiceInterceptor: APIServiceInterceptor)
+    constructor(private infoMessageManager: InfoMessageManager)
     {
-        super( req => this.base.SendRequest(req) );
-
-        this.base = new APIServiceBase(httpService, g_backendHostname, g_backendPort, g_backendProtocol);
-
-        this.base.RegisterInterceptor(apiServiceInterceptor);
     }
 
-    //Private variables
-    private base: APIServiceBase;
+    public async Intercept(response: ResponseData): Promise<boolean>
+    {
+        switch(response.statusCode)
+        {
+            case 400:
+            {
+                const message = `
+                Unhandled error: ${response.statusCode}
+                ${response.body}
+                `;
+
+                this.infoMessageManager.ShowMessage(message, {
+                    duration: 10000
+                });
+            }
+            break;
+        }
+
+        return true;
+    }
 }

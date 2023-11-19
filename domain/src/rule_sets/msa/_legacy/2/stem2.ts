@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { RootType } from "../../../../VerbRoot";
 import { StemDefinition } from "../../../Definitions";
 import { stem2_imperative } from "./imperative";
 import { stem2_past_active } from "./past_active";
@@ -34,18 +33,4 @@ export const stem2: StemDefinition = {
         active: stem2_present_active,
         passive: stem2_present_passive,
     },
-
-    participleRules: {
-        [RootType.Defective]: [
-            { voice: "active", conjugation: "TODO" },
-            { voice: "passive", conjugation: "TODO" },
-        ],
-
-        [RootType.Quadriliteral]: [
-            { voice: "active", conjugation: "TODO" },
-            { voice: "passive", conjugation: "TODO" },
-        ],
-    },
-
-    verbalNounRules: {}
 };

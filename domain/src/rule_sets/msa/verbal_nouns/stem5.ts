@@ -15,22 +15,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { FATHA, DHAMMA } from "../../../Definitions";
+import { RootType, VerbRoot } from "../../../VerbRoot";
+import { Vocalized } from "../../../Vocalization";
+import { TA } from "../_legacy/VerbStem";
 
-import { Component, Injectable, JSX_CreateElement } from "acfrontend";
-import { AnyWordData, VerbDerivedWordData } from "../../dist/api";
-import { RenderTranslations } from "../shared/translations";
-import { WordReferenceComponent } from "./WordReferenceComponent";
-
-@Injectable
-export class WordOverviewComponent extends Component<{ word: AnyWordData | VerbDerivedWordData; }>
+export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): Vocalized[]
 {
-    protected Render(): RenderValue
+    switch(root.type)
     {
-        return <tr>
-            <td><WordReferenceComponent word={this.input.word} /></td>
-            <td>
-                {RenderTranslations(this.input.word.translations)}
-            </td>
-        </tr>;
+        case RootType.Assimilated:
+        case RootType.Hollow:
+        case RootType.Sound:
+            return [
+                { letter: TA, shadda: false, tashkil: FATHA },
+                { letter: root.r1, shadda: false, tashkil: FATHA },
+                { letter: root.r2, shadda: true, tashkil: DHAMMA },
+                { letter: root.r3, shadda: false },
+            ];
+        default:
+            return [{letter: "TODO", shadda: false}];
     }
 }

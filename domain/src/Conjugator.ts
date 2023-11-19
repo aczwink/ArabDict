@@ -24,7 +24,7 @@ import { StemTenseVoiceDefinition } from "./rule_sets/Definitions";
 import { ConjugationParams } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
 import { Vocalized } from "./Vocalization";
-import { DHAMMA, KASRA, SUKUN, WAW, YA } from "./Definitions";
+import { ALEF, DHAMMA, FATHA, KASRA, SUKUN, WAW, YA } from "./Definitions";
 
 export enum DialectType
 {
@@ -74,13 +74,25 @@ export class Conjugator
     public ConjugateParticiple(dialect: DialectType, root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): string
     {
         const dialectConjugator = this.CreateDialectConjugator(dialect);
-        return dialectConjugator.ConjugateParticiple(root, stem, voice, stem1Context);
+        const pattern = dialectConjugator.ConjugateParticiple(root, stem, voice, stem1Context);
+
+        this.RemoveTrailingSukun(pattern);
+
+        return Hamzate(pattern);
     }
 
     public GenerateAllPossibleVerbalNouns(dialect: DialectType, root: VerbRoot, stem: number): string[]
     {
         const dialectConjugator = this.CreateDialectConjugator(dialect);
-        return dialectConjugator.GenerateAllPossibleVerbalNouns(root, stem);
+        const patterns = dialectConjugator.GenerateAllPossibleVerbalNouns(root, stem);
+
+        return patterns.map(x => {
+            if(typeof x === "string")
+                return x;
+            this.RemoveRedundantTashkil(x as any[]);
+            this.RemoveTrailingSukun(x as any);
+            return Hamzate(x as any);
+        });
     }
 
     //Private methods
@@ -137,10 +149,19 @@ export class Conjugator
         for(let i = 1; i < vocalized.length; i++)
         {
             const v = vocalized[i];
-            if( (v.letter === WAW) && (v.tashkil === DHAMMA) )
+            if( (v.letter === ALEF) && (v.tashkil === FATHA) )
+                v.tashkil = undefined;
+            else if( (v.letter === WAW) && (v.tashkil === DHAMMA) )
                 v.tashkil = undefined;
             else if( (v.letter === YA) && (v.tashkil === KASRA) )
                 v.tashkil = undefined;
         }
+    }
+
+    private RemoveTrailingSukun(pattern: Vocalized[])
+    {
+        const last = pattern[pattern.length - 1];
+        if(last.tashkil === SUKUN)
+            last.tashkil = undefined;
     }
 }

@@ -17,10 +17,9 @@
  * */
 
 import { NumberDictionary } from "acts-util-core";
-import { Gender, Person, Numerus, Voice } from "./msa/_legacy/VerbStem";
+import { Gender, Person, Numerus } from "./msa/_legacy/VerbStem";
 import { Stem1Context } from "./msa/_legacy/CreateVerb";
 import { VerbRoot } from "../VerbRoot";
-import { BASE_TASHKIL } from "../Definitions";
 
 export interface Stem1DefectiveContext
 {
@@ -51,21 +50,11 @@ interface StemTenseDefinition
     passive?: StemTenseVoiceDefinition;
 }
 
-interface ParticipleRule
-{
-    condition?: (stem1Context: Stem1Context) => boolean;
-    voice: Voice;
-    conjugation: string;
-}
-
 export interface StemDefinition
 {
     imperative?: StemTenseVoiceDefinition;
     perfect?: StemTenseDefinition;
     present?: StemTenseDefinition;
-
-    participleRules: NumberDictionary<ParticipleRule[]>;
-    verbalNounRules: NumberDictionary<string[]>;
 }
 
 export interface DialectDefinition

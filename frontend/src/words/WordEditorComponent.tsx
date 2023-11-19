@@ -19,7 +19,7 @@
 import { Component, FormField, JSX_CreateElement, LineEdit, Select } from "acfrontend";
 import { TranslationEntry, WordRelation, WordType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
-import { WordMayHaveGender, WordTypeToText } from "../shared/words";
+import { WordMayHaveGender, WordTypeToText, allWordTypes } from "../shared/words";
 import { WordRelationsEditorComponent } from "./WordRelationsEditorComponent";
 
 interface WordBaseData
@@ -35,22 +35,10 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
 {
     protected Render(): RenderValue
     {
-        const wordTypes = [
-            WordType.Adjective,
-            WordType.Conjunction,
-            WordType.ForeignVerb,
-            WordType.Noun,
-            WordType.Preposition,
-            WordType.Adverb,
-            WordType.Pronoun,
-            WordType.Phrase,
-            WordType.Particle,
-        ];
-
         return <fragment>
             <FormField title="Type">
                 <Select onChanged={this.OnWordTypeChanged.bind(this)}>
-                    {wordTypes.map(x => <option selected={x === this.input.data.type} value={x}>{WordTypeToText(x)}</option>)}
+                    {allWordTypes.map(x => <option selected={x === this.input.data.type} value={x}>{WordTypeToText(x)}</option>)}
                 </Select>
             </FormField>
 

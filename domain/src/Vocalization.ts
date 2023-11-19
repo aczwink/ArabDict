@@ -16,12 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, DHAMMA, FATHA, KASRA, SHADDA, SUKUN } from "./Definitions";
+import { BASE_TASHKIL, DHAMMA, FATHA, FULL_TASHKIL, KASRA, SHADDA, SUKUN } from "./Definitions";
 
 export interface Vocalized
 {
     letter: string;
     tashkil?: BASE_TASHKIL;
+    shadda: boolean;
+}
+export interface FullyVocalized
+{
+    letter: string;
+    tashkil: FULL_TASHKIL;
     shadda: boolean;
 }
 

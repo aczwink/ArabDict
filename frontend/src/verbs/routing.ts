@@ -21,10 +21,12 @@ import { EditVerbComponent } from "./EditVerbComponent";
 import { ShowVerbComponent } from "./ShowVerbComponent";
 import { AddWordComponent } from "./AddWordComponent";
 import { AddVerbalNounComponent } from "./AddVerbalNounComponent";
+import { SearchVerbsComponent } from "./SearchVerbsComponent";
 
 export const routes : Routes = [
     { path: "addverbalnoun/:verbId", component: AddVerbalNounComponent },
     { path: "addword/:verbId", component: AddWordComponent },
     { path: "edit/:verbId", component: EditVerbComponent },
     { path: ":verbId", component: ShowVerbComponent },
+    { path: "", component: SearchVerbsComponent },
 ];

@@ -15,24 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { DAL, ZAY } from "../../../Definitions";
+import { Vocalized } from "../../../Vocalization";
+import { AugmentedRoot } from "../AugmentedRoot";
+import { Tense } from "../_legacy/VerbStem";
 
-import { Component, JSX_CreateElement } from "acfrontend";
-import { SearchVerbsComponent } from "./verbs/SearchVerbsComponent";
-import { SearchWordsComponent } from "./underived_words/SearchWordsComponent";
-import { WordAnalysisComponent } from "./WordAnalysisComponent";
-
-export class SearchComponent extends Component
-{    
-    protected Render(): RenderValue
+export function Stem8AssimilateTa(vocalized: Vocalized[], r1idx: number)
+{
+    switch(vocalized[r1idx].letter)
     {
-        return <fragment>
-            <div className="row">
-                <div className="col"><SearchVerbsComponent /></div>
-                <div className="col"><SearchWordsComponent /></div>
-            </div>
-            <div className="row">
-                <WordAnalysisComponent />
-            </div>
-        </fragment>
+        case ZAY:
+            vocalized[r1idx + 1].letter = DAL;
+            break;
     }
+}
+
+export function Stem8AssimilateTaVerb(augmentedRoot: AugmentedRoot, tense: Tense)
+{
+    const r1idx = (tense === "perfect") ? 1 : 0;
+    Stem8AssimilateTa(augmentedRoot.vocalized, r1idx);
 }

@@ -17,7 +17,10 @@
  * */
 
 import { APIController, Body, Delete, Get, NotFound, Path, Post, Put, Query } from "acts-util-apilib";
-import { WordCreationData, WordsController } from "../data-access/WordsController";
+import { WordCreationData, WordFilterCriteria, WordType, WordsController } from "../data-access/WordsController";
+
+type OptionalBool = boolean | null;
+type OptionalWordType = WordType | null;
 
 @APIController("words")
 class _api_
@@ -35,12 +38,30 @@ class _api_
     }
 
     @Get()
-    public async QueryWords(
+    public async FindWords(
+        @Query wordFilter: string,
+        @Query verbDerivedOrNot: OptionalBool,
+        @Query includeRelated: boolean,
+        @Query translation: string,
+        @Query type: OptionalWordType,
         @Query offset: number,
-        @Query limit: number
+        @Query limit: number,
     )
     {
-        return await this.wordsController.QueryUnderivedWords(offset, limit);
+        const filterCriteria: WordFilterCriteria = {
+            includeRelated,
+            verbDerivedOrNot,
+            word: wordFilter,
+            translation,
+            type
+        };
+        const totalCount = await this.wordsController.FindWordsCount(filterCriteria);
+        const words = await this.wordsController.FindWords(filterCriteria, offset, limit);
+
+        return {
+            totalCount,
+            words,
+        };
     }
 }
 

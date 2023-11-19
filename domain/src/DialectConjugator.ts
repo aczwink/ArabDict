@@ -19,7 +19,7 @@
 import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { VerbRoot } from "./VerbRoot";
 import { Tense, Voice, Gender, Person, Numerus, Mood } from "./rule_sets/msa/_legacy/VerbStem";
-import { Vocalized } from "./Vocalization";
+import { FullyVocalized, Vocalized } from "./Vocalization";
 
 export interface ConjugationParams
 {
@@ -36,6 +36,6 @@ export interface ConjugationParams
 export interface DialectConjugator
 {
     Conjugate(root: VerbRoot, params: ConjugationParams): Vocalized[];
-    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): string;
-    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): string[];
+    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): Vocalized[];
+    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[];
 }

@@ -135,6 +135,52 @@ CREATE TABLE `words_verbs` (
   CONSTRAINT `words_verbs_wordId` FOREIGN KEY (`wordId`) REFERENCES `words` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping routines for database 'arabdict'
+--
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP FUNCTION IF EXISTS `AR_TRIM` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE FUNCTION `AR_TRIM`(`s` TEXT) RETURNS text CHARSET utf8mb4 COLLATE utf8mb4_general_ci
+    NO SQL
+    DETERMINISTIC
+BEGIN
+  DECLARE tmp TEXT;
+  SET tmp = REPLACE(
+      REPLACE(
+        REPLACE(
+          REPLACE(
+            REPLACE(s, "ُ", ""),
+            "َ", ""),
+          "ِ", ""),
+        "ّ", ""),
+      "ْ", "");
+
+  SET tmp = REPLACE(
+    REPLACE(tmp, "أ", "ا"),
+    "إ", "ا"
+  );
+
+  SET tmp = REPLACE(
+    REPLACE(tmp, "ئ", "ي"),
+    "ى", "ي"
+  );
+
+    RETURN tmp;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -145,4 +191,4 @@ CREATE TABLE `words_verbs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-05 22:39:38
+-- Dump completed on 2023-11-19 22:11:36

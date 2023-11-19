@@ -28,10 +28,4 @@ export const stem8: StemDefinition = {
     present: {
         active: stem8_present_active,
     },
-
-    participleRules: {},
-    
-    verbalNounRules: {
-        [RootType.Assimilated]: ["إتِّعال"],
-    }
 };

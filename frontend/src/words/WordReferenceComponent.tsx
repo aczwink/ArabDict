@@ -18,10 +18,18 @@
 
 import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "../APIService";
-import { AnyWordData, UnderivedWordData } from "../../dist/api";
+import { AnyWordData, WordType } from "../../dist/api";
 import { WordGenderToAbbreviation, WordTypeToAbbreviationText } from "../shared/words";
 
-export class WordReferenceComponent extends Component<{ word: UnderivedWordData; }>
+interface BaseWordData
+{
+    id: number;
+    word: string;
+    type: WordType;
+    isMale: boolean | null;
+}
+
+export class WordReferenceComponent extends Component<{ word: BaseWordData; }>
 {
     protected Render(): RenderValue
     {

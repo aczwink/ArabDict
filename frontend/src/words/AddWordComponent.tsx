@@ -19,7 +19,7 @@
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router } from "acfrontend";
 import { WordCreationData, WordRelationType, WordType } from "../../dist/api";
 import { APIService } from "../APIService";
-import { WordEditorComponent } from "../words/WordEditorComponent";
+import { WordEditorComponent } from "./WordEditorComponent";
 
 @Injectable
 export class AddWordComponent extends Component
@@ -67,7 +67,7 @@ export class AddWordComponent extends Component
     {
         this.loading = true;
 
-        await this.apiService.words.post({
+        const response = await this.apiService.words.post({
             type: this.data.type,
             word: this.data.word,
             translations: this.data.translations,
@@ -75,6 +75,6 @@ export class AddWordComponent extends Component
             outgoingRelations: this.data.outgoingRelations
         });
 
-        this.router.RouteTo("/underived_words");
+        this.router.RouteTo("/words/" + response.data);
     }
 }

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, ALEF_MADDA, BASE_TASHKIL, DHAMMA, KASRA, SUKUN, WAW, WAW_HAMZA, YA, YA_HAMZA } from "./Definitions";
+import { ALEF, ALEF_HAMZA_BELOW, ALEF_MADDA, BASE_TASHKIL, DHAMMA, KASRA, SUKUN, WAW, WAW_HAMZA, YA, YA_HAMZA } from "./Definitions";
 import { ALEF_HAMZA, FATHA, HAMZA } from "./Definitions";
 import { Vocalized, VocalizedToString } from "./Vocalization";
 
@@ -77,7 +77,7 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
     if(isInitial)
     {
         if(followingShortVowel === KASRA)
-            throw new Error("Should be hamza under alif");
+            return { letter: ALEF_HAMZA_BELOW, tashkil: followingShortVowel, shadda: false };
         return { letter: ALEF_HAMZA, tashkil: followingShortVowel, shadda: false };
     }
 

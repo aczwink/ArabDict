@@ -17,7 +17,7 @@
  * */
 
 import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
-import { DHAMMA, FATHA, HAMZA, KASRA, LETTER_RA, PRIMARY_TASHKIL, WAW, YA } from "./Definitions";
+import { DHAMMA, FATHA, HAMZA, HHA, KASRA, LETTER_RA, PRIMARY_TASHKIL, WAW, YA } from "./Definitions";
 
 export enum RootType
 {
@@ -132,6 +132,7 @@ export class VerbRoot
         switch(this.type)
         {
             case RootType.Assimilated:
+            case RootType.HamzaOnR1:
             case RootType.Sound:
             {
                 let present: PRIMARY_TASHKIL[];
@@ -158,16 +159,18 @@ export class VerbRoot
                         soundOverride: [false]
                     };
                 }
+                if(this.radicalsAsSeparateLetters.Equals([HHA, YA, WAW]))
+                {
+                    return {
+                        past: [],
+                        present: [FATHA],
+                        soundOverride: [false]
+                    };
+                }
                 
                 return {
                     past: [(stem1Context.middleRadicalTashkilPresent === FATHA) ? KASRA : FATHA],
                     present: [FATHA, DHAMMA, KASRA],
-                    soundOverride: [false]
-                };
-            case RootType.HamzaOnR1:
-                return {
-                    past: [DHAMMA],
-                    present: [DHAMMA],
                     soundOverride: [false]
                 };
             case RootType.Hollow:

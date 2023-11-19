@@ -16,11 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Routes } from "acfrontend";
-import { SearchWordsComponent } from "./SearchWordsComponent";
-import { AddWordComponent } from "./AddWordComponent";
+import { ALEF, FATHA, YA } from "../../../Definitions";
+import { ConjugationParams } from "../../../DialectConjugator";
+import { AugmentedRoot } from "../AugmentedRoot";
 
-export const routes : Routes = [
-    { path: "add", component: AddWordComponent },
-    { path: "", component: SearchWordsComponent },
-];
+export function AlterSpecialCaseHayiya(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+{
+    if(params.tense === "perfect")
+        augmentedRoot.ReplaceRadical(3, { letter: YA, shadda: false, tashkil: FATHA });
+    else
+    {
+        augmentedRoot.ReplaceRadical(3, { letter: ALEF, shadda: false });
+    }
+}

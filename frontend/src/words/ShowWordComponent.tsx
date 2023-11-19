@@ -75,7 +75,7 @@ export class ShowWordComponent extends Component
 
             <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(this.data.word)} target="_blank">See on Wiktionary</a>
             <br />
-            <RouterButton className="btn btn-primary" route={"/underived_words/add?relatedWordId=" + this.wordId}><BootstrapIcon>plus</BootstrapIcon> Add related word</RouterButton>
+            <RouterButton className="btn btn-primary" route={"/words/add?relatedWordId=" + this.wordId}><BootstrapIcon>plus</BootstrapIcon> Add related word</RouterButton>
         </fragment>;
     }
 

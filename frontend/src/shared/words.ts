@@ -18,6 +18,18 @@
 
 import { WordType } from "../../dist/api";
 
+export const allWordTypes = [
+    WordType.Adjective,
+    WordType.Conjunction,
+    WordType.ForeignVerb,
+    WordType.Noun,
+    WordType.Preposition,
+    WordType.Adverb,
+    WordType.Pronoun,
+    WordType.Phrase,
+    WordType.Particle,
+];
+
 export function WordMayHaveGender(wordType: WordType)
 {
     switch(wordType)

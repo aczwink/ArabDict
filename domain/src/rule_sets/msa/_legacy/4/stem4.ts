@@ -30,13 +30,4 @@ export const stem4: StemDefinition = {
     present: {
         active: stem4_present_active
     },
-
-    participleRules: {
-        [RootType.Hollow]: [
-            { voice: "active", conjugation: "مُفِيل" },
-            { voice: "passive", conjugation: "مُفَال" }
-        ]
-    },
-    
-    verbalNounRules: {}
 };
