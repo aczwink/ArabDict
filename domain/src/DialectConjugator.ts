@@ -36,6 +36,6 @@ export interface ConjugationParams
 export interface DialectConjugator
 {
     Conjugate(root: VerbRoot, params: ConjugationParams): Vocalized[];
-    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): Vocalized[];
+    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): Vocalized[] | FullyVocalized[];
     GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[];
 }

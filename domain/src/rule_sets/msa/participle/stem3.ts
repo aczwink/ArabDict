@@ -16,23 +16,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { MIM, DHAMMA, FATHA, KASRA, ALEF } from "../../../Definitions";
+import { MIM, DHAMMA, FATHA, KASRA, ALEF, KASRATAN, SUKUN, FATHATAN, ALEF_MAKSURA } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { Vocalized } from "../../../Vocalization";
+import { FullyVocalized } from "../../../Vocalization";
 import { Voice } from "../_legacy/VerbStem";
 
-export function GenerateParticipleStem3(root: VerbRoot, voice: Voice): Vocalized[]
+export function GenerateParticipleStem3(root: VerbRoot, voice: Voice): FullyVocalized[]
 {
     switch(root.type)
     {
+        case RootType.Defective:
+            if(voice === "active")
+            {
+                return [
+                    { letter: MIM, shadda: false, tashkil: DHAMMA },
+                    { letter: root.r1, shadda: false, tashkil: FATHA },
+                    { letter: ALEF, shadda: false, tashkil: FATHA },
+                    { letter: root.r2, shadda: false, tashkil: KASRATAN },
+                ];
+            }
+            return [
+                { letter: MIM, shadda: false, tashkil: DHAMMA },
+                { letter: root.r1, shadda: false, tashkil: FATHA },
+                { letter: ALEF, shadda: false, tashkil: FATHA },
+                { letter: root.r2, shadda: false, tashkil: FATHATAN },
+                { letter: ALEF_MAKSURA, shadda: false, tashkil: SUKUN },
+            ];
+
         case RootType.Sound:
             return [
                 { letter: MIM, shadda: false, tashkil: DHAMMA },
                 { letter: root.r1, shadda: false, tashkil: FATHA },
-                { letter: ALEF, shadda: false },
+                { letter: ALEF, shadda: false, tashkil: FATHA },
                 { letter: root.r2, shadda: false, tashkil: (voice === "active") ? KASRA : FATHA },
-                { letter: root.r3, shadda: false },
+                { letter: root.r3, shadda: false, tashkil: SUKUN },
             ];
     }
-    return [{letter: "TODO", shadda: false}];
+    return [{letter: "TODO", shadda: false, tashkil: SUKUN }];
 }

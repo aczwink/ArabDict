@@ -23,7 +23,7 @@ import { Voice } from "./rule_sets/msa/_legacy/VerbStem";
 import { StemTenseVoiceDefinition } from "./rule_sets/Definitions";
 import { ConjugationParams } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
-import { Vocalized } from "./Vocalization";
+import { FullyVocalized, Vocalized } from "./Vocalization";
 import { ALEF, DHAMMA, FATHA, KASRA, SUKUN, WAW, YA } from "./Definitions";
 
 export enum DialectType
@@ -76,9 +76,7 @@ export class Conjugator
         const dialectConjugator = this.CreateDialectConjugator(dialect);
         const pattern = dialectConjugator.ConjugateParticiple(root, stem, voice, stem1Context);
 
-        this.RemoveTrailingSukun(pattern);
-
-        return Hamzate(pattern);
+        return this.FormatPattern(pattern);
     }
 
     public GenerateAllPossibleVerbalNouns(dialect: DialectType, root: VerbRoot, stem: number): string[]
@@ -89,9 +87,7 @@ export class Conjugator
         return patterns.map(x => {
             if(typeof x === "string")
                 return x;
-            this.RemoveRedundantTashkil(x as any[]);
-            this.RemoveTrailingSukun(x as any);
-            return Hamzate(x as any);
+            return this.FormatPattern(x);
         });
     }
 
@@ -141,6 +137,13 @@ export class Conjugator
             case DialectType.NorthLevantineArabic:
                 throw new Error("implement me");
         }
+    }
+
+    private FormatPattern(pattern: (FullyVocalized | Vocalized)[]): string
+    {
+        this.RemoveRedundantTashkil(pattern as any[]);
+        this.RemoveTrailingSukun(pattern as any);
+        return Hamzate(pattern as any);
     }
 
     private RemoveRedundantTashkil(vocalized: Vocalized[])

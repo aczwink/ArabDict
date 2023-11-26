@@ -19,6 +19,7 @@
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
 import { APIService } from "../APIService";
 import { RootOverviewData } from "../../dist/api";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 interface AlphabetRange
 {
@@ -74,19 +75,33 @@ export class ListRootsComponent extends Component
         return elems;
     }
 
+    private RenderRootRow(rootData: RootOverviewData)
+    {
+        const root = new VerbRoot(rootData.radicals);
+        return <tr>
+            <td>{root.r4}</td>
+            <td>{root.r3}</td>
+            <td>{root.r2}</td>
+            <td><Anchor route={"/roots/" + rootData.id}>{root.radicalsAsSeparateLetters.join("-")}</Anchor></td>
+        </tr>;
+    }
+
     private RenderTable()
     {
         if(this.data === null)
             return <ProgressSpinner />;
 
-        return <table className="table table-striped table-hover table-sm">
+        return <table className="table table-striped table-hover table-sm text-center" style="margin-left: auto; margin-right: auto; width: auto;">
             <thead>
                 <tr>
-                    <th>Root</th>
+                    <th>r4</th>
+                    <th>r3</th>
+                    <th>r2</th>
+                    <th>Radicals</th>
                 </tr>
             </thead>
             <tbody>
-                {this.data.map(x => <tr><td><Anchor route={"/roots/" + x.id}>{x.radicals.split("").join("-")}</Anchor></td></tr>)}
+                {this.data.map(this.RenderRootRow.bind(this))}
             </tbody>
         </table>;
     }

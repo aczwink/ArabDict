@@ -93,7 +93,7 @@ export class MSAConjugator implements DialectConjugator
         return this.ConjugateLegacy(root, params);
     }
 
-    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): Vocalized[]
+    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): Vocalized[] | FullyVocalized[]
     {
         switch(stem)
         {
@@ -106,7 +106,7 @@ export class MSAConjugator implements DialectConjugator
             case 4:
                 return GenerateParticipleStem4(root, voice);
             case 5:
-                return GenerateParticipleStem5(root, voice) as any;
+                return GenerateParticipleStem5(root, voice);
             case 8:
                 return GenerateParticipleStem8(root, voice);
         }
