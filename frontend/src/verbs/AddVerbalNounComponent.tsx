@@ -17,7 +17,7 @@
  * */
 
 import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
-import { WordCreationData, WordType } from "../../dist/api";
+import { WordCreationData, WordType, WordVerbDerivationType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { ConjugationService } from "../ConjugationService";
 
@@ -80,8 +80,8 @@ export class AddVerbalNounComponent extends Component
             word: this.data.word,
             translations: this.data.translations,
             isMale: this.data.isMale,
-            verbData: {
-                isVerbalNoun: true,
+            derivation: {
+                type: WordVerbDerivationType.VerbalNoun,
                 verbId: this.verbId,
             },
             outgoingRelations: this.data.outgoingRelations

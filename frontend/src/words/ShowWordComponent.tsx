@@ -18,7 +18,7 @@
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
 import { APIService } from "../APIService";
-import { AnyWordData, VerbData, WordRelation, WordRelationType, WordVerbReferenceData } from "../../dist/api";
+import { AnyWordData, VerbData, WordRelation, WordRelationType, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
 import { WordTypeToText } from "../shared/words";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
@@ -60,7 +60,7 @@ export class ShowWordComponent extends Component
                         <th>Gender:</th>
                         <td>{this.RenderGender(this.data.isMale)}</td>
                     </tr>
-                    {this.RenderVerbData(this.data.verbData)}
+                    {this.RenderDerivationData(this.data.derivation)}
                     <tr>
                         <th>Translation:</th>
                         <td>{RenderTranslations(this.data.translations)}</td>
@@ -94,7 +94,19 @@ export class ShowWordComponent extends Component
                 return outgoing ? "female version" : "male version";
             case WordRelationType.Plural:
                 return outgoing ? "plural" : "singular";
+            case WordRelationType.Nisba:
+                return outgoing ? "relative adjective (nisbah اَلنِّسْبَة)" : "noun version";
         }
+    }
+
+    private RenderDerivationData(derivation?: WordRootDerivationData | WordVerbDerivationData)
+    {
+        if(derivation === undefined)
+            return null;
+
+        if("rootId" in derivation)
+            return this.RenderRootDerivationData(derivation);
+        return this.RenderVerbData(derivation);
     }
 
     private RenderGender(isMale: boolean | null)
@@ -127,17 +139,35 @@ export class ShowWordComponent extends Component
         </ul>;
     }
 
-    private RenderVerbData(verbData: WordVerbReferenceData | undefined)
+    private RenderRootDerivationData(rootData: WordRootDerivationData)
     {
-        if(verbData === undefined)
-            return null;
+        return <tr>
+            <th>Derived from root:</th>
+            <td><Anchor route={"/roots/" + rootData.rootId}>{this.rootRadicals.split("").join("-")}</Anchor></td>
+        </tr>;
+    }
 
-        const verbalNoun = verbData.isVerbalNoun ? "verbal noun of " : "";
+    private RenderVerbData(verbData: WordVerbDerivationData)
+    {
+        function DerivationText()
+        {
+            switch(verbData.type)
+            {
+                case WordVerbDerivationType.ActiveParticiple:
+                    return "active participle of ";
+                case WordVerbDerivationType.PassiveParticiple:
+                    return "passive participle of ";
+                case WordVerbDerivationType.Unknown:
+                    return "";
+                case WordVerbDerivationType.VerbalNoun:
+                    return "verbal noun of ";
+            }
+        }
         const conjugated = this.conjugationService.Conjugate(this.rootRadicals, this.verb!.stem, "perfect", "active", "male", "third", "singular", "indicative", this.verb!.stem1Context);
 
         return <tr>
             <th>Derived from verb:</th>
-            <td>{verbalNoun}<Anchor route={"/verbs/" + verbData.verbId}>{conjugated}</Anchor></td>
+            <td>{DerivationText()}<Anchor route={"/verbs/" + verbData.verbId}>{conjugated}</Anchor></td>
         </tr>;
     }
 
@@ -151,11 +181,13 @@ export class ShowWordComponent extends Component
             const word = this.data!;
             this.data = null;
             await this.apiService.words._any_.delete(this.wordId);
-            
-            if(word.verbData === undefined)
+
+            if(word.derivation === undefined)
                 this.router.RouteTo("/underived_words");
+            else if("rootId" in word.derivation)
+                this.router.RouteTo("/roots/" + word.derivation.rootId);
             else
-                this.router.RouteTo("/verbs/" + word.verbData.verbId);
+                this.router.RouteTo("/verbs/" + word.derivation.verbId);
         }
     }
 
@@ -165,14 +197,21 @@ export class ShowWordComponent extends Component
         if(response.statusCode !== 200)
             throw new Error("TODO: implement me");
 
-        if(response.data.verbData !== undefined)
+        if(response.data.derivation !== undefined)
         {
-            const response2 = await this.apiService.verbs.get({ verbId: response.data.verbData.verbId });
-            if(response2.statusCode !== 200)
-                throw new Error("TODO: implement me");
-            this.verb = response2.data;
+            let rootId;
+            if("rootId" in response.data.derivation)
+                rootId = response.data.derivation.rootId;
+            else
+            {
+                const response2 = await this.apiService.verbs.get({ verbId: response.data.derivation.verbId });
+                if(response2.statusCode !== 200)
+                    throw new Error("TODO: implement me");
+                this.verb = response2.data;
+                rootId = response2.data.rootId;
+            }
 
-            const response3 = await this.apiService.roots._any_.get(response2.data.rootId);
+            const response3 = await this.apiService.roots._any_.get(rootId);
             if(response3.statusCode !== 200)
                 throw new Error("TODO: implement me");
             this.rootRadicals = response3.data.radicals;

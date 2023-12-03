@@ -24,7 +24,7 @@ function RenderTranslationEntry(translationEntry: TranslationEntry)
 {
     return <fragment>
         {DialectToEmoji(translationEntry.dialect)}
-        <span style="white-space: pre;">{translationEntry.text}</span>
+        <span style="white-space: pre-wrap;">{translationEntry.text}</span>
     </fragment>;
 }
 

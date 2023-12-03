@@ -36,7 +36,8 @@ export class WordRelationsEditorComponent extends Component<{ relations: WordRel
     {
         const relationships = [
             WordRelationType.Feminine,
-            WordRelationType.Plural
+            WordRelationType.Plural,
+            WordRelationType.Nisba
         ];
 
         return <div className="row mb-2">
@@ -59,6 +60,8 @@ export class WordRelationsEditorComponent extends Component<{ relations: WordRel
                 return "feminine version";
             case WordRelationType.Plural:
                 return "plural";
+            case WordRelationType.Nisba:
+                return "adjective version (nisba)";
         }
     }
 

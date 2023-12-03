@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, JSX_CreateElement, LineEdit, Select } from "acfrontend";
-import { TranslationEntry, WordRelation, WordType } from "../../dist/api";
+import { Component, FormField, JSX_CreateElement, LineEdit, NumberSpinner, Select } from "acfrontend";
+import { TranslationEntry, WordRelation, WordRootDerivationData, WordType, WordVerbDerivationData } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 import { WordMayHaveGender, WordTypeToText, allWordTypes } from "../shared/words";
 import { WordRelationsEditorComponent } from "./WordRelationsEditorComponent";
@@ -26,6 +26,7 @@ interface WordBaseData
 {
     word: string;
     isMale: boolean | null;
+    derivation?: WordRootDerivationData | WordVerbDerivationData;
     outgoingRelations: WordRelation[];
     type: WordType;
     translations: TranslationEntry[];
@@ -49,11 +50,40 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
             {this.RenderGender()}
 
             <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.input.onDataChanged} />
+
+            {this.RenderDerivation()}
             <WordRelationsEditorComponent relations={this.input.data.outgoingRelations} onDataChanged={this.input.onDataChanged} />
         </fragment>;
     }
 
     //Private methods
+    private RenderDerivation()
+    {
+        return <div className="row">
+            <div className="col">
+                <FormField title="Derived from">
+                    <Select onChanged={this.OnDerivationTypeChanged.bind(this)}>
+                        <option selected={this.input.data.derivation === undefined}>None</option>
+                        <option selected={(this.input.data.derivation !== undefined) && ("rootId" in this.input.data.derivation)}>Root</option>
+                        <option selected={(this.input.data.derivation !== undefined) && ("verbId" in this.input.data.derivation)}>Verb</option>
+                    </Select>
+                </FormField>
+            </div>
+            <div className="col">{this.RenderDerivationSpecific()}</div>
+        </div>;
+    }
+
+    private RenderDerivationSpecific()
+    {
+        if(this.input.data.derivation === undefined)
+            return null;
+
+        if("rootId" in this.input.data.derivation)
+            return this.RenderRootDerivation(this.input.data.derivation);
+
+        return "todo: verb derivation editor";
+    }
+
     private RenderGender()
     {
         if(!WordMayHaveGender(this.input.data.type))
@@ -67,10 +97,41 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
         </FormField>;
     }
 
+    private RenderRootDerivation(rootData: WordRootDerivationData)
+    {
+        return <FormField title="Root">
+            <NumberSpinner value={rootData.rootId} step={1} onChanged={this.OnRootDerivationDataChanged.bind(this)} />
+        </FormField>;
+    }
+
     //Event handlers
+    private OnDerivationTypeChanged(newValue: string[])
+    {
+        switch(newValue[0])
+        {
+            case "None":
+                this.input.data.derivation = undefined;
+                break;
+            case "Root":
+                this.input.data.derivation = { rootId: 0 };
+                break;
+            case "Verb":
+                alert("TODO: not implemented yet. see https://github.com/aczwink/ArabDict/issues/17")
+        }
+        this.input.onDataChanged();
+    }
+
     private OnGenderChanged(newValue: boolean)
     {
         this.input.data.isMale = newValue;
+        this.input.onDataChanged();
+    }
+
+    private OnRootDerivationDataChanged(newValue: number)
+    {
+        this.input.data.derivation = {
+            rootId: newValue
+        };
         this.input.onDataChanged();
     }
 

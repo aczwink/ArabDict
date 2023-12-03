@@ -19,8 +19,8 @@
 import { APIController, Body, Delete, Get, NotFound, Path, Post, Put, Query } from "acts-util-apilib";
 import { WordCreationData, WordFilterCriteria, WordType, WordsController } from "../data-access/WordsController";
 
-type OptionalBool = boolean | null;
 type OptionalWordType = WordType | null;
+type WordSearchDerivation = "any" | "none" | "root" | "verb";
 
 @APIController("words")
 class _api_
@@ -40,7 +40,7 @@ class _api_
     @Get()
     public async FindWords(
         @Query wordFilter: string,
-        @Query verbDerivedOrNot: OptionalBool,
+        @Query derivation: WordSearchDerivation,
         @Query includeRelated: boolean,
         @Query translation: string,
         @Query type: OptionalWordType,
@@ -50,7 +50,7 @@ class _api_
     {
         const filterCriteria: WordFilterCriteria = {
             includeRelated,
-            verbDerivedOrNot,
+            derivation,
             word: wordFilter,
             translation,
             type

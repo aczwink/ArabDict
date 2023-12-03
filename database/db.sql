@@ -102,6 +102,23 @@ CREATE TABLE `words_relations` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `words_roots`
+--
+
+DROP TABLE IF EXISTS `words_roots`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `words_roots` (
+  `wordId` int(10) unsigned NOT NULL,
+  `rootId` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`wordId`),
+  KEY `words_roots_rootId` (`rootId`),
+  CONSTRAINT `words_roots_rootId` FOREIGN KEY (`rootId`) REFERENCES `roots` (`id`),
+  CONSTRAINT `words_roots_wordId` FOREIGN KEY (`wordId`) REFERENCES `words` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `words_translations`
 --
 
@@ -128,7 +145,7 @@ DROP TABLE IF EXISTS `words_verbs`;
 CREATE TABLE `words_verbs` (
   `wordId` int(10) unsigned NOT NULL,
   `verbId` int(10) unsigned NOT NULL,
-  `isVerbalNoun` tinyint(1) NOT NULL,
+  `type` tinyint(1) NOT NULL,
   PRIMARY KEY (`wordId`),
   KEY `words_verbs_verbId` (`verbId`),
   CONSTRAINT `words_verbs_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`),
@@ -191,4 +208,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-19 22:11:36
+-- Dump completed on 2023-12-03 23:02:52

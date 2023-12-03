@@ -17,10 +17,11 @@
  * */
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
-import { RootCreationData, VerbData } from "../../dist/api";
+import { AnyWordData, RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { WordOverviewComponent } from "../words/WordOverviewComponent";
 
 interface ShowRootData
 {
@@ -37,6 +38,7 @@ export class ShowRootComponent extends Component
 
         this.rootId = parseInt(routerState.routeParams.rootId!);
         this.data = null;
+        this.derivedWords = null;
     }
     
     protected Render(): RenderValue
@@ -48,14 +50,38 @@ export class ShowRootComponent extends Component
         return <fragment>
             <h2>Root: {root.radicalsAsSeparateLetters.join("-")} <Anchor route={"/roots/" + this.rootId + "/edit"}><MatIcon>edit</MatIcon></Anchor></h2>
             {this.data!.root.description}
+            <h4>Verbs</h4>
             {this.data.verbs.map(x => <VerbPreviewComponent root={this.data!.root} verbData={x} />)}
             <RouterButton className="btn btn-primary" route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
+            <h4>Words</h4>
+            {this.RenderDerivedWords()}
+            <RouterButton className="btn btn-primary" route={"/words/add?rootId=" + this.rootId}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </fragment>;
     }
 
     //Private state
     private rootId: number;
     private data: ShowRootData | null;
+    private derivedWords: AnyWordData[] | null;
+
+    //Private methods
+    private RenderDerivedWords()
+    {
+        if(this.derivedWords === null)
+            return <ProgressSpinner />;
+
+        return <table className="table table-striped table-hover table-sm">
+            <thead>
+                <tr>
+                    <th>Word</th>
+                    <th>Translation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {this.derivedWords.map(x => <WordOverviewComponent word={x} />)}
+            </tbody>
+        </table>;
+    }
 
     //Event handlers
     override async OnInitiated(): Promise<void>
@@ -70,5 +96,8 @@ export class ShowRootComponent extends Component
             root: response1.data,
             verbs: response2.data
         };
+
+        const response3 = await this.apiService.roots._any_.words.get(this.rootId);
+        this.derivedWords = response3.data;
     }
 }

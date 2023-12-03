@@ -42,6 +42,12 @@ export class AddWordComponent extends Component
                 relationType: WordRelationType.Feminine
             });
         }
+        else if(router.state.Get().queryParams.rootId !== undefined)
+        {
+            this.data.derivation = {
+                rootId: parseInt(router.state.Get().queryParams.rootId!)
+            };
+        }
 
         this.loading = false;
     }
@@ -72,7 +78,8 @@ export class AddWordComponent extends Component
             word: this.data.word,
             translations: this.data.translations,
             isMale: this.data.isMale,
-            outgoingRelations: this.data.outgoingRelations
+            outgoingRelations: this.data.outgoingRelations,
+            derivation: this.data.derivation,
         });
 
         this.router.RouteTo("/words/" + response.data);

@@ -19,7 +19,7 @@
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
 import { WordEditorComponent } from "./WordEditorComponent";
 import { APIService } from "../APIService";
-import { AnyWordData, WordType } from "../../dist/api";
+import { AnyWordData } from "../../dist/api";
 
 @Injectable
 export class EditWordComponent extends Component
@@ -66,11 +66,6 @@ export class EditWordComponent extends Component
     {
         const data = this.data!;
         this.data = null;
-
-        if( (data.type !== WordType.Noun) && (data.verbData !== undefined) )
-        {
-            data.verbData.isVerbalNoun = false;
-        }
 
         await this.apiService.words._any_.put(this.wordId, data);
 

@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { CreateVerb, Stem1Context } from "./_legacy/CreateVerb";
-import { WAW, A3EIN, LAM, FA, QAF, DHAMMA, SUKUN, FATHA, KASRA, ALEF, MIM, YA, TA_MARBUTA, ALEF_HAMZA_BELOW, HHA } from "../../Definitions";
+import { WAW, A3EIN, LAM, FA, QAF, YA, HHA, LETTER_RA, HAMZA } from "../../Definitions";
 import { ConjugationParams, DialectConjugator } from "../../DialectConjugator";
 import { Hamzate } from "../../Hamza";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { TA, Tense, Voice } from "./_legacy/VerbStem";
+import { Tense, Voice } from "./_legacy/VerbStem";
 import { FullyVocalized, ParseVocalizedText, Vocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
 import { AugmentedRoot } from "./AugmentedRoot";
@@ -42,10 +42,13 @@ import { GenerateAllPossibleVerbalNounsStem10 } from "./verbal_nouns/stem10";
 import { GenerateParticipleStem2 } from "./participle/stem2";
 import { GenerateParticipleStem1 } from "./participle/stem1";
 import { GenerateParticipleStem8 } from "./participle/stem8";
-import { AlterSpecialCaseHayiya } from "./conjugation/special_cases";
+import { AlterSpecialCaseHayiya, AlterSpecialCaseRa2a } from "./conjugation/special_cases";
 import { GenerateParticipleStem5 } from "./participle/stem5";
 import { GenerateParticipleStem3 } from "./participle/stem3";
 import { GenerateAllPossibleVerbalNounsStem3 } from "./verbal_nouns/stem3";
+import { GenerateAllPossibleVerbalNounsStem4 } from "./verbal_nouns/stem4";
+import { GenerateAllPossibleVerbalNounsStem6 } from "./verbal_nouns/stem6";
+import { GenerateAllPossibleVerbalNounsStem2 } from "./verbal_nouns/stem2";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -73,6 +76,8 @@ export class MSAConjugator implements DialectConjugator
                 case RootType.Defective:
                     if(root.radicalsAsSeparateLetters.Equals([HHA, YA, WAW]) && (params.stem === 1))
                         AlterSpecialCaseHayiya(augmentedRoot, params);
+                    else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]) && (params.stem === 1))
+                        AlterSpecialCaseRa2a(augmentedRoot, params);
                     else
                         AlterDefectiveEnding(augmentedRoot, params);
                 break;
@@ -120,49 +125,19 @@ export class MSAConjugator implements DialectConjugator
             case 1:
                 return GenerateAllPossibleVerbalNounsStem1(root);
             case 2:
-                switch(root.type)
-                {
-                    case RootType.HamzaOnR1:
-                    case RootType.SecondConsonantDoubled:
-                    case RootType.Sound:
-                        return [
-                            Hamzate([
-                                { letter: TA, shadda: false, tashkil: FATHA },
-                                { letter: root.r1, shadda: false, tashkil: SUKUN },
-                                { letter: root.r2, shadda: false, tashkil: KASRA },
-                                { letter: YA, shadda: false },
-                                { letter: root.r3, shadda: false },
-                            ])
-                        ];
-                }
-                break;
+                return [GenerateAllPossibleVerbalNounsStem2(root)];
             case 3:
                 return GenerateAllPossibleVerbalNounsStem3(root);
-
             case 4:
-                switch(root.type)
-                {
-                    case RootType.Sound:
-                        return [
-                            ALEF_HAMZA_BELOW + KASRA + root.r1 + SUKUN + root.r2 + FATHA + ALEF + root.r3,
-                        ];
-                }
-                break;
+                return [GenerateAllPossibleVerbalNounsStem4(root)];
             case 5:
                 return [Hamzate(GenerateAllPossibleVerbalNounsStem5(root))];
             case 6:
-                switch(root.type)
-                {
-                    case RootType.Sound:
-                        return [
-                            TA + FATHA + root.r1 + FATHA + ALEF + root.r2 + DHAMMA + root.r3
-                        ];
-                }
-                break;
+                return [GenerateAllPossibleVerbalNounsStem6(root)];
             case 8:
                 return [Hamzate(GenerateAllPossibleVerbalNounsStem8(root))];
             case 10:
-                return [Hamzate(GenerateAllPossibleVerbalNounsStem10(root))];
+                return [GenerateAllPossibleVerbalNounsStem10(root)];
         }
 
         return ["TODO"];

@@ -15,37 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ALEF, FATHA, KASRA, SUKUN, TA_MARBUTA } from "../../../Definitions";
+import { ALEF, DHAMMA, FATHA, SUKUN } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
 import { FullyVocalized } from "../../../Vocalization";
-import { SIIN, TA } from "../_legacy/VerbStem";
+import { TA } from "../_legacy/VerbStem";
 
-export function GenerateAllPossibleVerbalNounsStem10(root: VerbRoot): FullyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem6(root: VerbRoot): FullyVocalized[]
 {
     switch(root.type)
     {
-        case RootType.HamzaOnR1:
-        case RootType.SecondConsonantDoubled:
+        case RootType.Assimilated:
         case RootType.Sound:
             return [
-                { letter: ALEF, shadda: false, tashkil: KASRA },
-                { letter: SIIN, shadda: false, tashkil: SUKUN },
-                { letter: TA, shadda: false, tashkil: KASRA },
-                { letter: root.r1, shadda: false, tashkil: SUKUN },
-                { letter: root.r2, shadda: false, tashkil: FATHA },
-                { letter: ALEF, shadda: false, tashkil: FATHA },
-                { letter: root.r3, shadda: false, tashkil: FATHA },
-            ];
-
-        case RootType.Hollow:
-            return [
-                { letter: ALEF, shadda: false, tashkil: KASRA },
-                { letter: SIIN, shadda: false, tashkil: SUKUN },
-                { letter: TA, shadda: false, tashkil: KASRA },
+                { letter: TA, shadda: false, tashkil: FATHA },
                 { letter: root.r1, shadda: false, tashkil: FATHA },
                 { letter: ALEF, shadda: false, tashkil: FATHA },
-                { letter: root.r3, shadda: false, tashkil: FATHA },
-                { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
+                { letter: root.r2, shadda: false, tashkil: DHAMMA },
+                { letter: root.r3, shadda: false, tashkil: SUKUN },
             ];
     }
 

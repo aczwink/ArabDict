@@ -43,6 +43,16 @@ enum WordRelationType
     Plural = 0,
     //Relation from x to y means: x is feminine version of male word y
     Feminine = 1,
+    //Relation from adjective x to noun y means: x is nisba of y
+    Nisba = 2
+}
+
+enum WordVerbDerivationType
+{
+    Unknown = 0,
+    VerbalNoun = 1,
+    ActiveParticiple = 2,
+    PassiveParticiple = 3,
 }
 
 interface WordRelation
@@ -60,26 +70,34 @@ interface WordBaseData
     translations: TranslationEntry[];
 }
 
-interface WordVerbReferenceData
+interface WordRootDerivationData
 {
-    verbId: number;
-    isVerbalNoun: boolean;
+    rootId: number;
 }
+
+interface WordVerbDerivationData
+{
+    type: WordVerbDerivationType;
+    verbId: number;
+}
+
+type WordDerivationData = WordRootDerivationData | WordVerbDerivationData;
 
 export interface WordCreationData extends WordBaseData
 {
-    verbData?: WordVerbReferenceData;
+    derivation?: WordDerivationData;
 }
 
-interface VerbDerivedWordData extends WordBaseData, WordVerbReferenceData
+interface VerbDerivedWordData extends WordBaseData
 {
     id: number;
+    verbData: WordVerbDerivationData;
 }
 
 interface AnyWordData extends WordBaseData
 {
     id: number;
-    verbData?: WordVerbReferenceData;
+    derivation?: WordDerivationData;
     incomingRelations: WordRelation[];
 }
 
@@ -88,7 +106,7 @@ export interface WordFilterCriteria
     includeRelated: boolean;
     translation: string;
     type: WordType | null;
-    verbDerivedOrNot: boolean | null;
+    derivation: "any" | "none" | "root" | "verb";
     word: string;
 }
 
@@ -111,9 +129,12 @@ export class WordsController
         });
         const wordId = result.insertId;
 
-        if(data.verbData !== undefined)
+        if(data.derivation !== undefined)
         {
-            await conn.InsertRow("words_verbs", { wordId, verbId: data.verbData.verbId, isVerbalNoun: data.verbData.isVerbalNoun });
+            if("rootId" in data.derivation)
+                await conn.InsertRow("words_roots", { wordId, rootId: data.derivation.rootId });
+            else
+                await conn.InsertRow("words_verbs", { wordId, verbId: data.derivation.verbId, type: data.derivation.type });
         }
 
         await this.InsertRelations(wordId, data.outgoingRelations);
@@ -157,10 +178,26 @@ export class WordsController
         return row.cnt as number;
     }
 
+    public async QueryRootDerivedWords(rootId: number)
+    {
+        const query = `
+        SELECT w.id, w.word, w.type, w.isMale, wr.rootId
+        FROM words w
+        INNER JOIN words_roots wr
+            ON wr.wordId = w.id
+        WHERE wr.rootId = ?
+        `;
+
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const rows = await conn.Select(query, rootId);
+
+        return rows.Values().Map(this.QueryFullWordData.bind(this));
+    }
+
     public async QueryVerbDerivedWords(verbId: number)
     {
         const query = `
-        SELECT w.id, w.word, w.type, w.isMale, wv.verbId, wv.isVerbalNoun
+        SELECT w.id, w.word, w.type, w.isMale, wv.verbId, wv.type AS derivationType
         FROM words w
         INNER JOIN words_verbs wv
             ON wv.wordId = w.id
@@ -176,12 +213,14 @@ export class WordsController
             result.push({
                 id: row.id,
                 isMale: (typeof row.isMale === "number") ? (row.isMale !== 0) : null,
-                isVerbalNoun: row.isVerbalNoun,
                 translations: await this.translationsController.QueryWordTranslations(row.id),
                 type: row.type,
-                verbId: row.verbId,
+                verbData: {
+                    type: row.derivationType,
+                    verbId: row.verbId
+                },
                 word: row.word,
-                outgoingRelations: await this.QueryRelationsOf(row.id)
+                outgoingRelations: await this.QueryRelationsOf(row.id),
             });
         }
 
@@ -191,8 +230,10 @@ export class WordsController
     public async QueryWord(wordId: number)
     {
         const query = `
-        SELECT w.id, w.word, w.type, w.isMale, wv.verbId, wv.isVerbalNoun
+        SELECT w.id, w.word, w.type, w.isMale, wv.verbId, wv.type AS derivationType, wr.rootId
         FROM words w
+        LEFT JOIN words_roots wr
+            ON wr.wordId = w.id
         LEFT JOIN words_verbs wv
             ON wv.wordId = w.id
         WHERE w.id = ?
@@ -222,10 +263,14 @@ export class WordsController
 
         await conn.UpdateRows("words", { type: data.type, word: data.word, isMale: data.isMale }, "id = ?", wordId);
 
+        await conn.DeleteRows("words_roots", "wordId = ?", wordId);
         await conn.DeleteRows("words_verbs", "wordId = ?", wordId);
-        if(data.verbData !== undefined)
+        if(data.derivation !== undefined)
         {
-            await conn.InsertRow("words_verbs", { wordId, verbId: data.verbData.verbId, isVerbalNoun: data.verbData.isVerbalNoun });
+            if("rootId" in data.derivation)
+                await conn.InsertRow("words_roots", { wordId, rootId: data.derivation.rootId });
+            else
+                await conn.InsertRow("words_verbs", { wordId, verbId: data.derivation.verbId, type: data.derivation.type });
         }
 
         await conn.DeleteRows("words_relations", "fromWordId = ?", wordId);
@@ -240,8 +285,21 @@ export class WordsController
         const builder = this.dbController.CreateQueryBuilder();
         const wordsTable = builder.SetPrimaryTable("words");
 
+        const wordsRootsTable = builder.AddJoin({
+            type: (filterCriteria.derivation === "root") ? "INNER" : "LEFT",
+            tableName: "words_roots",
+            conditions: [
+                {
+                    column: "wordId",
+                    joinTable: wordsTable,
+                    joinTableColumn: "id",
+                    operator: "="
+                }
+            ]
+        });
+
         const wordsVerbsTable = builder.AddJoin({
-            type: (filterCriteria.verbDerivedOrNot === true) ? "INNER" : "LEFT",
+            type: (filterCriteria.derivation === "verb") ? "INNER" : "LEFT",
             tableName: "words_verbs",
             conditions: [
                 {
@@ -259,7 +317,8 @@ export class WordsController
             { table: wordsTable, column: "type" },
             { table: wordsTable, column: "isMale" },
             { table: wordsVerbsTable, column: "verbId" },
-            { table: wordsVerbsTable, column: "isVerbalNoun" },
+            { table: wordsVerbsTable, column: "type AS derivationType" },
+            { table: wordsRootsTable, column: "rootId" },
         ]);
 
         builder.AddCondition({
@@ -311,7 +370,18 @@ export class WordsController
             });
         }
 
-        if(filterCriteria.verbDerivedOrNot === false)
+        if( (filterCriteria.derivation === "none") || (filterCriteria.derivation === "verb") )
+        {
+            builder.AddCondition({
+                operand: {
+                    table: wordsRootsTable,
+                    column: "rootId",
+                },
+                operator: "IS",
+                constant: null
+            });
+        }
+        if( (filterCriteria.derivation === "none") || (filterCriteria.derivation === "root") )
         {
             builder.AddCondition({
                 operand: {
@@ -386,9 +456,15 @@ export class WordsController
         };
         if(typeof row.verbId === "number")
         {
-            result.verbData = {
-                isVerbalNoun: row.isVerbalNoun !== 0,
+            result.derivation = {
+                type: row.derivationType,
                 verbId: row.verbId,
+            };
+        }
+        else if(typeof row.rootId === "number")
+        {
+            result.derivation = {
+                rootId: row.rootId
             };
         }
 

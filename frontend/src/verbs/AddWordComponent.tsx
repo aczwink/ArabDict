@@ -17,7 +17,7 @@
  * */
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
-import { WordCreationData, WordType } from "../../dist/api";
+import { WordCreationData, WordType, WordVerbDerivationType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { WordEditorComponent } from "../words/WordEditorComponent";
 
@@ -66,8 +66,8 @@ export class AddWordComponent extends Component
             word: this.data.word,
             translations: this.data.translations,
             isMale: this.data.isMale,
-            verbData: {
-                isVerbalNoun: false,
+            derivation: {
+                type: WordVerbDerivationType.Unknown,
                 verbId: this.verbId,
             },
             outgoingRelations: this.data.outgoingRelations

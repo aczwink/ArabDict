@@ -19,6 +19,7 @@
 import { APIController, Body, Get, Path, Post, Put, Query } from "acts-util-apilib";
 import { RootCreationData, RootsController } from "../data-access/RootsController";
 import { VerbsController } from "../data-access/VerbsController";
+import { WordsController } from "../data-access/WordsController";
 
 @APIController("roots")
 class _api_
@@ -47,7 +48,7 @@ class _api_
 @APIController("roots/{rootId}")
 class _api2_
 {
-    constructor(private rootsController: RootsController, private verbsController: VerbsController)
+    constructor(private rootsController: RootsController, private verbsController: VerbsController, private wordsController: WordsController)
     {
     }
 
@@ -65,6 +66,14 @@ class _api2_
     )
     {
         return await this.verbsController.QueryVerbs(rootId);
+    }
+
+    @Get("words")
+    public async QueryRootDerivedWords(
+        @Path rootId: number
+    )
+    {
+        return (await this.wordsController.QueryRootDerivedWords(rootId)).PromiseAll();
     }
 
     @Put()

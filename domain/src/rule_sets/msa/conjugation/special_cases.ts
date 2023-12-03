@@ -19,6 +19,7 @@
 import { ALEF, FATHA, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { AugmentedRoot } from "../AugmentedRoot";
+import { AlterDefectiveEnding } from "./defective";
 
 export function AlterSpecialCaseHayiya(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
@@ -28,4 +29,11 @@ export function AlterSpecialCaseHayiya(augmentedRoot: AugmentedRoot, params: Con
     {
         augmentedRoot.ReplaceRadical(3, { letter: ALEF, shadda: false });
     }
+}
+
+export function AlterSpecialCaseRa2a(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+{
+    AlterDefectiveEnding(augmentedRoot, params);
+    if(params.tense !== "perfect")
+        augmentedRoot.DropRadial(2);
 }

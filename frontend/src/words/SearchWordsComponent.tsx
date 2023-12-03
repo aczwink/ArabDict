@@ -19,7 +19,7 @@
 import { BootstrapIcon, CheckBox, Component, FormField, Injectable, JSX_CreateElement, LineEdit, PaginationComponent, ProgressSpinner, RouterButton, Select } from "acfrontend";
 import { APIService } from "../APIService";
 import { WordOverviewComponent } from "./WordOverviewComponent";
-import { AnyWordData, WordType } from "../../dist/api";
+import { AnyWordData, WordSearchDerivation, WordType } from "../../dist/api";
 import { WordTypeToText, allWordTypes } from "../shared/words";
 
 @Injectable
@@ -31,7 +31,7 @@ export class SearchWordsComponent extends Component
 
         this.wordFilter = "";
         this.translationFilter = "";
-        this.verbDerivedOrNot = null;
+        this.derivation = "any";
         this.includeRelated = true;
         this.wordType = null;
 
@@ -55,7 +55,7 @@ export class SearchWordsComponent extends Component
     //Private state
     private wordFilter: string;
     private translationFilter: string;
-    private verbDerivedOrNot: boolean | null;
+    private derivation: WordSearchDerivation;
     private includeRelated: boolean;
     private wordType: WordType | null;
 
@@ -71,7 +71,7 @@ export class SearchWordsComponent extends Component
         this.data = null;
         const response = await this.apiService.words.get({
             wordFilter: this.wordFilter,
-            verbDerivedOrNot: this.verbDerivedOrNot,
+            derivation: this.derivation,
             includeRelated: this.includeRelated,
             translation: this.translationFilter,
             type: this.wordType,
@@ -108,22 +108,13 @@ export class SearchWordsComponent extends Component
                         </FormField>
                     </div>
                     <div className="col">
-                        <FormField title="Derived from verb?">
-                            <fragment>
-                                <br />
-                                <label>
-                                    <input type="radio" checked={this.verbDerivedOrNot === null} onclick={() => this.verbDerivedOrNot = null} />
-                                    Include both
-                                </label>
-                                <label>
-                                    <input type="radio" checked={this.verbDerivedOrNot === true} onclick={() => this.verbDerivedOrNot = true} />
-                                    Only
-                                </label>
-                                <label>
-                                    <input type="radio" checked={this.verbDerivedOrNot === false} onclick={() => this.verbDerivedOrNot = false} />
-                                    Omit
-                                </label>
-                            </fragment>
+                        <FormField title="Derivation">
+                            <Select onChanged={newValue => this.derivation = newValue[0] as any}>
+                                <option value="any" selected={this.derivation === "any"}>Any</option>
+                                <option value="none" selected={this.derivation === "none"}>None</option>
+                                <option value="root" selected={this.derivation === "root"}>Root</option>
+                                <option value="verb" selected={this.derivation === "verb"}>Verb</option>
+                            </Select>
                         </FormField>
                     </div>
                     <div className="col">
