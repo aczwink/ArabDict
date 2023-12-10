@@ -17,7 +17,7 @@
  * */
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router } from "acfrontend";
-import { WordCreationData, WordRelationType, WordType } from "../../dist/api";
+import { WordCreationData, WordType, WordVerbDerivationType, WordWordDerivationType } from "../../dist/api";
 import { APIService } from "../APIService";
 import { WordEditorComponent } from "./WordEditorComponent";
 
@@ -33,19 +33,25 @@ export class AddWordComponent extends Component
             translations: [],
             word: "",
             isMale: null,
-            outgoingRelations: [],
         };
         if(router.state.Get().queryParams.relatedWordId !== undefined)
         {
-            this.data.outgoingRelations.push({
+            this.data.derivation = {
                 refWordId: parseInt(router.state.Get().queryParams.relatedWordId!),
-                relationType: WordRelationType.Feminine
-            });
+                relationType: WordWordDerivationType.Feminine
+            };
         }
         else if(router.state.Get().queryParams.rootId !== undefined)
         {
             this.data.derivation = {
                 rootId: parseInt(router.state.Get().queryParams.rootId!)
+            };
+        }
+        else if(router.state.Get().queryParams.verbId !== undefined)
+        {
+            this.data.derivation = {
+                verbId: parseInt(router.state.Get().queryParams.verbId!),
+                type: WordVerbDerivationType.VerbalNoun
             };
         }
 
@@ -78,7 +84,6 @@ export class AddWordComponent extends Component
             word: this.data.word,
             translations: this.data.translations,
             isMale: this.data.isMale,
-            outgoingRelations: this.data.outgoingRelations,
             derivation: this.data.derivation,
         });
 

@@ -17,17 +17,17 @@
  * */
 
 import { Component, FormField, JSX_CreateElement, LineEdit, NumberSpinner, Select } from "acfrontend";
-import { TranslationEntry, WordRelation, WordRootDerivationData, WordType, WordVerbDerivationData } from "../../dist/api";
+import { TranslationEntry, WordRootDerivationData, WordType, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 import { WordMayHaveGender, WordTypeToText, allWordTypes } from "../shared/words";
-import { WordRelationsEditorComponent } from "./WordRelationsEditorComponent";
+import { WordWordDerivationEditorComponent } from "./WordWordDerivationEditorComponent";
+import { WordVerbDerivationEditorComponent } from "./WordVerbDerivationEditorComponent";
 
 interface WordBaseData
 {
     word: string;
     isMale: boolean | null;
-    derivation?: WordRootDerivationData | WordVerbDerivationData;
-    outgoingRelations: WordRelation[];
+    derivation?: WordRootDerivationData | WordVerbDerivationData | WordWordDerivationLink;
     type: WordType;
     translations: TranslationEntry[];
 }
@@ -52,7 +52,6 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
             <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.input.onDataChanged} />
 
             {this.RenderDerivation()}
-            <WordRelationsEditorComponent relations={this.input.data.outgoingRelations} onDataChanged={this.input.onDataChanged} />
         </fragment>;
     }
 
@@ -66,6 +65,7 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
                         <option selected={this.input.data.derivation === undefined}>None</option>
                         <option selected={(this.input.data.derivation !== undefined) && ("rootId" in this.input.data.derivation)}>Root</option>
                         <option selected={(this.input.data.derivation !== undefined) && ("verbId" in this.input.data.derivation)}>Verb</option>
+                        <option selected={(this.input.data.derivation !== undefined) && ("refWordId" in this.input.data.derivation)}>Word</option>
                     </Select>
                 </FormField>
             </div>
@@ -80,8 +80,9 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
 
         if("rootId" in this.input.data.derivation)
             return this.RenderRootDerivation(this.input.data.derivation);
-
-        return "todo: verb derivation editor";
+        if("verbId" in this.input.data.derivation)
+            return <WordVerbDerivationEditorComponent derivation={this.input.data.derivation} onDataChanged={this.input.onDataChanged} onUpdateWord={this.OnWordChanged.bind(this)} word={this.input.data.word} />;
+        return <WordWordDerivationEditorComponent derivationLink={this.input.data.derivation} onDataChanged={this.input.onDataChanged} />;
     }
 
     private RenderGender()
@@ -116,7 +117,11 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
                 this.input.data.derivation = { rootId: 0 };
                 break;
             case "Verb":
-                alert("TODO: not implemented yet. see https://github.com/aczwink/ArabDict/issues/17")
+                this.input.data.derivation = { type: WordVerbDerivationType.VerbalNoun, verbId: 0 };
+                break;
+            case "Word":
+                this.input.data.derivation = { refWordId: 0, relationType: WordWordDerivationType.Feminine };
+                break;
         }
         this.input.onDataChanged();
     }

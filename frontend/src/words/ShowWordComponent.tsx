@@ -18,7 +18,7 @@
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
 import { APIService } from "../APIService";
-import { AnyWordData, VerbData, WordRelation, WordRelationType, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
+import { AnyWordData, VerbData, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
 import { WordTypeToText } from "../shared/words";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
@@ -69,9 +69,7 @@ export class ShowWordComponent extends Component
             </table>
 
             <br />
-            <h5>Relationships to other words</h5>
-            {this.RenderOutgoingRelations()}
-            {this.RenderIncomingRelations()}
+            {this.RenderDerivedTerms()}
 
             <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(this.data.word)} target="_blank">See on Wiktionary</a>
             <br />
@@ -86,27 +84,29 @@ export class ShowWordComponent extends Component
     private rootRadicals: string;
 
     //Private methods
-    private RelationshipToText(relationType: WordRelationType, outgoing: boolean)
+    private RelationshipToText(relationType: WordWordDerivationType, outgoing: boolean)
     {
         switch(relationType)
         {
-            case WordRelationType.Feminine:
+            case WordWordDerivationType.Feminine:
                 return outgoing ? "female version" : "male version";
-            case WordRelationType.Plural:
+            case WordWordDerivationType.Plural:
                 return outgoing ? "plural" : "singular";
-            case WordRelationType.Nisba:
+            case WordWordDerivationType.Nisba:
                 return outgoing ? "relative adjective (nisbah اَلنِّسْبَة)" : "noun version";
         }
     }
 
-    private RenderDerivationData(derivation?: WordRootDerivationData | WordVerbDerivationData)
+    private RenderDerivationData(derivation?: WordRootDerivationData | WordVerbDerivationData | WordWordDerivationLink)
     {
         if(derivation === undefined)
             return null;
 
         if("rootId" in derivation)
             return this.RenderRootDerivationData(derivation);
-        return this.RenderVerbData(derivation);
+        if("verbId" in derivation)
+            return this.RenderVerbDerivationData(derivation);
+        return this.RenderWordDerivationData(derivation);
     }
 
     private RenderGender(isMale: boolean | null)
@@ -118,25 +118,22 @@ export class ShowWordComponent extends Component
         return "unknown";
     }
 
-    private RenderRelation(outgoing: boolean, relation: WordRelation)
+    private RenderRelation(outgoing: boolean, relation: WordWordDerivationLink)
     {
         return <li>
             {this.RelationshipToText(relation.relationType, outgoing)} of <WordIdReferenceComponent wordId={relation.refWordId} />
         </li>;
     }
 
-    private RenderIncomingRelations()
+    private RenderDerivedTerms()
     {
-        return <ul>
-            {this.data!.incomingRelations.map(this.RenderRelation.bind(this, false))}
-        </ul>;
-    }
+        if(this.data!.derived.length === 0)
+            return null;
 
-    private RenderOutgoingRelations()
-    {
-        return <ul>
-            {this.data!.outgoingRelations.map(this.RenderRelation.bind(this, true))}
-        </ul>;
+        return <fragment>
+            <h5>Derived words/terms</h5>
+            <ul>{this.data!.derived.map(this.RenderRelation.bind(this, false))}</ul>
+        </fragment>;
     }
 
     private RenderRootDerivationData(rootData: WordRootDerivationData)
@@ -147,7 +144,7 @@ export class ShowWordComponent extends Component
         </tr>;
     }
 
-    private RenderVerbData(verbData: WordVerbDerivationData)
+    private RenderVerbDerivationData(verbData: WordVerbDerivationData)
     {
         function DerivationText()
         {
@@ -171,6 +168,14 @@ export class ShowWordComponent extends Component
         </tr>;
     }
 
+    private RenderWordDerivationData(derivation: WordWordDerivationLink)
+    {
+        return <tr>
+            <th>Derived from word:</th>
+            <td>{this.RenderRelation(true, derivation)}</td>
+        </tr>;
+    }
+
     //Event handlers
     private async OnDeleteWord(event: Event)
     {
@@ -186,8 +191,10 @@ export class ShowWordComponent extends Component
                 this.router.RouteTo("/underived_words");
             else if("rootId" in word.derivation)
                 this.router.RouteTo("/roots/" + word.derivation.rootId);
-            else
+            else if("verbId" in word.derivation)
                 this.router.RouteTo("/verbs/" + word.derivation.verbId);
+            else
+                this.router.RouteTo("/underived_words");
         }
     }
 
@@ -202,7 +209,7 @@ export class ShowWordComponent extends Component
             let rootId;
             if("rootId" in response.data.derivation)
                 rootId = response.data.derivation.rootId;
-            else
+            else if("verbId" in response.data.derivation)
             {
                 const response2 = await this.apiService.verbs.get({ verbId: response.data.derivation.verbId });
                 if(response2.statusCode !== 200)
@@ -211,10 +218,13 @@ export class ShowWordComponent extends Component
                 rootId = response2.data.rootId;
             }
 
-            const response3 = await this.apiService.roots._any_.get(rootId);
-            if(response3.statusCode !== 200)
-                throw new Error("TODO: implement me");
-            this.rootRadicals = response3.data.radicals;
+            if(rootId !== undefined)
+            {
+                const response3 = await this.apiService.roots._any_.get(rootId);
+                if(response3.statusCode !== 200)
+                    throw new Error("TODO: implement me");
+                this.rootRadicals = response3.data.radicals;
+            }
         }
             
         this.data = response.data;

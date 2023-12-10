@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Injectable } from "acts-util-node";
+import { DBQueryExecutor, Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { TranslationEntry, TranslationsController } from "./TranslationsController";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
@@ -37,7 +37,7 @@ export enum WordType
     Particle = 8
 }
 
-enum WordRelationType
+enum WordWordDerivationType
 {
     //Relation from x to y means: x is plural of y
     Plural = 0,
@@ -55,10 +55,10 @@ enum WordVerbDerivationType
     PassiveParticiple = 3,
 }
 
-interface WordRelation
+interface WordWordDerivationLink
 {
     refWordId: number;
-    relationType: WordRelationType;
+    relationType: WordWordDerivationType;
 }
 
 interface WordBaseData
@@ -66,7 +66,6 @@ interface WordBaseData
     word: string;
     type: WordType;
     isMale: boolean | null;
-    outgoingRelations: WordRelation[];
     translations: TranslationEntry[];
 }
 
@@ -81,7 +80,7 @@ interface WordVerbDerivationData
     verbId: number;
 }
 
-type WordDerivationData = WordRootDerivationData | WordVerbDerivationData;
+type WordDerivationData = WordRootDerivationData | WordVerbDerivationData | WordWordDerivationLink;
 
 export interface WordCreationData extends WordBaseData
 {
@@ -98,7 +97,7 @@ interface AnyWordData extends WordBaseData
 {
     id: number;
     derivation?: WordDerivationData;
-    incomingRelations: WordRelation[];
+    derived: WordWordDerivationLink[];
 }
 
 export interface WordFilterCriteria
@@ -130,14 +129,7 @@ export class WordsController
         const wordId = result.insertId;
 
         if(data.derivation !== undefined)
-        {
-            if("rootId" in data.derivation)
-                await conn.InsertRow("words_roots", { wordId, rootId: data.derivation.rootId });
-            else
-                await conn.InsertRow("words_verbs", { wordId, verbId: data.derivation.verbId, type: data.derivation.type });
-        }
-
-        await this.InsertRelations(wordId, data.outgoingRelations);
+            await this.InsertDerivation(conn, data.derivation, wordId);
 
         await this.translationsController.UpdateWordTranslations(wordId, data.translations);
 
@@ -220,7 +212,6 @@ export class WordsController
                     verbId: row.verbId
                 },
                 word: row.word,
-                outgoingRelations: await this.QueryRelationsOf(row.id),
             });
         }
 
@@ -230,8 +221,10 @@ export class WordsController
     public async QueryWord(wordId: number)
     {
         const query = `
-        SELECT w.id, w.word, w.type, w.isMale, wv.verbId, wv.type AS derivationType, wr.rootId
+        SELECT w.id, w.word, w.type, w.isMale, wv.verbId, wv.type AS derivationType, wr.rootId, wd.sourceWordId, wd.relationship
         FROM words w
+        LEFT JOIN words_derivations wd
+            ON wd.derivedWordId = w.id
         LEFT JOIN words_roots wr
             ON wr.wordId = w.id
         LEFT JOIN words_verbs wv
@@ -263,18 +256,11 @@ export class WordsController
 
         await conn.UpdateRows("words", { type: data.type, word: data.word, isMale: data.isMale }, "id = ?", wordId);
 
+        await conn.DeleteRows("words_derivations", "derivedWordId = ?", wordId);
         await conn.DeleteRows("words_roots", "wordId = ?", wordId);
         await conn.DeleteRows("words_verbs", "wordId = ?", wordId);
         if(data.derivation !== undefined)
-        {
-            if("rootId" in data.derivation)
-                await conn.InsertRow("words_roots", { wordId, rootId: data.derivation.rootId });
-            else
-                await conn.InsertRow("words_verbs", { wordId, verbId: data.derivation.verbId, type: data.derivation.type });
-        }
-
-        await conn.DeleteRows("words_relations", "fromWordId = ?", wordId);
-        await this.InsertRelations(wordId, data.outgoingRelations);
+            await this.InsertDerivation(conn, data.derivation, wordId);
 
         await this.translationsController.UpdateWordTranslations(wordId, data.translations);
     }
@@ -397,10 +383,10 @@ export class WordsController
         {
             const wordsRelationsTable = builder.AddJoin({
                 type: "LEFT",
-                tableName: "words_relations",
+                tableName: "words_derivations",
                 conditions: [
                     {
-                        column: "fromWordId",
+                        column: "derivedWordId",
                         joinTable: wordsTable,
                         joinTableColumn: "id",
                         operator: "="
@@ -411,7 +397,7 @@ export class WordsController
             builder.AddCondition({
                 operand: {
                     table: wordsRelationsTable,
-                    column: "toWordId",
+                    column: "sourceWordId",
                 },
                 operator: "IS",
                 constant: null
@@ -421,14 +407,14 @@ export class WordsController
         return builder;
     }
 
-    private async InsertRelations(wordId: number, relations: WordRelation[])
+    private async InsertDerivation(conn: DBQueryExecutor, derivation: WordDerivationData, wordId: number)
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        for (const relation of relations)
-        {
-            await conn.InsertRow("words_relations", { fromWordId: wordId, toWordId: relation.refWordId, relationship: relation.relationType });
-        }
+        if("rootId" in derivation)
+            await conn.InsertRow("words_roots", { wordId, rootId: derivation.rootId });
+        else if("verbId" in derivation)
+            await conn.InsertRow("words_verbs", { wordId, verbId: derivation.verbId, type: derivation.type });
+        else
+            await conn.InsertRow("words_derivations", { derivedWordId: wordId, sourceWordId: derivation.refWordId, relationship: derivation.relationType });
     }
 
     private MapWordToSearchVariant(word: string)
@@ -443,6 +429,18 @@ export class WordsController
         return ya;
     }
 
+    private async QueryDerivedLinks(wordId: number)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const rows = await conn.Select("SELECT derivedWordId, relationship FROM words_derivations WHERE sourceWordId = ?", wordId)
+
+        return rows.map<WordWordDerivationLink>(x => ({
+            refWordId: x.derivedWordId,
+            relationType: x.relationship
+        }));
+    }
+
     private async QueryFullWordData(row: any)
     {
         const result: AnyWordData = {
@@ -451,8 +449,7 @@ export class WordsController
             translations: await this.translationsController.QueryWordTranslations(row.id),
             type: row.type,
             word: row.word,
-            outgoingRelations: await this.QueryRelationsOf(row.id),
-            incomingRelations: await this.QueryRelationsTo(row.id),
+            derived: await this.QueryDerivedLinks(row.id),
         };
         if(typeof row.verbId === "number")
         {
@@ -467,31 +464,14 @@ export class WordsController
                 rootId: row.rootId
             };
         }
+        else if(typeof row.sourceWordId === "number")
+        {
+            result.derivation = {
+                refWordId: row.sourceWordId,
+                relationType: row.relationship
+            };
+        }
 
         return result;
-    }
-
-    private async QueryRelationsOf(wordId: number)
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const rows = await conn.Select("SELECT toWordId, relationship FROM words_relations WHERE fromWordId = ?", wordId)
-
-        return rows.map<WordRelation>(x => ({
-            refWordId: x.toWordId,
-            relationType: x.relationship
-        }));
-    }
-
-    private async QueryRelationsTo(wordId: number)
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const rows = await conn.Select("SELECT fromWordId, relationship FROM words_relations WHERE toWordId = ?", wordId)
-
-        return rows.map<WordRelation>(x => ({
-            refWordId: x.fromWordId,
-            relationType: x.relationship
-        }));
     }
 }

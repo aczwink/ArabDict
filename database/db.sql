@@ -84,20 +84,20 @@ CREATE TABLE `words` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `words_relations`
+-- Table structure for table `words_derivations`
 --
 
-DROP TABLE IF EXISTS `words_relations`;
+DROP TABLE IF EXISTS `words_derivations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `words_relations` (
-  `fromWordId` int(10) unsigned NOT NULL,
-  `toWordId` int(10) unsigned NOT NULL,
+CREATE TABLE `words_derivations` (
+  `derivedWordId` int(10) unsigned NOT NULL,
+  `sourceWordId` int(10) unsigned NOT NULL,
   `relationship` tinyint(3) unsigned NOT NULL,
-  PRIMARY KEY (`fromWordId`,`toWordId`),
-  KEY `words_relations_toWordId` (`toWordId`),
-  CONSTRAINT `words_relations_fromWordId` FOREIGN KEY (`fromWordId`) REFERENCES `words` (`id`),
-  CONSTRAINT `words_relations_toWordId` FOREIGN KEY (`toWordId`) REFERENCES `words` (`id`)
+  PRIMARY KEY (`derivedWordId`) USING BTREE,
+  KEY `words_relations_toWordId` (`sourceWordId`),
+  CONSTRAINT `words_relations_fromWordId` FOREIGN KEY (`derivedWordId`) REFERENCES `words` (`id`),
+  CONSTRAINT `words_relations_toWordId` FOREIGN KEY (`sourceWordId`) REFERENCES `words` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -208,4 +208,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-03 23:02:52
+-- Dump completed on 2023-12-10 22:23:35
