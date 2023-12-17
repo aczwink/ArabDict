@@ -17,7 +17,7 @@
  * */
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
-import { AnyWordData, RootCreationData, VerbData } from "../../dist/api";
+import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
@@ -62,7 +62,7 @@ export class ShowRootComponent extends Component
     //Private state
     private rootId: number;
     private data: ShowRootData | null;
-    private derivedWords: AnyWordData[] | null;
+    private derivedWords: FullWordData[] | null;
 
     //Private methods
     private RenderDerivedWords()

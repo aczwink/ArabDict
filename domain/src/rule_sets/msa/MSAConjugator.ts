@@ -49,6 +49,7 @@ import { GenerateAllPossibleVerbalNounsStem3 } from "./verbal_nouns/stem3";
 import { GenerateAllPossibleVerbalNounsStem4 } from "./verbal_nouns/stem4";
 import { GenerateAllPossibleVerbalNounsStem6 } from "./verbal_nouns/stem6";
 import { GenerateAllPossibleVerbalNounsStem2 } from "./verbal_nouns/stem2";
+import { GenerateParticipleStem10 } from "./participle/stem10";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -114,6 +115,8 @@ export class MSAConjugator implements DialectConjugator
                 return GenerateParticipleStem5(root, voice);
             case 8:
                 return GenerateParticipleStem8(root, voice);
+            case 10:
+                return GenerateParticipleStem10(root, voice);
         }
         return [{letter: "TODO", shadda: false}];
     }

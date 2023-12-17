@@ -18,15 +18,18 @@
 
 import { Component, FormField, JSX_CreateElement, NumberSpinner, Select } from "acfrontend";
 import { WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
+import { WordDerivationTypeFromWordToString } from "../shared/words";
 
 export class WordWordDerivationEditorComponent extends Component<{ derivationLink: WordWordDerivationLink; onDataChanged: () => void; }>
 {;
     protected Render(): RenderValue
     {
         const relationships = [
+            WordWordDerivationType.Colloquial,
+            WordWordDerivationType.Extension,
             WordWordDerivationType.Feminine,
+            WordWordDerivationType.Nisba,
             WordWordDerivationType.Plural,
-            WordWordDerivationType.Nisba
         ];
 
         const wordRelation = this.input.derivationLink;
@@ -34,7 +37,7 @@ export class WordWordDerivationEditorComponent extends Component<{ derivationLin
             <div className="col-auto">
                 <FormField title="Derivation type">
                     <Select onChanged={this.OnRelationshipTypeChanged.bind(this, wordRelation)}>
-                        {relationships.map(x => <option selected={x === wordRelation.relationType} value={x}>{this.RenderRelationshipType(x) + " of"}</option>)}
+                        {relationships.map(x => <option selected={x === wordRelation.relationType} value={x}>{WordDerivationTypeFromWordToString(x) + " of"}</option>)}
                     </Select>
                 </FormField>
             </div>
@@ -44,20 +47,6 @@ export class WordWordDerivationEditorComponent extends Component<{ derivationLin
                 </FormField>
             </div>
         </div>;
-    }
-
-    //Private methods    
-    private RenderRelationshipType(relationshipType: WordWordDerivationType)
-    {
-        switch(relationshipType)
-        {
-            case WordWordDerivationType.Feminine:
-                return "feminine version";
-            case WordWordDerivationType.Plural:
-                return "plural";
-            case WordWordDerivationType.Nisba:
-                return "adjective version (nisba)";
-        }
     }
 
     //Event handlers

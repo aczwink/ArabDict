@@ -19,7 +19,7 @@
 import { BootstrapIcon, CheckBox, Component, FormField, Injectable, JSX_CreateElement, LineEdit, PaginationComponent, ProgressSpinner, RouterButton, Select } from "acfrontend";
 import { APIService } from "../APIService";
 import { WordOverviewComponent } from "./WordOverviewComponent";
-import { AnyWordData, WordSearchDerivation, WordType } from "../../dist/api";
+import { FullWordData, WordSearchDerivation, WordType } from "../../dist/api";
 import { WordTypeToText, allWordTypes } from "../shared/words";
 
 @Injectable
@@ -59,7 +59,7 @@ export class SearchWordsComponent extends Component
     private includeRelated: boolean;
     private wordType: WordType | null;
 
-    private data: AnyWordData[] | null;
+    private data: FullWordData[] | null;
 
     private offset: number;
     private size: number;

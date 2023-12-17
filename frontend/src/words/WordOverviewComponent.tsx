@@ -17,12 +17,12 @@
  * */
 
 import { Component, Injectable, JSX_CreateElement } from "acfrontend";
-import { AnyWordData, VerbDerivedWordData } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
 import { WordReferenceComponent } from "./WordReferenceComponent";
+import { FullWordData } from "../../dist/api";
 
 @Injectable
-export class WordOverviewComponent extends Component<{ word: AnyWordData | VerbDerivedWordData; }>
+export class WordOverviewComponent extends Component<{ word: FullWordData; }>
 {
     protected Render(): RenderValue
     {

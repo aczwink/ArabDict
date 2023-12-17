@@ -18,9 +18,9 @@
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
 import { APIService } from "../APIService";
-import { AnyWordData, VerbData, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
+import { FullWordData, VerbData, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
-import { WordTypeToText } from "../shared/words";
+import { WordDerivationTypeFromWordToString, WordTypeToText } from "../shared/words";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
 import { ConjugationService } from "../ConjugationService";
 import { WordIdReferenceComponent } from "./WordReferenceComponent";
@@ -79,21 +79,28 @@ export class ShowWordComponent extends Component
 
     //Private state
     private wordId: number;
-    private data: AnyWordData | null;
+    private data: FullWordData | null;
     private verb?: VerbData;
     private rootRadicals: string;
 
     //Private methods
     private RelationshipToText(relationType: WordWordDerivationType, outgoing: boolean)
     {
+        if(outgoing)
+            return WordDerivationTypeFromWordToString(relationType);
+
         switch(relationType)
         {
             case WordWordDerivationType.Feminine:
-                return outgoing ? "female version" : "male version";
+                return "male version";
             case WordWordDerivationType.Plural:
-                return outgoing ? "plural" : "singular";
+                return "singular";
             case WordWordDerivationType.Nisba:
-                return outgoing ? "relative adjective (nisbah اَلنِّسْبَة)" : "noun version";
+                return "noun version";
+            case WordWordDerivationType.Colloquial:
+                return "فصحى version";
+            case WordWordDerivationType.Extension:
+                return "base";
         }
     }
 

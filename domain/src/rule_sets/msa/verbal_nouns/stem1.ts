@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { FATHA, SUKUN, KASRA, ALEF, YA, TA_MARBUTA, ALEF_HAMZA, WAW, MIM, SHADDA, DHAMMA, ALEF_HAMZA_BELOW, HAMZA } from "../../../Definitions";
+import { FATHA, SUKUN, KASRA, ALEF, YA, TA_MARBUTA, ALEF_HAMZA, WAW, MIM, SHADDA, DHAMMA, ALEF_HAMZA_BELOW, HAMZA, FATHATAN, ALEF_MAKSURA } from "../../../Definitions";
 import { Hamzate } from "../../../Hamza";
 import { RootType, VerbRoot } from "../../../VerbRoot";
 import { FullyVocalized } from "../../../Vocalization";
@@ -51,6 +51,11 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                     { letter: root.r2, shadda: false, tashkil: FATHA },
                     { letter: ALEF, shadda: false, tashkil: FATHA },
                     { letter: HAMZA, shadda: false, tashkil: SUKUN },
+                ],
+                [
+                    { letter: root.r1, shadda: false, tashkil: FATHA },
+                    { letter: root.r2, shadda: false, tashkil: FATHATAN },
+                    { letter: ALEF_MAKSURA, shadda: false, tashkil: SUKUN },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: FATHA },

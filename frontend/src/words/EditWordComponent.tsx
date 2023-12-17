@@ -19,7 +19,7 @@
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
 import { WordEditorComponent } from "./WordEditorComponent";
 import { APIService } from "../APIService";
-import { AnyWordData } from "../../dist/api";
+import { FullWordData } from "../../dist/api";
 
 @Injectable
 export class EditWordComponent extends Component
@@ -48,7 +48,7 @@ export class EditWordComponent extends Component
 
     //Private state
     private wordId: number;
-    private data: AnyWordData | null;
+    private data: FullWordData | null;
     private origName: string;
 
     //Event handlers

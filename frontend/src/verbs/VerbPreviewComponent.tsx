@@ -17,7 +17,7 @@
  * */
 
 import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
-import { RootCreationData, VerbData, VerbDerivedWordData } from "../../dist/api";
+import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
@@ -57,10 +57,10 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
     }
 
     //Private state
-    private derivedWords: VerbDerivedWordData[] | null;
+    private derivedWords: FullWordData[] | null;
 
     //Private methods
-    private RenderNoun(derivedWord: VerbDerivedWordData)
+    private RenderNoun(derivedWord: FullWordData)
     {
         return <div className="row">
             <div className="col">

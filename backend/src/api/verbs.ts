@@ -59,7 +59,7 @@ class _api_
         @Query verbId: number
     )
     {
-        return await this.wordsController.QueryVerbDerivedWords(verbId);
+        return (await this.wordsController.QueryVerbDerivedWords(verbId)).PromiseAll();
     }
 
     @Put()

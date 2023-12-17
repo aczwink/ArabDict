@@ -18,7 +18,7 @@
 
 import { CheckBox, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "./APIService";
-import { AnyWordData, VerbData } from "../dist/api";
+import { FullWordData, VerbData } from "../dist/api";
 import { ConjugationService } from "./ConjugationService";
 import { RemoveTashkilButKeepShadda } from "arabdict-domain/src/Util";
 import { RenderTranslations } from "./shared/translations";
@@ -72,7 +72,7 @@ export class LearnComponent extends Component
     }
 
     //Private state
-    private data: VerbData | AnyWordData | null;
+    private data: VerbData | FullWordData | null;
     private rootRadicals: string;
     private showTashkil: boolean;
     private resolve: boolean;

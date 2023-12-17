@@ -17,7 +17,7 @@
  * */
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
-import { Stem1Context, VerbData, VerbDerivedWordData } from "../../dist/api";
+import { FullWordData, Stem1Context, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
@@ -65,7 +65,7 @@ export class ShowVerbComponent extends Component
     private verbId: number;
     private data: VerbData | null;
     private rootRadicals: string;
-    private derivedWords: VerbDerivedWordData[] | null;
+    private derivedWords: FullWordData[] | null;
 
     //Private methods
     private async LoadDerivedWords()

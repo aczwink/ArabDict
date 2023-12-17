@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WordType } from "../../dist/api";
+import { WordType, WordWordDerivationType } from "../../dist/api";
 
 export const allWordTypes = [
     WordType.Adjective,
@@ -30,17 +30,21 @@ export const allWordTypes = [
     WordType.Particle,
 ];
 
-export function WordMayHaveGender(wordType: WordType)
+export function WordDerivationTypeFromWordToString(type: WordWordDerivationType)
 {
-    switch(wordType)
+    switch(type)
     {
-        case WordType.Adjective:
-        case WordType.Noun:
-        case WordType.Pronoun:
-            return true;
+        case WordWordDerivationType.Feminine:
+            return "feminine version";
+        case WordWordDerivationType.Plural:
+            return "plural";
+        case WordWordDerivationType.Nisba:
+            return "relative adjective (nisbah اَلنِّسْبَة)";
+        case WordWordDerivationType.Colloquial:
+            return "colloquial version";
+        case WordWordDerivationType.Extension:
+            return "extension";
     }
-
-    return false;
 }
 
 export function WordGenderToAbbreviation(wordType: WordType, isMale: boolean | null)
@@ -53,6 +57,19 @@ export function WordGenderToAbbreviation(wordType: WordType, isMale: boolean | n
     else if(isMale === false)
         return "f";
     return "?";
+}
+
+export function WordMayHaveGender(wordType: WordType)
+{
+    switch(wordType)
+    {
+        case WordType.Adjective:
+        case WordType.Noun:
+        case WordType.Pronoun:
+            return true;
+    }
+
+    return false;
 }
 
 export function WordTypeToAbbreviationText(wordType: WordType)

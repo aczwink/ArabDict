@@ -44,7 +44,11 @@ enum WordWordDerivationType
     //Relation from x to y means: x is feminine version of male word y
     Feminine = 1,
     //Relation from adjective x to noun y means: x is nisba of y
-    Nisba = 2
+    Nisba = 2,
+    //Relation from x to y means: x is colloquial version of fus7a word y
+    Colloquial = 3,
+    //Relation from x to y means: x is an extension of word y (for example taking a word to a further meaning in a phrase)
+    Extension = 4,
 }
 
 enum WordVerbDerivationType
@@ -61,14 +65,6 @@ interface WordWordDerivationLink
     relationType: WordWordDerivationType;
 }
 
-interface WordBaseData
-{
-    word: string;
-    type: WordType;
-    isMale: boolean | null;
-    translations: TranslationEntry[];
-}
-
 interface WordRootDerivationData
 {
     rootId: number;
@@ -82,18 +78,16 @@ interface WordVerbDerivationData
 
 type WordDerivationData = WordRootDerivationData | WordVerbDerivationData | WordWordDerivationLink;
 
-export interface WordCreationData extends WordBaseData
+export interface WordCreationData
 {
+    word: string;
+    type: WordType;
+    isMale: boolean | null;
+    translations: TranslationEntry[];
     derivation?: WordDerivationData;
 }
 
-interface VerbDerivedWordData extends WordBaseData
-{
-    id: number;
-    verbData: WordVerbDerivationData;
-}
-
-interface AnyWordData extends WordBaseData
+interface FullWordData extends WordCreationData
 {
     id: number;
     derivation?: WordDerivationData;
@@ -197,25 +191,9 @@ export class WordsController
         `;
 
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
         const rows = await conn.Select(query, verbId);
-        const result: VerbDerivedWordData[] = [];
-        for (const row of rows)
-        {
-            result.push({
-                id: row.id,
-                isMale: (typeof row.isMale === "number") ? (row.isMale !== 0) : null,
-                translations: await this.translationsController.QueryWordTranslations(row.id),
-                type: row.type,
-                verbData: {
-                    type: row.derivationType,
-                    verbId: row.verbId
-                },
-                word: row.word,
-            });
-        }
 
-        return result;
+        return rows.Values().Map(this.QueryFullWordData.bind(this));
     }
 
     public async QueryWord(wordId: number)
@@ -443,7 +421,7 @@ export class WordsController
 
     private async QueryFullWordData(row: any)
     {
-        const result: AnyWordData = {
+        const result: FullWordData = {
             id: row.id,
             isMale: (row.isMale === null) ? null : (row.isMale !== 0),
             translations: await this.translationsController.QueryWordTranslations(row.id),

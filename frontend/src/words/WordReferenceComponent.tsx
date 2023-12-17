@@ -18,18 +18,10 @@
 
 import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "../APIService";
-import { AnyWordData, WordType } from "../../dist/api";
+import { FullWordData, WordVerbDerivationType } from "../../dist/api";
 import { WordGenderToAbbreviation, WordTypeToAbbreviationText } from "../shared/words";
 
-interface BaseWordData
-{
-    id: number;
-    word: string;
-    type: WordType;
-    isMale: boolean | null;
-}
-
-export class WordReferenceComponent extends Component<{ word: BaseWordData; }>
+export class WordReferenceComponent extends Component<{ word: FullWordData; }>
 {
     protected Render(): RenderValue
     {
@@ -46,8 +38,18 @@ export class WordReferenceComponent extends Component<{ word: BaseWordData; }>
     private TypeToString()
     {
         const word = this.input.word;
-        if( ("isVerbalNoun" in word) && (word.isVerbalNoun))
-            return "(verbal noun)";
+        if( (word.derivation !== undefined) && ("verbId" in word.derivation) )
+        {
+            switch(word.derivation.type)
+            {
+                case WordVerbDerivationType.ActiveParticiple:
+                    return "(active participle)";
+                case WordVerbDerivationType.PassiveParticiple:
+                    return "(passive participle)";
+                case WordVerbDerivationType.VerbalNoun:
+                    return "(verbal noun)";
+            }
+        }
         return WordTypeToAbbreviationText(word.type);
     }
 }
@@ -71,7 +73,7 @@ export class WordIdReferenceComponent extends Component<{ wordId: number }>
     }
 
     //Private state
-    private word: AnyWordData | null;
+    private word: FullWordData | null;
 
     //Event handlers
     override async OnInitiated(): Promise<void>
