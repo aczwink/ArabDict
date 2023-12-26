@@ -49,6 +49,7 @@ export class AddWordComponent extends Component
         }
         else if(router.state.Get().queryParams.verbId !== undefined)
         {
+            this.data.type = WordType.Noun;
             this.data.derivation = {
                 verbId: parseInt(router.state.Get().queryParams.verbId!),
                 type: WordVerbDerivationType.VerbalNoun

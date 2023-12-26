@@ -117,6 +117,7 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
                 this.input.data.derivation = { rootId: 0 };
                 break;
             case "Verb":
+                this.input.data.type = WordType.Noun;
                 this.input.data.derivation = { type: WordVerbDerivationType.VerbalNoun, verbId: 0 };
                 break;
             case "Word":

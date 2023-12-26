@@ -44,6 +44,8 @@ export function WordDerivationTypeFromWordToString(type: WordWordDerivationType)
             return "colloquial version";
         case WordWordDerivationType.Extension:
             return "extension";
+        case WordWordDerivationType.ElativeDegree:
+            return "elative degree";
     }
 }
 

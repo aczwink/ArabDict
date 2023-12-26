@@ -101,6 +101,8 @@ export class ShowWordComponent extends Component
                 return "فصحى version";
             case WordWordDerivationType.Extension:
                 return "base";
+            case WordWordDerivationType.ElativeDegree:
+                return "positive degree";
         }
     }
 
@@ -127,9 +129,7 @@ export class ShowWordComponent extends Component
 
     private RenderRelation(outgoing: boolean, relation: WordWordDerivationLink)
     {
-        return <li>
-            {this.RelationshipToText(relation.relationType, outgoing)} of <WordIdReferenceComponent wordId={relation.refWordId} />
-        </li>;
+        return <fragment>{this.RelationshipToText(relation.relationType, outgoing)} of <WordIdReferenceComponent wordId={relation.refWordId} /></fragment>;
     }
 
     private RenderDerivedTerms()
@@ -139,7 +139,7 @@ export class ShowWordComponent extends Component
 
         return <fragment>
             <h5>Derived words/terms</h5>
-            <ul>{this.data!.derived.map(this.RenderRelation.bind(this, false))}</ul>
+            <ul>{this.data!.derived.map(x => <li>{this.RenderRelation(false, x)}</li>)}</ul>
         </fragment>;
     }
 

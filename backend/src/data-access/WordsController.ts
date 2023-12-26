@@ -49,6 +49,8 @@ enum WordWordDerivationType
     Colloquial = 3,
     //Relation from x to y means: x is an extension of word y (for example taking a word to a further meaning in a phrase)
     Extension = 4,
+    //Relation from noun x to adjective y means: x is elative degree of y
+    ElativeDegree = 5,
 }
 
 enum WordVerbDerivationType

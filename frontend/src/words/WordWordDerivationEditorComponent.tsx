@@ -30,6 +30,7 @@ export class WordWordDerivationEditorComponent extends Component<{ derivationLin
             WordWordDerivationType.Feminine,
             WordWordDerivationType.Nisba,
             WordWordDerivationType.Plural,
+            WordWordDerivationType.ElativeDegree,
         ];
 
         const wordRelation = this.input.derivationLink;
