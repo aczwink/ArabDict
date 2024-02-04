@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -61,6 +61,12 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                     { letter: root.r1, shadda: false, tashkil: FATHA },
                     { letter: root.r2, shadda: false, tashkil: SUKUN },
                     { letter: WAW, shadda: false, tashkil: DHAMMA },
+                ],
+                [
+                    { letter: root.r1, shadda: false, tashkil: FATHA },
+                    { letter: root.r2, shadda: false, tashkil: SUKUN },
+                    { letter: YA, shadda: false, tashkil: FATHA },
+                    { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: KASRA },

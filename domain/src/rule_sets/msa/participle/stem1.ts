@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -69,6 +69,23 @@ export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Conte
                 { letter: root.r4, shadda: false },
             ];
 
+        case RootType.SecondConsonantDoubled:
+            if(voice === "active")
+            {
+                return [
+                    { letter: root.r1, shadda: false, tashkil: FATHA },
+                    { letter: ALEF, shadda: false, tashkil: FATHA },
+                    { letter: root.r2, shadda: true, tashkil: SUKUN },
+                ];
+            }
+            return [
+                { letter: MIM, shadda: false, tashkil: FATHA },
+                { letter: root.r1, shadda: false, tashkil: SUKUN },
+                { letter: root.r2, shadda: false, tashkil: DHAMMA },
+                { letter: WAW, shadda: false, tashkil: DHAMMA },
+                { letter: root.r2, shadda: false, tashkil: SUKUN },
+            ];
+
         case RootType.Sound:
             if(voice === "active")
             {
@@ -77,7 +94,7 @@ export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Conte
                     { letter: ALEF, shadda: false },
                     { letter: root.r2, shadda: false, tashkil: KASRA },
                     { letter: root.r3, shadda: false },
-                ]
+                ];
             }
             return [
                 { letter: MIM, shadda: false, tashkil: FATHA },
