@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -44,6 +44,9 @@ export class TranslationsEditorComponent extends Component<{ translations: Trans
             <div className="col">
                 <Textarea rows={4} value={translationEntry.text} onChanged={newValue => translationEntry.text = newValue} />
             </div>
+            <div className="col-auto">
+                <button type="button" className="btn btn-danger" onclick={this.RemoveEntry.bind(this, translationEntry)}><BootstrapIcon>trash</BootstrapIcon></button>
+            </div>
         </div>;
     }
 
@@ -60,6 +63,13 @@ export class TranslationsEditorComponent extends Component<{ translations: Trans
     private OnTranslationDialectChanged(translationEntry: TranslationEntry, newIdx: number)
     {
         translationEntry.dialect = dialects[newIdx];
+        this.input.onDataChanged();
+    }
+
+    private RemoveEntry(translationEntry: TranslationEntry)
+    {
+        const index = this.input.translations.indexOf(translationEntry);
+        this.input.translations.Remove(index);
         this.input.onDataChanged();
     }
 }
