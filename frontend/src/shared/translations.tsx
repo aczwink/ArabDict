@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { JSX_CreateElement } from "acfrontend";
+import { JSX_CreateElement, RootInjector } from "acfrontend";
 import { TranslationEntry } from "../../dist/api";
-import { DialectToEmoji } from "./dialects";
+import { DialectsService } from "../DialectsService";
 
 function RenderTranslationEntry(translationEntry: TranslationEntry)
 {
+    const d = RootInjector.Resolve(DialectsService).GetDialect(translationEntry.dialectId);
     return <fragment>
-        {DialectToEmoji(translationEntry.dialect)}
+        {d.flagCode}
         <span style="white-space: pre-wrap;">{translationEntry.text}</span>
     </fragment>;
 }

@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,11 +19,9 @@
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 
-export type DialectType = "apc" | "msa" | "eg" | "tn";
-
 export interface TranslationEntry
 {
-    dialect: DialectType;
+    dialectId: number;
     text: string;
 }
 
@@ -65,7 +63,7 @@ export class TranslationsController
             await conn.InsertRow(type + "s_translations", {
                 [type + "Id"]: id,
                 ordering: i,
-                dialect: translations[i].dialect,
+                dialectId: translations[i].dialectId,
                 text: translations[i].text
             });
         }
@@ -75,7 +73,7 @@ export class TranslationsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        return await conn.Select<TranslationEntry>("SELECT dialect, text FROM " + type + "s_translations WHERE " + type + "Id = ? ORDER BY ordering", id);
+        return await conn.Select<TranslationEntry>("SELECT dialectId, text FROM " + type + "s_translations WHERE " + type + "Id = ? ORDER BY ordering", id);
     }
 
     private async UpdateTranslations(id: number, type: "verb" | "word", translations: TranslationEntry[])

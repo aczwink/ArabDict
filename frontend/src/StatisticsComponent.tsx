@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,12 +19,12 @@
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "./APIService";
 import { DialectStatistics, DictionaryStatistics } from "../dist/api";
-import { DialectToDisplayName, DialectToEmoji } from "./shared/dialects";
+import { DialectsService } from "./DialectsService";
 
 @Injectable
 export class StatisticsComponent extends Component
 {
-    constructor(private apiService: APIService)
+    constructor(private apiService: APIService, private dialectsService: DialectsService)
     {
         super();
 
@@ -61,13 +61,14 @@ export class StatisticsComponent extends Component
     //Private methods
     private RenderDialectCounts(dialectCounts: DialectStatistics)
     {
+        const d = this.dialectsService.GetDialect(dialectCounts.dialectId);
         return <fragment>
             <tr>
-                <th>Number of verbs in dialect "{DialectToDisplayName(dialectCounts.dialect)}" {DialectToEmoji(dialectCounts.dialect)}:</th>
+                <th>Number of verbs in dialect "{d.name}" {d.flagCode}:</th>
                 <td>{dialectCounts.verbsCount}</td>
             </tr>
             <tr>
-                <th>Number of words (excluding verbs) in dialect "{DialectToDisplayName(dialectCounts.dialect)}" {DialectToEmoji(dialectCounts.dialect)}:</th>
+                <th>Number of words (excluding verbs) in dialect "{d.name}" {d.flagCode}:</th>
                 <td>{dialectCounts.wordsCount}</td>
             </tr>
         </fragment>
@@ -78,6 +79,6 @@ export class StatisticsComponent extends Component
     {
         const response = await this.apiService.statistics.get();
         this.data = response.data;
-        this.data.dialectCounts.SortBy(x => x.dialect);
+        this.data.dialectCounts.SortBy(x => this.dialectsService.GetDialect(x.dialectId).isoCode);
     }
 }

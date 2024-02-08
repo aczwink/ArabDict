@@ -16,6 +16,25 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `dialects`
+--
+
+DROP TABLE IF EXISTS `dialects`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dialects` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` text NOT NULL,
+  `flagCode` char(2) NOT NULL,
+  `parent` int(10) unsigned DEFAULT NULL,
+  `isoCode` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `dialects_parent` (`parent`),
+  CONSTRAINT `dialects_parent` FOREIGN KEY (`parent`) REFERENCES `dialects` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `roots`
 --
 
@@ -60,9 +79,11 @@ DROP TABLE IF EXISTS `verbs_translations`;
 CREATE TABLE `verbs_translations` (
   `verbId` int(10) unsigned NOT NULL,
   `ordering` tinyint(3) unsigned NOT NULL,
-  `dialect` char(3) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `dialectId` int(10) unsigned NOT NULL,
   `text` text NOT NULL,
   PRIMARY KEY (`verbId`,`ordering`),
+  KEY `verbs_translations_dialectId` (`dialectId`),
+  CONSTRAINT `verbs_translations_dialectId` FOREIGN KEY (`dialectId`) REFERENCES `dialects` (`id`),
   CONSTRAINT `verbs_translations_verbId` FOREIGN KEY (`verbId`) REFERENCES `verbs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -128,9 +149,11 @@ DROP TABLE IF EXISTS `words_translations`;
 CREATE TABLE `words_translations` (
   `wordId` int(10) unsigned NOT NULL,
   `ordering` tinyint(3) unsigned NOT NULL,
-  `dialect` char(3) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `dialectId` int(10) unsigned NOT NULL,
   `text` text NOT NULL,
   PRIMARY KEY (`wordId`,`ordering`),
+  KEY `words_translations_dialectId` (`dialectId`),
+  CONSTRAINT `words_translations_dialectId` FOREIGN KEY (`dialectId`) REFERENCES `dialects` (`id`),
   CONSTRAINT `words_translations_wordId` FOREIGN KEY (`wordId`) REFERENCES `words` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -208,4 +231,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-10 22:23:35
+-- Dump completed on 2024-02-06 18:04:43

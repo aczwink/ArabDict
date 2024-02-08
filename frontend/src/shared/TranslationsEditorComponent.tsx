@@ -16,12 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, Component, FormField, JSX_CreateElement, SingleSelect, Textarea } from "acfrontend";
-import { TranslationEntry } from "../../dist/api";
-import { DialectToDisplayName, DialectToEmoji, dialects } from "./dialects";
+import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, SingleSelect, Textarea } from "acfrontend";
+import { DialectData, TranslationEntry } from "../../dist/api";
+import { DialectsService } from "../DialectsService";
 
+interface DialectRenderInfo
+{
+    dialect: DialectData;
+    level: number;
+}
+
+@Injectable
 export class TranslationsEditorComponent extends Component<{ translations: TranslationEntry[]; onDataChanged: () => void; }>
-{;
+{
+    constructor(private dialectsService: DialectsService)
+    {
+        super();
+
+        this.dialects = [];
+    }
+
     protected Render(): RenderValue
     {
         return <FormField title="Translations">
@@ -32,13 +46,33 @@ export class TranslationsEditorComponent extends Component<{ translations: Trans
         </FormField>;
     }
 
+    //State
+    private dialects: DialectRenderInfo[];
+
     //Private methods
+    private BuildDialectNodes(dialects: DialectData[], parent: number | null, level: number)
+    {
+        const filtered = dialects.filter(x => x.parent === parent);
+        filtered.forEach(x => {
+            this.dialects.push({ dialect: x, level });
+            this.BuildDialectNodes(dialects, x.id, level + 1);
+        });
+    }
+
+    private RenderDialect(x: DialectRenderInfo)
+    {
+        const indention = "  ".repeat(x.level);
+        return <span style="white-space: pre;">
+            {indention} {x.dialect.flagCode} {x.dialect.name}
+        </span>;
+    }
+
     private RenderTranslationEntry(translationEntry: TranslationEntry)
     {
         return <div className="row mb-2">
             <div className="col-auto">
-                <SingleSelect selectedIndex={dialects.indexOf(translationEntry.dialect)} onSelectionChanged={this.OnTranslationDialectChanged.bind(this, translationEntry)}>
-                    {dialects.map(x => DialectToEmoji(x) + DialectToDisplayName(x))}
+                <SingleSelect selectedIndex={this.dialects.findIndex(x => translationEntry.dialectId === x.dialect.id)} onSelectionChanged={this.OnTranslationDialectChanged.bind(this, translationEntry)}>
+                    {this.dialects.map(this.RenderDialect.bind(this))}
                 </SingleSelect>
             </div>
             <div className="col">
@@ -54,15 +88,22 @@ export class TranslationsEditorComponent extends Component<{ translations: Trans
     private OnAddTranslationEntry()
     {
         this.input.translations.push({
-            dialect: "msa",
+            dialectId: this.dialects[0].dialect.id,
             text: ""
         });
         this.input.onDataChanged();
     }
 
+    override async OnInitiated(): Promise<void>
+    {
+        const dialects = await this.dialectsService.QueryDialects();
+        const ordered = dialects.Values().OrderBy(x => x.name).ToArray();
+        this.BuildDialectNodes(ordered, null, 0);
+    }
+
     private OnTranslationDialectChanged(translationEntry: TranslationEntry, newIdx: number)
     {
-        translationEntry.dialect = dialects[newIdx];
+        translationEntry.dialectId = this.dialects[newIdx].dialect.id;
         this.input.onDataChanged();
     }
 

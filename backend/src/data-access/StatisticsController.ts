@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,11 +18,10 @@
 
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
-import { DialectType } from "./TranslationsController";
 
 interface DialectStatistics
 {
-    dialect: DialectType;
+    dialectId: number;
     wordsCount: number;
     verbsCount: number;
 }
@@ -72,18 +71,18 @@ export class StatisticsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const verbs = await conn.Select("SELECT COUNT(DISTINCT verbId) as cnt, dialect FROM `verbs_translations` GROUP BY dialect");
-        const words = await conn.Select("SELECT COUNT(DISTINCT wordId) as cnt, dialect FROM `words_translations` GROUP BY dialect");
+        const verbs = await conn.Select("SELECT COUNT(DISTINCT verbId) as cnt, dialectId FROM `verbs_translations` GROUP BY dialectId");
+        const words = await conn.Select("SELECT COUNT(DISTINCT wordId) as cnt, dialectId FROM `words_translations` GROUP BY dialectId");
 
         const dialectCounts: DialectStatistics[] = [];
         for (const row of verbs)
-            dialectCounts.push({ dialect: row.dialect, verbsCount: row.cnt, wordsCount: 0});
+            dialectCounts.push({ dialectId: row.dialectId, verbsCount: row.cnt, wordsCount: 0});
 
         for (const row of words)
         {
-            const entry = dialectCounts.find(x => x.dialect === row.dialect);
+            const entry = dialectCounts.find(x => x.dialectId === row.dialectId);
             if(entry === undefined)
-                dialectCounts.push({ dialect: row.dialect, verbsCount: 0, wordsCount: row.cnt });
+                dialectCounts.push({ dialectId: row.dialectId, verbsCount: 0, wordsCount: row.cnt });
             else
                 entry.wordsCount = row.cnt;
         }

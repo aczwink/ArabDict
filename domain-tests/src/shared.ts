@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,6 +19,7 @@ import "acts-util-core";
 import { Expect } from "acts-util-test";
 import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
 import { ALEF_MAKSURA, BASE_TASHKIL, FATHA, KASRA, MIM, SUKUN, YA, YA_HAMZA } from "arabdict-domain/dist/Definitions";
+import { ConjugationParams } from "arabdict-domain/dist/DialectConjugator";
 import { VerbRoot } from "arabdict-domain/dist/VerbRoot";
 import { ParseVocalizedText, Vocalized } from "arabdict-domain/dist/Vocalization";
 import { Stem1Context } from "arabdict-domain/dist/rule_sets/msa/_legacy/CreateVerb";
@@ -70,7 +71,7 @@ function ToDisplayVersion(v: Vocalized[])
     return v.map(conv);
 }
 
-function Test(expected: string, got: string)
+function Test(expected: string, got: string, params: ConjugationParams)
 {
     const a = ParseVocalizedText(expected);
     const b = ParseVocalizedText(got);
@@ -78,6 +79,7 @@ function Test(expected: string, got: string)
     if(!a.Equals(b))
     {
         console.log("expected:", a, "(" + ToDisplayVersion(a) + ")", "got:", b, "(" + ToDisplayVersion(b) + ")");
+        console.log("conjugation params:", params);
         Expect(expected).Equals(got);
     }
 }
@@ -97,7 +99,7 @@ export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], st
     {
         const root = new VerbRoot(test.root.split("-").join(""));
 
-        const pastResult = conjugator.Conjugate(root, {
+        const params1: ConjugationParams = {
             gender: "male",
             numerus: "singular",
             person: "third",
@@ -105,10 +107,11 @@ export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], st
             tense: "perfect",
             voice: "active",
             mood: "indicative"
-        }, DialectType.ModernStandardArabic);
-        Test(test.past, pastResult);
+        };
+        const pastResult = conjugator.Conjugate(root, params1, DialectType.ModernStandardArabic);
+        Test(test.past, pastResult, params1);
 
-        const presentResult = conjugator.Conjugate(root, {
+        const params2: ConjugationParams = {
             gender: "male",
             numerus: "singular",
             person: "third",
@@ -116,8 +119,9 @@ export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], st
             tense: "present",
             voice: "active",
             mood: "indicative"
-        }, DialectType.ModernStandardArabic);
-        Test(test.present, presentResult);
+        };
+        const presentResult = conjugator.Conjugate(root, params2, DialectType.ModernStandardArabic);
+        Test(test.present, presentResult, params2);
     }
 }
 
@@ -139,7 +143,7 @@ export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Con
     {
         const root = new VerbRoot(rootRadicals.split("-").join(""));
 
-        const pastResult = conjugator.Conjugate(root, {
+        const params = {
             gender: test.gender ?? "male",
             numerus: test.numerus ?? "singular",
             person: test.person ?? "third",
@@ -148,7 +152,8 @@ export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Con
             tense: test.tense ?? "perfect",
             voice: test.voice ?? "active",
             mood: test.mood ?? "indicative"
-        }, DialectType.ModernStandardArabic);
-        Test(test.expected, pastResult);
+        };
+        const pastResult = conjugator.Conjugate(root, params, DialectType.ModernStandardArabic);
+        Test(test.expected, pastResult, params);
     }
 }

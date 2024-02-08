@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import "./api/dialects";
-import "./api/random";
-import "./api/roots";
-import "./api/stats";
-import "./api/verbs";
-import "./api/words";
+import { APIController, Get } from "acts-util-apilib";
+import { DialectsController } from "../data-access/DialectsController";
+
+@APIController("dialects")
+class _api_
+{
+    constructor(private dialectsController: DialectsController)
+    {
+    }
+    
+    @Get()
+    public async QueryDialects()
+    {
+        return this.dialectsController.QueryDialects();
+    }
+}

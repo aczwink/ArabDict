@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import "./api/dialects";
-import "./api/random";
-import "./api/roots";
-import "./api/stats";
-import "./api/verbs";
-import "./api/words";
+import { Injectable } from "acts-util-node";
+import { DatabaseController } from "./DatabaseController";
+
+interface DialectData
+{
+    id: number;
+    name: string;
+    flagCode: string;
+    parent: number | null;
+    isoCode: string;
+}
+
+@Injectable
+export class DialectsController
+{
+    constructor(private dbController: DatabaseController)
+    {
+    }
+
+    //Public methods
+    public async QueryDialects()
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const rows = await conn.Select<DialectData>("SELECT id, name, flagCode, parent, isoCode FROM dialects");
+
+        return rows;
+    }
+}
