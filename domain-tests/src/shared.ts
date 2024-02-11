@@ -18,12 +18,12 @@
 import "acts-util-core";
 import { Expect } from "acts-util-test";
 import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
-import { ALEF_MAKSURA, BASE_TASHKIL, FATHA, KASRA, MIM, SUKUN, YA, YA_HAMZA } from "arabdict-domain/dist/Definitions";
+import { A3EIN, ALEF, ALEF_HAMZA, ALEF_MAKSURA, BASE_TASHKIL, DAL, DHAMMA, FATHA, KASRA, MIM, SUKUN, WAW, YA, YA_HAMZA } from "arabdict-domain/dist/Definitions";
 import { ConjugationParams } from "arabdict-domain/dist/DialectConjugator";
 import { VerbRoot } from "arabdict-domain/dist/VerbRoot";
 import { ParseVocalizedText, Vocalized } from "arabdict-domain/dist/Vocalization";
 import { Stem1Context } from "arabdict-domain/dist/rule_sets/msa/_legacy/CreateVerb";
-import { Gender, Mood, NUN, Numerus, Person, SIIN, Tense, Voice } from "arabdict-domain/dist/rule_sets/msa/_legacy/VerbStem";
+import { Gender, Mood, NUN, Numerus, Person, SIIN, TA, Tense, Voice } from "arabdict-domain/dist/rule_sets/msa/_legacy/VerbStem";
 
 function ToDisplayVersion(v: Vocalized[])
 {
@@ -31,16 +31,52 @@ function ToDisplayVersion(v: Vocalized[])
     {
         switch(c)
         {
-            case ALEF_MAKSURA:
-                return "alef_maksura";
+            case ALEF:
+                return "alef";
+            //ba
+            case TA:
+                return "ta";
+            //tha
+            //jim
+            //7aa
+            //kha
+            case DAL:
+                return "dal";
+            //dhal
+            //ra
+            //zay
             case SIIN:
                 return "siin";
+            //shin
+            //Saad
+            //Daad
+            //Taa
+            //Tha
+            case A3EIN:
+                return "a3ein";
+            //ghayn
+            //fa
+            //qaf
+            //kaf
+            //lam
             case MIM:
                 return "mim";
             case NUN:
                 return "nun";
+            //haa
+            case WAW:
+                return "waw";
             case YA:
                 return "ya";
+            //hamza
+            case ALEF_HAMZA:
+                return "alef_hamza";
+            //waw hamza
+            //ya hamza
+            //alif maddah
+            //ta marbuta
+            case ALEF_MAKSURA:
+                return "alef_maksura";
         }
         return "TODO: " + c + " " + c.codePointAt(0);
     }
@@ -51,6 +87,8 @@ function ToDisplayVersion(v: Vocalized[])
             return "";
         switch(t)
         {
+            case DHAMMA:
+                return "/dhamma";
             case FATHA:
                 return "/fatha";
             case KASRA:
@@ -58,7 +96,6 @@ function ToDisplayVersion(v: Vocalized[])
             case SUKUN:
                 return "/sukun";
         }
-        return t.codePointAt(0);
     }
 
     function conv(v: Vocalized)

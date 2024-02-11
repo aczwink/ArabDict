@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "dev": "nodemon --exec \"npm run compile && npm run run\"",
+    "dev": "nodemon --exec \"cd ../domain && npm run build && cd ../domain-tests && npm run compile && npm run run\"",
     "run": "node node_modules/acts-util-test/dist/runner.js dist"
   },
   "keywords": [],

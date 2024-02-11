@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ import { DerivePrefix } from "./conjugation/prefix";
 import { AugmentRoot } from "./conjugation/rootAugmentation";
 import { ShortenOrAlefizeR2 } from "./conjugation/hollow";
 import { GeminateDoubledConsonant } from "./conjugation/doubled";
-import { AlterDefectiveEnding } from "./conjugation/defective";
+import { AlterDefectiveEnding, AlterDefectiveSuffix } from "./conjugation/defective";
 import { DropOutR1 } from "./conjugation/assimilated";
 import { ApplyRootTashkil } from "./conjugation/rootTashkil";
 import { GenerateAllPossibleVerbalNounsStem1 } from "./verbal_nouns/stem1";
@@ -80,7 +80,10 @@ export class MSAConjugator implements DialectConjugator
                     else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]) && (params.stem === 1))
                         AlterSpecialCaseRa2a(augmentedRoot, params);
                     else
+                    {
+                        AlterDefectiveSuffix(params, suffix.suffix);
                         AlterDefectiveEnding(augmentedRoot, params);
+                    }
                 break;
                 case RootType.Hollow:
                     ShortenOrAlefizeR2(augmentedRoot, params);

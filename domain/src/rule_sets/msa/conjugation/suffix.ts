@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@
 import { BASE_TASHKIL, SUKUN, DHAMMA, FATHA, KASRA, MIM, ALEF, WAW, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { Vocalized } from "../../../Vocalization";
-import { TA, NUN } from "../_legacy/VerbStem";
+import { TA, NUN, Person, Numerus, Gender } from "../_legacy/VerbStem";
 
 function DeriveSuffixPerfect(params: ConjugationParams): { suffix: Vocalized[]; preSuffixTashkil: BASE_TASHKIL}
 {
@@ -271,4 +271,13 @@ export function DeriveSuffix(params: ConjugationParams): { suffix: Vocalized[]; 
     if(params.tense === "perfect")
         return DeriveSuffixPerfect(params);
     return DeriveSuffixPresent(params);
+}
+
+export function DoesPresentSuffixStartWithWawOrYa(person: Person, numerus: Numerus, gender: Gender)
+{
+    const singular = (person === "second") && (numerus === "singular") && (gender === "female");
+    //dual has always alef
+    const plural = (person !== "first") && (numerus === "plural") && (gender === "male");
+
+    return singular || plural;
 }

@@ -58,11 +58,11 @@ It("Wikipedia defective stem1 type 1", () => {
         { expected: "نَرْمِي", gender: "male", person: "first", numerus: "plural", tense: "present" },
 
         //subjunctive
-        { expected: "يَرْمِي", gender: "male", person: "third", tense: "present", mood: "subjunctive" },
-        { expected: "تَرْمِي", gender: "female", person: "third", tense: "present", mood: "subjunctive" },
-        { expected: "تَرْمِي", gender: "male", person: "second", tense: "present", mood: "subjunctive" },
+        { expected: "يَرْمِيَ", gender: "male", person: "third", tense: "present", mood: "subjunctive" },
+        { expected: "تَرْمِيَ", gender: "female", person: "third", tense: "present", mood: "subjunctive" },
+        { expected: "تَرْمِيَ", gender: "male", person: "second", tense: "present", mood: "subjunctive" },
         { expected: "تَرْمِي", gender: "female", person: "second", tense: "present", mood: "subjunctive" },
-        { expected: "أَرْمِي", gender: "male", person: "first", tense: "present", mood: "subjunctive" },
+        { expected: "أَرْمِيَ", gender: "male", person: "first", tense: "present", mood: "subjunctive" },
 
         { expected: "يَرْمِيَا", gender: "male", person: "third", numerus: "dual", tense: "present", mood: "subjunctive" },
         { expected: "تَرْمِيَا", gender: "female", person: "third", numerus: "dual", tense: "present", mood: "subjunctive" },
@@ -72,7 +72,7 @@ It("Wikipedia defective stem1 type 1", () => {
         { expected: "يَرْمِينَ", gender: "female", person: "third", numerus: "plural", tense: "present", mood: "subjunctive" },
         { expected: "تَرْمُوا", gender: "male", person: "second", numerus: "plural", tense: "present", mood: "subjunctive" },
         { expected: "تَرْمِينَ", gender: "female", person: "second", numerus: "plural", tense: "present", mood: "subjunctive" },
-        { expected: "نَرْمِي", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "subjunctive" },
+        { expected: "نَرْمِيَ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "subjunctive" },
 
         //jussive
         { expected: "يَرْمِ", gender: "male", person: "third", tense: "present", mood: "jussive" },
@@ -141,11 +141,11 @@ It("Wikipedia defective stem1 type 2", () => {
         { expected: "نَدْعُو", gender: "male", person: "first", numerus: "plural", tense: "present" },
 
         //subjunctive
-        { expected: "يَدْعُو", gender: "male", person: "third", tense: "present", mood: "subjunctive" },
-        { expected: "تَدْعُو", gender: "female", person: "third", tense: "present", mood: "subjunctive" },
-        { expected: "تَدْعُو", gender: "male", person: "second", tense: "present", mood: "subjunctive" },
+        { expected: "يَدْعُوَ", gender: "male", person: "third", tense: "present", mood: "subjunctive" },
+        { expected: "تَدْعُوَ", gender: "female", person: "third", tense: "present", mood: "subjunctive" },
+        { expected: "تَدْعُوَ", gender: "male", person: "second", tense: "present", mood: "subjunctive" },
         { expected: "تَدْعِي", gender: "female", person: "second", tense: "present", mood: "subjunctive" },
-        { expected: "أَدْعُو", gender: "male", person: "first", tense: "present", mood: "subjunctive" },
+        { expected: "أَدْعُوَ", gender: "male", person: "first", tense: "present", mood: "subjunctive" },
 
         { expected: "يَدْعُوَا", gender: "male", person: "third", numerus: "dual", tense: "present", mood: "subjunctive" },
         { expected: "تَدْعُوَا", gender: "female", person: "third", numerus: "dual", tense: "present", mood: "subjunctive" },
@@ -155,7 +155,7 @@ It("Wikipedia defective stem1 type 2", () => {
         { expected: "يَدْعُونَ", gender: "female", person: "third", numerus: "plural", tense: "present", mood: "subjunctive" },
         { expected: "تَدْعُوا", gender: "male", person: "second", numerus: "plural", tense: "present", mood: "subjunctive" },
         { expected: "تَدْعُونَ", gender: "female", person: "second", numerus: "plural", tense: "present", mood: "subjunctive" },
-        { expected: "نَدْعُو", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "subjunctive" },
+        { expected: "نَدْعُوَ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "subjunctive" },
 
         //jussive
         { expected: "يَدْعُ", gender: "male", person: "third", tense: "present", mood: "jussive" },
@@ -236,7 +236,7 @@ It("Wikipedia defective stem1 type 3", () => {
         
         { expected: "يَنْسَوْا", gender: "male", person: "third", numerus: "plural", tense: "present", mood: "subjunctive" },
         { expected: "يَنْسَيْنَ", gender: "female", person: "third", numerus: "plural", tense: "present", mood: "subjunctive" },
-        { expected: "تَنْسَوْا ", gender: "male", person: "second", numerus: "plural", tense: "present", mood: "subjunctive" },
+        { expected: "تَنْسَوْا", gender: "male", person: "second", numerus: "plural", tense: "present", mood: "subjunctive" },
         { expected: "تَنْسَيْنَ", gender: "female", person: "second", numerus: "plural", tense: "present", mood: "subjunctive" },
         { expected: "نَنْسَى", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "subjunctive" },
 

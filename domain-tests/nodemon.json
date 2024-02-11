@@ -1,6 +1,6 @@
 {
     "ext": "ts",
     "ignore": ["./dist"],
-    "watch": "./src",
+    "watch": ["./src", "./node_modules/arabdict-domain/src"],
     "verbose": true
 }
