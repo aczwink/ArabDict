@@ -18,12 +18,25 @@
 
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
+import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 interface DialectStatistics
 {
     dialectId: number;
     wordsCount: number;
     verbsCount: number;
+}
+
+interface RootStatistics
+{
+    rootType: RootType;
+    count: number;
+}
+
+interface VerbStemStatistics
+{
+    stem: number;
+    count: number;
 }
 
 interface DictionaryStatistics
@@ -33,6 +46,8 @@ interface DictionaryStatistics
     wordsCount: number;
 
     dialectCounts: DialectStatistics[];
+    rootCounts: RootStatistics[];
+    stemCounts: VerbStemStatistics[];
 }
 
 @Injectable
@@ -62,7 +77,9 @@ export class StatisticsController
             rootsCount: ExtractCount(r1),
             verbsCount: ExtractCount(r2),
             wordsCount: ExtractCount(r3),
-            dialectCounts: await this.QueryDialectCounts()
+            dialectCounts: await this.QueryDialectCounts(),
+            rootCounts: await this.QueryRootCounts(),
+            stemCounts: await this.QueryStemCounts()
         };
     }
 
@@ -88,5 +105,24 @@ export class StatisticsController
         }
 
         return dialectCounts;
+    }
+
+    private async QueryRootCounts()
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const rows = await conn.Select("SELECT radicals FROM roots");
+        return rows.Values().Map(x => new VerbRoot(x.radicals)).GroupBy(x => x.type).Map<RootStatistics>(x => ({
+            count: x.value.length,
+            rootType: x.key
+        })).ToArray();
+    }
+
+    private async QueryStemCounts()
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const verbs = await conn.Select<VerbStemStatistics>("SELECT stem, COUNT(*) AS count FROM verbs GROUP BY stem");
+        return verbs;
     }
 }

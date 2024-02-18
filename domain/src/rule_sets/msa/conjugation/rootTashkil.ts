@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@
 import { BASE_TASHKIL, KASRA, FATHA, SUKUN, DHAMMA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { RootType } from "../../../VerbRoot";
-import { Vocalized } from "../../../Vocalization";
+import { PartiallyVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
 
 interface RootTashkil
@@ -84,7 +84,7 @@ function Derive4RadicalRootTashkil(params: ConjugationParams): RootTashkil & { r
     };
 }
 
-function ApplyRootAugmentationTashkil(augmentedRoot: Vocalized[], params: ConjugationParams)
+function ApplyRootAugmentationTashkil(augmentedRoot: PartiallyVocalized[], params: ConjugationParams)
 {
     switch(params.stem)
     {
@@ -130,7 +130,7 @@ function ApplyRootAugmentationTashkil(augmentedRoot: Vocalized[], params: Conjug
 
 export function ApplyRootTashkil(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    if(augmentedRoot.root.type === RootType.Quadriliteral)
+    if(augmentedRoot.type === RootType.Quadriliteral)
     {
         const tashkil = Derive4RadicalRootTashkil(params);
         augmentedRoot.ApplyTashkil(1, tashkil.r1);
@@ -143,6 +143,6 @@ export function ApplyRootTashkil(augmentedRoot: AugmentedRoot, params: Conjugati
         augmentedRoot.ApplyTashkil(1, tashkil.r1);
         augmentedRoot.ApplyTashkil(2, tashkil.r2);
         
-        ApplyRootAugmentationTashkil(augmentedRoot.vocalized, params);
+        ApplyRootAugmentationTashkil(augmentedRoot.partiallyVocalized, params);
     }
 }

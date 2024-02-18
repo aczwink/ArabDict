@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { DAL, ZAY } from "../../../Definitions";
-import { Vocalized } from "../../../Vocalization";
+import { PartiallyVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
 import { Tense } from "../_legacy/VerbStem";
 
-export function Stem8AssimilateTa(vocalized: Vocalized[], r1idx: number)
+export function Stem8AssimilateTa(vocalized: PartiallyVocalized[], r1idx: number)
 {
     switch(vocalized[r1idx].letter)
     {
@@ -33,5 +33,5 @@ export function Stem8AssimilateTa(vocalized: Vocalized[], r1idx: number)
 export function Stem8AssimilateTaVerb(augmentedRoot: AugmentedRoot, tense: Tense)
 {
     const r1idx = (tense === "perfect") ? 1 : 0;
-    Stem8AssimilateTa(augmentedRoot.vocalized, r1idx);
+    Stem8AssimilateTa(augmentedRoot.partiallyVocalized, r1idx);
 }

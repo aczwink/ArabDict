@@ -18,10 +18,10 @@
 
 import { BASE_TASHKIL, SUKUN, DHAMMA, FATHA, KASRA, MIM, ALEF, WAW, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
-import { Vocalized } from "../../../Vocalization";
+import { PartiallyVocalized } from "../../../Vocalization";
 import { TA, NUN, Person, Numerus, Gender } from "../_legacy/VerbStem";
 
-function DeriveSuffixPerfect(params: ConjugationParams): { suffix: Vocalized[]; preSuffixTashkil: BASE_TASHKIL}
+function DeriveSuffixPerfect(params: ConjugationParams): { suffix: PartiallyVocalized[]; preSuffixTashkil: BASE_TASHKIL}
 {
     switch(params.numerus)
     {
@@ -166,7 +166,7 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: Vocalized[]; 
     }
 }
 
-function DeriveSuffixPresent(params: ConjugationParams): { suffix: Vocalized[]; preSuffixTashkil: BASE_TASHKIL}
+function DeriveSuffixPresent(params: ConjugationParams): { suffix: PartiallyVocalized[]; preSuffixTashkil: BASE_TASHKIL}
 {
     let defTashkil: BASE_TASHKIL = DHAMMA;
     if(params.mood === "subjunctive")
@@ -266,7 +266,7 @@ function DeriveSuffixPresent(params: ConjugationParams): { suffix: Vocalized[]; 
     }
 }
 
-export function DeriveSuffix(params: ConjugationParams): { suffix: Vocalized[]; preSuffixTashkil: BASE_TASHKIL}
+export function DeriveSuffix(params: ConjugationParams): { suffix: PartiallyVocalized[]; preSuffixTashkil: BASE_TASHKIL}
 {
     if(params.tense === "perfect")
         return DeriveSuffixPerfect(params);

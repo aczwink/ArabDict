@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -42,6 +42,6 @@ export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: C
             augmentedRoot.r1.tashkil = cond ? FATHA : KASRA; //two sukuns after each other are forbidden
         }
         augmentedRoot.r3.shadda = true;
-        augmentedRoot.vocalized.Remove(augmentedRoot.vocalized.length - 2); //assimilate r2
+        augmentedRoot.partiallyVocalized.Remove(augmentedRoot.partiallyVocalized.length - 2); //assimilate r2
     }
 }

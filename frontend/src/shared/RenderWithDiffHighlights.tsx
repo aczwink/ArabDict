@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -53,6 +53,8 @@ export function RenderWithDiffHighlights(word: string, reference: string)
     const parsedWord = ParseVocalizedText(word);
     const parsedRef = ParseVocalizedText(reference);
 
+    const missingAtBeginning = (parsedWord[0].letter !== parsedRef[0].letter) && (parsedRef.length > parsedWord.length);
+
     while( parsedWord.length > 0 )
     {
         if(parsedWord[0].letter === parsedRef[0]?.letter)
@@ -84,6 +86,9 @@ export function RenderWithDiffHighlights(word: string, reference: string)
     }
 
     FinishBlock();
+
+    if(missingAtBeginning)
+        result.push(<span className="text-danger">{"\u2610"}</span>);
 
     return result;
 }

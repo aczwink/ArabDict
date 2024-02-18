@@ -18,14 +18,14 @@
 import "acts-util-core";
 import { Expect } from "acts-util-test";
 import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
-import { A3EIN, ALEF, ALEF_HAMZA, ALEF_MAKSURA, BASE_TASHKIL, DAL, DHAMMA, FATHA, KASRA, MIM, SUKUN, WAW, YA, YA_HAMZA } from "arabdict-domain/dist/Definitions";
+import { A3EIN, ALEF, ALEF_HAMZA, ALEF_HAMZA_BELOW, ALEF_MAKSURA, BA, BASE_TASHKIL, DAL, DHAMMA, FATHA, KASRA, LAM, Letter, MIM, SUKUN, WAW, YA } from "arabdict-domain/dist/Definitions";
 import { ConjugationParams } from "arabdict-domain/dist/DialectConjugator";
 import { VerbRoot } from "arabdict-domain/dist/VerbRoot";
-import { ParseVocalizedText, Vocalized } from "arabdict-domain/dist/Vocalization";
+import { ParseVocalizedText, PartiallyVocalized } from "arabdict-domain/dist/Vocalization";
 import { Stem1Context } from "arabdict-domain/dist/rule_sets/msa/_legacy/CreateVerb";
 import { Gender, Mood, NUN, Numerus, Person, SIIN, TA, Tense, Voice } from "arabdict-domain/dist/rule_sets/msa/_legacy/VerbStem";
 
-function ToDisplayVersion(v: Vocalized[])
+function ToDisplayVersion(v: PartiallyVocalized[])
 {
     function conv_letter(c: string)
     {
@@ -33,11 +33,13 @@ function ToDisplayVersion(v: Vocalized[])
         {
             case ALEF:
                 return "alef";
-            //ba
+            case BA:
+                return "ba";
             case TA:
                 return "ta";
             //tha
-            //jim
+            case Letter.Jiim:
+                return "jiim";
             //7aa
             //kha
             case DAL:
@@ -58,7 +60,8 @@ function ToDisplayVersion(v: Vocalized[])
             //fa
             //qaf
             //kaf
-            //lam
+            case LAM:
+                return "laam";
             case MIM:
                 return "mim";
             case NUN:
@@ -75,6 +78,8 @@ function ToDisplayVersion(v: Vocalized[])
             //ya hamza
             //alif maddah
             //ta marbuta
+            case ALEF_HAMZA_BELOW:
+                return "alef_hamza_below";
             case ALEF_MAKSURA:
                 return "alef_maksura";
         }
@@ -98,7 +103,7 @@ function ToDisplayVersion(v: Vocalized[])
         }
     }
 
-    function conv(v: Vocalized)
+    function conv(v: PartiallyVocalized)
     {
         const l = conv_letter(v.letter);
 
@@ -172,7 +177,7 @@ export interface ConjugationTest
     tense?: Tense;
     voice?: Voice;
 }
-export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Context, conjugations: ConjugationTest[])
+export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Context, conjugations: ConjugationTest[], dialect: DialectType = DialectType.ModernStandardArabic)
 {
     const conjugator = new Conjugator();
     
@@ -190,7 +195,7 @@ export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Con
             voice: test.voice ?? "active",
             mood: test.mood ?? "indicative"
         };
-        const pastResult = conjugator.Conjugate(root, params, DialectType.ModernStandardArabic);
+        const pastResult = conjugator.Conjugate(root, params, dialect);
         Test(test.expected, pastResult, params);
     }
 }

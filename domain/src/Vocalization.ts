@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,12 +18,19 @@
 
 import { BASE_TASHKIL, DHAMMA, FATHA, FULL_TASHKIL, KASRA, SHADDA, SUKUN } from "./Definitions";
 
-export interface Vocalized
+export interface PartiallyVocalized
 {
     letter: string;
     tashkil?: BASE_TASHKIL;
     shadda: boolean;
 }
+export interface VerbVocalized
+{
+    letter: string;
+    tashkil: BASE_TASHKIL;
+    shadda: boolean;
+}
+
 export interface FullyVocalized
 {
     letter: string;
@@ -33,7 +40,7 @@ export interface FullyVocalized
 
 export function ParseVocalizedText(text: string)
 {
-    const result: Vocalized[] = [];
+    const result: PartiallyVocalized[] = [];
 
     for(let i = 0; i < text.length;)
     {
@@ -91,12 +98,12 @@ export function ParseVocalizedText(text: string)
     return result;
 }
 
-export function Vocalize(letter: string, tashkil: BASE_TASHKIL): Vocalized
+export function Vocalize(letter: string, tashkil: BASE_TASHKIL): PartiallyVocalized
 {
     return { letter, tashkil, shadda: false };
 }
 
-export function VocalizedToString(v: Vocalized)
+export function VocalizedToString(v: PartiallyVocalized)
 {
     return v.letter + (v.shadda ? SHADDA : "") + (v.tashkil ? v.tashkil : "");
 }

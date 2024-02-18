@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WAW } from "../../../Definitions";
+import { DHAMMA, WAW } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { AugmentedRoot } from "../AugmentedRoot";
 
@@ -31,7 +31,7 @@ export function DropOutR1(augmentedRoot: AugmentedRoot, params: ConjugationParam
                 if(params.voice === "active")
                     augmentedRoot.DropRadial(1);
                 else
-                    augmentedRoot.ApplyTashkil(1, undefined);
+                    augmentedRoot.ApplyTashkil(1, DHAMMA);
             }
         }
         break;

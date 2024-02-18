@@ -269,3 +269,24 @@ It("Wikipedia defective stem1 type 3", () => {
 
     RunConjugationTest("ن-س-ي", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: FATHA, soundOverride: false }, conjugations);
 });
+
+It("Wikipedia defective stem table", () => {
+    //TODO: I
+    //TODO: II
+    //TODO: III
+
+    RunConjugationTest("ف-ع-ي", 4, [
+        { expected: "أَفْعَى" },
+        { expected: "يُفْعِي", tense: "present" },
+        { expected: "أَفْعِ", tense: "present", mood: "imperative", person: "second" },
+        { voice: "passive", expected: "أُفْعِيَ" },
+        { voice: "passive", expected: "يُفْعَى", tense: "present" },
+    ]);
+
+    //TODO: V
+    //TODO: VI
+    //TODO: VII
+    //TODO: VIII
+    //TODO: IX
+    //TODO: X
+});

@@ -18,11 +18,11 @@
 
 import { FATHA, ALEF, KASRATAN, MIM, SUKUN, DHAMMA, KASRA, WAW, YA, YA_HAMZA } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { Vocalized } from "../../../Vocalization";
+import { PartiallyVocalized } from "../../../Vocalization";
 import { Stem1Context } from "../_legacy/CreateVerb";
 import { Voice } from "../_legacy/VerbStem";
 
-export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Context: Stem1Context): Vocalized[]
+export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Context: Stem1Context): PartiallyVocalized[]
 {
     switch(root.type)
     {

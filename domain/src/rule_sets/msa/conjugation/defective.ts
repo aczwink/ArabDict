@@ -18,7 +18,7 @@
 
 import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, KASRA, SUKUN, WAW, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
-import { Vocalized } from "../../../Vocalization";
+import { PartiallyVocalized, VerbVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
 import { Stem1Context } from "../_legacy/CreateVerb";
 import { Numerus, Person } from "../_legacy/VerbStem";
@@ -44,9 +44,9 @@ function AlterDefectiveEndingActivePerfect(augmentedRoot: AugmentedRoot, params:
     }
     else
     {
-        let ending: Vocalized = { letter: ALEF_MAKSURA, shadda: false };
+        let ending: VerbVocalized = { letter: ALEF_MAKSURA, shadda: false, tashkil: FATHA };
         if(params.stem1Context?.middleRadicalTashkilPresent === DHAMMA)
-            ending = { letter: ALEF, shadda: false };
+            ending = { letter: ALEF, shadda: false, tashkil: FATHA };
 
         if(params.person === "third")
         {
@@ -96,7 +96,7 @@ function AlterDefectiveEndingActivePresentIndicative(augmentedRoot: AugmentedRoo
     }
     else if(IsDefectiveType3SpecialCase(params.numerus, params.person, params.stem1Context))
     {
-        augmentedRoot.ReplaceRadical(3, { letter: ALEF_MAKSURA, shadda: false });
+        augmentedRoot.ReplaceRadical(3, { letter: ALEF_MAKSURA, shadda: false, tashkil: FATHA });
     }
     else if( (params.numerus === "plural") && (params.gender === "female") )
     {
@@ -214,7 +214,7 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
                             augmentedRoot.ApplyTashkil(2, FATHA);
                         }
                         else
-                            augmentedRoot.ReplaceRadical(3, { letter: ALEF_MAKSURA, shadda: false });
+                            augmentedRoot.ReplaceRadical(3, { letter: ALEF_MAKSURA, shadda: false, tashkil: FATHA });
                     }
                 }
                 return;
@@ -233,7 +233,7 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
     }
 }
 
-export function AlterDefectiveSuffix(params: ConjugationParams, suffix: Vocalized[])
+export function AlterDefectiveSuffix(params: ConjugationParams, suffix: PartiallyVocalized[])
 {
     if(params.voice === "active")
     {

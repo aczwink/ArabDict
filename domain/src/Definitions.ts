@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,11 +18,17 @@
 
 //Source: https://en.wikipedia.org/wiki/Arabic_script_in_Unicode
 
+export enum Letter
+{
+    Jiim = "\u062C"
+}
+
 export const ALEF = "\u0627";
 export const ALEF_HAMZA = "\u0623";
 export const ALEF_HAMZA_BELOW = "\u0625";
 export const ALEF_MADDA = "\u0622";
 export const ALEF_MAKSURA = "\u0649";
+export const BA = "\u0628";
 export const TA_MARBUTA = "\u0629";
 export const HHA = "\u062D";
 export const DAL = "\u062F";

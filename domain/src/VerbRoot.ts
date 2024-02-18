@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,8 @@
  * */
 
 import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
-import { DHAMMA, FATHA, HAMZA, HHA, KASRA, LETTER_RA, PRIMARY_TASHKIL, WAW, YA } from "./Definitions";
+import { DHAMMA, FATHA, HAMZA, KASRA, PRIMARY_TASHKIL, WAW, YA } from "./Definitions";
+import { GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching } from "./rule_sets/msa/conjugation/defective_special_cases";
 
 export enum RootType
 {
@@ -150,20 +151,12 @@ export class VerbRoot
                 }
             }
             case RootType.Defective:
-                //special cases
-                if(this.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]))
+                const special = GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching(this);
+                if(special !== undefined)
                 {
                     return {
                         past: [],
-                        present: [KASRA],
-                        soundOverride: [false]
-                    };
-                }
-                if(this.radicalsAsSeparateLetters.Equals([HHA, YA, WAW]))
-                {
-                    return {
-                        past: [],
-                        present: [FATHA],
+                        present: [special],
                         soundOverride: [false]
                     };
                 }

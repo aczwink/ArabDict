@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,18 +37,42 @@ It("Wikipedia assimilated stem1", () => {
         { expected: "يَضَعُ", tense: "present" },
         { expected: "ضَعْ", tense: "present", mood: "imperative", person: "second" },
     ]);
+
     RunConjugationTest("و-ج-ل", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: FATHA, soundOverride: true }, [
         { expected: "وَجِلَ" },
         { expected: "يَوْجَلُ", tense: "present" },
         { expected: "إيجَلْ", tense: "present", mood: "imperative", person: "second" },
     ]);
+
+    /*
+    This verb does not even exist. And even if, the imperative should begin with alef and not alef hamza
     RunConjugationTest("ي-س-ر", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, [
         { expected: "يَسَرَ" },
         { expected: "يَيْسِرُ", tense: "present" },
         { expected: "إيسِرْ", tense: "present", mood: "imperative", person: "second" },
     ]);
+    */
 
-    //TODO: rest
+    /*
+    again, imperative does not start with alef hamza
+    RunConjugationTest("ي-ب-س", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: FATHA, soundOverride: false }, [
+        { expected: "يَبِسَ" },
+        { expected: "يَيْبَسُ", tense: "present" },
+        { expected: "إيبَسْ", tense: "present", mood: "imperative", person: "second" },
+    ]);
+    */
+
+    RunConjugationTest("و-د-د", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: FATHA, soundOverride: false }, [
+        { expected: "وَدَّ" },
+        { expected: "يَدُّ", tense: "present" },
+        { expected: "إيدَدْ", tense: "present", mood: "imperative", person: "second" },
+    ]);
+
+    RunConjugationTest("و-ل-ي", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: FATHA, soundOverride: false }, [
+        { expected: "وَلِيَ" },
+        { expected: "يَلِي", tense: "present" },
+        { expected: "لِ", tense: "present", mood: "imperative", person: "second" },
+    ]);
 });
 
 It("Wikipedia assimilated stem table", () => {
@@ -87,4 +111,8 @@ It("Wikipedia assimilated stem table", () => {
         { expected: "وُعِلَ", voice: "passive" },
         { expected: "يُوعَلُ", voice: "passive", tense: "present" },
     ]);
+
+    //TODO: IV
+    //TODO: VIII
+    //TODO: X
 });

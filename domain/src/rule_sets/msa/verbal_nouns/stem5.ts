@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +17,10 @@
  * */
 import { FATHA, DHAMMA } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { Vocalized } from "../../../Vocalization";
+import { PartiallyVocalized } from "../../../Vocalization";
 import { TA } from "../_legacy/VerbStem";
 
-export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): Vocalized[]
+export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): PartiallyVocalized[]
 {
     switch(root.type)
     {

@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,11 +17,11 @@
  * */
 import { ALEF, FATHA, KASRA, SUKUN, YA } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { Vocalized } from "../../../Vocalization";
+import { PartiallyVocalized } from "../../../Vocalization";
 import { TA } from "../_legacy/VerbStem";
 import { Stem8AssimilateTa } from "../conjugation/stem8";
 
-export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): Vocalized[]
+export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): PartiallyVocalized[]
 {
     switch(root.type)
     {
@@ -36,7 +36,7 @@ export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): Vocalized[]
             ];
         case RootType.Sound:
         {
-            const v: Vocalized[] = [
+            const v: PartiallyVocalized[] = [
                 { letter: ALEF, shadda: false, tashkil: KASRA },
                 { letter: root.r1, shadda: false, tashkil: SUKUN },
                 { letter: TA, shadda: false, tashkil: KASRA },

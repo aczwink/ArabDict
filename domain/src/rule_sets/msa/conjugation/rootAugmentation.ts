@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,10 +19,10 @@
 import { WAW, ALEF, ALEF_HAMZA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { RootType } from "../../../VerbRoot";
-import { Vocalized } from "../../../Vocalization";
+import { AugmentedRootSymbolInput } from "../AugmentedRoot";
 import { TA, NUN, SIIN } from "../_legacy/VerbStem";
 
-export function AugmentRoot(stem: number, rootType: RootType, params: ConjugationParams): Vocalized[] | undefined
+export function AugmentRoot(stem: number, rootType: RootType, params: ConjugationParams): AugmentedRootSymbolInput[] | undefined
 {
     switch(stem)
     {
@@ -37,16 +37,16 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
-                        { letter: "r1", shadda: false },
-                        { letter: "r2", shadda: false },
-                        { letter: "r3", shadda: false },
+                        { symbolName: "r1", shadda: false },
+                        { symbolName: "r2", shadda: false },
+                        { symbolName: "r3", shadda: false },
                     ];
                 case RootType.Quadriliteral:
                     return [
-                        { letter: "r1", shadda: false },
-                        { letter: "r2", shadda: false },
-                        { letter: "r3", shadda: false },
-                        { letter: "r4", shadda: false },
+                        { symbolName: "r1", shadda: false },
+                        { symbolName: "r2", shadda: false },
+                        { symbolName: "r3", shadda: false },
+                        { symbolName: "r4", shadda: false },
                     ];
             }
         }
@@ -60,9 +60,9 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
-                        { letter: "r1", shadda: false },
-                        { letter: "r2", shadda: true },
-                        { letter: "r3", shadda: false },
+                        { symbolName: "r1", shadda: false },
+                        { symbolName: "r2", shadda: true },
+                        { symbolName: "r3", shadda: false },
                     ];
             }
         }
@@ -74,10 +74,10 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.HamzaOnR1:
                 case RootType.Sound:
                     return [
-                        { letter: "r1", shadda: false },
-                        { letter: ((params.tense === "perfect") && (params.voice === "passive")) ? WAW : ALEF, shadda: false },
-                        { letter: "r2", shadda: false },
-                        { letter: "r3", shadda: false },
+                        { symbolName: "r1", shadda: false },
+                        { letter: ((params.tense === "perfect") && (params.voice === "passive")) ? WAW : ALEF, shadda: false, symbolName: "ai1" },
+                        { symbolName: "r2", shadda: false },
+                        { symbolName: "r3", shadda: false },
                     ];
             }
         }
@@ -87,13 +87,13 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             switch(rootType)
             {
                 case RootType.Sound:
-                    const x = [
-                        { letter: "r1", shadda: false },
-                        { letter: "r2", shadda: false },
-                        { letter: "r3", shadda: false },
+                    const x: AugmentedRootSymbolInput[] = [
+                        { symbolName: "r1", shadda: false },
+                        { symbolName: "r2", shadda: false },
+                        { symbolName: "r3", shadda: false },
                     ];
                     if(params.tense === "perfect")
-                        x.unshift({ letter: ALEF_HAMZA, shadda: false });
+                        x.unshift({ letter: ALEF_HAMZA, shadda: false, symbolName: "apost1" });
                     return x;
             }
         }
@@ -104,10 +104,10 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             {
                 case RootType.Sound:
                     return [
-                        { letter: TA, shadda: false },
-                        { letter: "r1", shadda: false },
-                        { letter: "r2", shadda: true },
-                        { letter: "r3", shadda: false },
+                        { letter: TA, shadda: false, symbolName: "apre1" },
+                        { symbolName: "r1", shadda: false },
+                        { symbolName: "r2", shadda: true },
+                        { symbolName: "r3", shadda: false },
                     ];
             }
         }
@@ -118,11 +118,11 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             {
                 case RootType.Sound:
                     return [
-                        { letter: TA, shadda: false },
-                        { letter: "r1", shadda: false },
-                        { letter: ((params.tense === "perfect") && (params.voice === "passive")) ? WAW : ALEF, shadda: false },
-                        { letter: "r2", shadda: false },
-                        { letter: "r3", shadda: false },
+                        { letter: TA, shadda: false, symbolName: "apre1" },
+                        { symbolName: "r1", shadda: false },
+                        { letter: ((params.tense === "perfect") && (params.voice === "passive")) ? WAW : ALEF, shadda: false, symbolName: "ai1" },
+                        { symbolName: "r2", shadda: false },
+                        { symbolName: "r3", shadda: false },
                     ];
             }
         }
@@ -132,14 +132,14 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             switch(rootType)
             {
                 case RootType.Sound:
-                    const x = [
-                        { letter: NUN, shadda: false },
-                        { letter: "r1", shadda: false },
-                        { letter: "r2", shadda: false },
-                        { letter: "r3", shadda: false },
+                    const x: AugmentedRootSymbolInput[] = [
+                        { letter: NUN, shadda: false, symbolName: "apre1" },
+                        { symbolName: "r1", shadda: false },
+                        { symbolName: "r2", shadda: false },
+                        { symbolName: "r3", shadda: false },
                     ];
                     if(params.tense === "perfect")
-                        x.unshift({ letter: ALEF, shadda: false });
+                        x.unshift({ letter: ALEF, shadda: false, symbolName: "apost1" });
                     return x;
             }
         }
@@ -149,14 +149,14 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             switch(rootType)
             {
                 case RootType.Sound:
-                    const x = [
-                        { letter: "r1", shadda: false },
-                        { letter: TA, shadda: false },
-                        { letter: "r2", shadda: false },
-                        { letter: "r3", shadda: false },
+                    const x: AugmentedRootSymbolInput[] = [
+                        { symbolName: "r1", shadda: false },
+                        { letter: TA, shadda: false, symbolName: "ai1" },
+                        { symbolName: "r2", shadda: false },
+                        { symbolName: "r3", shadda: false },
                     ];
                     if(params.tense === "perfect")
-                        x.unshift({ letter: ALEF, shadda: false });
+                        x.unshift({ letter: ALEF, shadda: false, symbolName: "apost1" });
                     return x;
             }
         }
@@ -171,11 +171,11 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
-                        { letter: SIIN, shadda: false },
-                        { letter: TA, shadda: false },
-                        { letter: "r1", shadda: false },
-                        { letter: "r2", shadda: false },
-                        { letter: "r3", shadda: false },
+                        { letter: SIIN, shadda: false, symbolName: "apre1" },
+                        { letter: TA, shadda: false, symbolName: "apre2" },
+                        { symbolName: "r1", shadda: false },
+                        { symbolName: "r2", shadda: false },
+                        { symbolName: "r3", shadda: false },
                     ];
             }
         }

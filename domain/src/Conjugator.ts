@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,8 +23,9 @@ import { Voice } from "./rule_sets/msa/_legacy/VerbStem";
 import { StemTenseVoiceDefinition } from "./rule_sets/Definitions";
 import { ConjugationParams } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
-import { FullyVocalized, Vocalized } from "./Vocalization";
-import { ALEF, DHAMMA, FATHA, KASRA, SUKUN, WAW, YA } from "./Definitions";
+import { FullyVocalized, PartiallyVocalized } from "./Vocalization";
+import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, KASRA, SUKUN, WAW, YA } from "./Definitions";
+import { APCConjugator } from "./rule_sets/apc/APCConjugator";
 
 export enum DialectType
 {
@@ -112,7 +113,7 @@ export class Conjugator
         }
     }
 
-    private CheckShaddaPattern(vocalized: Vocalized[])
+    private CheckShaddaPattern(vocalized: PartiallyVocalized[])
     {
         for(let i = 0; i < vocalized.length - 1; i++)
         {
@@ -135,18 +136,18 @@ export class Conjugator
             case DialectType.ModernStandardArabic:
                 return new MSAConjugator;
             case DialectType.NorthLevantineArabic:
-                throw new Error("implement me");
+                return new APCConjugator;
         }
     }
 
-    private FormatPattern(pattern: (FullyVocalized | Vocalized)[]): string
+    private FormatPattern(pattern: (FullyVocalized | PartiallyVocalized)[]): string
     {
         this.RemoveRedundantTashkil(pattern as any[]);
         this.RemoveTrailingSukun(pattern as any);
         return Hamzate(pattern as any);
     }
 
-    private RemoveRedundantTashkil(vocalized: Vocalized[])
+    private RemoveRedundantTashkil(vocalized: PartiallyVocalized[])
     {
         //don't alter first char because word can't start with vowel
         for(let i = 1; i < vocalized.length; i++)
@@ -158,10 +159,12 @@ export class Conjugator
                 v.tashkil = undefined;
             else if( (v.letter === YA) && (v.tashkil === KASRA) )
                 v.tashkil = undefined;
+            else if( (v.letter === ALEF_MAKSURA) && (v.tashkil === FATHA) )
+                v.tashkil = undefined;
         }
     }
 
-    private RemoveTrailingSukun(pattern: Vocalized[])
+    private RemoveTrailingSukun(pattern: PartiallyVocalized[])
     {
         const last = pattern[pattern.length - 1];
         if(last.tashkil === SUKUN)

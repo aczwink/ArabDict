@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,11 +18,11 @@
 
 import { ALEF, ALEF_HAMZA_BELOW, ALEF_MADDA, BASE_TASHKIL, DHAMMA, KASRA, SUKUN, WAW, WAW_HAMZA, YA, YA_HAMZA } from "./Definitions";
 import { ALEF_HAMZA, FATHA, HAMZA } from "./Definitions";
-import { Vocalized, VocalizedToString } from "./Vocalization";
+import { PartiallyVocalized, VocalizedToString } from "./Vocalization";
 
 //Source: https://en.wikipedia.org/wiki/Hamza#Detailed_description
 
-function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShortVowel?: BASE_TASHKIL, predecessor?: Vocalized, prepredecessor?: Vocalized): Vocalized
+function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShortVowel?: BASE_TASHKIL, predecessor?: PartiallyVocalized, prepredecessor?: PartiallyVocalized): PartiallyVocalized
 {
     /*
     function VowelToTashkil(vowel: string)
@@ -62,7 +62,7 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
         return MaxPrecedence(t1, t2);
     }
 
-    function IsDiphtong(v: Vocalized | undefined, predecessor: Vocalized | undefined)
+    function IsDiphtong(v: PartiallyVocalized | undefined, predecessor: PartiallyVocalized | undefined)
     {
         //diphtongs are /aj/ or /aw/, i.e. a ya or waw with sukun above it, while the predecessor needs to have a fatha
         return (
@@ -132,7 +132,7 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
     }
 }
 
-function MaddahCheck(current: Vocalized, prev?: Vocalized)
+function MaddahCheck(current: PartiallyVocalized, prev?: PartiallyVocalized)
 {
     if(prev?.letter === ALEF_HAMZA)
     {
@@ -157,13 +157,13 @@ function MaddahCheck(current: Vocalized, prev?: Vocalized)
     return false;
 }
 
-export function Hamzate(vocalized: Vocalized[])
+export function Hamzate(vocalized: PartiallyVocalized[])
 {
     //special case for empty words (for example dual does not exist in levantine dialects)
     if(vocalized.length === 0)
         return "";
 
-    const result: Vocalized[] = [];
+    const result: PartiallyVocalized[] = [];
     for(let i = 0; i < vocalized.length; i++)
     {
         const prev = result[result.length - 1];

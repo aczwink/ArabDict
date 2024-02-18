@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,6 @@ import { DialectDefinition } from "../Definitions";
 import { stem1 } from "./_legacy/1/stem1";
 import { stem2 } from "./_legacy/2/stem2";
 import { stem3 } from "./_legacy/3/stem3";
-import { stem4 } from "./_legacy/4/stem4";
 import { stem5 } from "./_legacy/5/stem5";
 import { stem8 } from "./_legacy/8/stem8";
 
@@ -29,7 +28,6 @@ export const definition: DialectDefinition = {
         1: stem1,
         2: stem2,
         3: stem3,
-        4: stem4,
         5: stem5,
         8: stem8,
     }

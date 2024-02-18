@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,15 +18,49 @@
 
 import { ALEF, BASE_TASHKIL, FATHA, KASRA, LONG_VOWEL, PRIMARY_TASHKIL, YA } from "../../Definitions";
 import { VerbRoot } from "../../VerbRoot";
-import { Vocalized } from "../../Vocalization";
+import { PartiallyVocalized, VerbVocalized } from "../../Vocalization";
+
+interface ConstantRootSymbolInput extends PartiallyVocalized
+{
+    readonly symbolName: "ai1" | "apre1" | "apre2" | "apost1"; //augmented-(infix | postfix | prefix)
+}
+
+interface VariableRootSymbolInput
+{
+    shadda: boolean;
+    readonly symbolName: "r1" | "r2" | "r3" | "r4";
+}
+
+export type AugmentedRootSymbolInput = ConstantRootSymbolInput | VariableRootSymbolInput;
+
+interface AugmentedRootSymbol
+{
+    letter: string;
+    shadda: boolean;
+    readonly symbolName: string;
+    tashkil?: BASE_TASHKIL;
+}
 
 export class AugmentedRoot
 {
-    constructor(private _vocalized: Vocalized[], private _root: VerbRoot)
+    constructor(inputSymbols: AugmentedRootSymbolInput[], private root: VerbRoot)
     {
+        this.symbols = inputSymbols.map(x => {
+            return {
+                letter: ("letter" in x) ? x.letter : (this.root.radicalsAsSeparateLetters[parseInt(x.symbolName.substring(1)) - 1]),
+                shadda: x.shadda,
+                symbolName: x.symbolName,
+                tashkil: ("tashkil" in x) ? x.tashkil : undefined
+            };
+        })
     }
 
     //Properties
+    public get partiallyVocalized()
+    {
+        return this.symbols as PartiallyVocalized[];
+    }
+
     public get r1()
     {
         return this.GetRadical(1)!;
@@ -42,30 +76,13 @@ export class AugmentedRoot
         return this.GetRadical(3)!;
     }
 
-    public get root()
+    public get type()
     {
-        return this._root;
-    }
-
-    public get vocalized()
-    {
-        return this._vocalized;
+        return this.root.type;
     }
 
     //Public methods
-    public ApplyRootLetters()
-    {
-        for (const v of this._vocalized)
-        {
-            if(v.letter.startsWith("r"))
-            {
-                const n = parseInt(v.letter.substring(1));
-                v.letter = this._root.radicalsAsSeparateLetters[n-1];
-            }
-        }
-    }
-
-    public ApplyTashkil(radical: number, taskil: BASE_TASHKIL | undefined)
+    public ApplyTashkil(radical: number, taskil: BASE_TASHKIL)
     {
         const v = this.GetRadical(radical);
         v!.tashkil = taskil;
@@ -75,14 +92,14 @@ export class AugmentedRoot
     {
         const idx = this.GetRadicalIndedx(radical);
 
-        this._vocalized[idx - 1].tashkil = this._vocalized[idx].tashkil;
-        this._vocalized.Remove(idx);
+        this.symbols[idx - 1].tashkil = this.symbols[idx].tashkil;
+        this.symbols.Remove(idx);
     }
 
     public DropRadial(radical: number)
     {
         const idx = this.GetRadicalIndedx(radical);
-        this._vocalized.Remove(idx);
+        this.symbols.Remove(idx);
     }
 
     public InsertLongVowel(radical: number, vowel: LONG_VOWEL)
@@ -98,7 +115,7 @@ export class AugmentedRoot
             }
         }
 
-        this.ReplaceRadical(radical, { letter: vowel, shadda: false });
+        this.ReplaceRadical(radical, { letter: vowel, shadda: false, tashkil: LongVowelToShortVowel(vowel) });
         this.ApplyTashkil(radical - 1, LongVowelToShortVowel(vowel));
     }
 
@@ -108,7 +125,7 @@ export class AugmentedRoot
         this.ApplyTashkil(radical - 1, shortVowel);
     }
 
-    public ReplaceRadical(radical: number, replacement: Vocalized)
+    public ReplaceRadical(radical: number, replacement: VerbVocalized)
     {
         const v = this.GetRadical(radical);
         v!.letter = replacement.letter;
@@ -116,14 +133,17 @@ export class AugmentedRoot
         v!.tashkil = replacement.tashkil;
     }
 
+    //Private state
+    private symbols: AugmentedRootSymbol[];
+
     //Private methods
     private GetRadical(n: number)
     {
-        return this._vocalized.find( x => x.letter === ("r" + n));
+        return this.symbols.find( x => x.symbolName === ("r" + n));
     }
 
     private GetRadicalIndedx(n: number)
     {
-        return this._vocalized.findIndex( x => x.letter === ("r" + n));
+        return this.symbols.findIndex( x => x.symbolName === ("r" + n));
     }
 }

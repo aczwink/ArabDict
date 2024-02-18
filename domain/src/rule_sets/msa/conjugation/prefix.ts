@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@
 import { BASE_TASHKIL, ALEF_HAMZA, FATHA, SUKUN, ALEF, DHAMMA, KASRA, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { RootType } from "../../../VerbRoot";
-import { Vocalized } from "../../../Vocalization";
+import { PartiallyVocalized } from "../../../Vocalization";
 import { NUN, TA } from "../_legacy/VerbStem";
 
 function DerivePrefixTashkil(rootType: RootType, params: ConjugationParams)
@@ -46,7 +46,7 @@ function DerivePrefixTashkil(rootType: RootType, params: ConjugationParams)
     }
 }
 
-export function DerivePrefix(prevTashkil: BASE_TASHKIL, rootType: RootType, params: ConjugationParams): Vocalized[]
+export function DerivePrefix(prevTashkil: BASE_TASHKIL, rootType: RootType, params: ConjugationParams): PartiallyVocalized[]
 {
     if(params.tense === "perfect")
     {

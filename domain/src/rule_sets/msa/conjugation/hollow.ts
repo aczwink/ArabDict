@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,14 +37,14 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
     {
         case 1:
         {
-            const vowelTashkil = (augmentedRoot.root.r2 === WAW) ? DHAMMA : KASRA;
+            const vowelTashkil = (augmentedRoot.r2.letter === WAW) ? DHAMMA : KASRA;
 
             if(params.tense === "perfect")
             {
                 if((params.person === "third") && !((params.numerus === "plural") && (params.gender === "female")))
                 {
                     if(params.voice === "active")
-                        augmentedRoot.ReplaceRadical(2, { letter: ALEF, shadda: false });
+                        augmentedRoot.ReplaceRadical(2, { letter: ALEF, shadda: false, tashkil: FATHA });
                     else
                         augmentedRoot.InsertLongVowel(2, YA);
                 }
@@ -67,7 +67,7 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
                 if(shortenVowel)
                     augmentedRoot.AssimilateRadical(2);
                 else if(params.voice === "passive")
-                    augmentedRoot.ReplaceRadical(2, { letter: ALEF, shadda: false });
+                    augmentedRoot.ReplaceRadical(2, { letter: ALEF, shadda: false, tashkil: FATHA });
 
                 augmentedRoot.ApplyTashkil(1, (params.voice === "active") ? vowelTashkil : FATHA);
             }

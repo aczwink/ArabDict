@@ -24,17 +24,6 @@ import { DialectData } from "../dist/api";
 import { ConjugationService } from "./ConjugationService";
 import { DialectsService } from "./DialectsService";
 
-function MapDialectType(type: DialectType): string
-{
-    switch(type)
-    {
-        case DialectType.ModernStandardArabic:
-            return "arb";
-        case DialectType.NorthLevantineArabic:
-            return "apc";
-    }
-}
-
 function MapDialectTypeBack(type: string)
 {
     switch(type)
@@ -60,7 +49,7 @@ export class DialectSelectionComponent extends Component
     {
         return <div className="flex-shrink-0">
             <a href="#" className="text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                {this.FindEmoji(MapDialectType(this.conjugationService.globalDialect))}
+                {this.FindEmoji(this.conjugationService.globalDialectMetaData.iso639code)}
             </a>
             <ul className="dropdown-menu shadow">
                 {this.RenderDialectChildrenOf(null, 0)}
@@ -93,7 +82,7 @@ export class DialectSelectionComponent extends Component
         
         const indention = "  ".repeat(level);
         return <li>
-            <a className={(x.isoCode === MapDialectType(this.conjugationService.globalDialect)) ? "dropdown-item active" : "dropdown-item"} onclick={this.OnChangeDialect.bind(this, x)} href="#" style="white-space: pre;">{indention}{x.flagCode} {x.name}</a>
+            <a className={(x.isoCode === this.conjugationService.globalDialectMetaData.iso639code) ? "dropdown-item active" : "dropdown-item"} onclick={this.OnChangeDialect.bind(this, x)} href="#" style="white-space: pre;">{indention}{x.flagCode} {x.name}</a>
         </li>;
     }
 
@@ -104,7 +93,7 @@ export class DialectSelectionComponent extends Component
         const dialectType = MapDialectTypeBack(dialect.isoCode);
         if(dialectType !== undefined)
         {
-            this.conjugationService.globalDialect = dialectType;
+            this.conjugationService.globalDialect.Set(dialectType);
             this.Update();
         }
     }

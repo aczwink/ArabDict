@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,8 @@ import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Tense, Voice, Gender, Person, Numerus, Mood } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 import { Stem1Context } from "../dist/api";
+import { Property } from "../../../ACTS-Util/core/dist/Observables/Property";
+import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 
 @Injectable
 export class ConjugationService
@@ -28,7 +30,7 @@ export class ConjugationService
     constructor()
     {
         this.conjugator = new Conjugator;
-        this._globalDialect = DialectType.ModernStandardArabic;
+        this._globalDialect = new Property(DialectType.ModernStandardArabic);
     }
 
     //Properties
@@ -37,15 +39,15 @@ export class ConjugationService
         return this._globalDialect;
     }
 
-    public set globalDialect(newValue: DialectType)
+    public get globalDialectMetaData()
     {
-        this._globalDialect = newValue;
+        return GetDialectMetadata(this._globalDialect.Get());
     }
 
     //Public methods
     public AnalyzeConjugation(conjugated: string)
     {
-        return this.conjugator.AnalyzeConjugation(this._globalDialect, conjugated);
+        return this.conjugator.AnalyzeConjugation(this._globalDialect.Get(), conjugated);
     }
 
     public Conjugate(rootRadicals: string, stem: number, tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus, mood: Mood, stem1Context?: Stem1Context)
@@ -60,22 +62,22 @@ export class ConjugationService
             numerus,
             mood,
             stem1Context
-        }, this._globalDialect);
+        }, this._globalDialect.Get());
     }
 
     public ConjugateParticiple(rootRadicals: string, stem: number, voice: Voice, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
-        return this.conjugator.ConjugateParticiple(this._globalDialect, root, stem, voice, stem1Context);
+        return this.conjugator.ConjugateParticiple(this._globalDialect.Get(), root, stem, voice, stem1Context);
     }
 
     public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: number)
     {
         const root = new VerbRoot(rootRadicals);
-        return this.conjugator.GenerateAllPossibleVerbalNouns(this._globalDialect, root, stem);
+        return this.conjugator.GenerateAllPossibleVerbalNouns(this._globalDialect.Get(), root, stem);
     }
 
     //Private state
     private conjugator: Conjugator;
-    private _globalDialect: DialectType;
+    private _globalDialect: Property<DialectType>;
 }

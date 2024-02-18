@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { CreateVerb, Stem1Context } from "./_legacy/CreateVerb";
-import { WAW, A3EIN, LAM, FA, QAF, YA, HHA, LETTER_RA, HAMZA } from "../../Definitions";
+import { WAW, A3EIN, LAM, FA, QAF } from "../../Definitions";
 import { ConjugationParams, DialectConjugator } from "../../DialectConjugator";
 import { Hamzate } from "../../Hamza";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { Tense, Voice } from "./_legacy/VerbStem";
-import { FullyVocalized, ParseVocalizedText, Vocalized } from "../../Vocalization";
+import { FullyVocalized, ParseVocalizedText, PartiallyVocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
 import { AugmentedRoot } from "./AugmentedRoot";
 import { definition as msaDef } from "./dialectDefinition";
@@ -42,7 +42,7 @@ import { GenerateAllPossibleVerbalNounsStem10 } from "./verbal_nouns/stem10";
 import { GenerateParticipleStem2 } from "./participle/stem2";
 import { GenerateParticipleStem1 } from "./participle/stem1";
 import { GenerateParticipleStem8 } from "./participle/stem8";
-import { AlterSpecialCaseHayiya, AlterSpecialCaseRa2a } from "./conjugation/special_cases";
+import { AlterSpeciallyIrregularDefective, IsSpeciallyIrregularDefective } from "./conjugation/defective_special_cases";
 import { GenerateParticipleStem5 } from "./participle/stem5";
 import { GenerateParticipleStem3 } from "./participle/stem3";
 import { GenerateAllPossibleVerbalNounsStem3 } from "./verbal_nouns/stem3";
@@ -56,7 +56,7 @@ import { GenerateParticipleStem10 } from "./participle/stem10";
 export class MSAConjugator implements DialectConjugator
 {
     //Public methods
-    public Conjugate(root: VerbRoot, params: ConjugationParams): Vocalized[]
+    public Conjugate(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[]
     {
         const maybeAugmentedRoot = AugmentRoot(params.stem, root.type, params);
         if(maybeAugmentedRoot !== undefined)
@@ -75,10 +75,8 @@ export class MSAConjugator implements DialectConjugator
                     DropOutR1(augmentedRoot, params);
                 break;
                 case RootType.Defective:
-                    if(root.radicalsAsSeparateLetters.Equals([HHA, YA, WAW]) && (params.stem === 1))
-                        AlterSpecialCaseHayiya(augmentedRoot, params);
-                    else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]) && (params.stem === 1))
-                        AlterSpecialCaseRa2a(augmentedRoot, params);
+                    if(IsSpeciallyIrregularDefective(root, params.stem))
+                        AlterSpeciallyIrregularDefective(root, augmentedRoot, params);
                     else
                     {
                         AlterDefectiveSuffix(params, suffix.suffix);
@@ -93,16 +91,15 @@ export class MSAConjugator implements DialectConjugator
                 break;
             }
 
-            augmentedRoot.ApplyRootLetters();
             if(params.stem === 8)
                 Stem8AssimilateTaVerb(augmentedRoot, params.tense);
-            return DerivePrefix(augmentedRoot.vocalized[0].tashkil!, root.type, params).concat(augmentedRoot.vocalized, suffix.suffix);
+            return DerivePrefix(augmentedRoot.partiallyVocalized[0].tashkil!, root.type, params).concat(augmentedRoot.partiallyVocalized, suffix.suffix);
         }
 
         return this.ConjugateLegacy(root, params);
     }
 
-    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): Vocalized[] | FullyVocalized[]
+    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): PartiallyVocalized[] | FullyVocalized[]
     {
         switch(stem)
         {
@@ -169,7 +166,7 @@ export class MSAConjugator implements DialectConjugator
         return replaced;
     }
 
-    private ConjugateLegacy(root: VerbRoot, params: ConjugationParams): Vocalized[]
+    private ConjugateLegacy(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[]
     {
         const dialectDef = this.GetDialectDefiniton();
         const rootType = params.stem1Context?.soundOverride ? RootType.Sound : root.type;

@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@
 import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { VerbRoot } from "./VerbRoot";
 import { Tense, Voice, Gender, Person, Numerus, Mood } from "./rule_sets/msa/_legacy/VerbStem";
-import { FullyVocalized, Vocalized } from "./Vocalization";
+import { FullyVocalized, PartiallyVocalized } from "./Vocalization";
 
 export interface ConjugationParams
 {
@@ -35,7 +35,7 @@ export interface ConjugationParams
 
 export interface DialectConjugator
 {
-    Conjugate(root: VerbRoot, params: ConjugationParams): Vocalized[];
-    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): Vocalized[] | FullyVocalized[];
+    Conjugate(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[];
+    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): PartiallyVocalized[] | FullyVocalized[];
     GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[];
 }
