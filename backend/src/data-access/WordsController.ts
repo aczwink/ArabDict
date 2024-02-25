@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -34,7 +34,8 @@ export enum WordType
     Adverb = 5,
     Pronoun = 6,
     Phrase = 7,
-    Particle = 8
+    Particle = 8,
+    Interjection = 9
 }
 
 enum WordWordDerivationType
@@ -53,6 +54,12 @@ enum WordWordDerivationType
     ElativeDegree = 5,
 }
 
+export enum WordRelationshipType
+{
+    Synonym = 0,
+    Antonym = 1,
+}
+
 enum WordVerbDerivationType
 {
     Unknown = 0,
@@ -65,6 +72,12 @@ interface WordWordDerivationLink
 {
     refWordId: number;
     relationType: WordWordDerivationType;
+}
+
+interface WordRelation
+{
+    relatedWordId: number;
+    relationType: WordRelationshipType;
 }
 
 interface WordRootDerivationData
@@ -87,6 +100,7 @@ export interface WordCreationData
     isMale: boolean | null;
     translations: TranslationEntry[];
     derivation?: WordDerivationData;
+    related: WordRelation[];
 }
 
 interface FullWordData extends WordCreationData
@@ -128,6 +142,7 @@ export class WordsController
             await this.InsertDerivation(conn, data.derivation, wordId);
 
         await this.translationsController.UpdateWordTranslations(wordId, data.translations);
+        await this.UpdateWordRelations(wordId, data.related);
 
         return wordId;
     }
@@ -243,6 +258,7 @@ export class WordsController
             await this.InsertDerivation(conn, data.derivation, wordId);
 
         await this.translationsController.UpdateWordTranslations(wordId, data.translations);
+        await this.UpdateWordRelations(wordId, data.related);
     }
 
     //Private methods
@@ -430,6 +446,7 @@ export class WordsController
             type: row.type,
             word: row.word,
             derived: await this.QueryDerivedLinks(row.id),
+            related: await this.QueryRelatedWords(row.id),
         };
         if(typeof row.verbId === "number")
         {
@@ -453,5 +470,36 @@ export class WordsController
         }
 
         return result;
+    }
+
+    private async QueryRelatedWords(wordId: number)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const rows = await conn.Select("SELECT word1Id, word2Id, relationship FROM words_relations WHERE (word1Id = ?) OR (word2Id = ?)", wordId, wordId);
+
+        return rows.map<WordRelation>(x => ({
+            relatedWordId: x.word1Id === wordId ? x.word2Id : x.word1Id,
+            relationType: x.relationship
+        }));
+    }
+
+    private async UpdateWordRelations(wordId: number, related: WordRelation[])
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        await conn.DeleteRows("words_relations", "(word1Id = ?) OR (word2Id = ?)", wordId, wordId);
+
+        for (const relation of related)
+        {
+            const word1Id = Math.min(relation.relatedWordId, wordId);
+            const word2Id = Math.max(relation.relatedWordId, wordId);
+
+            await conn.InsertRow("words_relations", {
+                word1Id,
+                word2Id,
+                relationship: relation.relationType
+            });
+        }
     }
 }

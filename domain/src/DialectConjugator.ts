@@ -33,8 +33,15 @@ export interface ConjugationParams
     stem1Context?: Stem1Context;
 }
 
+export interface ReverseConjugationResult
+{
+    root: VerbRoot;
+    tense: Tense;
+}
+
 export interface DialectConjugator
 {
+    AnalyzeConjugation(conjugated: PartiallyVocalized[]): ReverseConjugationResult[];
     Conjugate(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[];
     ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): PartiallyVocalized[] | FullyVocalized[];
     GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[];

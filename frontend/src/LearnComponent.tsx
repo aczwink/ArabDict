@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ import { FullWordData, VerbData } from "../dist/api";
 import { ConjugationService } from "./ConjugationService";
 import { RemoveTashkilButKeepShadda } from "arabdict-domain/src/Util";
 import { RenderTranslations } from "./shared/translations";
+import { Stem1DataToStem1ContextOptional } from "./verbs/model";
 
 @Injectable
 export class LearnComponent extends Component
@@ -41,7 +42,7 @@ export class LearnComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        const title = ("rootId" in this.data) ? this.conjugationService.Conjugate(this.rootRadicals, this.data.stem, "perfect", "active", "male", "third", "singular", "indicative", this.data.stem1Context) : this.data.word;
+        const title = ("rootId" in this.data) ? this.conjugationService.Conjugate(this.rootRadicals, this.data.stem, "perfect", "active", "male", "third", "singular", "indicative", Stem1DataToStem1ContextOptional(this.data.stem1Data)) : this.data.word;
 
         if(this.resolve)
         {

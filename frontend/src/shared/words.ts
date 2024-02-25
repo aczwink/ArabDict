@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,12 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WordType, WordWordDerivationType } from "../../dist/api";
+import { WordRelationshipType, WordType, WordWordDerivationType } from "../../dist/api";
 
 export const allWordTypes = [
     WordType.Adjective,
     WordType.Conjunction,
     WordType.ForeignVerb,
+    WordType.Interjection,
     WordType.Noun,
     WordType.Preposition,
     WordType.Adverb,
@@ -74,6 +75,15 @@ export function WordMayHaveGender(wordType: WordType)
     return false;
 }
 
+export function WordRelationshipTypeToString(type: WordRelationshipType)
+{
+    switch(type)
+    {
+        case WordRelationshipType.Synonym:
+            return "synonym";
+    }
+}
+
 export function WordTypeToAbbreviationText(wordType: WordType)
 {
     switch(wordType)
@@ -96,6 +106,8 @@ export function WordTypeToAbbreviationText(wordType: WordType)
             return "(phrase)";
         case WordType.Particle:
             return "(particle)";
+        case WordType.Interjection:
+            return "(interj.)";
     }
 }
 
@@ -121,5 +133,7 @@ export function WordTypeToText(wordType: WordType)
             return "Phrase";
         case WordType.Particle:
             return "Particle";
+        case WordType.Interjection:
+            return "Interjection";
     }
 }

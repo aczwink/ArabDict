@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -34,6 +34,7 @@ export class AddVerbComponent extends Component
         this.data = {
             stem: 1,
             translations: [],
+            related: []
         };
     }
     
@@ -60,8 +61,9 @@ export class AddVerbComponent extends Component
         await this.apiService.verbs.post({
             rootId: this.rootId,
             stem: this.data.stem,
-            stem1Context: this.data.stem1Context,
+            stem1Data: this.data.stem1Data,
             translations: this.data.translations,
+            related: this.data.related,
         });
 
         this.router.RouteTo("/roots/" + this.rootId);

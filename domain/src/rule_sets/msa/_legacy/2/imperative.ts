@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,50 +19,10 @@
 import { RootType } from "../../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../../Definitions";
 
-export const stem2_imperative: StemTenseVoiceDefinition = {
-    [RootType.Defective]: {
-        rules: [
-            { numerus: "singular", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "singular", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "plural", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "female", conjugation: "TODO" },
-        ]
-    },
-    
+export const stem2_imperative: StemTenseVoiceDefinition = {    
     [RootType.Hollow]: {
         rules: [
             { numerus: "singular", person: "second", gender: "male", conjugation: "فَعِّلْ" }
-        ]
-    },
-
-    [RootType.Quadriliteral]: {
-        rules: [
-            { numerus: "singular", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "singular", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "plural", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "female", conjugation: "TODO" },
         ]
     },
 };

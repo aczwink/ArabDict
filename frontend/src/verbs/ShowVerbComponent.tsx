@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
-import { FullWordData, Stem1Context, VerbData } from "../../dist/api";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
+import { FullWordData, RootCreationData, VerbData, VerbRelation } from "../../dist/api";
 import { APIService } from "../APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
@@ -28,17 +28,22 @@ import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Tense, Voice, Mood, Gender, Person, Numerus } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
+import { WordRelationshipTypeToString } from "../shared/words";
+import { VerbIdReferenceComponent } from "./VerbReferenceComponent";
+import { RootToString } from "../roots/general";
+import { Stem1DataToStem1ContextOptional } from "./model";
+import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
 
 @Injectable
 export class ShowVerbComponent extends Component
 {
-    constructor(private apiService: APIService, routerState: RouterState, private conjugationService: ConjugationService)
+    constructor(private apiService: APIService, routerState: RouterState, private conjugationService: ConjugationService, private router: Router)
     {
         super();
 
         this.verbId = parseInt(routerState.routeParams.verbId!);
         this.data = null;
-        this.rootRadicals = "";
+        this.root = { description: "", flags: 0, radicals: "" };
         this.derivedWords = null;
 
         this.dialectSubscription = this.conjugationService.globalDialect.Subscribe(this.Update.bind(this));
@@ -50,11 +55,18 @@ export class ShowVerbComponent extends Component
             return <ProgressSpinner />;
 
         const verbData = this.data;
-        const stem1ctx = verbData.stem1Context;
+        const stem1ctx = Stem1DataToStem1ContextOptional(verbData.stem1Data);
         const conjugated = this.conjugationService.Conjugate(this.rootRadicals, verbData.stem, "perfect", "active", "male", "third", "singular", "indicative", stem1ctx);
 
         return <fragment>
-            <h2>{conjugated} <Anchor route={"/verbs/edit/" + verbData.id}><MatIcon>edit</MatIcon></Anchor></h2>
+            <div className="row">
+                <div className="col"><h2>{conjugated}</h2></div>
+                <div className="col-auto">
+                    <Anchor route={"verbs/edit/" + verbData.id}><MatIcon>edit</MatIcon></Anchor>
+                    <a href="#" className="link-danger" onclick={this.OnDeleteVerb.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
+                </div>
+            </div>
+
             {this.RenderProperties(stem1ctx)}
             <br />
             <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(conjugated)} target="_blank">See on Wiktionary</a>
@@ -67,9 +79,15 @@ export class ShowVerbComponent extends Component
     //Private state
     private verbId: number;
     private data: VerbData | null;
-    private rootRadicals: string;
+    private root: RootCreationData;
     private derivedWords: FullWordData[] | null;
     private dialectSubscription: Subscription;
+
+    //Private properties
+    private get rootRadicals()
+    {
+        return this.root.radicals;
+    }
 
     //Private methods
     private async LoadDerivedWords()
@@ -270,7 +288,7 @@ export class ShowVerbComponent extends Component
             <tbody>
                 <tr>
                     <th>Root:</th>
-                    <td><Anchor route={"/roots/" + data.rootId}>{this.rootRadicals.split("").join("-")}</Anchor></td>
+                    <td><Anchor route={"/roots/" + data.rootId}>{RootToString(this.root)}</Anchor></td>
                 </tr>
                 <tr>
                     <th>Stem:</th>
@@ -289,6 +307,10 @@ export class ShowVerbComponent extends Component
                     <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.rootRadicals, data.stem, "passive", stem1ctx), past)}</td>
                 </tr>
                 <tr>
+                    <th>Related:</th>
+                    <td>{this.RenderRelations(data.related)}</td>
+                </tr>
+                <tr>
                     <th>Translation:</th>
                     <td>{RenderTranslations(data.translations)}</td>
                 </tr>
@@ -296,7 +318,40 @@ export class ShowVerbComponent extends Component
         </table>;
     }
 
+    private RenderRelation(related: VerbRelation)
+    {
+        return <li>
+            {WordRelationshipTypeToString(related.relationType)} of <VerbIdReferenceComponent verbId={related.relatedVerbId} />
+        </li>;
+    }
+
+    private RenderRelations(related: VerbRelation[])
+    {
+        return <ul>
+            {related.map(this.RenderRelation.bind(this))}
+        </ul>;
+    }
+
     //Event handlers
+    private async OnDeleteVerb(event: Event)
+    {
+        event.preventDefault();
+
+        const verbData = this.data!;
+        const stem1ctx = Stem1DataToStem1ContextOptional(verbData.stem1Data);
+        const conjugated = this.conjugationService.Conjugate(this.rootRadicals, verbData.stem, "perfect", "active", "male", "third", "singular", "indicative", stem1ctx);
+
+        if(confirm("Are you sure that you want to delete the verb: " + conjugated + "?"))
+        {
+            const rootId = this.data!.rootId;
+
+            this.data = null;
+            await this.apiService.verbs.delete({ verbId: this.verbId });
+            
+            this.router.RouteTo("/roots/" + rootId);
+        }
+    }
+
     override async OnInitiated(): Promise<void>
     {
         const response1 = await this.apiService.verbs.get({ verbId: this.verbId });
@@ -307,7 +362,7 @@ export class ShowVerbComponent extends Component
         if(response2.statusCode !== 200)
             throw new Error("TODO implement me");
 
-        this.rootRadicals = response2.data.radicals;
+        this.root = response2.data;
         this.data = response1.data;
 
         this.LoadDerivedWords();

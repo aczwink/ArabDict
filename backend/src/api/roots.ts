@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, Get, Path, Post, Put, Query } from "acts-util-apilib";
+import { APIController, Body, Delete, Get, Path, Post, Put, Query } from "acts-util-apilib";
 import { RootCreationData, RootsController } from "../data-access/RootsController";
 import { VerbsController } from "../data-access/VerbsController";
 import { WordsController } from "../data-access/WordsController";
@@ -50,6 +50,14 @@ class _api2_
 {
     constructor(private rootsController: RootsController, private verbsController: VerbsController, private wordsController: WordsController)
     {
+    }
+
+    @Delete()
+    public async DeleteRoot(
+        @Path rootId: number
+    )
+    {
+        await this.rootsController.DeleteRoot(rootId);
     }
 
     @Get()

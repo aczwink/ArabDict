@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,6 +20,7 @@ import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, Progre
 import { APIService } from "../APIService";
 import { RootOverviewData } from "../../dist/api";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { RootToString } from "./general";
 
 interface AlphabetRange
 {
@@ -82,7 +83,7 @@ export class ListRootsComponent extends Component
             <td>{root.r4}</td>
             <td>{root.r3}</td>
             <td>{root.r2}</td>
-            <td><Anchor route={"/roots/" + rootData.id}>{root.radicalsAsSeparateLetters.join("-")}</Anchor></td>
+            <td><Anchor route={"/roots/" + rootData.id}>{RootToString(rootData)}</Anchor></td>
         </tr>;
     }
 

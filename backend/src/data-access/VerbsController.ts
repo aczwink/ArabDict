@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,13 +21,27 @@ import { DatabaseController } from "./DatabaseController";
 import { TranslationEntry, TranslationsController } from "./TranslationsController";
 import { RootsController } from "./RootsController";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
+import { WordRelationshipType } from "./WordsController";
+
+interface VerbRelation
+{
+    relatedVerbId: number;
+    relationType: WordRelationshipType;
+}
+
+interface Stem1ExtraData
+{
+    middleRadicalTashkil: string;
+    middleRadicalTashkilPresent: string;
+    flags: number;
+}
 
 export interface VerbUpdateData
 {
     stem: number;
-    stem1Context?: Stem1Context;
+    stem1Data?: Stem1ExtraData;
     translations: TranslationEntry[];
+    related: VerbRelation[];
 }
 
 export interface VerbCreationData extends VerbUpdateData
@@ -57,22 +71,30 @@ export class VerbsController
         const result = await conn.InsertRow("verbs", {
             rootId: data.rootId,
             stem: data.stem,
-            stem1MiddleRadicalTashkil: data.stem1Context?.middleRadicalTashkil ?? "",
-            stem1MiddleRadicalTashkilPresent: data.stem1Context?.middleRadicalTashkilPresent ?? "",
-            soundOverride: data.stem1Context?.soundOverride ?? false
+            stem1MiddleRadicalTashkil: data.stem1Data?.middleRadicalTashkil ?? "",
+            stem1MiddleRadicalTashkilPresent: data.stem1Data?.middleRadicalTashkilPresent ?? "",
+            flags: data.stem1Data?.flags ?? 0
         });
         const verbId = result.insertId;
 
         await this.translationsController.UpdateVerbTranslations(verbId, data.translations);
+        await this.UpdateVerbRelations(verbId, data.related);
 
         return verbId;
+    }
+
+    public async DeleteVerb(verbId: number)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        await conn.DeleteRows("verbs", "id = ?", verbId);
     }
 
     public async QueryVerb(verbId: number): Promise<VerbData | undefined>
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const row = await conn.SelectOne("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, stem1MiddleRadicalTashkilPresent, soundOverride FROM verbs WHERE id = ?", verbId);
+        const row = await conn.SelectOne("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, stem1MiddleRadicalTashkilPresent, flags FROM verbs WHERE id = ?", verbId);
         if(row === undefined)
             return undefined;
 
@@ -81,11 +103,12 @@ export class VerbsController
             rootId: row.rootId,
             stem: row.stem,
             translations: await this.translationsController.QueryVerbTranslations(row.id),
-            stem1Context: (row.stem === 1) ? {
+            stem1Data: (row.stem === 1) ? {
                 middleRadicalTashkil: row.stem1MiddleRadicalTashkil,
                 middleRadicalTashkilPresent: row.stem1MiddleRadicalTashkilPresent,
-                soundOverride: row.soundOverride !== 0
-            } : undefined
+                flags: row.flags
+            } : undefined,
+            related: await this.QueryRelatedVerbs(row.id),
         };
     }
 
@@ -129,23 +152,55 @@ export class VerbsController
 
         await conn.UpdateRows("verbs", {
             stem: data.stem,
-            stem1MiddleRadicalTashkil: data.stem1Context?.middleRadicalTashkil,
-            stem1MiddleRadicalTashkilPresent: data.stem1Context?.middleRadicalTashkilPresent,
-            soundOverride: data.stem1Context?.soundOverride
+            stem1MiddleRadicalTashkil: data.stem1Data?.middleRadicalTashkil,
+            stem1MiddleRadicalTashkilPresent: data.stem1Data?.middleRadicalTashkilPresent,
+            flags: data.stem1Data?.flags
         }, "id = ?", verbId);
 
         await this.translationsController.UpdateVerbTranslations(verbId, data.translations);
+        await this.UpdateVerbRelations(verbId, data.related);
     }
 
     //Private methods
+    private async QueryRelatedVerbs(verbId: number)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const rows = await conn.Select("SELECT verb1Id, verb2Id, relationship FROM verbs_relations WHERE (verb1Id = ?) OR (verb2Id = ?)", verbId, verbId);
+
+        return rows.map<VerbRelation>(x => ({
+            relatedVerbId: x.verb1Id === verbId ? x.verb2Id : x.verb1Id,
+            relationType: x.relationship
+        }));
+    }
+
+    private async UpdateVerbRelations(verbId: number, related: VerbRelation[])
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        await conn.DeleteRows("verbs_relations", "(verb1Id = ?) OR (verb2Id = ?)", verbId, verbId);
+
+        for (const relation of related)
+        {
+            const verb1Id = Math.min(relation.relatedVerbId, verbId);
+            const verb2Id = Math.max(relation.relatedVerbId, verbId);
+
+            await conn.InsertRow("verbs_relations", {
+                verb1Id,
+                verb2Id,
+                relationship: relation.relationType
+            });
+        }
+    }
+
     private async ValidateStem1Context(data: VerbUpdateData, rootId: number)
     {
         if(data.stem !== 1)
         {
-            data.stem1Context = undefined;
+            data.stem1Data = undefined;
             return;
         }
-        if(data.stem1Context === undefined)
+        if(data.stem1Data === undefined)
             throw new Error("Missing context for stem 1");
 
         const rootData = await this.rootsController.QueryRoot(rootId);
@@ -153,10 +208,14 @@ export class VerbsController
             throw new Error("Root not found");
 
         const root = new VerbRoot(rootData.radicals);
-        const choices = root.GetStem1ContextChoices(data.stem1Context);
+        const choices = root.GetStem1ContextChoices({
+            middleRadicalTashkil: data.stem1Data.middleRadicalTashkil,
+            middleRadicalTashkilPresent: data.stem1Data.middleRadicalTashkilPresent,
+            soundOverride: (data.stem1Data.flags & 1) !== 0
+        });
         if(choices.past.length === 0)
-            data.stem1Context.middleRadicalTashkil = "";
+            data.stem1Data.middleRadicalTashkil = "";
         else if(choices.present.length === 0)
-            data.stem1Context.middleRadicalTashkilPresent = "";
+            data.stem1Data.middleRadicalTashkilPresent = "";
     }
 }

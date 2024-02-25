@@ -20,9 +20,10 @@ import { Injectable } from "acfrontend";
 import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Tense, Voice, Gender, Person, Numerus, Mood } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
-import { Stem1Context } from "../dist/api";
 import { Property } from "../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
+import { ParseVocalizedText } from "arabdict-domain/src/Vocalization";
+import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
 
 @Injectable
 export class ConjugationService
@@ -47,7 +48,7 @@ export class ConjugationService
     //Public methods
     public AnalyzeConjugation(conjugated: string)
     {
-        return this.conjugator.AnalyzeConjugation(this._globalDialect.Get(), conjugated);
+        return this.conjugator.AnalyzeConjugation(this._globalDialect.Get(), ParseVocalizedText(conjugated));
     }
 
     public Conjugate(rootRadicals: string, stem: number, tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus, mood: Mood, stem1Context?: Stem1Context)

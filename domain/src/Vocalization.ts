@@ -38,6 +38,38 @@ export interface FullyVocalized
     shadda: boolean;
 }
 
+function cmp(a: PartiallyVocalized, b: PartiallyVocalized)
+{
+    if(a.letter === b.letter)
+    {
+        const tashkilMatches = (a.tashkil === b.tashkil) || ( (a.tashkil === undefined) && (b.tashkil !== undefined) ) || ( (b.tashkil === undefined) && (a.tashkil !== undefined) );
+        if(tashkilMatches)
+        {
+            if(a.shadda === b.shadda)
+                return 1;
+            return 0.75;
+        }
+    }
+
+    return 0;
+}
+
+export function CompareVocalized(a: PartiallyVocalized[], b: PartiallyVocalized[])
+{
+    if(a.length !== b.length)
+        return -1;
+
+    let sum = 0;
+    for(let i = 0; i < a.length; i++)
+    {
+        const res = cmp(a[i], b[i]);
+        if(res === 0)
+            return 0;
+        sum += res;
+    }
+    return sum / a.length;
+}
+
 export function ParseVocalizedText(text: string)
 {
     const result: PartiallyVocalized[] = [];

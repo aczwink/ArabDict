@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, JSX_CreateElement, LineEdit, NumberSpinner, Select } from "acfrontend";
-import { TranslationEntry, WordRootDerivationData, WordType, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
+import { BootstrapIcon, Component, FormField, JSX_CreateElement, LineEdit, NumberSpinner, Select } from "acfrontend";
+import { TranslationEntry, WordRelation, WordRelationshipType, WordRootDerivationData, WordType, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
-import { WordMayHaveGender, WordTypeToText, allWordTypes } from "../shared/words";
+import { WordMayHaveGender, WordRelationshipTypeToString, WordTypeToText, allWordTypes } from "../shared/words";
 import { WordWordDerivationEditorComponent } from "./WordWordDerivationEditorComponent";
 import { WordVerbDerivationEditorComponent } from "./WordVerbDerivationEditorComponent";
 
@@ -30,6 +30,7 @@ interface WordBaseData
     derivation?: WordRootDerivationData | WordVerbDerivationData | WordWordDerivationLink;
     type: WordType;
     translations: TranslationEntry[];
+    related: WordRelation[];
 }
 
 export class WordEditorComponent extends Component<{ data: WordBaseData; onDataChanged: () => void }>
@@ -52,6 +53,7 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
             <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.input.onDataChanged} />
 
             {this.RenderDerivation()}
+            {this.RenderRelations()}
         </fragment>;
     }
 
@@ -98,6 +100,42 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
         </FormField>;
     }
 
+    private RenderRelation(relation: WordRelation)
+    {
+        const relationships = [
+            WordRelationshipType.Synonym
+        ];
+
+        return <div className="row mb-2">
+            <div className="col-auto">
+                <FormField title="Derivation type">
+                    <Select onChanged={this.OnWordRelationshipTypeChanged.bind(this, relation)}>
+                        {relationships.map(x => <option selected={x === relation.relationType} value={x}>{WordRelationshipTypeToString(x) + " of"}</option>)}
+                    </Select>
+                </FormField>
+            </div>
+            <div className="col">
+                <FormField title="Related word id">
+                    <NumberSpinner value={relation.relatedWordId} step={1} onChanged={this.OnRelatedWordIdChanged.bind(this, relation)} />
+                </FormField>
+            </div>
+            <div className="col-auto">
+                <a href="#" className="link-danger" onclick={this.OnDeleteRelation.bind(this, relation)}><BootstrapIcon>trash</BootstrapIcon></a>
+            </div>
+        </div>;
+    }
+
+    private RenderRelations()
+    {
+        return <fragment>
+            <hr />
+            <h6>Relations</h6>
+            {this.input.data.related.map(this.RenderRelation.bind(this))}
+            <button className="btn btn-secondary" type="button" onclick={this.OnAddRelation.bind(this)}><BootstrapIcon>plus</BootstrapIcon></button>
+            <hr />
+        </fragment>;
+    }
+
     private RenderRootDerivation(rootData: WordRootDerivationData)
     {
         return <FormField title="Root">
@@ -106,6 +144,23 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     }
 
     //Event handlers
+    private OnAddRelation()
+    {
+        this.input.data.related.push({
+            relatedWordId: 0,
+            relationType: WordRelationshipType.Synonym
+        });
+        this.input.onDataChanged();
+    }
+
+    private OnDeleteRelation(relation: WordRelation, event: Event)
+    {
+        event.preventDefault();
+        
+        this.input.data.related.Remove(this.input.data.related.indexOf(relation));
+        this.input.onDataChanged();
+    }
+
     private OnDerivationTypeChanged(newValue: string[])
     {
         switch(newValue[0])
@@ -133,6 +188,12 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
         this.input.onDataChanged();
     }
 
+    private OnRelatedWordIdChanged(relation: WordRelation, newValue: number)
+    {
+        relation.relatedWordId = newValue;
+        this.input.onDataChanged();
+    }
+
     private OnRootDerivationDataChanged(newValue: number)
     {
         this.input.data.derivation = {
@@ -144,6 +205,12 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     private OnWordChanged(newValue: string)
     {
         this.input.data.word = newValue;
+        this.input.onDataChanged();
+    }
+
+    private OnWordRelationshipTypeChanged(relation: WordRelation, newValue: string[])
+    {
+        relation.relationType = parseInt(newValue[0]);
         this.input.onDataChanged();
     }
 

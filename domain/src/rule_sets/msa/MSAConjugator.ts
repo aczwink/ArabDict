@@ -17,7 +17,7 @@
  * */
 import { CreateVerb, Stem1Context } from "./_legacy/CreateVerb";
 import { WAW, A3EIN, LAM, FA, QAF } from "../../Definitions";
-import { ConjugationParams, DialectConjugator } from "../../DialectConjugator";
+import { ConjugationParams, DialectConjugator, ReverseConjugationResult } from "../../DialectConjugator";
 import { Hamzate } from "../../Hamza";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { Tense, Voice } from "./_legacy/VerbStem";
@@ -50,12 +50,18 @@ import { GenerateAllPossibleVerbalNounsStem4 } from "./verbal_nouns/stem4";
 import { GenerateAllPossibleVerbalNounsStem6 } from "./verbal_nouns/stem6";
 import { GenerateAllPossibleVerbalNounsStem2 } from "./verbal_nouns/stem2";
 import { GenerateParticipleStem10 } from "./participle/stem10";
+import { ReverseConjugate } from "./reverse/conjugate";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
 export class MSAConjugator implements DialectConjugator
 {
     //Public methods
+    public AnalyzeConjugation(conjugated: PartiallyVocalized[]): ReverseConjugationResult[]
+    {
+        return ReverseConjugate(conjugated);
+    }
+
     public Conjugate(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[]
     {
         const maybeAugmentedRoot = AugmentRoot(params.stem, root.type, params);
@@ -78,6 +84,13 @@ export class MSAConjugator implements DialectConjugator
                     if(IsSpeciallyIrregularDefective(root, params.stem))
                         AlterSpeciallyIrregularDefective(root, augmentedRoot, params);
                     else
+                    {
+                        AlterDefectiveSuffix(params, suffix.suffix);
+                        AlterDefectiveEnding(augmentedRoot, params);
+                    }
+                break;
+                case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+                    if(params.stem > 1)
                     {
                         AlterDefectiveSuffix(params, suffix.suffix);
                         AlterDefectiveEnding(augmentedRoot, params);

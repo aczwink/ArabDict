@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,12 +18,13 @@
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
 import { APIService } from "../APIService";
-import { FullWordData, VerbData, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
+import { FullWordData, VerbData, WordRelation, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
-import { WordDerivationTypeFromWordToString, WordTypeToText } from "../shared/words";
+import { WordDerivationTypeFromWordToString, WordRelationshipTypeToString, WordTypeToText } from "../shared/words";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
 import { ConjugationService } from "../ConjugationService";
 import { WordIdReferenceComponent } from "./WordReferenceComponent";
+import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 
 @Injectable
 export class ShowWordComponent extends Component
@@ -61,6 +62,10 @@ export class ShowWordComponent extends Component
                         <td>{this.RenderGender(this.data.isMale)}</td>
                     </tr>
                     {this.RenderDerivationData(this.data.derivation)}
+                    <tr>
+                        <th>Related:</th>
+                        <td>{this.RenderRelations(this.data.related)}</td>
+                    </tr>
                     <tr>
                         <th>Translation:</th>
                         <td>{RenderTranslations(this.data.translations)}</td>
@@ -127,7 +132,7 @@ export class ShowWordComponent extends Component
         return "unknown";
     }
 
-    private RenderRelation(outgoing: boolean, relation: WordWordDerivationLink)
+    private RenderDerivedTerm(outgoing: boolean, relation: WordWordDerivationLink)
     {
         return <fragment>{this.RelationshipToText(relation.relationType, outgoing)} of <WordIdReferenceComponent wordId={relation.refWordId} /></fragment>;
     }
@@ -139,8 +144,22 @@ export class ShowWordComponent extends Component
 
         return <fragment>
             <h5>Derived words/terms</h5>
-            <ul>{this.data!.derived.map(x => <li>{this.RenderRelation(false, x)}</li>)}</ul>
+            <ul>{this.data!.derived.map(x => <li>{this.RenderDerivedTerm(false, x)}</li>)}</ul>
         </fragment>;
+    }
+
+    private RenderRelation(related: WordRelation)
+    {
+        return <li>
+            {WordRelationshipTypeToString(related.relationType)} of <WordIdReferenceComponent wordId={related.relatedWordId} />
+        </li>;
+    }
+
+    private RenderRelations(related: WordRelation[])
+    {
+        return <ul>
+            {related.map(this.RenderRelation.bind(this))}
+        </ul>;
     }
 
     private RenderRootDerivationData(rootData: WordRootDerivationData)
@@ -167,7 +186,7 @@ export class ShowWordComponent extends Component
                     return "verbal noun of ";
             }
         }
-        const conjugated = this.conjugationService.Conjugate(this.rootRadicals, this.verb!.stem, "perfect", "active", "male", "third", "singular", "indicative", this.verb!.stem1Context);
+        const conjugated = this.conjugationService.Conjugate(this.rootRadicals, this.verb!.stem, "perfect", "active", "male", "third", "singular", "indicative", Stem1DataToStem1ContextOptional(this.verb!.stem1Data));
 
         return <tr>
             <th>Derived from verb:</th>
@@ -179,7 +198,7 @@ export class ShowWordComponent extends Component
     {
         return <tr>
             <th>Derived from word:</th>
-            <td>{this.RenderRelation(true, derivation)}</td>
+            <td>{this.RenderDerivedTerm(true, derivation)}</td>
         </tr>;
     }
 

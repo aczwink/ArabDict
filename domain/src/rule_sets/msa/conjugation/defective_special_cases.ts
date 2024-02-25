@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, FATHA, HAMZA, HHA, KASRA, LETTER_RA, WAW, YA } from "../../../Definitions";
+import { ALEF, DHAMMA, FATHA, HAMZA, HHA, KASRA, LETTER_RA, PRIMARY_TASHKIL, SUKUN, WAW, YA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { VerbRoot } from "../../../VerbRoot";
 import { AugmentedRoot } from "../AugmentedRoot";
@@ -45,18 +45,21 @@ function AlterSpecialCaseRa2a(augmentedRoot: AugmentedRoot, params: ConjugationP
 
 export function AlterSpeciallyIrregularDefective(root: VerbRoot, augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    if(root.radicalsAsSeparateLetters.Equals([HHA, YA, WAW]) && (params.stem === 1))
-        AlterSpecialCaseHayiya(augmentedRoot, params);
-    else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]) && (params.stem === 1))
-        AlterSpecialCaseRa2a(augmentedRoot, params);
+    if(params.stem === 1)
+    {
+        if(root.radicalsAsSeparateLetters.Equals([HHA, YA, WAW]))
+            AlterSpecialCaseHayiya(augmentedRoot, params);
+        else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]))
+            AlterSpecialCaseRa2a(augmentedRoot, params);
+    }
 }
 
-export function GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching(root: VerbRoot)
+export function GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching(root: VerbRoot): { past: PRIMARY_TASHKIL; present: PRIMARY_TASHKIL } | undefined
 {
     if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]))
-        return KASRA;
+        return { past: FATHA, present: KASRA };
     if(root.radicalsAsSeparateLetters.Equals([HHA, YA, WAW]))
-        return FATHA;
+        return { past: KASRA, present: FATHA };
     return undefined;
 }
 

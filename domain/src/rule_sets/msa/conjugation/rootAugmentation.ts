@@ -55,6 +55,8 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.Defective:
+                case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:
                 case RootType.SecondConsonantDoubled:
@@ -86,6 +88,8 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.Defective:
+                case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
                         { symbolName: "r1", shadda: false },
@@ -102,6 +106,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.Hollow:
                 case RootType.Sound:
                     return [
                         { letter: TA, shadda: false, symbolName: "apre1" },
@@ -131,6 +136,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
                         { letter: NUN, shadda: false, symbolName: "apre1" },

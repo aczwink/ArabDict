@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,6 +33,7 @@ export class AddWordComponent extends Component
             translations: [],
             word: "",
             isMale: null,
+            related: []
         };
         if(router.state.Get().queryParams.relatedWordId !== undefined)
         {
@@ -86,6 +87,7 @@ export class AddWordComponent extends Component
             translations: this.data.translations,
             isMale: this.data.isMale,
             derivation: this.data.derivation,
+            related: this.data.related
         });
 
         this.router.RouteTo("/words/" + response.data);

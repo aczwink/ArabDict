@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,12 +23,14 @@ export interface RootCreationData
 {
     radicals: string;
     description: string;
+    flags: number;
 }
 
 interface RootOverviewData
 {
     id: number;
     radicals: string;
+    flags: number;
 }
 
 @Injectable
@@ -48,11 +50,18 @@ export class RootsController
         return result.insertId;
     }
 
+    public async DeleteRoot(rootId: number)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        await conn.DeleteRows("roots", "id = ?", rootId);
+    }
+
     public async QueryRoot(id: number)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const row = await conn.SelectOne<RootCreationData>("SELECT radicals, description FROM roots WHERE id = ?", id);
+        const row = await conn.SelectOne<RootCreationData>("SELECT radicals, description, flags FROM roots WHERE id = ?", id);
 
         return row;
     }
@@ -61,7 +70,7 @@ export class RootsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const rows = await conn.Select<RootOverviewData>("SELECT id, radicals FROM roots WHERE radicals LIKE ? ORDER BY radicals", prefix + "%");
+        const rows = await conn.Select<RootOverviewData>("SELECT id, radicals, flags FROM roots WHERE radicals LIKE ? ORDER BY radicals", prefix + "%");
 
         return rows;
     }
@@ -70,6 +79,6 @@ export class RootsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        await conn.UpdateRows("roots", { radicals: data.radicals, description: data.description }, "id = ?", rootId);
+        await conn.UpdateRows("roots", { radicals: data.radicals, description: data.description, flags: data.flags }, "id = ?", rootId);
     }
 }

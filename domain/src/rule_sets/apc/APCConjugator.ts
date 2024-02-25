@@ -17,7 +17,7 @@
  * */
 
 import { ALEF, BA, BASE_TASHKIL, DHAMMA, FATHA, KASRA, MIM, SUKUN, WAW, YA } from "../../Definitions";
-import { ConjugationParams, DialectConjugator } from "../../DialectConjugator";
+import { ConjugationParams, DialectConjugator, ReverseConjugationResult } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { PartiallyVocalized, FullyVocalized, VerbVocalized } from "../../Vocalization";
 import { AugmentedRoot, AugmentedRootSymbolInput } from "../msa/AugmentedRoot";
@@ -29,6 +29,11 @@ import { NUN, TA, Voice } from "../msa/_legacy/VerbStem";
 export class APCConjugator implements DialectConjugator
 {
     //Public methods
+    public AnalyzeConjugation(conjugated: PartiallyVocalized[]): ReverseConjugationResult[]
+    {
+        throw new Error("Method not implemented.");
+    }
+    
     public Conjugate(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[]
     {
         const rootAugmentation = this.AugmentRoot(root, params);

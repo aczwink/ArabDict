@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,6 +19,7 @@
 import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner, Router, RouterState, Textarea } from "acfrontend";
 import { APIService } from "../APIService";
 import { RootCreationData } from "../../dist/api";
+import { IsFlagSet, RootFlags, ToggleFlag } from "../shared/flags";
 
 @Injectable
 export class EditRootComponent extends Component
@@ -43,6 +44,10 @@ export class EditRootComponent extends Component
 
             <FormField title="Description" description="Descriptive text about the root">
                 <Textarea value={this.data.description} onChanged={newValue => {this.data!.description = newValue; this.Update();}} />
+            </FormField>
+
+            <FormField title="Defective root with و and ي">
+                <input type="checkbox" checked={IsFlagSet(this.data.flags, RootFlags.DefectiveAlsoYa)} onclick={() => this.data!.flags = ToggleFlag(this.data!.flags, RootFlags.DefectiveAlsoYa)} />
             </FormField>
 
             Root: {this.data.radicals.split("").join("-")}

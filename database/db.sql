@@ -45,6 +45,7 @@ CREATE TABLE `roots` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `radicals` char(4) NOT NULL,
   `description` text NOT NULL,
+  `flags` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -62,10 +63,28 @@ CREATE TABLE `verbs` (
   `stem` tinyint(3) unsigned NOT NULL,
   `stem1MiddleRadicalTashkil` char(1) NOT NULL,
   `stem1MiddleRadicalTashkilPresent` char(1) NOT NULL,
-  `soundOverride` tinyint(1) unsigned NOT NULL,
+  `flags` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `rootId` (`rootId`,`stem`,`stem1MiddleRadicalTashkil`,`stem1MiddleRadicalTashkilPresent`) USING BTREE,
   CONSTRAINT `verbs_rootId` FOREIGN KEY (`rootId`) REFERENCES `roots` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `verbs_relations`
+--
+
+DROP TABLE IF EXISTS `verbs_relations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `verbs_relations` (
+  `verb1Id` int(10) unsigned NOT NULL,
+  `verb2Id` int(10) unsigned NOT NULL,
+  `relationship` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY (`verb1Id`,`verb2Id`),
+  KEY `verbs_relations_verb2Id` (`verb2Id`),
+  CONSTRAINT `verbs_relations_verb1Id` FOREIGN KEY (`verb1Id`) REFERENCES `verbs` (`id`),
+  CONSTRAINT `verbs_relations_verb2Id` FOREIGN KEY (`verb2Id`) REFERENCES `verbs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -119,6 +138,24 @@ CREATE TABLE `words_derivations` (
   KEY `words_relations_toWordId` (`sourceWordId`),
   CONSTRAINT `words_relations_fromWordId` FOREIGN KEY (`derivedWordId`) REFERENCES `words` (`id`),
   CONSTRAINT `words_relations_toWordId` FOREIGN KEY (`sourceWordId`) REFERENCES `words` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `words_relations`
+--
+
+DROP TABLE IF EXISTS `words_relations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `words_relations` (
+  `word1Id` int(10) unsigned NOT NULL,
+  `word2Id` int(10) unsigned NOT NULL,
+  `relationship` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY (`word1Id`,`word2Id`),
+  KEY `words_relations_word2Id` (`word2Id`),
+  CONSTRAINT `words_relations_word1Id` FOREIGN KEY (`word1Id`) REFERENCES `words` (`id`),
+  CONSTRAINT `words_relations_word2Id` FOREIGN KEY (`word2Id`) REFERENCES `words` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -198,7 +235,9 @@ BEGIN
       REPLACE(
         REPLACE(
           REPLACE(
-            REPLACE(s, "ُ", ""),
+            REPLACE(
+            	REPLACE(s, "ٰ", "")
+            , "ُ", ""),
             "َ", ""),
           "ِ", ""),
         "ّ", ""),
@@ -231,4 +270,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-06 18:04:43
+-- Dump completed on 2024-02-25 23:16:47

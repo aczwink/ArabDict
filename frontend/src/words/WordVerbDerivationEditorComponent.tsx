@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,9 +17,11 @@
  * */
 
 import { Component, FormField, Injectable, JSX_CreateElement, NumberSpinner, ProgressSpinner, Select } from "acfrontend";
-import { Stem1Context, WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
+import { WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
 import { ConjugationService } from "../ConjugationService";
 import { APIService } from "../APIService";
+import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
+import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 
 interface WordVerbDerivationEditorInput
 {
@@ -100,7 +102,7 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
         this.SetCurrentVerb({
             rootRadicals: response2.data.radicals,
             stem: response.data.stem,
-            stem1Context: response.data.stem1Context
+            stem1Context: Stem1DataToStem1ContextOptional(response.data.stem1Data)
         });
     }
 

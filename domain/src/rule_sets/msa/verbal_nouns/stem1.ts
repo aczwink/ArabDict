@@ -128,6 +128,10 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                 root.r1 + FATHA + root.r2 + FATHA + ALEF + root.r3,
                 root.r1 + FATHA + root.r2 + KASRA + YA + root.r3,
                 [
+                    { letter: root.r1, shadda: false, tashkil: FATHA },
+                    { letter: root.r2, shadda: true, tashkil: SUKUN },
+                ],
+                [
                     { letter: root.r1, shadda: false, tashkil: KASRA },
                     { letter: root.r2, shadda: false, tashkil: FATHA },
                     { letter: ALEF, shadda: false, tashkil: FATHA },
@@ -182,7 +186,17 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                     { letter: root.r3, shadda: false, tashkil: FATHA },
                     { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
                 ],
-                root.r1 + FATHA + root.r2 + SUKUN + root.r3,
+                [
+                    { letter: root.r1, shadda: false, tashkil: FATHA },
+                    { letter: root.r2, shadda: false, tashkil: SUKUN },
+                    { letter: root.r3, shadda: false, tashkil: FATHA },
+                    { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
+                ],
+                [
+                    { letter: root.r1, shadda: false, tashkil: FATHA },
+                    { letter: root.r2, shadda: false, tashkil: SUKUN },
+                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                ],
                 root.r1 + KASRA + root.r2 + FATHA + ALEF + root.r3 + FATHA + TA_MARBUTA,
                 root.r1 + KASRA + root.r2 + SUKUN + root.r3,
             ];

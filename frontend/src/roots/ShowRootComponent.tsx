@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
 import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
+import { RootToString } from "./general";
 
 interface ShowRootData
 {
@@ -32,7 +32,7 @@ interface ShowRootData
 @Injectable
 export class ShowRootComponent extends Component
 {
-    constructor(routerState: RouterState, private apiService: APIService)
+    constructor(routerState: RouterState, private apiService: APIService, private router: Router)
     {
         super();
 
@@ -46,9 +46,15 @@ export class ShowRootComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
         
-        const root = new VerbRoot(this.data!.root.radicals);
         return <fragment>
-            <h2>Root: {root.radicalsAsSeparateLetters.join("-")} <Anchor route={"/roots/" + this.rootId + "/edit"}><MatIcon>edit</MatIcon></Anchor></h2>
+            <div className="row">
+                <div className="col"><h2>Root: {RootToString(this.data.root)}</h2></div>
+                <div className="col-auto">
+                    <Anchor route={"roots/" + this.rootId + "/edit"}><MatIcon>edit</MatIcon></Anchor>
+                    <a href="#" className="link-danger" onclick={this.OnDeleteRoot.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
+                </div>
+            </div>
+
             {this.data!.root.description}
             <h4>Verbs</h4>
             {this.data.verbs.map(x => <VerbPreviewComponent root={this.data!.root} verbData={x} />)}
@@ -84,6 +90,19 @@ export class ShowRootComponent extends Component
     }
 
     //Event handlers
+    private async OnDeleteRoot(event: Event)
+    {
+        event.preventDefault();
+
+        if(confirm("Are you sure that you want to delete the verb: " + RootToString(this.data!.root) + "?"))
+        {
+            this.data = null;
+            await this.apiService.roots._any_.delete(this.rootId);
+            
+            this.router.RouteTo("/roots");
+        }
+    }
+
     override async OnInitiated(): Promise<void>
     {
         const response1 = await this.apiService.roots._any_.get(this.rootId);

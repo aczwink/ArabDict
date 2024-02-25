@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -48,7 +48,7 @@ export class AddRootComponent extends Component
     //Event handlers
     private async OnCreateRoot()
     {
-        const response = await this.apiService.roots.post({ radicals: this.radicals, description: "" });
+        const response = await this.apiService.roots.post({ radicals: this.radicals, description: "", flags: 0 });
         this.router.RouteTo("/roots/" + response.data);
     }
 }

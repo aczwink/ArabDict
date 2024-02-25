@@ -19,11 +19,10 @@
 import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { Hamzate } from "./Hamza";
 import { VerbRoot } from "./VerbRoot";
-import { Voice } from "./rule_sets/msa/_legacy/VerbStem";
-import { StemTenseVoiceDefinition } from "./rule_sets/Definitions";
+import { Gender, Mood, Numerus, Person, Voice } from "./rule_sets/msa/_legacy/VerbStem";
 import { ConjugationParams } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
-import { FullyVocalized, PartiallyVocalized } from "./Vocalization";
+import { CompareVocalized, FullyVocalized, ParseVocalizedText, PartiallyVocalized } from "./Vocalization";
 import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, KASRA, SUKUN, WAW, YA } from "./Definitions";
 import { APCConjugator } from "./rule_sets/apc/APCConjugator";
 
@@ -33,27 +32,89 @@ export enum DialectType
     NorthLevantineArabic
 }
 
+export interface VerbReverseConjugationResult
+{
+    root: VerbRoot;
+    params: ConjugationParams;
+    score: number;
+}
+
 export class Conjugator
 {
     //Public methods
-    public AnalyzeConjugation(dialect: DialectType, conjugated: string)
+    public AnalyzeConjugation(dialect: DialectType, toAnalyze: PartiallyVocalized[])
     {
-        /*const dialectDef = this.GetDialectDefiniton(dialect);
-        const letters = ParseVocalizedText(conjugated);
+        const dialectConjugator = this.CreateDialectConjugator(dialect);
+        const analysisResults = dialectConjugator.AnalyzeConjugation(toAnalyze);
 
-        for (const stemNumber in dialectDef.stems)
+        const numeruses: Numerus[] = ["singular", "dual", "plural"];
+        const persons: Person[] = ["first", "second", "third"];
+        const genders: Gender[] = ["male", "female"];
+        const voices: Voice[] = ["active", "passive"];
+        const stems = [2, 3, 4, 5, 6, 7, 8, 10];
+
+        const matches: VerbReverseConjugationResult[] = [];
+        for (const result of analysisResults)
         {
-            if (Object.prototype.hasOwnProperty.call(dialectDef.stems, stemNumber))
+            const moods: Mood[] = (result.tense === "perfect") ? ["indicative"] : ["indicative", "subjunctive", "jussive"];
+            for (const voice of voices)
             {
-                const stem = dialectDef.stems[stemNumber]!;
+                for (const mood of moods)
+                {
+                    for (const numerus of numeruses)
+                    {
+                        for (const person of persons)
+                        {
+                            for (const gender of genders)
+                            {
+                                const context = this;
+                                function CompareAndAdd(stem: number, stem1Context?: Stem1Context)
+                                {
+                                    const params: ConjugationParams = {
+                                        gender,
+                                        mood: mood,
+                                        numerus,
+                                        person,
+                                        stem,
+                                        tense: result.tense,
+                                        voice,
+                                        stem1Context,
+                                    };
+                                    const conjugated = context.Conjugate(result.root, params, dialect);
 
-                this.AnalyzeConjugationInStemTenseVoiceDefinition(stem.imperative);
-                this.AnalyzeConjugationInStemTenseVoiceDefinition(stem.perfect?.active);
-                this.AnalyzeConjugationInStemTenseVoiceDefinition(stem.perfect?.passive);
-                this.AnalyzeConjugationInStemTenseVoiceDefinition(stem.present?.active);
-                this.AnalyzeConjugationInStemTenseVoiceDefinition(stem.present?.passive);
+                                    const match = CompareVocalized(toAnalyze, ParseVocalizedText(conjugated));
+                                    if(match > 0)
+                                    {
+                                        matches.push({
+                                            root: result.root,
+                                            params,
+                                            score: match
+                                        })
+                                    }
+                                }
+                                
+                                for (const t1 of [DHAMMA, FATHA, KASRA])
+                                {
+                                    for (const t2 of [DHAMMA, FATHA, KASRA])
+                                    {
+                                        const stem1ctx: Stem1Context = {
+                                            middleRadicalTashkil: t1,
+                                            middleRadicalTashkilPresent: t2,
+                                            soundOverride: false
+                                        };
+                                        CompareAndAdd(1, stem1ctx);
+                                    }
+                                }
+
+                                for (const stem of stems)
+                                    CompareAndAdd(stem);
+                            }
+                        }
+                    }
+                }
             }
-        }*/
+        }
+        return matches;
     }
 
     public Conjugate(root: VerbRoot, params: ConjugationParams, dialect: DialectType)
@@ -93,26 +154,6 @@ export class Conjugator
     }
 
     //Private methods
-    private AnalyzeConjugationInStemTenseVoiceDefinition(stemTenseVoiceDefinition: StemTenseVoiceDefinition | undefined)
-    {
-        if(stemTenseVoiceDefinition === undefined)
-            return;
-
-        for (const rootType in stemTenseVoiceDefinition)
-        {
-            if (Object.prototype.hasOwnProperty.call(stemTenseVoiceDefinition, rootType))
-            {
-                throw new Error("TODO implement me");
-                /*const rules = stemTenseVoiceDefinition[rootType]!.rules;
-
-                for (const rule of rules)
-                {
-                    console.log("test rule", rule.conjugation);
-                }*/
-            }
-        }
-    }
-
     private CheckShaddaPattern(vocalized: PartiallyVocalized[])
     {
         for(let i = 0; i < vocalized.length - 1; i++)
@@ -149,15 +190,16 @@ export class Conjugator
 
     private RemoveRedundantTashkil(vocalized: PartiallyVocalized[])
     {
-        //don't alter first char because word can't start with vowel
         for(let i = 1; i < vocalized.length; i++)
         {
+            const p = vocalized[i - 1];
             const v = vocalized[i];
+
             if( (v.letter === ALEF) && (v.tashkil === FATHA) )
                 v.tashkil = undefined;
             else if( (v.letter === WAW) && (v.tashkil === DHAMMA) )
                 v.tashkil = undefined;
-            else if( (v.letter === YA) && (v.tashkil === KASRA) )
+            else if( (v.letter === YA) && (v.tashkil === KASRA) && (p.tashkil === KASRA) )
                 v.tashkil = undefined;
             else if( (v.letter === ALEF_MAKSURA) && (v.tashkil === FATHA) )
                 v.tashkil = undefined;

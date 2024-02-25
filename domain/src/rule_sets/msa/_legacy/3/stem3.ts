@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,16 +17,12 @@
  * */
 
 import { StemDefinition } from "../../../Definitions";
-import { stem3_imperative } from "./imperative";
 import { stem3_past_active } from "./past_active";
-import { stem3_past_passive } from "./past_passive";
 import { stem3_present_active } from "./present_active";
 
 export const stem3: StemDefinition = {
-    imperative: stem3_imperative,
     perfect: {
         active: stem3_past_active,
-        passive: stem3_past_passive,
     },
     present: {
         active: stem3_present_active,

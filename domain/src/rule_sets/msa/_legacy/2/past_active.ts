@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,26 +23,6 @@ export const stem2_past_active: StemTenseVoiceDefinition = {
     [RootType.Assimilated]: {
         rules: [
             { numerus: "singular", person: "third", gender: "male", conjugation: "وَعَّلَ" }
-        ]
-    },
-
-    [RootType.Defective]: {
-        rules: [
-            { numerus: "singular", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعَّى" },
-            { numerus: "singular", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "plural", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "female", conjugation: "TODO" },
         ]
     },
 

@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +25,7 @@ import { RenderTranslations } from "../shared/translations";
 import { ConjugationService } from "../ConjugationService";
 import { KASRA } from "arabdict-domain/src/Definitions";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Stem1DataToStem1ContextOptional } from "./model";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
@@ -40,7 +41,7 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
     {
         const verbData = this.input.verbData;
         const root = new VerbRoot(this.input.root.radicals);
-        const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", "indicative", verbData.stem1Context);
+        const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", "indicative", Stem1DataToStem1ContextOptional(verbData.stem1Data));
         const conjugationReference = this.conjugationService.Conjugate(this.input.root.radicals, 1, "perfect", "active", "male", "third", "singular", "indicative", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: "", soundOverride: false });
         const verbPresentation = (verbData.stem === 1) ? conjugated : RenderWithDiffHighlights(conjugated, conjugationReference);
 

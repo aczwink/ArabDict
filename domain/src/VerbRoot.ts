@@ -155,8 +155,8 @@ export class VerbRoot
                 if(special !== undefined)
                 {
                     return {
-                        past: [],
-                        present: [special],
+                        past: [special.past],
+                        present: [special.present],
                         soundOverride: [false]
                     };
                 }
@@ -205,5 +205,10 @@ export class VerbRoot
             default:
                 throw new Error("TODO: implement me");
         }
+    }
+
+    public ToString()
+    {
+        return this.radicalsAsSeparateLetters.join("-");
     }
 }

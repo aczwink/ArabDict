@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, BodyProp, Get, NotFound, Post, Put, Query } from "acts-util-apilib";
+import { APIController, Body, BodyProp, Delete, Get, NotFound, Post, Put, Query } from "acts-util-apilib";
 import { VerbCreationData, VerbUpdateData, VerbsController } from "../data-access/VerbsController";
 import { WordsController } from "../data-access/WordsController";
 
@@ -33,6 +33,14 @@ class _api_
     )
     {
         return await this.verbsController.CreateVerb(data);
+    }
+
+    @Delete()
+    public async DeleteVerb(
+        @Query verbId: number
+    )
+    {
+        await this.verbsController.DeleteVerb(verbId);
     }
 
     @Get()

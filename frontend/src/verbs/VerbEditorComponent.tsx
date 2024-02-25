@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { CheckBox, Component, FormField, Injectable, JSX_CreateElement, Select, SingleSelect } from "acfrontend";
-import { Stem1Context, VerbUpdateData } from "../../dist/api";
+import { BootstrapIcon, CheckBox, Component, FormField, Injectable, JSX_CreateElement, NumberSpinner, Select, SingleSelect } from "acfrontend";
+import { VerbRelation, VerbUpdateData, WordRelationshipType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 import { ConjugationService } from "../ConjugationService";
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { DHAMMA, FATHA, KASRA, PRIMARY_TASHKIL } from "arabdict-domain/src/Definitions";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { Tense } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
+import { WordRelationshipTypeToString } from "../shared/words";
+import { Stem1DataToStem1Context, Stem1DataToStem1ContextOptional, VerbFlags } from "./model";
+import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
+import { IsFlagSet, ToggleFlagConditionally } from "../shared/flags";
 
 @Injectable
 export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootRadicals: string; onChanged: () => void }>
@@ -52,10 +56,47 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
                 <div className="col">{this.RenderStem1Context()}</div>
             </div>
             <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.input.onChanged} />
+            {this.RenderRelations()}
         </fragment>;
     }
 
     //Private methods
+    private RenderRelation(relation: VerbRelation)
+    {
+        const relationships = [
+            WordRelationshipType.Synonym
+        ];
+
+        return <div className="row mb-2">
+            <div className="col-auto">
+                <FormField title="Derivation type">
+                    <Select onChanged={this.OnVerbRelationshipTypeChanged.bind(this, relation)}>
+                        {relationships.map(x => <option selected={x === relation.relationType} value={x}>{WordRelationshipTypeToString(x) + " of"}</option>)}
+                    </Select>
+                </FormField>
+            </div>
+            <div className="col">
+                <FormField title="Related word id">
+                    <NumberSpinner value={relation.relatedVerbId} step={1} onChanged={this.OnRelatedVerbIdChanged.bind(this, relation)} />
+                </FormField>
+            </div>
+            <div className="col-auto">
+                <a href="#" className="link-danger" onclick={this.OnDeleteRelation.bind(this, relation)}><BootstrapIcon>trash</BootstrapIcon></a>
+            </div>
+        </div>;
+    }
+
+    private RenderRelations()
+    {
+        return <fragment>
+            <hr />
+            <h6>Relations</h6>
+            {this.input.data.related.map(this.RenderRelation.bind(this))}
+            <button className="btn btn-secondary" type="button" onclick={this.OnAddRelation.bind(this)}><BootstrapIcon>plus</BootstrapIcon></button>
+            <hr />
+        </fragment>;
+    }
+
     private RenderTashkilHelp()
     {
         const root = new VerbRoot(this.input.rootRadicals);
@@ -66,7 +107,7 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
         if( cond )
         {
             return <FormField title="Perfect 1st person male singular">
-                <div>{this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, "perfect", "active", "male", "first", "singular", "indicative", this.input.data.stem1Context)}</div>
+                <div>{this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, "perfect", "active", "male", "first", "singular", "indicative", Stem1DataToStem1ContextOptional(this.input.data.stem1Data))}</div>
             </FormField>;
         }
 
@@ -79,7 +120,7 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
 
         if(this.input.data.stem === 1)
         {
-            const choices = root.GetStem1ContextChoices(this.input.data.stem1Context!);
+            const choices = root.GetStem1ContextChoices(Stem1DataToStem1Context(this.input.data.stem1Data!));
             if(choices.soundOverride.length > 1)
                 return this.RenderSoundOverride();
         }
@@ -95,12 +136,7 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
             [KASRA]: "كسرة",
         };
 
-        const stem1Ctx: Stem1Context = {
-            middleRadicalTashkil: (tense === "perfect") ? tashkil : this.input.data.stem1Context!.middleRadicalTashkil,
-            middleRadicalTashkilPresent: (tense === "present") ? tashkil : this.input.data.stem1Context!.middleRadicalTashkilPresent,
-            soundOverride: this.input.data.stem1Context!.soundOverride
-        };
-
+        const stem1Ctx = Stem1DataToStem1Context(this.input.data.stem1Data!);
         return tashkilDisplayName[tashkil] + "  " + tashkil + " : " + this.RenderConjugation(tense, stem1Ctx);
     }
 
@@ -113,7 +149,7 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
     private RenderSoundOverride()
     {
         return <FormField title="Sound override" description="Some hollow verbs are actually conjugated as if they were strong verbs">
-            <CheckBox value={this.input.data.stem1Context!.soundOverride} onChanged={newValue => { this.input.data.stem1Context!.soundOverride = newValue; this.input.onChanged(); }} />
+            <CheckBox value={IsFlagSet(this.input.data.stem1Data!.flags, VerbFlags.SoundOverride)} onChanged={newValue => { this.input.data.stem1Data!.flags = ToggleFlagConditionally(this.input.data.stem1Data!.flags, newValue, VerbFlags.SoundOverride); this.input.onChanged(); }} />
         </FormField>;
     }
 
@@ -123,12 +159,12 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
             return this.RenderTashkilField(tense, [], "", () => null);
 
         const root = new VerbRoot(this.input.rootRadicals);
-        const choices = root.GetStem1ContextChoices(this.input.data.stem1Context!);
+        const choices = root.GetStem1ContextChoices(Stem1DataToStem1Context(this.input.data.stem1Data!));
 
         const key = tense === "present" ? "middleRadicalTashkilPresent" : "middleRadicalTashkil";
-        return this.RenderTashkilField(tense, choices[tense], this.input.data.stem1Context![key], newValue =>
+        return this.RenderTashkilField(tense, choices[tense], this.input.data.stem1Data![key], newValue =>
             {
-                this.input.data.stem1Context![key] = newValue;
+                this.input.data.stem1Data![key] = newValue;
                 this.ValidateStem1Context();
                 this.input.onChanged();
             }
@@ -146,7 +182,7 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
     private RenderTashkilSelect(choices: PRIMARY_TASHKIL[], tense: Tense, value: string, onChanged: (newValue: string) => void)
     {
         if(choices.length === 0)
-            return <div>{this.RenderConjugation(tense, this.input.data.stem1Context!)}</div>;
+            return <div>{this.RenderConjugation(tense, Stem1DataToStem1ContextOptional(this.input.data.stem1Data))}</div>;
         if(choices.length === 1)
             return <div>{this.RenderChoice(choices[0], tense)}</div>
 
@@ -159,20 +195,20 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
     {
         if(this.input.data.stem !== 1)
         {
-            this.input.data.stem1Context = undefined;
+            this.input.data.stem1Data = undefined;
             return;
         }
 
-        if(this.input.data.stem1Context === undefined)
+        if(this.input.data.stem1Data === undefined)
         {
-            this.input.data.stem1Context = {
+            this.input.data.stem1Data = {
                 middleRadicalTashkil: FATHA,
                 middleRadicalTashkilPresent: FATHA,
-                soundOverride: false
+                flags: 0
             };
         }
 
-        const ctx = this.input.data.stem1Context;
+        const ctx = Stem1DataToStem1Context(this.input.data.stem1Data);
         const root = new VerbRoot(this.input.rootRadicals);
 
         const choices = root.GetStem1ContextChoices(ctx);
@@ -200,15 +236,44 @@ export class VerbEditorComponent extends Component<{ data: VerbUpdateData; rootR
     }
 
     //Event handlers
+    private OnAddRelation()
+    {
+        this.input.data.related.push({
+            relatedVerbId: 0,
+            relationType: WordRelationshipType.Synonym
+        });
+        this.input.onChanged();
+    }
+
+    private OnDeleteRelation(relation: VerbRelation, event: Event)
+    {
+        event.preventDefault();
+        
+        this.input.data.related.Remove(this.input.data.related.indexOf(relation));
+        this.input.onChanged();
+    }
+
     override OnInitiated(): void
     {
         this.ValidateStem1Context();
+    }
+
+    private OnRelatedVerbIdChanged(relation: VerbRelation, newValue: number)
+    {
+        relation.relatedVerbId = newValue;
+        this.input.onChanged();
     }
 
     private OnStemChanged(newValue: string[])
     {
         this.input.data.stem = parseInt(newValue[0]);
         this.ValidateStem1Context();
+        this.input.onChanged();
+    }
+
+    private OnVerbRelationshipTypeChanged(relation: VerbRelation, newValue: string[])
+    {
+        relation.relationType = parseInt(newValue[0]);
         this.input.onChanged();
     }
 }

@@ -168,6 +168,7 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
     switch(params.stem)
     {
         case 1:
+        case 2:
         case 10:
         {
             if(params.voice === "passive")

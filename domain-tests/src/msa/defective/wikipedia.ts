@@ -272,7 +272,15 @@ It("Wikipedia defective stem1 type 3", () => {
 
 It("Wikipedia defective stem table", () => {
     //TODO: I
-    //TODO: II
+
+    RunConjugationTest("ف-ع-ي", 2, [
+        { expected: "فَعَّى" },
+        { expected: "يُفَعِّي", tense: "present" },
+        { expected: "فَعِّ", tense: "present", mood: "imperative", person: "second" },
+        { voice: "passive", expected: "فُعِّيَ" },
+        { voice: "passive", expected: "يُفَعّى", tense: "present" },
+    ]);
+
     //TODO: III
 
     RunConjugationTest("ف-ع-ي", 4, [
