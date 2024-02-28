@@ -43,8 +43,12 @@ jobs:
       working-directory: ./domain
     - run: npm run build
       working-directory: ./domain
+    - run: npm link
+      working-directory: ./domain
 
     #build tests
+    - run: npm link arabdict-domain
+      working-directory: ./domain-tests
     - run: npm install
       working-directory: ./domain-tests
     - run: npm run compile
