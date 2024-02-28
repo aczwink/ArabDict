@@ -1,4 +1,6 @@
 # ArabDict
 [![Run tests](https://github.com/aczwink/ArabDict/actions/workflows/tests.yml/badge.svg)](https://github.com/aczwink/ArabDict/actions/workflows/tests.yml)
 
+[![Test results](https://camo.githubusercontent.com/daae93cdd0562a03bcd3edf340218f832ed9c5246cf9db6cb51a6d9220bddce5/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f74657374732d3134253230706173736564253243253230372532306661696c65642d637269746963616c)](https://camo.githubusercontent.com/daae93cdd0562a03bcd3edf340218f832ed9c5246cf9db6cb51a6d9220bddce5/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f74657374732d3134253230706173736564253243253230372532306661696c65642d637269746963616c)
+
 A dictionary webapp specifically for the Arabic language
