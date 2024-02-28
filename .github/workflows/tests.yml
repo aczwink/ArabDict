@@ -37,6 +37,8 @@ jobs:
       working-directory: ./actsutil/core
 
     #build acts-util-tests
+    - run: npm link acts-util-core
+      working-directory: ./actsutil/test
     - run: npm install
       working-directory: ./actsutil/test
     - run: npm run compile
