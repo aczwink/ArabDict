@@ -65,10 +65,7 @@ jobs:
       working-directory: ./domain-tests
 
     #run tests
-    - run: echo "$(npm run run)" > results.txt
-      working-directory: ./domain-tests
-    - name: show test results
-      run: cat results.txt
+    - run: echo "$(npm run run mocha-json)" > results.json
       working-directory: ./domain-tests
     - name: Archive test results
       uses: actions/upload-artifact@v4
@@ -81,5 +78,5 @@ jobs:
       if: success() || failure()
       with:
         name: Tests
-        path: ./domain-tests/results.txt
+        path: ./domain-tests/results.json
         reporter: mocha-json
