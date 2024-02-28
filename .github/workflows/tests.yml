@@ -65,13 +65,13 @@ jobs:
       working-directory: ./domain-tests
 
     #run tests
-    - run: npm run run mocha-json 1>results.json 2>/dev/null
+    - run: npm run --silent run mocha-json 1>results.json 2>stderr.log
       working-directory: ./domain-tests
     - name: Archive test results
       uses: actions/upload-artifact@v4
       with:
         name: test-result-report
-        path: ./domain-tests/results.json
+        path: ./domain-tests/results.json ./domain-tests/stderr.log
 
     - name: Test Report
       uses: dorny/test-reporter@v1
