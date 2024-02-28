@@ -65,7 +65,7 @@ jobs:
       working-directory: ./domain-tests
 
     #run tests
-    - run: echo "$(npm run run mocha-json)" > results.json
+    - run: npm run run mocha-json 1>results.json 2>/dev/null
       working-directory: ./domain-tests
     - name: Archive test results
       uses: actions/upload-artifact@v4
