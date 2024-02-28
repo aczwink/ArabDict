@@ -47,7 +47,7 @@ jobs:
       working-directory: ./domain
 
     #build tests
-    - run: npm link arabdict-domain
+    - run: npm link acts-util-core arabdict-domain
       working-directory: ./domain-tests
     - run: npm install
       working-directory: ./domain-tests
