@@ -75,3 +75,11 @@ jobs:
       with:
         name: test-result-report
         path: ./domain-tests/results.txt
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
+      with:
+        name: Tests
+        path: ./domain-tests/results.txt
+        reporter: mocha-json
