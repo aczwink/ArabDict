@@ -35,6 +35,14 @@ jobs:
       working-directory: ./actsutil/core
     - run: npm link
       working-directory: ./actsutil/core
+
+    #build acts-util-tests
+    - run: npm install
+      working-directory: ./actsutil/test
+    - run: npm run compile
+      working-directory: ./actsutil/test
+    - run: npm link
+      working-directory: ./actsutil/test
     
     #build domain
     - run: npm link acts-util-core
@@ -47,7 +55,7 @@ jobs:
       working-directory: ./domain
 
     #build tests
-    - run: npm link acts-util-core arabdict-domain
+    - run: npm link acts-util-core acts-util-test arabdict-domain
       working-directory: ./domain-tests
     - run: npm install
       working-directory: ./domain-tests
