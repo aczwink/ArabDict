@@ -67,3 +67,10 @@ jobs:
     #run tests
     - run: npm run run
       working-directory: ./domain-tests
+    - run: echo "npm run run" > results.txt
+      working-directory: ./domain-tests
+    - name: Archive test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-result-report
+        path: ./results.txt
