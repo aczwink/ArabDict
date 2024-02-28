@@ -120,8 +120,8 @@ function Test(expected: string, got: string, params: ConjugationParams)
 
     if(!a.Equals(b))
     {
-        console.log("expected:", a, "(" + ToDisplayVersion(a) + ")", "got:", b, "(" + ToDisplayVersion(b) + ")");
-        console.log("conjugation params:", params);
+        console.error("expected:", a, "(" + ToDisplayVersion(a) + ")", "got:", b, "(" + ToDisplayVersion(b) + ")");
+        console.error("conjugation params:", params);
         Expect(expected).Equals(got);
     }
 }
