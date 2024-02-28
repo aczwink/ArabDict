@@ -71,7 +71,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-result-report
-        path: ./domain-tests/results.txt
+        path: ./domain-tests/results.json
 
     - name: Test Report
       uses: dorny/test-reporter@v1
