@@ -25,6 +25,7 @@ interface DialectMetadata
     hasJussive: boolean;
     hasPassive: boolean;
     iso639code: string;
+    glottoCode: string;
 }
 
 export function GetDialectMetadata(dialectType: DialectType): DialectMetadata
@@ -37,7 +38,8 @@ export function GetDialectMetadata(dialectType: DialectType): DialectMetadata
                 hasFemalePlural: true,
                 hasJussive: true,
                 hasPassive: true,
-                iso639code: "arb"
+                iso639code: "arb",
+                glottoCode: "stan1318",
             };
 
         case DialectType.NorthLevantineArabic:
@@ -46,7 +48,17 @@ export function GetDialectMetadata(dialectType: DialectType): DialectMetadata
                 hasFemalePlural: false,
                 hasJussive: false,
                 hasPassive: false,
-                iso639code: "apc"
+                iso639code: "apc",
+                glottoCode: "nort3139"
+            };
+        case DialectType.Lebanese:
+            return {
+                hasDual: false,
+                hasFemalePlural: false,
+                hasJussive: false,
+                hasPassive: false,
+                iso639code: "apc",
+                glottoCode: "stan1323"
             };
     }
 }

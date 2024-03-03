@@ -17,23 +17,11 @@
  * */
 
 import { Component, Injectable, JSX_CreateElement } from "acfrontend";
-
-import { DialectType } from "arabdict-domain/src/Conjugator";
-
 import { DialectData } from "../dist/api";
 import { ConjugationService } from "./ConjugationService";
 import { DialectsService } from "./DialectsService";
-
-function MapDialectTypeBack(type: string)
-{
-    switch(type)
-    {
-        case "apc":
-            return DialectType.NorthLevantineArabic;
-        case "arb":
-            return DialectType.ModernStandardArabic;
-    }
-}
+import { DialectType } from "arabdict-domain/src/Conjugator";
+import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 
 @Injectable
 export class DialectSelectionComponent extends Component
@@ -49,7 +37,7 @@ export class DialectSelectionComponent extends Component
     {
         return <div className="flex-shrink-0">
             <a href="#" className="text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                {this.FindEmoji(this.conjugationService.globalDialectMetaData.iso639code)}
+                {this.FindEmoji()}
             </a>
             <ul className="dropdown-menu shadow">
                 {this.RenderDialectChildrenOf(null, 0)}
@@ -61,9 +49,20 @@ export class DialectSelectionComponent extends Component
     private dialects: DialectData[];
 
     //Private methods
-    private FindEmoji(isoCode: string)
+    private FindEmoji()
     {
-        return this.dialects.find(x => x.isoCode === isoCode)?.flagCode;
+        return this.dialects.find(x => this.MapDialectType(x) === this.conjugationService.globalDialect.Get())?.emojiCodes;
+    }
+
+    private MapDialectType(dialect: DialectData)
+    {
+        const types: DialectType[] = [DialectType.ModernStandardArabic, DialectType.NorthLevantineArabic, DialectType.Lebanese];
+        for (const type of types)
+        {
+            const metaData = GetDialectMetadata(type);
+            if( (dialect.iso639code === metaData.iso639code) && (dialect.glottoCode === metaData.glottoCode) )
+                return type;
+        }
     }
 
     private RenderDialectChildrenOf(parent: number | null, level: number)
@@ -77,12 +76,12 @@ export class DialectSelectionComponent extends Component
 
     private RenderDialect(x: DialectData, level: number)
     {
-        if(MapDialectTypeBack(x.isoCode) === undefined)
+        if(this.MapDialectType(x) === undefined)
             return null;
         
         const indention = "  ".repeat(level);
         return <li>
-            <a className={(x.isoCode === this.conjugationService.globalDialectMetaData.iso639code) ? "dropdown-item active" : "dropdown-item"} onclick={this.OnChangeDialect.bind(this, x)} href="#" style="white-space: pre;">{indention}{x.flagCode} {x.name}</a>
+            <a className={(this.MapDialectType(x) === this.conjugationService.globalDialect.Get()) ? "dropdown-item active" : "dropdown-item"} onclick={this.OnChangeDialect.bind(this, x)} href="#" style="white-space: pre;">{indention}{x.emojiCodes} {x.name}</a>
         </li>;
     }
 
@@ -90,7 +89,7 @@ export class DialectSelectionComponent extends Component
     private OnChangeDialect(dialect: DialectData, event: Event)
     {
         event.preventDefault();
-        const dialectType = MapDialectTypeBack(dialect.isoCode);
+        const dialectType = this.MapDialectType(dialect);
         if(dialectType !== undefined)
         {
             this.conjugationService.globalDialect.Set(dialectType);

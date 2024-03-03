@@ -20,6 +20,7 @@ import { FATHA, SUKUN, KASRA, ALEF, YA, TA_MARBUTA, ALEF_HAMZA, WAW, MIM, SHADDA
 import { Hamzate } from "../../../Hamza";
 import { RootType, VerbRoot } from "../../../VerbRoot";
 import { FullyVocalized } from "../../../Vocalization";
+import { NUN } from "../_legacy/VerbStem";
 
 export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | FullyVocalized[])[]
 {
@@ -96,6 +97,13 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                 root.r1 + FATHA + WAW + SUKUN + root.r3,
                 root.r1 + FATHA + WAW + SUKUN + root.r3 + FATHA + TA_MARBUTA,
                 root.r1 + FATHA + WAW + FATHA + ALEF + root.r3,
+                [
+                    { letter: root.r1, shadda: false, tashkil: FATHA },
+                    { letter: YA, shadda: false, tashkil: FATHA },
+                    { letter: root.r3, shadda: false, tashkil: FATHA },
+                    { letter: ALEF, shadda: false, tashkil: FATHA },
+                    { letter: NUN, shadda: false, tashkil: SUKUN },
+                ],
                 Hamzate([
                     { letter: root.r1, shadda: false, tashkil: FATHA },
                     { letter: YA, shadda: false, tashkil: SUKUN },

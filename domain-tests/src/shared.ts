@@ -122,7 +122,7 @@ function Test(expected: string, got: string, params: ConjugationParams)
     {
         console.error("expected:", a, "(" + ToDisplayVersion(a) + ")", "got:", b, "(" + ToDisplayVersion(b) + ")");
         console.error("conjugation params:", params);
-        Expect(expected).Equals(got);
+        Expect(expected).Equals(got, "tense: " + params.tense + ", numerus: " + params.numerus + ", person: " + params.person + ", gender: " + params.gender);
     }
 }
 

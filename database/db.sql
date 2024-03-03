@@ -25,9 +25,10 @@ DROP TABLE IF EXISTS `dialects`;
 CREATE TABLE `dialects` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` text NOT NULL,
-  `flagCode` char(2) NOT NULL,
+  `emojiCodes` varchar(10) NOT NULL,
   `parent` int(10) unsigned DEFAULT NULL,
-  `isoCode` text NOT NULL,
+  `iso639code` varchar(100) NOT NULL,
+  `glottoCode` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `dialects_parent` (`parent`),
   CONSTRAINT `dialects_parent` FOREIGN KEY (`parent`) REFERENCES `dialects` (`id`)
@@ -270,4 +271,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-25 23:16:47
+-- Dump completed on 2024-03-03 22:58:49

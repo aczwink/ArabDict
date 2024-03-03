@@ -20,7 +20,12 @@
 
 export enum Letter
 {
-    Jiim = "\u062C"
+    Tha = "\u062B",
+    Jiim = "\u062C",
+    Tta = "\u0637",
+    Ththa = "\u0638",
+    Ghain = "\u063A",
+    Kaf = "\u0643"
 }
 
 export const ALEF = "\u0627";

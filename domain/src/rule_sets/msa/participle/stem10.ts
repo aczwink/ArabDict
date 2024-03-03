@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ALEF_MAKSURA, DHAMMA, FATHA, FATHATAN, KASRATAN, MIM, SUKUN } from "../../../Definitions";
+import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, FATHATAN, KASRA, KASRATAN, MIM, SUKUN, YA } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
 import { FullyVocalized } from "../../../Vocalization";
 import { SIIN, TA, Voice } from "../_legacy/VerbStem";
@@ -43,6 +43,26 @@ export function GenerateParticipleStem10(root: VerbRoot, voice: Voice): FullyVoc
                 { letter: root.r1, shadda: false, tashkil: SUKUN },
                 { letter: root.r2, shadda: false, tashkil: FATHATAN },
                 { letter: ALEF_MAKSURA, shadda: false, tashkil: SUKUN },
+            ];
+
+        case RootType.Hollow:
+            return [
+                { letter: MIM, shadda: false, tashkil: DHAMMA },
+                { letter: SIIN, shadda: false, tashkil: SUKUN },
+                { letter: TA, shadda: false, tashkil: FATHA },
+                { letter: root.r1, shadda: false, tashkil: (voice === "active") ? KASRA : FATHA },
+                { letter: (voice === "active") ? YA : ALEF, shadda: false, tashkil: KASRA },
+                { letter: root.r3, shadda: false, tashkil: SUKUN },
+            ];
+            
+        case RootType.Sound:
+            return [
+                { letter: MIM, shadda: false, tashkil: DHAMMA },
+                { letter: SIIN, shadda: false, tashkil: SUKUN },
+                { letter: TA, shadda: false, tashkil: FATHA },
+                { letter: root.r1, shadda: false, tashkil: SUKUN },
+                { letter: root.r2, shadda: false, tashkil: (voice === "active") ? KASRA : FATHA },
+                { letter: root.r3, shadda: false, tashkil: SUKUN },
             ];
     }
     return [{letter: "TODO", shadda: false, tashkil: SUKUN}];

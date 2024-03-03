@@ -16,10 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner, Router, RouterState, Textarea } from "acfrontend";
+import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Textarea } from "acfrontend";
 import { APIService } from "../APIService";
 import { RootCreationData } from "../../dist/api";
-import { IsFlagSet, RootFlags, ToggleFlag } from "../shared/flags";
+import { RootEditorComponent } from "./RootEditorComponent";
+import { AreValidRootCharacters } from "./general";
 
 @Injectable
 export class EditRootComponent extends Component
@@ -38,21 +39,13 @@ export class EditRootComponent extends Component
             return <ProgressSpinner />;
 
         return <fragment>
-            <FormField title="Radicals" description="The radicals that make up the root">
-                <LineEdit value={this.data.radicals} onChanged={newValue => {this.data!.radicals = newValue; this.Update();}} />
-            </FormField>
+            <RootEditorComponent data={this.data} onDataChanged={this.Update.bind(this)} />
 
             <FormField title="Description" description="Descriptive text about the root">
                 <Textarea value={this.data.description} onChanged={newValue => {this.data!.description = newValue; this.Update();}} />
             </FormField>
 
-            <FormField title="Defective root with و and ي">
-                <input type="checkbox" checked={IsFlagSet(this.data.flags, RootFlags.DefectiveAlsoYa)} onclick={() => this.data!.flags = ToggleFlag(this.data!.flags, RootFlags.DefectiveAlsoYa)} />
-            </FormField>
-
-            Root: {this.data.radicals.split("").join("-")}
-
-            <button className="btn btn-primary" type="button" onclick={this.OnSaveRoot.bind(this)}>Save</button>
+            <button disabled={!AreValidRootCharacters(this.data.radicals)} className="btn btn-primary" type="button" onclick={this.OnSaveRoot.bind(this)}>Save</button>
         </fragment>;
     }
 

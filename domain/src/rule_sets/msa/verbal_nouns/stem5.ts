@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { FATHA, DHAMMA } from "../../../Definitions";
+import { FATHA, DHAMMA, KASRATAN, SUKUN } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { FullyVocalized } from "../../../Vocalization";
 import { TA } from "../_legacy/VerbStem";
 
-export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): PartiallyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): FullyVocalized[]
 {
     switch(root.type)
     {
@@ -31,9 +31,16 @@ export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): PartiallyVo
                 { letter: TA, shadda: false, tashkil: FATHA },
                 { letter: root.r1, shadda: false, tashkil: FATHA },
                 { letter: root.r2, shadda: true, tashkil: DHAMMA },
-                { letter: root.r3, shadda: false },
+                { letter: root.r3, shadda: false, tashkil: SUKUN },
+            ];
+
+        case RootType.Defective:
+            return [
+                { letter: TA, shadda: false, tashkil: FATHA },
+                { letter: root.r1, shadda: false, tashkil: FATHA },
+                { letter: root.r2, shadda: true, tashkil: KASRATAN },
             ];
         default:
-            return [{letter: "TODO", shadda: false}];
+            return [{letter: "TODO", shadda: false, tashkil: SUKUN}];
     }
 }

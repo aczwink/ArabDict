@@ -63,7 +63,7 @@ export class TranslationsEditorComponent extends Component<{ translations: Trans
     {
         const indention = "  ".repeat(x.level);
         return <span style="white-space: pre;">
-            {indention} {x.dialect.flagCode} {x.dialect.name}
+            {indention} {x.dialect.emojiCodes} {x.dialect.name}
         </span>;
     }
 

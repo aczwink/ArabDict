@@ -74,6 +74,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             switch(rootType)
             {
                 case RootType.HamzaOnR1:
+                case RootType.Hollow:
                 case RootType.Sound:
                     return [
                         { symbolName: "r1", shadda: false },
@@ -106,6 +107,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.Defective:
                 case RootType.Hollow:
                 case RootType.Sound:
                     return [
@@ -171,6 +173,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.Assimilated:
                 case RootType.Defective:
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:

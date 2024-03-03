@@ -18,8 +18,9 @@
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
 import { APIService } from "../APIService";
-import { RootCreationData, VerbUpdateData } from "../../dist/api";
-import { VerbEditorComponent } from "../verbs/VerbEditorComponent";
+import { RootCreationData } from "../../dist/api";
+import { VerbEditorComponent, VerbEditorData } from "../verbs/VerbEditorComponent";
+import { Stem1ContextToStem1DataOptional } from "../verbs/model";
 
 @Injectable
 export class AddVerbComponent extends Component
@@ -53,7 +54,7 @@ export class AddVerbComponent extends Component
     //Private state
     private rootId: number;
     private root: RootCreationData | null;
-    private data: VerbUpdateData;
+    private data: VerbEditorData;
 
     //Event handlers
     private async OnCreateVerb()
@@ -61,7 +62,7 @@ export class AddVerbComponent extends Component
         await this.apiService.verbs.post({
             rootId: this.rootId,
             stem: this.data.stem,
-            stem1Data: this.data.stem1Data,
+            stem1Data: Stem1ContextToStem1DataOptional(this.data.stem1Context),
             translations: this.data.translations,
             related: this.data.related,
         });

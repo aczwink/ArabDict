@@ -16,11 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Select } from "acfrontend";
-import { RootCreationData, VerbData } from "../../dist/api";
+import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
+import { VerbData } from "../../dist/api";
 import { APIService } from "../APIService";
-import { VerbEditorComponent } from "./VerbEditorComponent";
+import { VerbEditorComponent, VerbEditorData } from "./VerbEditorComponent";
 import { ConjugationService } from "../ConjugationService";
+import { Stem1ContextToStem1DataOptional, Stem1DataToStem1ContextOptional } from "./model";
 
 @Injectable
 export class EditVerbComponent extends Component
@@ -48,10 +49,10 @@ export class EditVerbComponent extends Component
 
     //Private state
     private verbId: number;
-    private data: VerbData | null;
+    private data: VerbEditorData | null;
     private rootRadicals: string;
 
-    //Event handlers
+    //Event handlers    
     override async OnInitiated(): Promise<void>
     {
         const response1 = await this.apiService.verbs.get({ verbId: this.verbId });
@@ -63,7 +64,14 @@ export class EditVerbComponent extends Component
             throw new Error("TODO implement me");
 
         this.rootRadicals = response2.data.radicals;
-        this.data = response1.data;
+
+        const data = response1.data;
+        this.data = {
+            related: data.related,
+            stem: data.stem,
+            translations: data.translations,
+            stem1Context: Stem1DataToStem1ContextOptional(data.stem1Data)
+        };
     }
 
     private async OnSave()
@@ -76,7 +84,7 @@ export class EditVerbComponent extends Component
             data: {
                 stem: data.stem,
                 translations: data.translations,
-                stem1Data: data.stem1Data,
+                stem1Data: Stem1ContextToStem1DataOptional(data.stem1Context),
                 related: data.related
             }
         });

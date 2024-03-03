@@ -25,11 +25,13 @@ import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
 import { CompareVocalized, FullyVocalized, ParseVocalizedText, PartiallyVocalized } from "./Vocalization";
 import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, KASRA, SUKUN, WAW, YA } from "./Definitions";
 import { APCConjugator } from "./rule_sets/apc/APCConjugator";
+import { LebaneseConjugator } from "./rule_sets/lebanese/LebaneseConjugator";
 
 export enum DialectType
 {
     ModernStandardArabic,
-    NorthLevantineArabic
+    NorthLevantineArabic,
+    Lebanese
 }
 
 export interface VerbReverseConjugationResult
@@ -178,6 +180,8 @@ export class Conjugator
                 return new MSAConjugator;
             case DialectType.NorthLevantineArabic:
                 return new APCConjugator;
+            case DialectType.Lebanese:
+                return new LebaneseConjugator;
         }
     }
 

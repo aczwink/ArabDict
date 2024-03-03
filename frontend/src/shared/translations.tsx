@@ -24,7 +24,7 @@ function RenderTranslationEntry(translationEntry: TranslationEntry)
 {
     const d = RootInjector.Resolve(DialectsService).GetDialect(translationEntry.dialectId);
     return <fragment>
-        {d.flagCode}
+        {d.emojiCodes}
         <span style="white-space: pre-wrap;">{translationEntry.text}</span>
     </fragment>;
 }

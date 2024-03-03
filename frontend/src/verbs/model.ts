@@ -25,6 +25,23 @@ export enum VerbFlags
     SoundOverride = 1
 }
 
+function Stem1ContextToStem1Data(data: Stem1Context): Stem1ExtraData
+{
+    return {
+        flags: data.soundOverride ? VerbFlags.SoundOverride : 0,
+        middleRadicalTashkil: data.middleRadicalTashkil,
+        middleRadicalTashkilPresent: data.middleRadicalTashkilPresent
+    };
+}
+
+export function Stem1ContextToStem1DataOptional(data?: Stem1Context)
+{
+    if(data === undefined)
+        return undefined;
+
+    return Stem1ContextToStem1Data(data);
+}
+
 export function Stem1DataToStem1Context(data: Stem1ExtraData): Stem1Context
 {
     return {

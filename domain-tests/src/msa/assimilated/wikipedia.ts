@@ -114,5 +114,12 @@ It("Wikipedia assimilated stem table", () => {
 
     //TODO: IV
     //TODO: VIII
-    //TODO: X
+    
+    RunConjugationTest("و-ع-ل", 10, [
+        { expected: "اِسْتَوْعَلَ" },
+        { expected: "يَسْتَوْعِلُ", tense: "present" },
+        { expected: "اِسْتَوْعِلْ", tense: "present", mood: "imperative", person: "second" },
+        { expected: "اُسْتُوعِلَ", voice: "passive" },
+        { expected: "يُسْتَوْعَلُ", voice: "passive", tense: "present" },
+    ]);
 });

@@ -16,8 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, Router } from "acfrontend";
+import { Component, Injectable, JSX_CreateElement, Router } from "acfrontend";
 import { APIService } from "../APIService";
+import { RootEditorComponent } from "./RootEditorComponent";
+import { RootCreationData } from "../../dist/api";
+import { AreValidRootCharacters } from "./general";
 
 @Injectable
 export class AddRootComponent extends Component
@@ -26,29 +29,29 @@ export class AddRootComponent extends Component
     {
         super();
 
-        this.radicals = "";
+        this.data = {
+            description: "",
+            flags: 0,
+            radicals: ""
+        };
     }
     
     protected Render(): RenderValue
     {
         return <fragment>
-            <FormField title="Radicals" description="The radicals that make up the root">
-                <LineEdit value={this.radicals} onChanged={newValue => this.radicals = newValue} />
-            </FormField>
+            <RootEditorComponent data={this.data} onDataChanged={this.Update.bind(this)} />
 
-            Root: {this.radicals.split("").join("-")}
-
-            <button className="btn btn-primary" type="button" onclick={this.OnCreateRoot.bind(this)}>Create</button>
+            <button disabled={!AreValidRootCharacters(this.data.radicals)} className="btn btn-primary" type="button" onclick={this.OnCreateRoot.bind(this)}>Create</button>
         </fragment>;
     }
 
     //Private state
-    private radicals: string;
+    private data: RootCreationData;
 
     //Event handlers
     private async OnCreateRoot()
     {
-        const response = await this.apiService.roots.post({ radicals: this.radicals, description: "", flags: 0 });
+        const response = await this.apiService.roots.post(this.data);
         this.router.RouteTo("/roots/" + response.data);
     }
 }

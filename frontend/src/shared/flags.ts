@@ -18,8 +18,8 @@
 
 export enum RootFlags
 {
-    //When for a defective root ending in waw, also an equivalent root with ya exists
-    DefectiveAlsoYa = 1,
+    //When for a defective root ending in waw, also an equivalent root with ya exists. Same for hollow
+    DefectiveOrHollowAlsoYa = 1,
 }
 
 export function IsFlagSet(flags: number, flagToTest: number)

@@ -15,34 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { It } from "acts-util-test";
+import { RunConjugationTest } from "../../shared";
 
-import { Injectable } from "acts-util-node";
-import { DatabaseController } from "./DatabaseController";
+//Source: https://en.wikipedia.org/wiki/Arabic_verbs#Hollow_(second-weak)_verbs
 
-interface DialectData
-{
-    id: number;
-    name: string;
-    emojiCodes: string;
-    parent: number | null;
-    iso639code: string;
-    glottoCode: string;
-}
+It("Wikipedia hollow stem table", () => {
+    //TODO: I
+    //TODO: IV
+    //TODO: VII
+    //TODO: VIII
 
-@Injectable
-export class DialectsController
-{
-    constructor(private dbController: DatabaseController)
-    {
-    }
-
-    //Public methods
-    public async QueryDialects()
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const rows = await conn.Select<DialectData>("SELECT id, name, emojiCodes, parent, iso639code, glottoCode FROM dialects");
-
-        return rows;
-    }
-}
+    RunConjugationTest("ف-و-ل", 10, [
+        { expected: "اِسْتَفَالَ" },
+        { expected: "يَسْتَفْيلُ", tense: "present" },
+        { expected: "اِسْتَفِلْ", tense: "present", mood: "imperative", person: "second" },
+        { expected: "اُسْتُفِيلَ", voice: "passive" },
+        { expected: "يُسْتَفَالُ", voice: "passive", tense: "present" },
+    ]);
+});

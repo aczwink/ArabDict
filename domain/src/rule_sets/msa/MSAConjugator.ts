@@ -147,7 +147,7 @@ export class MSAConjugator implements DialectConjugator
             case 4:
                 return [GenerateAllPossibleVerbalNounsStem4(root)];
             case 5:
-                return [Hamzate(GenerateAllPossibleVerbalNounsStem5(root))];
+                return [GenerateAllPossibleVerbalNounsStem5(root)];
             case 6:
                 return [GenerateAllPossibleVerbalNounsStem6(root)];
             case 8:

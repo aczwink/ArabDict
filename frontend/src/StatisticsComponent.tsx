@@ -68,7 +68,7 @@ export class StatisticsComponent extends Component
         const d = this.dialectsService.GetDialect(dialectCounts.dialectId);
 
         return {
-            dialect: d.flagCode + " " + d.name,
+            dialect: d.emojiCodes + " " + d.name,
             ...dialectCounts
         };
     }
