@@ -18,10 +18,10 @@
 
 import { MIM, DHAMMA, FATHA, KASRA, KASRATAN, FATHATAN, SUKUN } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { _LegacyFullyVocalized } from "../../../Vocalization";
 import { TA, Voice } from "../_legacy/VerbStem";
 
-export function GenerateParticipleStem5(root: VerbRoot, voice: Voice): FullyVocalized[]
+export function GenerateParticipleStem5(root: VerbRoot, voice: Voice): _LegacyFullyVocalized[]
 {
     switch(root.type)
     {

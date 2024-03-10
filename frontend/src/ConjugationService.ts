@@ -31,10 +31,16 @@ export class ConjugationService
     constructor()
     {
         this.conjugator = new Conjugator;
+        this._canEdit = new Property(false);
         this._globalDialect = new Property(DialectType.ModernStandardArabic);
     }
 
     //Properties
+    public get canEdit()
+    {
+        return this._canEdit;
+    }
+
     public get globalDialect()
     {
         return this._globalDialect;
@@ -80,5 +86,6 @@ export class ConjugationService
 
     //Private state
     private conjugator: Conjugator;
+    private _canEdit: Property<boolean>;
     private _globalDialect: Property<DialectType>;
 }

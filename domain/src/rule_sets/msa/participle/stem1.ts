@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { FATHA, ALEF, KASRATAN, MIM, SUKUN, DHAMMA, KASRA, WAW, YA, YA_HAMZA } from "../../../Definitions";
+import { FATHA, ALEF, KASRATAN, MIM, SUKUN, DHAMMA, KASRA, WAW, Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { FullyVocalized, _LegacyPartiallyVocalized } from "../../../Vocalization";
 import { Stem1Context } from "../_legacy/CreateVerb";
 import { Voice } from "../_legacy/VerbStem";
 
-export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Context: Stem1Context): PartiallyVocalized[]
+export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Context: Stem1Context): (_LegacyPartiallyVocalized | FullyVocalized)[]
 {
     switch(root.type)
     {
@@ -40,7 +40,7 @@ export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Conte
                 { letter: MIM, shadda: false, tashkil: FATHA },
                 { letter: root.r1, shadda: false, tashkil: SUKUN },
                 { letter: root.r2, shadda: false, tashkil: (stem1Context.middleRadicalTashkilPresent === DHAMMA) ? DHAMMA : KASRA },
-                { letter: (stem1Context.middleRadicalTashkilPresent === DHAMMA) ? WAW : YA, shadda: true },
+                { letter: (stem1Context.middleRadicalTashkilPresent === DHAMMA) ? WAW : Letter.Ya, shadda: true },
             ];
 
         case RootType.Hollow:
@@ -48,16 +48,16 @@ export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Conte
             {
                 return [
                     { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false },
-                    { letter: YA_HAMZA, shadda: false, tashkil: KASRA },
-                    { letter: root.r3, shadda: false },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
+                    { letter: Letter.Hamza, shadda: false, tashkil: KASRA },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.WordEnd },
                 ];
             }
             return [
                 { letter: MIM, shadda: false, tashkil: FATHA },
                 { letter: root.r1, shadda: false, tashkil: (stem1Context.middleRadicalTashkil === KASRA) ? KASRA : DHAMMA },
-                { letter: (stem1Context.middleRadicalTashkil === KASRA) ? YA : WAW, shadda: false },
-                { letter: root.r3, shadda: false },
+                { letter: (stem1Context.middleRadicalTashkil === KASRA) ? Letter.Ya : Letter.Waw, shadda: false, tashkil: Tashkil.Vowel },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.WordEnd },
             ];
 
         case RootType.Quadriliteral:

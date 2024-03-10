@@ -16,29 +16,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, DHAMMA, FATHA, FULL_TASHKIL, KASRA, SHADDA, SUKUN } from "./Definitions";
+import { BASE_TASHKIL, DHAMMA, FATHA, FULL_TASHKIL, KASRA, Letter, SHADDA, SUKUN, Tashkil } from "./Definitions";
 
-export interface PartiallyVocalized
+export interface _LegacyPartiallyVocalized
 {
     letter: string;
     tashkil?: BASE_TASHKIL;
     shadda: boolean;
 }
-export interface VerbVocalized
+export interface _LegacyVerbVocalized
 {
     letter: string;
     tashkil: BASE_TASHKIL;
     shadda: boolean;
 }
 
-export interface FullyVocalized
+export interface _LegacyFullyVocalized
 {
     letter: string;
     tashkil: FULL_TASHKIL;
     shadda: boolean;
 }
 
-function cmp(a: PartiallyVocalized, b: PartiallyVocalized)
+interface Vocalized
+{
+    letter: Letter;
+    shadda: boolean;
+}
+
+export interface PartiallyVocalized extends Vocalized
+{
+    tashkil?: Tashkil;
+}
+
+export interface FullyVocalized extends Vocalized
+{
+    tashkil: Tashkil;
+}
+
+function cmp(a: _LegacyPartiallyVocalized, b: _LegacyPartiallyVocalized)
 {
     if(a.letter === b.letter)
     {
@@ -54,7 +70,7 @@ function cmp(a: PartiallyVocalized, b: PartiallyVocalized)
     return 0;
 }
 
-export function CompareVocalized(a: PartiallyVocalized[], b: PartiallyVocalized[])
+export function CompareVocalized(a: _LegacyPartiallyVocalized[], b: _LegacyPartiallyVocalized[])
 {
     if(a.length !== b.length)
         return -1;
@@ -70,9 +86,16 @@ export function CompareVocalized(a: PartiallyVocalized[], b: PartiallyVocalized[
     return sum / a.length;
 }
 
+export function IsLongVowel(vocalized: FullyVocalized, predecessor?: FullyVocalized)
+{
+    const isYa = (vocalized.letter === Letter.Ya) && (vocalized.tashkil === Tashkil.Vowel) && (predecessor?.tashkil === Tashkil.Kasra);
+
+    return isYa;
+}
+
 export function ParseVocalizedText(text: string)
 {
-    const result: PartiallyVocalized[] = [];
+    const result: _LegacyPartiallyVocalized[] = [];
 
     for(let i = 0; i < text.length;)
     {
@@ -130,9 +153,14 @@ export function ParseVocalizedText(text: string)
     return result;
 }
 
-export function Vocalize(letter: string, tashkil: BASE_TASHKIL): PartiallyVocalized
+export function Vocalize(letter: string, tashkil: BASE_TASHKIL): _LegacyPartiallyVocalized
 {
     return { letter, tashkil, shadda: false };
+}
+
+export function _LegacyVocalizedToString(v: _LegacyPartiallyVocalized)
+{
+    return v.letter + (v.shadda ? SHADDA : "") + (v.tashkil ? v.tashkil : "");
 }
 
 export function VocalizedToString(v: PartiallyVocalized)

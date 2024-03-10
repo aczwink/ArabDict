@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, DHAMMA, FATHA, KASRA, WAW, YA } from "../../../Definitions";
+import { ALEF, DHAMMA, FATHA, KASRA, Letter, WAW } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { AugmentedRoot } from "../AugmentedRoot";
 
@@ -46,7 +46,7 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
                     if(params.voice === "active")
                         augmentedRoot.ReplaceRadical(2, { letter: ALEF, shadda: false, tashkil: FATHA });
                     else
-                        augmentedRoot.InsertLongVowel(2, YA);
+                        augmentedRoot.InsertLongVowel(2, Letter.Ya);
                 }
                 else
                 {
@@ -78,7 +78,7 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
             if(params.tense === "perfect")
             {
                 if((params.person === "third") && !((params.numerus === "plural") && (params.gender === "female")))
-                    augmentedRoot.InsertLongVowel(2, (params.voice === "active") ? ALEF : YA);
+                    augmentedRoot.InsertLongVowel(2, (params.voice === "active") ? ALEF : Letter.Ya);
                 else
                     augmentedRoot.InsertShortVowel(2, (params.voice === "active") ? FATHA : KASRA);
             }
@@ -94,7 +94,7 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
                 if(shortenVowel)
                     augmentedRoot.AssimilateRadical(2);
                 else if(params.voice === "passive")
-                    augmentedRoot.InsertLongVowel(2, (params.voice === "passive") ? ALEF : YA);
+                    augmentedRoot.InsertLongVowel(2, (params.voice === "passive") ? ALEF : Letter.Ya);
             }
         }
         break;

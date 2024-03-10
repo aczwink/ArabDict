@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, FATHATAN, KASRA, KASRATAN, MIM, SUKUN, YA } from "../../../Definitions";
+import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, FATHATAN, KASRA, KASRATAN, Letter, MIM, SUKUN } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { _LegacyFullyVocalized } from "../../../Vocalization";
 import { SIIN, TA, Voice } from "../_legacy/VerbStem";
 
-export function GenerateParticipleStem10(root: VerbRoot, voice: Voice): FullyVocalized[]
+export function GenerateParticipleStem10(root: VerbRoot, voice: Voice): _LegacyFullyVocalized[]
 {
     switch(root.type)
     {
@@ -51,7 +51,7 @@ export function GenerateParticipleStem10(root: VerbRoot, voice: Voice): FullyVoc
                 { letter: SIIN, shadda: false, tashkil: SUKUN },
                 { letter: TA, shadda: false, tashkil: FATHA },
                 { letter: root.r1, shadda: false, tashkil: (voice === "active") ? KASRA : FATHA },
-                { letter: (voice === "active") ? YA : ALEF, shadda: false, tashkil: KASRA },
+                { letter: (voice === "active") ? Letter.Ya : ALEF, shadda: false, tashkil: KASRA },
                 { letter: root.r3, shadda: false, tashkil: SUKUN },
             ];
             

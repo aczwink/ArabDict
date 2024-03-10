@@ -18,10 +18,10 @@
 
 import { MIM, DHAMMA, FATHA, KASRA } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { _LegacyPartiallyVocalized } from "../../../Vocalization";
 import { Voice } from "../_legacy/VerbStem";
 
-export function GenerateParticipleStem2(root: VerbRoot, voice: Voice): PartiallyVocalized[]
+export function GenerateParticipleStem2(root: VerbRoot, voice: Voice): _LegacyPartiallyVocalized[]
 {
     switch(root.type)
     {

@@ -18,14 +18,14 @@
 import "acts-util-core";
 import { Expect } from "acts-util-test";
 import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
-import { A3EIN, ALEF, ALEF_HAMZA, ALEF_HAMZA_BELOW, ALEF_MAKSURA, BA, BASE_TASHKIL, DAL, DHAMMA, FATHA, KASRA, LAM, Letter, MIM, SUKUN, WAW, YA } from "arabdict-domain/dist/Definitions";
+import { A3EIN, ALEF, ALEF_HAMZA, ALEF_MAKSURA, BA, BASE_TASHKIL, DAL, DHAMMA, FATHA, KASRA, LAM, Letter, MIM, SUKUN, Tashkil, WAW } from "arabdict-domain/dist/Definitions";
 import { ConjugationParams } from "arabdict-domain/dist/DialectConjugator";
 import { VerbRoot } from "arabdict-domain/dist/VerbRoot";
-import { ParseVocalizedText, PartiallyVocalized } from "arabdict-domain/dist/Vocalization";
+import { ParseVocalizedText, PartiallyVocalized, _LegacyPartiallyVocalized } from "arabdict-domain/dist/Vocalization";
 import { Stem1Context } from "arabdict-domain/dist/rule_sets/msa/_legacy/CreateVerb";
 import { Gender, Mood, NUN, Numerus, Person, SIIN, TA, Tense, Voice } from "arabdict-domain/dist/rule_sets/msa/_legacy/VerbStem";
 
-function ToDisplayVersion(v: PartiallyVocalized[])
+function ToDisplayVersion(v: _LegacyPartiallyVocalized[])
 {
     function conv_letter(c: string)
     {
@@ -69,16 +69,17 @@ function ToDisplayVersion(v: PartiallyVocalized[])
             //haa
             case WAW:
                 return "waw";
-            case YA:
+            case Letter.Ya:
                 return "ya";
-            //hamza
+            case Letter.Hamza:
+                return "hamza";
             case ALEF_HAMZA:
                 return "alef_hamza";
             //waw hamza
             //ya hamza
             //alif maddah
             //ta marbuta
-            case ALEF_HAMZA_BELOW:
+            case Letter.AlefHamzaBelow:
                 return "alef_hamza_below";
             case ALEF_MAKSURA:
                 return "alef_maksura";
@@ -103,7 +104,7 @@ function ToDisplayVersion(v: PartiallyVocalized[])
         }
     }
 
-    function conv(v: PartiallyVocalized)
+    function conv(v: _LegacyPartiallyVocalized)
     {
         const l = conv_letter(v.letter);
 
@@ -120,9 +121,8 @@ function Test(expected: string, got: string, params: ConjugationParams)
 
     if(!a.Equals(b))
     {
-        console.error("expected:", a, "(" + ToDisplayVersion(a) + ")", "got:", b, "(" + ToDisplayVersion(b) + ")");
-        console.error("conjugation params:", params);
-        Expect(expected).Equals(got, "tense: " + params.tense + ", numerus: " + params.numerus + ", person: " + params.person + ", gender: " + params.gender);
+        //console.error("conjugation params:", params);
+        Expect(expected).Equals(got, "expected: " + ToDisplayVersion(a) + " got: " + ToDisplayVersion(b) + " tense: " + params.tense + ", numerus: " + params.numerus + ", person: " + params.person + ", gender: " + params.gender);
     }
 }
 

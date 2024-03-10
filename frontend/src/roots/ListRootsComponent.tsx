@@ -20,7 +20,8 @@ import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, Progre
 import { APIService } from "../APIService";
 import { RootOverviewData } from "../../dist/api";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { RootToString } from "./general";
+import { AreValidRootCharacters, RootToString } from "./general";
+import { RadicalsEditorComponent } from "./RadicalsEditorComponent";
 
 interface AlphabetRange
 {
@@ -43,23 +44,33 @@ export class ListRootsComponent extends Component
     {
         super();
 
-        this.queryChar = routerState.queryParams.char || null;
+        this.searchText = routerState.queryParams.searchText || null;
         this.data = null;
     }
 
     protected Render(): RenderValue
     {
         return <fragment>
-            <ul className="nav nav-pills">
-                {alphabetChars.map(this.RenderRange.bind(this))}
-            </ul>
+            <div className="row">
+                <div className="col">
+                    <ul className="nav nav-pills">
+                        {alphabetChars.map(this.RenderRange.bind(this))}
+                    </ul>
+                </div>
+                <div className="col-auto">
+                    <div className="input-group input-group-sm">
+                        <span className="input-group-text"><BootstrapIcon>search</BootstrapIcon></span>
+                        <RadicalsEditorComponent radicals={this.searchText ?? ""} onDataChanged={this.OnSearchChanged.bind(this)} joinBeginning={true} />
+                    </div>
+                </div>
+            </div>
             {this.RenderTable()}
             <RouterButton className="btn btn-primary" route="/roots/add"><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </fragment>;
     }
 
     //Private state
-    private queryChar: string | null;
+    private searchText: string | null;
     private data: RootOverviewData[] | null;
 
     //Private methods
@@ -70,7 +81,7 @@ export class ListRootsComponent extends Component
         {
             const char = String.fromCodePoint(range.first + i);
             elems.push(
-                <li><Anchor class={"nav-link" + (char === this.queryChar ? " active" : "")} route={"/roots?char=" + char}>{char}</Anchor></li>
+                <li><a className={"nav-link" + (this.searchText?.startsWith(char) ? " active" : "")} onclick={this.OnSearchChanged.bind(this, char)} role="button">{char}</a></li>
             );
         }
         return elems;
@@ -110,12 +121,24 @@ export class ListRootsComponent extends Component
     //Event handlers
     override async OnInitiated(): Promise<void>
     {
-        if(this.queryChar !== null)
+        if(this.searchText !== null)
         {
-            const response = await this.apiService.roots.get({ prefix: this.queryChar });
+            const response = await this.apiService.roots.get({ prefix: this.searchText });
             this.data = response.data;
         }
         else
             this.data = [];
+    }
+
+    private async OnSearchChanged(newValue: string)
+    {
+        if((newValue !== this.searchText) && AreValidRootCharacters(newValue) && (newValue.length > 0))
+        {
+            this.data = null;
+            this.searchText = newValue;
+
+            const response = await this.apiService.roots.get({ prefix: newValue });
+            this.data = response.data;
+        }
     }
 }

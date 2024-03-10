@@ -18,15 +18,15 @@
 
 import { Expect, It } from "acts-util-test";
 import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
-import { A3EIN, DAL, DHAMMA, YA } from "arabdict-domain/dist/Definitions";
-import { PartiallyVocalized } from "arabdict-domain/dist/Vocalization";
+import { A3EIN, DAL, DHAMMA, Letter } from "arabdict-domain/dist/Definitions";
+import { _LegacyPartiallyVocalized } from "arabdict-domain/dist/Vocalization";
 
 It("Reverse lookup يُعد", () => {
     const conjugator = new Conjugator();
 
-    const conjugated: PartiallyVocalized[] = [
+    const conjugated: _LegacyPartiallyVocalized[] = [
         {
-            letter: YA,
+            letter: Letter.Ya,
             shadda: false,
             tashkil: DHAMMA
         },

@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, BASE_TASHKIL, FATHA, KASRA, LONG_VOWEL, PRIMARY_TASHKIL, YA } from "../../Definitions";
+import { ALEF, BASE_TASHKIL, FATHA, KASRA, LONG_VOWEL, Letter, PRIMARY_TASHKIL } from "../../Definitions";
 import { VerbRoot } from "../../VerbRoot";
-import { PartiallyVocalized, VerbVocalized } from "../../Vocalization";
+import { _LegacyPartiallyVocalized, _LegacyVerbVocalized } from "../../Vocalization";
 
-interface ConstantRootSymbolInput extends PartiallyVocalized
+interface ConstantRootSymbolInput extends _LegacyPartiallyVocalized
 {
     readonly symbolName: "ai1" | "apre1" | "apre2" | "apost1"; //augmented-(infix | postfix | prefix)
 }
@@ -58,7 +58,7 @@ export class AugmentedRoot
     //Properties
     public get partiallyVocalized()
     {
-        return this.symbols as PartiallyVocalized[];
+        return this.symbols as _LegacyPartiallyVocalized[];
     }
 
     public get r1()
@@ -110,8 +110,10 @@ export class AugmentedRoot
             {
                 case ALEF:
                     return FATHA;
-                case YA:
+                case Letter.Ya:
                     return KASRA;
+                default:
+                    throw new Error("TODO: implement me");
             }
         }
 
@@ -125,7 +127,7 @@ export class AugmentedRoot
         this.ApplyTashkil(radical - 1, shortVowel);
     }
 
-    public ReplaceRadical(radical: number, replacement: VerbVocalized)
+    public ReplaceRadical(radical: number, replacement: _LegacyVerbVocalized)
     {
         const v = this.GetRadical(radical);
         v!.letter = replacement.letter;

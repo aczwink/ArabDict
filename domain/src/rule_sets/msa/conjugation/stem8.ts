@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { DAL, ZAY } from "../../../Definitions";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { _LegacyFullyVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
 import { Tense } from "../_legacy/VerbStem";
 
-export function Stem8AssimilateTa(vocalized: PartiallyVocalized[], r1idx: number)
+export function Stem8AssimilateTa(vocalized: _LegacyFullyVocalized[], r1idx: number)
 {
     switch(vocalized[r1idx].letter)
     {
@@ -33,5 +33,5 @@ export function Stem8AssimilateTa(vocalized: PartiallyVocalized[], r1idx: number
 export function Stem8AssimilateTaVerb(augmentedRoot: AugmentedRoot, tense: Tense)
 {
     const r1idx = (tense === "perfect") ? 1 : 0;
-    Stem8AssimilateTa(augmentedRoot.partiallyVocalized, r1idx);
+    Stem8AssimilateTa(augmentedRoot.partiallyVocalized as any, r1idx);
 }

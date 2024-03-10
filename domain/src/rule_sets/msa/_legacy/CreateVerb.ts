@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,6 @@
 
 import { VerbRoot } from "../../../VerbRoot";
 import { VerbStem } from "./VerbStem";
-import { VerbStem4 } from "./VerbStem4";
 import { VerbStem8 } from "./VerbStem8";
 
 export interface Stem1Context
@@ -37,8 +36,6 @@ export function CreateVerb(root: string, stem: number): VerbStem
     const vRoot = new VerbRoot(root);
     switch(stem)
     {
-        case 4:
-            return new VerbStem4(vRoot);
         case 8:
             return new VerbStem8(vRoot);
     }

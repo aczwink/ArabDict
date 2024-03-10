@@ -16,13 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { FATHA, SUKUN, KASRA, ALEF, YA, TA_MARBUTA, ALEF_HAMZA, WAW, MIM, SHADDA, DHAMMA, ALEF_HAMZA_BELOW, HAMZA, FATHATAN, ALEF_MAKSURA } from "../../../Definitions";
-import { Hamzate } from "../../../Hamza";
+import { FATHA, SUKUN, KASRA, ALEF, ALEF_HAMZA, WAW, MIM, SHADDA, DHAMMA, FATHATAN, ALEF_MAKSURA, Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { FullyVocalized, _LegacyFullyVocalized } from "../../../Vocalization";
 import { NUN } from "../_legacy/VerbStem";
 
-export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | FullyVocalized[])[]
+export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | _LegacyFullyVocalized[] | FullyVocalized[])[]
 {
     switch(root.type)
     {
@@ -41,7 +40,7 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                 [
                     { letter: root.r2, shadda: false, tashkil: KASRA },
                     { letter: root.r3, shadda: false, tashkil: FATHA },
-                    { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
                 ],
             ];
 
@@ -51,7 +50,7 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                     { letter: root.r1, shadda: false, tashkil: FATHA },
                     { letter: root.r2, shadda: false, tashkil: FATHA },
                     { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: HAMZA, shadda: false, tashkil: SUKUN },
+                    { letter: Letter.Hamza, shadda: false, tashkil: SUKUN },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: FATHA },
@@ -66,21 +65,30 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                 [
                     { letter: root.r1, shadda: false, tashkil: FATHA },
                     { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: YA, shadda: false, tashkil: FATHA },
-                    { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
+                    { letter: Letter.Ya, shadda: false, tashkil: FATHA },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: KASRA },
                     { letter: root.r2, shadda: false, tashkil: FATHA },
                     { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: HAMZA, shadda: false, tashkil: SUKUN },
+                    { letter: Letter.Hamza, shadda: false, tashkil: SUKUN },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: KASRA },
                     { letter: root.r2, shadda: false, tashkil: FATHA },
                     { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: YA, shadda: false, tashkil: FATHA },
-                    { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
+                    { letter: Letter.Ya, shadda: false, tashkil: FATHA },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
+                ],
+            ];
+
+        case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+            return  [
+                [
+                    { letter: root.r1, shadda: false, tashkil: FATHA },
+                    { letter: root.r2, shadda: false, tashkil: SUKUN },
+                    { letter: Letter.Ya, shadda: false, tashkil: SUKUN },
                 ],
             ];
             
@@ -88,53 +96,53 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
             return [
                 ALEF_HAMZA + FATHA + root.r2 + FATHA + root.r3,
                 ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3,
-                ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3 + FATHA + TA_MARBUTA,
-                ALEF_HAMZA_BELOW + KASRA + root.r2 + FATHA + ALEF + root.r3 + FATHA + TA_MARBUTA
+                ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3 + FATHA + Letter.TaMarbuta,
+                Letter.Hamza + KASRA + root.r2 + FATHA + ALEF + root.r3 + FATHA + Letter.TaMarbuta
             ];
 
         case RootType.Hollow:
             return [
                 root.r1 + FATHA + WAW + SUKUN + root.r3,
-                root.r1 + FATHA + WAW + SUKUN + root.r3 + FATHA + TA_MARBUTA,
+                root.r1 + FATHA + WAW + SUKUN + root.r3 + FATHA + Letter.TaMarbuta,
                 root.r1 + FATHA + WAW + FATHA + ALEF + root.r3,
                 [
                     { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: YA, shadda: false, tashkil: FATHA },
+                    { letter: Letter.Ya, shadda: false, tashkil: FATHA },
                     { letter: root.r3, shadda: false, tashkil: FATHA },
                     { letter: ALEF, shadda: false, tashkil: FATHA },
                     { letter: NUN, shadda: false, tashkil: SUKUN },
                 ],
-                Hamzate([
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: YA, shadda: false, tashkil: SUKUN },
-                    { letter: root.r3, shadda: false },
-                ]),
-                Hamzate([
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: YA, shadda: false, tashkil: SUKUN },
-                    { letter: root.r3, shadda: false, tashkil: FATHA },
-                    { letter: TA_MARBUTA, shadda: false}
-                ]),
-                root.r1 + KASRA + YA + FATHA + ALEF + root.r3,
+                [
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.WordEnd },
+                ],
+                [
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.WordEnd }
+                ],
+                root.r1 + KASRA + Letter.Ya + FATHA + ALEF + root.r3,
                 MIM + FATHA + root.r1 + FATHA + ALEF + root.r3,
             ];
 
         case RootType.Quadriliteral:
             return [
-                Hamzate([
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: root.r3, shadda: false, tashkil: FATHA },
-                    { letter: root.r4, shadda: false, tashkil: FATHA },
-                    { letter: TA_MARBUTA, shadda: false },
-                ])
+                [
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha, },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun, },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha, },
+                    { letter: root.r4, shadda: false, tashkil: Tashkil.Fatha, },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.WordEnd },
+                ]
             ];
 
         case RootType.SecondConsonantDoubled:
             return [
                 root.r1 + DHAMMA + root.r2 + DHAMMA + WAW + root.r3,
                 root.r1 + FATHA + root.r2 + FATHA + ALEF + root.r3,
-                root.r1 + FATHA + root.r2 + KASRA + YA + root.r3,
+                root.r1 + FATHA + root.r2 + KASRA + Letter.Ya + root.r3,
                 [
                     { letter: root.r1, shadda: false, tashkil: FATHA },
                     { letter: root.r2, shadda: true, tashkil: SUKUN },
@@ -148,13 +156,13 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                 [
                     { letter: root.r1, shadda: false, tashkil: KASRA },
                     { letter: root.r2, shadda: true, tashkil: FATHA },
-                    { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: KASRA },
                     { letter: root.r2, shadda: true, tashkil: SUKUN },
                 ],
-                MIM + FATHA + root.r1 + FATHA + root.r2 + SHADDA + FATHA + TA_MARBUTA
+                MIM + FATHA + root.r1 + FATHA + root.r2 + SHADDA + FATHA + Letter.TaMarbuta
             ];
 
         case RootType.Sound:
@@ -192,20 +200,20 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | F
                     { letter: root.r2, shadda: false, tashkil: FATHA },
                     { letter: ALEF, shadda: false, tashkil: FATHA },
                     { letter: root.r3, shadda: false, tashkil: FATHA },
-                    { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: FATHA },
                     { letter: root.r2, shadda: false, tashkil: SUKUN },
                     { letter: root.r3, shadda: false, tashkil: FATHA },
-                    { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: FATHA },
                     { letter: root.r2, shadda: false, tashkil: SUKUN },
                     { letter: root.r3, shadda: false, tashkil: SUKUN },
                 ],
-                root.r1 + KASRA + root.r2 + FATHA + ALEF + root.r3 + FATHA + TA_MARBUTA,
+                root.r1 + KASRA + root.r2 + FATHA + ALEF + root.r3 + FATHA + Letter.TaMarbuta,
                 root.r1 + KASRA + root.r2 + SUKUN + root.r3,
             ];
 

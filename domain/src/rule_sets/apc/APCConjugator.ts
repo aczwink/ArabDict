@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, BA, BASE_TASHKIL, DHAMMA, FATHA, KASRA, MIM, SUKUN, WAW, YA } from "../../Definitions";
+import { ALEF, BA, BASE_TASHKIL, DHAMMA, FATHA, KASRA, Letter, MIM, SUKUN, WAW } from "../../Definitions";
 import { ConjugationParams, DialectConjugator, ReverseConjugationResult } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { PartiallyVocalized, FullyVocalized, VerbVocalized } from "../../Vocalization";
+import { _LegacyPartiallyVocalized, _LegacyFullyVocalized, _LegacyVerbVocalized } from "../../Vocalization";
 import { AugmentedRoot, AugmentedRootSymbolInput } from "../msa/AugmentedRoot";
 import { Stem1Context } from "../msa/_legacy/CreateVerb";
 import { NUN, TA, Voice } from "../msa/_legacy/VerbStem";
@@ -29,12 +29,12 @@ import { NUN, TA, Voice } from "../msa/_legacy/VerbStem";
 export class APCConjugator implements DialectConjugator
 {
     //Public methods
-    public AnalyzeConjugation(conjugated: PartiallyVocalized[]): ReverseConjugationResult[]
+    public AnalyzeConjugation(conjugated: _LegacyPartiallyVocalized[]): ReverseConjugationResult[]
     {
         throw new Error("Method not implemented.");
     }
     
-    public Conjugate(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[]
+    public Conjugate(root: VerbRoot, params: ConjugationParams): _LegacyPartiallyVocalized[]
     {
         const rootAugmentation = this.AugmentRoot(root, params);
         if(rootAugmentation === undefined)
@@ -58,10 +58,10 @@ export class APCConjugator implements DialectConjugator
         const prefix = this.DerivePrefix(params);
         const suffix = this.DeriveSuffix(params);
 
-        return (prefix as PartiallyVocalized[]).concat(augmentedRoot.partiallyVocalized, suffix);
+        return (prefix as _LegacyPartiallyVocalized[]).concat(augmentedRoot.partiallyVocalized, suffix);
     }
 
-    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context | undefined): PartiallyVocalized[] | FullyVocalized[]
+    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context | undefined): _LegacyPartiallyVocalized[] | _LegacyFullyVocalized[]
     {
         return [
             {
@@ -71,7 +71,7 @@ export class APCConjugator implements DialectConjugator
         ];
     }
 
-    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[]
+    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | _LegacyFullyVocalized[])[]
     {
         return [
             "TODO"
@@ -129,7 +129,7 @@ export class APCConjugator implements DialectConjugator
         return undefined;
     }
 
-    private DerivePrefix(params: ConjugationParams): VerbVocalized[]
+    private DerivePrefix(params: ConjugationParams): _LegacyVerbVocalized[]
     {
         if(params.tense === "perfect")
             return [];
@@ -174,7 +174,7 @@ export class APCConjugator implements DialectConjugator
         return this.DerivePrefixSubjunctive(params);
     }
 
-    private DerivePrefixSubjunctive(params: ConjugationParams): VerbVocalized[]
+    private DerivePrefixSubjunctive(params: ConjugationParams): _LegacyVerbVocalized[]
     {
         switch(params.person)
         {
@@ -212,7 +212,7 @@ export class APCConjugator implements DialectConjugator
                 {
                     return [
                         {
-                            letter: YA,
+                            letter: Letter.Ya,
                             shadda: false,
                             tashkil: KASRA
                         },
@@ -296,7 +296,7 @@ export class APCConjugator implements DialectConjugator
         }
     }
 
-    private DeriveSuffix(params: ConjugationParams): VerbVocalized[]
+    private DeriveSuffix(params: ConjugationParams): _LegacyVerbVocalized[]
     {
         if(params.tense === "present")
             return this.DeriveSuffixPresent(params);
@@ -371,7 +371,7 @@ export class APCConjugator implements DialectConjugator
                         tashkil: KASRA
                     },
                     {
-                        letter: YA,
+                        letter: Letter.Ya,
                         shadda: false,
                         tashkil: KASRA
                     }
@@ -391,7 +391,7 @@ export class APCConjugator implements DialectConjugator
         }
     }
 
-    private DeriveSuffixPresent(params: ConjugationParams): VerbVocalized[]
+    private DeriveSuffixPresent(params: ConjugationParams): _LegacyVerbVocalized[]
     {
         if(params.numerus === "plural")
         {
@@ -417,7 +417,7 @@ export class APCConjugator implements DialectConjugator
                 {
                     return [
                         {
-                            letter: YA,
+                            letter: Letter.Ya,
                             shadda: false,
                             tashkil: KASRA
                         }

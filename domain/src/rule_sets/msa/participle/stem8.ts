@@ -18,10 +18,10 @@
 
 import { MIM, DHAMMA, SUKUN, FATHA, KASRA, KASRATAN, FATHATAN, ALEF_MAKSURA } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { _LegacyFullyVocalized } from "../../../Vocalization";
 import { TA, Voice } from "../_legacy/VerbStem";
 
-export function GenerateParticipleStem8(root: VerbRoot, voice: Voice): FullyVocalized[]
+export function GenerateParticipleStem8(root: VerbRoot, voice: Voice): _LegacyFullyVocalized[]
 {
     const voicingTashkil = (voice === "active") ? KASRA : FATHA;
     switch(root.type)

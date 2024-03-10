@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest } from "../../shared";
 import { DHAMMA } from "arabdict-domain/dist/Definitions";
 
-It("Ya before hamza", () => {
+It("Ya as consonant before hamza", () => {
     const conjugations: ConjugationTest[] = [
         { expected: "يَأْمُنُ", tense: "present" }
     ];

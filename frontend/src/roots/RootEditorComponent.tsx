@@ -16,71 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, JSX_CreateElement, LineEdit } from "acfrontend";
+import { Component, FormField, JSX_CreateElement } from "acfrontend";
 import { RootCreationData } from "../../dist/api";
-import { AreValidRootCharacters, IsValidRootRadical, RootToString } from "./general";
-import { BA, HAMZA, HHA, LAM, LETTER_RA, Letter, MIM, QAF, WAW, YA } from "arabdict-domain/src/Definitions";
-import { NUN, SIIN, TA } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 import { IsFlagSet, RootFlags, ToggleFlag } from "../shared/flags";
+import { RadicalsEditorComponent } from "./RadicalsEditorComponent";
 
 export class RootEditorComponent extends Component<{ data: RootCreationData; onDataChanged: () => void }>
 {
     protected Render(): RenderValue
     {
-        const validClassName = AreValidRootCharacters(this.input.data.radicals) ? "is-valid" : "is-invalid";
         return <fragment>
             <FormField title="Radicals" description="The radicals that make up the root">
-                <LineEdit className={validClassName} value={this.input.data.radicals} onChanged={this.OnRootRadicalsChanged.bind(this)} />
+                <RadicalsEditorComponent radicals={this.input.data.radicals} onDataChanged={this.OnRootRadicalsChanged.bind(this)} />
             </FormField>
-
-            Root radicals: {RootToString(this.input.data)}
 
             <FormField title="Defective/Hollow root with و and ي">
                 <input type="checkbox" checked={IsFlagSet(this.input.data.flags, RootFlags.DefectiveOrHollowAlsoYa)} onclick={this.OnYaFlagToggled.bind(this)} />
             </FormField>
         </fragment>;
-    }
-
-    //Private methods
-    private MapChar(char: string)
-    {
-        if(IsValidRootRadical(char))
-            return char;
-
-        switch(char)
-        {
-            case "a":
-                return HAMZA;
-            case "b":
-                return BA;
-            case "g":
-                return Letter.Ghain;
-            case "H":
-                return HHA;
-            case "k":
-                return Letter.Kaf;
-            case "l":
-                return LAM;
-            case "m":
-                return MIM;
-            case "n":
-                return NUN;
-            case "q":
-                return QAF;
-            case "r":
-                return LETTER_RA;
-            case "s":
-                return SIIN;
-            case "t":
-                return TA;
-            case "T":
-                return Letter.Tta;
-            case "w":
-                return WAW;
-            case "y":
-                return YA;
-        }
-        return "";
     }
 
     //Event handlers
@@ -91,8 +44,7 @@ export class RootEditorComponent extends Component<{ data: RootCreationData; onD
 
     private OnRootRadicalsChanged(newValue: string)
     {
-        const chars = newValue.split("").map(this.MapChar.bind(this));
-        this.input.data.radicals = chars.join("");
+        this.input.data.radicals = newValue;
         this.input.onDataChanged();
     }
 

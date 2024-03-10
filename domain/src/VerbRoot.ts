@@ -17,7 +17,7 @@
  * */
 
 import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
-import { DHAMMA, FATHA, HAMZA, KASRA, PRIMARY_TASHKIL, WAW, YA } from "./Definitions";
+import { DHAMMA, FATHA, KASRA, Letter, PRIMARY_TASHKIL, WAW } from "./Definitions";
 import { GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching } from "./rule_sets/msa/conjugation/defective_special_cases";
 
 export enum RootType
@@ -64,22 +64,22 @@ export class VerbRoot
     //Properties
     public get r1()
     {
-        return this.radicals.charAt(0);
+        return this.radicals.charAt(0) as Letter;
     }
 
     public get r2()
     {
-        return this.radicals.charAt(1);
+        return this.radicals.charAt(1) as Letter;
     }
 
     public get r3()
     {
-        return this.radicals.charAt(2);
+        return this.radicals.charAt(2) as Letter;
     }
 
     public get r4()
     {
-        return this.radicals.charAt(3);
+        return this.radicals.charAt(3) as Letter;
     }
 
     public get radicalsAsSeparateLetters()
@@ -107,22 +107,22 @@ export class VerbRoot
         if(this.r2 === this.r3)
             return RootType.SecondConsonantDoubled;
 
-        if( (this.r1 === WAW) && ( (this.r3 === WAW) || (this.r3 === YA) ) )
+        if( (this.r1 === WAW) && ( (this.r3 === WAW) || (this.r3 === Letter.Ya) ) )
             return RootType.DoublyWeak_WawOnR1_WawOrYaOnR3;
 
-        if((this.r1 === WAW) || (this.r1 === YA))
+        if((this.r1 === WAW) || (this.r1 === Letter.Ya))
             return RootType.Assimilated;
 
-        if((this.r2 === WAW) || (this.r2 === YA))
+        if((this.r2 === WAW) || (this.r2 === Letter.Ya))
         {
-            if((this.r3 === WAW) || (this.r3 === YA))
+            if((this.r3 === WAW) || (this.r3 === Letter.Ya))
                 return RootType.Defective;
             return RootType.Hollow;
         }
 
-        if((this.r3 === WAW) || (this.r3 === YA))
+        if((this.r3 === WAW) || (this.r3 === Letter.Ya))
             return RootType.Defective;
-        if(this.r1 === HAMZA)
+        if(this.r1 === Letter.Hamza)
             return RootType.HamzaOnR1;
         return RootType.Sound;
     }
@@ -198,8 +198,8 @@ export class VerbRoot
                 }
             case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 return {
-                    past: [],
-                    present: [],
+                    past: [FATHA],
+                    present: [KASRA],
                     soundOverride: []
                 };
             default:

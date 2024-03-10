@@ -19,7 +19,7 @@
 import { BASE_TASHKIL, KASRA, FATHA, SUKUN, DHAMMA } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { RootType } from "../../../VerbRoot";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { _LegacyPartiallyVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
 
 interface RootTashkil
@@ -84,7 +84,7 @@ function Derive4RadicalRootTashkil(params: ConjugationParams): RootTashkil & { r
     };
 }
 
-function ApplyRootAugmentationTashkil(augmentedRoot: PartiallyVocalized[], params: ConjugationParams)
+function ApplyRootAugmentationTashkil(augmentedRoot: _LegacyPartiallyVocalized[], params: ConjugationParams)
 {
     switch(params.stem)
     {

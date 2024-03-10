@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ALEF, FATHA, KASRA, SUKUN, YA } from "../../../Definitions";
+import { ALEF, FATHA, KASRA, Letter, SUKUN } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { _LegacyFullyVocalized, _LegacyPartiallyVocalized } from "../../../Vocalization";
 import { TA } from "../_legacy/VerbStem";
 import { Stem8AssimilateTa } from "../conjugation/stem8";
 
-export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): PartiallyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): _LegacyFullyVocalized[]
 {
     switch(root.type)
     {
@@ -30,19 +30,19 @@ export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): PartiallyVo
                 { letter: ALEF, shadda: false, tashkil: KASRA },
                 { letter: root.r1, shadda: false, tashkil: SUKUN },
                 { letter: TA, shadda: false, tashkil: KASRA },
-                { letter: YA, shadda: false, tashkil: FATHA },
-                { letter: ALEF, shadda: false },
-                { letter: root.r3, shadda: false },
+                { letter: Letter.Ya, shadda: false, tashkil: FATHA },
+                { letter: ALEF, shadda: false, tashkil: FATHA },
+                { letter: root.r3, shadda: false, tashkil: SUKUN },
             ];
         case RootType.Sound:
         {
-            const v: PartiallyVocalized[] = [
+            const v: _LegacyFullyVocalized[] = [
                 { letter: ALEF, shadda: false, tashkil: KASRA },
                 { letter: root.r1, shadda: false, tashkil: SUKUN },
                 { letter: TA, shadda: false, tashkil: KASRA },
                 { letter: root.r2, shadda: false, tashkil: FATHA },
-                { letter: ALEF, shadda: false },
-                { letter: root.r3, shadda: false },
+                { letter: ALEF, shadda: false, tashkil: FATHA },
+                { letter: root.r3, shadda: false, tashkil: SUKUN },
             ];
         
             Stem8AssimilateTa(v, 1);
@@ -51,5 +51,5 @@ export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): PartiallyVo
         }
     }
 
-    return [{letter: "TODO", shadda: false}];
+    return [{letter: "TODO", shadda: false, tashkil: FATHA}];
 }

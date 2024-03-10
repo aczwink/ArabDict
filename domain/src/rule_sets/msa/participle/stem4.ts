@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { MIM, DHAMMA, KASRA, YA, FATHA, ALEF, SUKUN } from "../../../Definitions";
+import { MIM, DHAMMA, KASRA, FATHA, ALEF, SUKUN, Letter } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { _LegacyPartiallyVocalized } from "../../../Vocalization";
 import { Voice } from "../_legacy/VerbStem";
 
-export function GenerateParticipleStem4(root: VerbRoot, voice: Voice): PartiallyVocalized[]
+export function GenerateParticipleStem4(root: VerbRoot, voice: Voice): _LegacyPartiallyVocalized[]
 {
     const voicingTashkil = (voice === "active") ? KASRA : FATHA;
     switch(root.type)
@@ -30,7 +30,7 @@ export function GenerateParticipleStem4(root: VerbRoot, voice: Voice): Partially
             return [
                 { letter: MIM, shadda: false, tashkil: DHAMMA },
                 { letter: root.r1, shadda: false, tashkil: voicingTashkil },
-                { letter: (voice === "active") ? YA : ALEF, shadda: false },
+                { letter: (voice === "active") ? Letter.Ya : ALEF, shadda: false },
                 { letter: root.r3, shadda: false },
             ];
 

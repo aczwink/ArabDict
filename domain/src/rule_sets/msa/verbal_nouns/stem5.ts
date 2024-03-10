@@ -17,10 +17,10 @@
  * */
 import { FATHA, DHAMMA, KASRATAN, SUKUN } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { _LegacyFullyVocalized } from "../../../Vocalization";
 import { TA } from "../_legacy/VerbStem";
 
-export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): FullyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): _LegacyFullyVocalized[]
 {
     switch(root.type)
     {

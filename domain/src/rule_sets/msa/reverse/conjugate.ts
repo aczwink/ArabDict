@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DHAMMA, FATHA, WAW, YA } from "../../../Definitions";
+import { DHAMMA, FATHA, Letter, WAW } from "../../../Definitions";
 import { ReverseConjugationResult } from "../../../DialectConjugator";
 import { VerbRoot } from "../../../VerbRoot";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { _LegacyPartiallyVocalized } from "../../../Vocalization";
 
-function TryMatchRootFromPresentWithoutPrefix(conjugated: PartiallyVocalized[]): ReverseConjugationResult[]
+function TryMatchRootFromPresentWithoutPrefix(conjugated: _LegacyPartiallyVocalized[]): ReverseConjugationResult[]
 {
     switch(conjugated.length)
     {
@@ -47,11 +47,11 @@ function TryMatchRootFromPresentWithoutPrefix(conjugated: PartiallyVocalized[]):
     throw new Error("TODO: implement me");
 }
 
-function TryMatchRootWithPrefix(conjugated: PartiallyVocalized[])
+function TryMatchRootWithPrefix(conjugated: _LegacyPartiallyVocalized[])
 {
     switch(conjugated[0].letter)
     {
-        case YA:
+        case Letter.Ya:
             switch(conjugated[0].tashkil)
             {
                 case DHAMMA:
@@ -63,7 +63,7 @@ function TryMatchRootWithPrefix(conjugated: PartiallyVocalized[])
     return [];
 }
 
-export function ReverseConjugate(conjugated: PartiallyVocalized[]): ReverseConjugationResult[]
+export function ReverseConjugate(conjugated: _LegacyPartiallyVocalized[]): ReverseConjugationResult[]
 {
     return TryMatchRootWithPrefix(conjugated);
 }

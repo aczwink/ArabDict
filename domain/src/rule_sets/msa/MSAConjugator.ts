@@ -18,10 +18,9 @@
 import { CreateVerb, Stem1Context } from "./_legacy/CreateVerb";
 import { WAW, A3EIN, LAM, FA, QAF } from "../../Definitions";
 import { ConjugationParams, DialectConjugator, ReverseConjugationResult } from "../../DialectConjugator";
-import { Hamzate } from "../../Hamza";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { Tense, Voice } from "./_legacy/VerbStem";
-import { FullyVocalized, ParseVocalizedText, PartiallyVocalized } from "../../Vocalization";
+import { _LegacyFullyVocalized, ParseVocalizedText, _LegacyPartiallyVocalized, FullyVocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
 import { AugmentedRoot } from "./AugmentedRoot";
 import { definition as msaDef } from "./dialectDefinition";
@@ -57,12 +56,12 @@ import { ReverseConjugate } from "./reverse/conjugate";
 export class MSAConjugator implements DialectConjugator
 {
     //Public methods
-    public AnalyzeConjugation(conjugated: PartiallyVocalized[]): ReverseConjugationResult[]
+    public AnalyzeConjugation(conjugated: _LegacyPartiallyVocalized[]): ReverseConjugationResult[]
     {
         return ReverseConjugate(conjugated);
     }
 
-    public Conjugate(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[]
+    public Conjugate(root: VerbRoot, params: ConjugationParams): _LegacyPartiallyVocalized[]
     {
         const maybeAugmentedRoot = AugmentRoot(params.stem, root.type, params);
         if(maybeAugmentedRoot !== undefined)
@@ -90,11 +89,10 @@ export class MSAConjugator implements DialectConjugator
                     }
                 break;
                 case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-                    if(params.stem > 1)
-                    {
-                        AlterDefectiveSuffix(params, suffix.suffix);
-                        AlterDefectiveEnding(augmentedRoot, params);
-                    }
+                    if(params.stem === 1)
+                        DropOutR1(augmentedRoot, params);
+                    AlterDefectiveSuffix(params, suffix.suffix);
+                    AlterDefectiveEnding(augmentedRoot, params);
                 break;
                 case RootType.Hollow:
                     ShortenOrAlefizeR2(augmentedRoot, params);
@@ -106,13 +104,13 @@ export class MSAConjugator implements DialectConjugator
 
             if(params.stem === 8)
                 Stem8AssimilateTaVerb(augmentedRoot, params.tense);
-            return DerivePrefix(augmentedRoot.partiallyVocalized[0].tashkil!, root.type, params).concat(augmentedRoot.partiallyVocalized, suffix.suffix);
+            return DerivePrefix(augmentedRoot.partiallyVocalized[0].tashkil!, root.type, params).concat(augmentedRoot.partiallyVocalized, suffix.suffix as any);
         }
 
         return this.ConjugateLegacy(root, params);
     }
 
-    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): PartiallyVocalized[] | FullyVocalized[]
+    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): (_LegacyPartiallyVocalized | _LegacyFullyVocalized | FullyVocalized)[]
     {
         switch(stem)
         {
@@ -134,7 +132,7 @@ export class MSAConjugator implements DialectConjugator
         return [{letter: "TODO", shadda: false}];
     }
 
-    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[]
+    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | _LegacyFullyVocalized[] | FullyVocalized[])[]
     {
         switch(stem)
         {
@@ -151,7 +149,7 @@ export class MSAConjugator implements DialectConjugator
             case 6:
                 return [GenerateAllPossibleVerbalNounsStem6(root)];
             case 8:
-                return [Hamzate(GenerateAllPossibleVerbalNounsStem8(root))];
+                return [GenerateAllPossibleVerbalNounsStem8(root)];
             case 10:
                 return [GenerateAllPossibleVerbalNounsStem10(root)];
         }
@@ -179,7 +177,7 @@ export class MSAConjugator implements DialectConjugator
         return replaced;
     }
 
-    private ConjugateLegacy(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[]
+    private ConjugateLegacy(root: VerbRoot, params: ConjugationParams): _LegacyPartiallyVocalized[]
     {
         const dialectDef = this.GetDialectDefiniton();
         const rootType = params.stem1Context?.soundOverride ? RootType.Sound : root.type;

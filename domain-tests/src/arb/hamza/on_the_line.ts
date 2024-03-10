@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,16 +15,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { It } from "acts-util-test";
+import { ConjugationTest, RunConjugationTest } from "../../shared";
+import { KASRA } from "arabdict-domain/dist/Definitions";
 
-import { StemDefinition } from "../../../Definitions";
-import { stem1_past_active } from "./past_active";
-import { stem1_present_active } from "./present_active";
+//Source: https://en.wiktionary.org/wiki/%D8%AC%D8%A7%D8%A1
 
-export const stem1: StemDefinition = {
-    perfect: {
-        active: stem1_past_active,
-    },
-    present: {
-        active: stem1_present_active,
-    },
-};
+It("Hamza on the line", () => {
+    const conjugations: ConjugationTest[] = [
+        { expected: "جَاءَ" },
+        { expected: "جَاءَتْ", gender: "female" },
+    ];
+
+    RunConjugationTest("ج-ي-ء", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, conjugations);
+});

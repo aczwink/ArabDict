@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, SUKUN, DHAMMA, FATHA, KASRA, MIM, ALEF, WAW, YA } from "../../../Definitions";
+import { BASE_TASHKIL, SUKUN, DHAMMA, FATHA, KASRA, MIM, ALEF, WAW, Letter, Tashkil } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { FullyVocalized, _LegacyPartiallyVocalized } from "../../../Vocalization";
 import { TA, NUN, Person, Numerus, Gender } from "../_legacy/VerbStem";
 
-function DeriveSuffixPerfect(params: ConjugationParams): { suffix: PartiallyVocalized[]; preSuffixTashkil: BASE_TASHKIL}
+function DeriveSuffixPerfect(params: ConjugationParams): { suffix: (_LegacyPartiallyVocalized | FullyVocalized)[]; preSuffixTashkil: BASE_TASHKIL}
 {
     switch(params.numerus)
     {
@@ -79,7 +79,7 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: PartiallyVoca
                         suffix: [
                             { letter: TA, shadda: false, tashkil: DHAMMA },
                             { letter: MIM, shadda: false, tashkil: FATHA },
-                            { letter: ALEF, shadda: false },
+                            { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
                         ],
                     };
                 case "third":
@@ -90,7 +90,7 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: PartiallyVoca
                             return {
                                 preSuffixTashkil: FATHA,
                                 suffix: [
-                                    { letter: ALEF, shadda: false },
+                                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
                                 ],
                             };
                         case "female":
@@ -98,7 +98,7 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: PartiallyVoca
                                 preSuffixTashkil: FATHA,
                                 suffix: [
                                     { letter: TA, shadda: false, tashkil: FATHA },
-                                    { letter: ALEF, shadda: false },
+                                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
                                 ],
                             };
                     }
@@ -115,7 +115,7 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: PartiallyVoca
                         preSuffixTashkil: SUKUN,
                         suffix: [
                             { letter: NUN, shadda: false, tashkil: FATHA },
-                            { letter: ALEF, shadda: false },
+                            { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
                         ],
                     };
                 case "second":
@@ -148,8 +148,8 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: PartiallyVoca
                             return {
                                 preSuffixTashkil: DHAMMA,
                                 suffix: [
-                                    { letter: WAW, shadda: false },
-                                    { letter: ALEF, shadda: false },
+                                    { letter: Letter.Waw, shadda: false, tashkil: Tashkil.Vowel },
+                                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.WordEnd },
                                 ],
                             };
                         case "female":
@@ -166,7 +166,7 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: PartiallyVoca
     }
 }
 
-function DeriveSuffixPresent(params: ConjugationParams): { suffix: PartiallyVocalized[]; preSuffixTashkil: BASE_TASHKIL}
+function DeriveSuffixPresent(params: ConjugationParams): { suffix: (_LegacyPartiallyVocalized | FullyVocalized)[]; preSuffixTashkil: BASE_TASHKIL}
 {
     let defTashkil: BASE_TASHKIL = DHAMMA;
     if(params.mood === "subjunctive")
@@ -187,14 +187,14 @@ function DeriveSuffixPresent(params: ConjugationParams): { suffix: PartiallyVoca
                     return {
                         preSuffixTashkil: KASRA,
                         suffix: [
-                            { letter: YA, shadda: false },
+                            { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Vowel },
                         ]
                     };
                 }
                 return {
                     preSuffixTashkil: KASRA,
                     suffix: [
-                        { letter: YA, shadda: false },
+                        { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Vowel },
                         { letter: NUN, shadda: false, tashkil: FATHA }
                     ]
                 };
@@ -213,7 +213,7 @@ function DeriveSuffixPresent(params: ConjugationParams): { suffix: PartiallyVoca
                 return {
                     preSuffixTashkil: FATHA,
                     suffix: [
-                        { letter: ALEF, shadda: false },
+                        { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
                     ]
                 };
             }
@@ -221,7 +221,7 @@ function DeriveSuffixPresent(params: ConjugationParams): { suffix: PartiallyVoca
             return {
                 preSuffixTashkil: FATHA,
                 suffix: [
-                    { letter: ALEF, shadda: false },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
                     { letter: NUN, shadda: false, tashkil: KASRA }
                 ]
             };
@@ -242,15 +242,15 @@ function DeriveSuffixPresent(params: ConjugationParams): { suffix: PartiallyVoca
                     return {
                         preSuffixTashkil: DHAMMA,
                         suffix: [
-                            { letter: WAW, shadda: false },
-                            { letter: ALEF, shadda: false }
+                            { letter: Letter.Waw, shadda: false, tashkil: Tashkil.Vowel },
+                            { letter: Letter.Alef, shadda: false, tashkil: Tashkil.WordEnd }
                         ]
                     };
                 }
                 return {
                     preSuffixTashkil: DHAMMA,
                     suffix: [
-                        { letter: WAW, shadda: false },
+                        { letter: Letter.Waw, shadda: false, tashkil: Tashkil.Vowel },
                         { letter: NUN, shadda: false, tashkil: FATHA }
                     ]
                 };
@@ -266,7 +266,7 @@ function DeriveSuffixPresent(params: ConjugationParams): { suffix: PartiallyVoca
     }
 }
 
-export function DeriveSuffix(params: ConjugationParams): { suffix: PartiallyVocalized[]; preSuffixTashkil: BASE_TASHKIL}
+export function DeriveSuffix(params: ConjugationParams): { suffix: (_LegacyPartiallyVocalized | FullyVocalized)[]; preSuffixTashkil: BASE_TASHKIL}
 {
     if(params.tense === "perfect")
         return DeriveSuffixPerfect(params);

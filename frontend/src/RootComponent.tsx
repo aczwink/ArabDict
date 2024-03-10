@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +18,7 @@
 
 import { Component, JSX_CreateElement, Navigation, NavItem, RouterComponent } from "acfrontend";
 import { DialectSelectionComponent } from "./DialectSelectionComponent";
+import { SessionComponent } from "./SessionComponent";
 
 export class RootComponent extends Component
 {
@@ -33,7 +34,10 @@ export class RootComponent extends Component
                     <NavItem route="/learn">Learn</NavItem>
                     <NavItem route="/statistics">Statistics</NavItem>
                 </ul>
-                <DialectSelectionComponent />
+                <div className="row">
+                    <div className="col-auto"><DialectSelectionComponent /></div>
+                    <div className="col-auto"><SessionComponent /></div>
+                </div>
             </Navigation>
             <div className="container-fluid">
                 <RouterComponent />

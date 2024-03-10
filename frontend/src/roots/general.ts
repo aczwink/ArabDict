@@ -19,40 +19,57 @@
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { RootCreationData, RootOverviewData } from "../../dist/api";
 import { IsFlagSet, RootFlags } from "../shared/flags";
-import { BA, HAMZA, HHA, LAM, LETTER_RA, Letter, MIM, QAF, WAW, YA } from "arabdict-domain/src/Definitions";
+import { A3EIN, BA, DAL, FA, HHA, LAM, LETTER_RA, Letter, MIM, QAF, WAW, ZAY } from "arabdict-domain/src/Definitions";
 import { NUN, SIIN, TA } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 
 export function AreValidRootCharacters(rootRadicals: string)
+{
+    const chars = rootRadicals.split("");
+    if(chars.length > 4)
+        return false;
+    return chars.Values().Map(IsValidRootRadical).All();
+}
+
+export function DoRootCharactersFormValidRoot(rootRadicals: string)
 {
     const chars = rootRadicals.split("");
     if(chars.length < 3)
         return false;
     if(chars.length > 4)
         return false;
-    return chars.Values().Map(IsValidRootRadical).All();
+    return AreValidRootCharacters(rootRadicals);
 }
 
 export function IsValidRootRadical(char: string)
 {
     switch(char)
     {
+        case Letter.Hamza:
         case BA:
         case TA:
         case Letter.Tha:
+        case Letter.Jiim:
         case HHA:
+        case DAL:
+        case Letter.Thal:
         case LETTER_RA:
+        case ZAY:
         case SIIN:
+        case Letter.Saad:
+        case Letter.Daad:
         case Letter.Tta:
         case Letter.Ththa:
+        case A3EIN:
         case Letter.Ghain:
+        case FA:
         case QAF:
         case Letter.Kaf:
         case LAM:
         case MIM:
         case NUN:
+        case Letter.Ha:
         case WAW:
-        case YA:
-        case HAMZA:
+        case Letter.Ya:
             return true;
     }
     return false;
@@ -68,13 +85,13 @@ export function RootToString(rootData: RootCreationData | RootOverviewData)
         {
             case RootType.Defective:
                 {
-                    const radicalsYa = rootData.radicals.substring(0, 2) + YA;
+                    const radicalsYa = rootData.radicals.substring(0, 2) + Letter.Ya;
                     const root2 = new VerbRoot(radicalsYa);
                     return root.ToString() + " / " + root2.ToString();
                 }
             case RootType.Hollow:
                 {
-                    const radicalsYa = root.r1 + YA + root.r3;
+                    const radicalsYa = root.r1 + Letter.Ya + root.r3;
                     const root2 = new VerbRoot(radicalsYa);
                     return root.ToString() + " / " + root2.ToString();
                 }

@@ -18,7 +18,7 @@
 
 import { JSX_CreateElement } from "acfrontend";
 import { SHADDA } from "arabdict-domain/src/Definitions";
-import { ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
+import { ParseVocalizedText, _LegacyVocalizedToString } from "arabdict-domain/src/Vocalization";
 
 export function RenderWithDiffHighlights(word: string, reference: string)
 {
@@ -70,7 +70,7 @@ export function RenderWithDiffHighlights(word: string, reference: string)
         }
         else if(parsedWord.length > parsedRef.length)
         {
-            Add(VocalizedToString(parsedWord[0]), true);
+            Add(_LegacyVocalizedToString(parsedWord[0]), true);
             parsedWord.Remove(0);
         }
         else

@@ -20,7 +20,7 @@ import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, R
 import { APIService } from "../APIService";
 import { RootCreationData } from "../../dist/api";
 import { RootEditorComponent } from "./RootEditorComponent";
-import { AreValidRootCharacters } from "./general";
+import { DoRootCharactersFormValidRoot } from "./general";
 
 @Injectable
 export class EditRootComponent extends Component
@@ -45,7 +45,7 @@ export class EditRootComponent extends Component
                 <Textarea value={this.data.description} onChanged={newValue => {this.data!.description = newValue; this.Update();}} />
             </FormField>
 
-            <button disabled={!AreValidRootCharacters(this.data.radicals)} className="btn btn-primary" type="button" onclick={this.OnSaveRoot.bind(this)}>Save</button>
+            <button disabled={!DoRootCharactersFormValidRoot(this.data.radicals)} className="btn btn-primary" type="button" onclick={this.OnSaveRoot.bind(this)}>Save</button>
         </fragment>;
     }
 

@@ -22,7 +22,16 @@ import { RunConjugationTest } from "../../shared";
 
 It("Wikipedia hollow stem table", () => {
     //TODO: I
-    //TODO: IV
+
+    RunConjugationTest("ف-و-ل", 4, [
+        { expected: "أَفَالَ" },
+        { expected: "أَفَلْت", person: "first" },
+        { expected: "يُفِيلُ", tense: "present" },
+        { expected: "أَفِلْ", tense: "present", mood: "imperative", person: "second" },
+        { expected: "أُفِيلَ", voice: "passive" },
+        { expected: "يُفَالُ", voice: "passive", tense: "present" },
+    ]);
+
     //TODO: VII
     //TODO: VIII
 

@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,14 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { It } from "acts-util-test";
+import { ConjugationTest, RunConjugationTest } from "../../shared";
+import { KASRA } from "arabdict-domain/dist/Definitions";
 
-import { RootType } from "../../../../VerbRoot";
-import { StemTenseVoiceDefinition } from "../../../Definitions";
+//Source: https://en.wiktionary.org/wiki/%D8%AC%D8%A7%D8%A1
 
-export const stem1_past_active: StemTenseVoiceDefinition = {
-    [RootType.DoublyWeak_WawOnR1_WawOrYaOnR3]: {
-        rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعَى" }
-        ]
-    },
-};
+It("Long alef before hamza (with dhamma)", () => {
+    const conjugations: ConjugationTest[] = [
+        { expected: "جَاؤُوا", numerus: "plural" },
+    ];
+
+    RunConjugationTest("ج-ي-ء", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, conjugations);
+});

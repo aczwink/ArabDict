@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,35 +15,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ALEF, ALEF_HAMZA_BELOW, FATHA, HAMZA, KASRA, SUKUN, TA_MARBUTA } from "../../../Definitions";
+import { ALEF, FATHA, KASRA, Letter, SUKUN } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { _LegacyFullyVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem4(root: VerbRoot): FullyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem4(root: VerbRoot): _LegacyFullyVocalized[]
 {
     switch(root.type)
     {
         case RootType.Defective:
             return [
-                { letter: ALEF_HAMZA_BELOW, shadda: false, tashkil: KASRA },
+                { letter: Letter.Hamza, shadda: false, tashkil: KASRA },
                 { letter: root.r1, shadda: false, tashkil: SUKUN },
                 { letter: root.r2, shadda: false, tashkil: FATHA },
                 { letter: ALEF, shadda: false, tashkil: FATHA },
-                { letter: HAMZA, shadda: false, tashkil: SUKUN },
+                { letter: Letter.Hamza, shadda: false, tashkil: SUKUN },
             ];
 
         case RootType.Hollow:
             return [
-                { letter: ALEF_HAMZA_BELOW, shadda: false, tashkil: KASRA },
+                { letter: Letter.Hamza, shadda: false, tashkil: KASRA },
                 { letter: root.r1, shadda: false, tashkil: FATHA },
                 { letter: ALEF, shadda: false, tashkil: FATHA },
                 { letter: root.r3, shadda: false, tashkil: FATHA },
-                { letter: TA_MARBUTA, shadda: false, tashkil: SUKUN },
+                { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
             ];
 
         case RootType.Sound:
             return [
-                { letter: ALEF_HAMZA_BELOW, shadda: false, tashkil: KASRA },
+                { letter: Letter.Hamza, shadda: false, tashkil: KASRA },
                 { letter: root.r1, shadda: false, tashkil: SUKUN },
                 { letter: root.r2, shadda: false, tashkil: FATHA },
                 { letter: ALEF, shadda: false, tashkil: FATHA },

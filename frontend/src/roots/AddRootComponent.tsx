@@ -20,7 +20,7 @@ import { Component, Injectable, JSX_CreateElement, Router } from "acfrontend";
 import { APIService } from "../APIService";
 import { RootEditorComponent } from "./RootEditorComponent";
 import { RootCreationData } from "../../dist/api";
-import { AreValidRootCharacters } from "./general";
+import { DoRootCharactersFormValidRoot } from "./general";
 
 @Injectable
 export class AddRootComponent extends Component
@@ -41,7 +41,7 @@ export class AddRootComponent extends Component
         return <fragment>
             <RootEditorComponent data={this.data} onDataChanged={this.Update.bind(this)} />
 
-            <button disabled={!AreValidRootCharacters(this.data.radicals)} className="btn btn-primary" type="button" onclick={this.OnCreateRoot.bind(this)}>Create</button>
+            <button disabled={!DoRootCharactersFormValidRoot(this.data.radicals)} className="btn btn-primary" type="button" onclick={this.OnCreateRoot.bind(this)}>Create</button>
         </fragment>;
     }
 

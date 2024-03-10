@@ -20,10 +20,10 @@ import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { Hamzate } from "./Hamza";
 import { VerbRoot } from "./VerbRoot";
 import { Gender, Mood, Numerus, Person, Voice } from "./rule_sets/msa/_legacy/VerbStem";
-import { ConjugationParams } from "./DialectConjugator";
+import { ConjugationParams, DialectConjugator } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
-import { CompareVocalized, FullyVocalized, ParseVocalizedText, PartiallyVocalized } from "./Vocalization";
-import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, KASRA, SUKUN, WAW, YA } from "./Definitions";
+import { CompareVocalized, _LegacyFullyVocalized, ParseVocalizedText, _LegacyPartiallyVocalized, FullyVocalized, VocalizedToString, PartiallyVocalized } from "./Vocalization";
+import { DHAMMA, FATHA, KASRA, SUKUN, Tashkil } from "./Definitions";
 import { APCConjugator } from "./rule_sets/apc/APCConjugator";
 import { LebaneseConjugator } from "./rule_sets/lebanese/LebaneseConjugator";
 
@@ -44,7 +44,7 @@ export interface VerbReverseConjugationResult
 export class Conjugator
 {
     //Public methods
-    public AnalyzeConjugation(dialect: DialectType, toAnalyze: PartiallyVocalized[])
+    public AnalyzeConjugation(dialect: DialectType, toAnalyze: _LegacyPartiallyVocalized[])
     {
         const dialectConjugator = this.CreateDialectConjugator(dialect);
         const analysisResults = dialectConjugator.AnalyzeConjugation(toAnalyze);
@@ -130,9 +130,9 @@ export class Conjugator
 
         const dialectConjugator = this.CreateDialectConjugator(dialect);
         const pattern = dialectConjugator.Conjugate(root, params);
+
         this.CheckShaddaPattern(pattern);
-        this.RemoveRedundantTashkil(pattern);
-        return Hamzate(pattern);
+        return this.ExecuteWordTransformationPipeline(pattern);
     }
 
     public ConjugateParticiple(dialect: DialectType, root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): string
@@ -140,7 +140,7 @@ export class Conjugator
         const dialectConjugator = this.CreateDialectConjugator(dialect);
         const pattern = dialectConjugator.ConjugateParticiple(root, stem, voice, stem1Context);
 
-        return this.FormatPattern(pattern);
+        return this.ExecuteWordTransformationPipeline(pattern);
     }
 
     public GenerateAllPossibleVerbalNouns(dialect: DialectType, root: VerbRoot, stem: number): string[]
@@ -151,12 +151,12 @@ export class Conjugator
         return patterns.map(x => {
             if(typeof x === "string")
                 return x;
-            return this.FormatPattern(x);
+            return this.ExecuteWordTransformationPipeline(x);
         });
     }
 
     //Private methods
-    private CheckShaddaPattern(vocalized: PartiallyVocalized[])
+    private CheckShaddaPattern(vocalized: _LegacyPartiallyVocalized[])
     {
         for(let i = 0; i < vocalized.length - 1; i++)
         {
@@ -172,7 +172,7 @@ export class Conjugator
         }
     }
 
-    private CreateDialectConjugator(dialect: DialectType)
+    private CreateDialectConjugator(dialect: DialectType): DialectConjugator
     {
         switch(dialect)
         {
@@ -185,20 +185,61 @@ export class Conjugator
         }
     }
 
-    private FormatPattern(pattern: (FullyVocalized | PartiallyVocalized)[]): string
+    private ExecuteWordTransformationPipeline(pattern: (_LegacyFullyVocalized | _LegacyPartiallyVocalized | FullyVocalized)[]): string
     {
-        this.RemoveRedundantTashkil(pattern as any[]);
-        this.RemoveTrailingSukun(pattern as any);
-        return Hamzate(pattern as any);
+        const migrated = this.MigrateLegacyVocalized(pattern);
+        const hamzated = Hamzate(migrated);
+        const partial = this.RemoveRedundantTashkil(hamzated);
+        this.RemoveWordEndMarker(partial);
+        return this.ToString(partial);
     }
 
-    private RemoveRedundantTashkil(vocalized: PartiallyVocalized[])
+    private MigrateLegacyVocalized(vocalized: (_LegacyFullyVocalized | _LegacyPartiallyVocalized | FullyVocalized)[]): FullyVocalized[]
     {
-        for(let i = 1; i < vocalized.length; i++)
+        function MigrateTashkil(v: _LegacyPartiallyVocalized | _LegacyFullyVocalized | FullyVocalized): Tashkil
         {
-            const p = vocalized[i - 1];
-            const v = vocalized[i];
+            switch(v.tashkil)
+            {
+                case Tashkil.Dhamma:
+                    return Tashkil.Dhamma;
+                case Tashkil.Fatha:
+                    return Tashkil.Fatha;
+                case Tashkil.Kasra:
+                    return Tashkil.Kasra;
+                case Tashkil.Vowel:
+                    return Tashkil.Vowel;
+                case Tashkil.WordEnd:
+                    return Tashkil.WordEnd;
+                case Tashkil.Sukun:
+                    return Tashkil.Sukun;
+                case undefined:
+                    console.log(vocalized);
+                    throw new Error("undefined is not allowed anymore");
+                default:
+                    throw new Error("Function not implemented: " + v.tashkil);
+            }
+        }
 
+        return vocalized.map(v => ({
+            letter: v.letter as any,
+            shadda: v.shadda,
+            tashkil: MigrateTashkil(v),
+        }));
+    }
+
+    private RemoveRedundantTashkil(vocalized: FullyVocalized[]): PartiallyVocalized[]
+    {
+        return vocalized.map( (v, i) => {
+            const predecessor: FullyVocalized | undefined = vocalized[i - 1];
+
+            return {
+                letter: v.letter,
+                shadda: v.shadda,
+                tashkil: v.tashkil
+            };
+        });
+        /*for(let i = 1; i < vocalized.length; i++)
+        {
             if( (v.letter === ALEF) && (v.tashkil === FATHA) )
                 v.tashkil = undefined;
             else if( (v.letter === WAW) && (v.tashkil === DHAMMA) )
@@ -207,13 +248,18 @@ export class Conjugator
                 v.tashkil = undefined;
             else if( (v.letter === ALEF_MAKSURA) && (v.tashkil === FATHA) )
                 v.tashkil = undefined;
-        }
+        }*/
     }
 
-    private RemoveTrailingSukun(pattern: PartiallyVocalized[])
+    private RemoveWordEndMarker(pattern: PartiallyVocalized[])
     {
         const last = pattern[pattern.length - 1];
-        if(last.tashkil === SUKUN)
+        if(last.tashkil === Tashkil.WordEnd)
             last.tashkil = undefined;
+    }
+
+    private ToString(vocalized: PartiallyVocalized[])
+    {
+        return vocalized.Values().Map(VocalizedToString).Join("");
     }
 }

@@ -19,7 +19,7 @@
 import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { VerbRoot } from "./VerbRoot";
 import { Tense, Voice, Gender, Person, Numerus, Mood } from "./rule_sets/msa/_legacy/VerbStem";
-import { FullyVocalized, PartiallyVocalized } from "./Vocalization";
+import { FullyVocalized, _LegacyFullyVocalized, _LegacyPartiallyVocalized } from "./Vocalization";
 
 export interface ConjugationParams
 {
@@ -41,8 +41,8 @@ export interface ReverseConjugationResult
 
 export interface DialectConjugator
 {
-    AnalyzeConjugation(conjugated: PartiallyVocalized[]): ReverseConjugationResult[];
-    Conjugate(root: VerbRoot, params: ConjugationParams): PartiallyVocalized[];
-    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): PartiallyVocalized[] | FullyVocalized[];
-    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[];
+    AnalyzeConjugation(conjugated: _LegacyPartiallyVocalized[]): ReverseConjugationResult[];
+    Conjugate(root: VerbRoot, params: ConjugationParams): _LegacyPartiallyVocalized[];
+    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): (_LegacyPartiallyVocalized | _LegacyFullyVocalized | FullyVocalized)[];
+    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | _LegacyFullyVocalized[] | FullyVocalized[])[];
 }

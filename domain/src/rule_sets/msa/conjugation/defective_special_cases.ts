@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, DHAMMA, FATHA, HAMZA, HHA, KASRA, LETTER_RA, PRIMARY_TASHKIL, SUKUN, WAW, YA } from "../../../Definitions";
+import { ALEF, FATHA, HHA, KASRA, LETTER_RA, Letter, PRIMARY_TASHKIL, WAW } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { VerbRoot } from "../../../VerbRoot";
 import { AugmentedRoot } from "../AugmentedRoot";
@@ -29,7 +29,7 @@ Currently known ones are: رأى, أرى, حيي
 function AlterSpecialCaseHayiya(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
     if(params.tense === "perfect")
-        augmentedRoot.ReplaceRadical(3, { letter: YA, shadda: false, tashkil: FATHA });
+        augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, shadda: false, tashkil: FATHA });
     else
     {
         augmentedRoot.ReplaceRadical(3, { letter: ALEF, shadda: false, tashkil: FATHA });
@@ -47,18 +47,18 @@ export function AlterSpeciallyIrregularDefective(root: VerbRoot, augmentedRoot: 
 {
     if(params.stem === 1)
     {
-        if(root.radicalsAsSeparateLetters.Equals([HHA, YA, WAW]))
+        if(root.radicalsAsSeparateLetters.Equals([HHA, Letter.Ya, WAW]))
             AlterSpecialCaseHayiya(augmentedRoot, params);
-        else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]))
+        else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, Letter.Hamza, Letter.Ya]))
             AlterSpecialCaseRa2a(augmentedRoot, params);
     }
 }
 
 export function GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching(root: VerbRoot): { past: PRIMARY_TASHKIL; present: PRIMARY_TASHKIL } | undefined
 {
-    if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]))
+    if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, Letter.Hamza, Letter.Ya]))
         return { past: FATHA, present: KASRA };
-    if(root.radicalsAsSeparateLetters.Equals([HHA, YA, WAW]))
+    if(root.radicalsAsSeparateLetters.Equals([HHA, Letter.Ya, WAW]))
         return { past: KASRA, present: FATHA };
     return undefined;
 }
@@ -67,7 +67,7 @@ export function IsSpeciallyIrregularDefective(root: VerbRoot, stem: number)
 {
     if(stem === 1)
         return GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching(root) !== undefined;
-    if( (stem === 4) && root.radicalsAsSeparateLetters.Equals([LETTER_RA, HAMZA, YA]) )
+    if( (stem === 4) && root.radicalsAsSeparateLetters.Equals([LETTER_RA, Letter.Hamza, Letter.Ya]) )
         return true;
     return false;
 }

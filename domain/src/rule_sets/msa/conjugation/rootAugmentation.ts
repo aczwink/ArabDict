@@ -32,6 +32,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             {
                 case RootType.Assimilated:
                 case RootType.Defective:
+                case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:
                 case RootType.SecondConsonantDoubled:
@@ -50,7 +51,6 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                     ];
             }
         }
-        break;
         case 2:
         {
             switch(rootType)
@@ -90,6 +90,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             switch(rootType)
             {
                 case RootType.Defective:
+                case RootType.Hollow:
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
@@ -107,6 +108,7 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.Assimilated:
                 case RootType.Defective:
                 case RootType.Hollow:
                 case RootType.Sound:

@@ -22,6 +22,10 @@ import { APIService } from "../APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { RootToString } from "./general";
+import { A3EIN, BA, FA, LETTER_RA, Letter, QAF, ZAY } from "arabdict-domain/src/Definitions";
+import { NUN } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
+import { ConjugationService } from "../ConjugationService";
+import { Subscription } from "../../../../ACTS-Util/core/dist/main";
 
 interface ShowRootData
 {
@@ -32,36 +36,39 @@ interface ShowRootData
 @Injectable
 export class ShowRootComponent extends Component
 {
-    constructor(routerState: RouterState, private apiService: APIService, private router: Router)
+    constructor(routerState: RouterState, private apiService: APIService, private router: Router, private conjugationService: ConjugationService)
     {
         super();
 
         this.rootId = parseInt(routerState.routeParams.rootId!);
         this.data = null;
         this.derivedWords = null;
+        this.editSubscription = this.conjugationService.canEdit.Subscribe(this.Update.bind(this));
     }
     
     protected Render(): RenderValue
     {
         if(this.data === null)
             return <ProgressSpinner />;
-        
+
+        const canEdit = this.conjugationService.canEdit.Get();        
         return <fragment>
             <div className="row">
                 <div className="col"><h2>Root: {RootToString(this.data.root)}</h2></div>
                 <div className="col-auto">
-                    <Anchor route={"roots/" + this.rootId + "/edit"}><MatIcon>edit</MatIcon></Anchor>
-                    <a href="#" className="link-danger" onclick={this.OnDeleteRoot.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
+                    {canEdit ? this.RenderEditControls() : null}
                 </div>
             </div>
 
             {this.data!.root.description}
+            <a href={"http://ejtaal.net/aa#bwq=" + this.ToBuckwalterTransilteration()} target="_blank">See on Mawrid reader</a>
+
             <h4>Verbs</h4>
             {this.data.verbs.map(x => <VerbPreviewComponent root={this.data!.root} verbData={x} />)}
-            <RouterButton className="btn btn-primary" route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
+            {canEdit ? <RouterButton className="btn btn-primary" route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton> : null}
             <h4>Words</h4>
             {this.RenderDerivedWords()}
-            <RouterButton className="btn btn-primary" route={"/words/add?rootId=" + this.rootId}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
+            {canEdit ? <RouterButton className="btn btn-primary" route={"/words/add?rootId=" + this.rootId}><BootstrapIcon>plus</BootstrapIcon></RouterButton> : null}
         </fragment>;
     }
 
@@ -69,6 +76,7 @@ export class ShowRootComponent extends Component
     private rootId: number;
     private data: ShowRootData | null;
     private derivedWords: FullWordData[] | null;
+    private editSubscription: Subscription;
 
     //Private methods
     private RenderDerivedWords()
@@ -87,6 +95,51 @@ export class ShowRootComponent extends Component
                 {this.derivedWords.map(x => <WordOverviewComponent word={x} />)}
             </tbody>
         </table>;
+    }
+
+    private RenderEditControls()
+    {
+        return <fragment>
+            <Anchor route={"roots/" + this.rootId + "/edit"}><MatIcon>edit</MatIcon></Anchor>
+            <a href="#" className="link-danger" onclick={this.OnDeleteRoot.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
+        </fragment>;
+    }
+
+    private ToBuckwalterTransilteration()
+    {
+        function ejtaal(char: string)
+        {
+            switch(char)
+            {
+                case Letter.Hamza:
+                    return "A";
+                case BA:
+                    return "b";
+                case Letter.Jiim:
+                    return "j";
+                case LETTER_RA:
+                    return "r";
+                case ZAY:
+                    return "z";
+                case Letter.Saad:
+                    return "S";
+                case Letter.Daad:
+                    return "D";
+                case A3EIN:
+                    return "E";
+                case FA:
+                    return "f";
+                case QAF:
+                    return "q";
+                case NUN:
+                    return "n";
+                case Letter.Ha:
+                    return "h";
+                case Letter.Ya:
+                    return "y";
+            }
+        }
+        return this.data!.root.radicals.split("").map(ejtaal).join("");
     }
 
     //Event handlers
@@ -118,5 +171,10 @@ export class ShowRootComponent extends Component
 
         const response3 = await this.apiService.roots._any_.words.get(this.rootId);
         this.derivedWords = response3.data;
+    }
+
+    override OnUnmounted(): void
+    {
+        this.editSubscription.Unsubscribe();
     }
 }

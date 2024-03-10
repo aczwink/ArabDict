@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, ALEF_HAMZA, FATHA, SUKUN, ALEF, DHAMMA, KASRA, YA } from "../../../Definitions";
+import { BASE_TASHKIL, ALEF_HAMZA, FATHA, SUKUN, ALEF, DHAMMA, KASRA, Letter } from "../../../Definitions";
 import { ConjugationParams } from "../../../DialectConjugator";
 import { RootType } from "../../../VerbRoot";
-import { PartiallyVocalized } from "../../../Vocalization";
+import { _LegacyPartiallyVocalized } from "../../../Vocalization";
 import { NUN, TA } from "../_legacy/VerbStem";
 
 function DerivePrefixTashkil(rootType: RootType, params: ConjugationParams)
@@ -46,7 +46,7 @@ function DerivePrefixTashkil(rootType: RootType, params: ConjugationParams)
     }
 }
 
-export function DerivePrefix(prevTashkil: BASE_TASHKIL, rootType: RootType, params: ConjugationParams): PartiallyVocalized[]
+export function DerivePrefix(prevTashkil: BASE_TASHKIL, rootType: RootType, params: ConjugationParams): _LegacyPartiallyVocalized[]
 {
     if(params.tense === "perfect")
     {
@@ -89,12 +89,12 @@ export function DerivePrefix(prevTashkil: BASE_TASHKIL, rootType: RootType, para
         case "third":
         {
             if((params.numerus === "plural") && (params.gender === "female"))
-                return [{ letter: YA, shadda: false, tashkil }];
+                return [{ letter: Letter.Ya, shadda: false, tashkil }];
             
             switch(params.gender)
             {
                 case "male":
-                    return [{ letter: YA, shadda: false, tashkil }];
+                    return [{ letter: Letter.Ya, shadda: false, tashkil }];
                 case "female":
                     return [{ letter: TA, shadda: false, tashkil }];
             }
