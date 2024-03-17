@@ -15,15 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { CreateVerb, Stem1Context } from "./_legacy/CreateVerb";
-import { WAW, A3EIN, LAM, FA, QAF } from "../../Definitions";
-import { ConjugationParams, DialectConjugator, ReverseConjugationResult } from "../../DialectConjugator";
+import { _LegacyCreateVerb } from "./_legacy/CreateVerb";
+import { A3EIN, LAM, FA, QAF, Letter, Stem1Context, ConjugationParams, _LegacyTense, _LegacyVoice } from "../../Definitions";
+import { DialectConjugator, ReverseConjugationResult } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { Tense, Voice } from "./_legacy/VerbStem";
-import { _LegacyFullyVocalized, ParseVocalizedText, _LegacyPartiallyVocalized, FullyVocalized } from "../../Vocalization";
+import { ParseVocalizedText, _LegacyPartiallyVocalized, FullyVocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
 import { AugmentedRoot } from "./AugmentedRoot";
-import { definition as msaDef } from "./dialectDefinition";
+import { _Legacydefinition as msaDef } from "./dialectDefinition";
 import { DeriveSuffix } from "./conjugation/suffix";
 import { DerivePrefix } from "./conjugation/prefix";
 import { AugmentRoot } from "./conjugation/rootAugmentation";
@@ -61,7 +60,7 @@ export class MSAConjugator implements DialectConjugator
         return ReverseConjugate(conjugated);
     }
 
-    public Conjugate(root: VerbRoot, params: ConjugationParams): _LegacyPartiallyVocalized[]
+    public Conjugate(root: VerbRoot, params: ConjugationParams): (_LegacyPartiallyVocalized | FullyVocalized)[]
     {
         const maybeAugmentedRoot = AugmentRoot(params.stem, root.type, params);
         if(maybeAugmentedRoot !== undefined)
@@ -71,9 +70,9 @@ export class MSAConjugator implements DialectConjugator
             ApplyRootTashkil(augmentedRoot, params);
 
             const suffix = DeriveSuffix(params);
-            augmentedRoot.ApplyTashkil(root.radicalsAsSeparateLetters.length, suffix.preSuffixTashkil);
+            augmentedRoot.ApplyRadicalTashkil(root.radicalsAsSeparateLetters.length as any, suffix.preSuffixTashkil);
 
-            const rootType = params.stem1Context?.soundOverride ? RootType.Sound : root.type;
+            const rootType = params._legacyStem1Context?.soundOverride ? RootType.Sound : root.type;
             switch(rootType)
             {
                 case RootType.Assimilated:
@@ -103,14 +102,14 @@ export class MSAConjugator implements DialectConjugator
             }
 
             if(params.stem === 8)
-                Stem8AssimilateTaVerb(augmentedRoot, params.tense);
-            return DerivePrefix(augmentedRoot.partiallyVocalized[0].tashkil!, root.type, params).concat(augmentedRoot.partiallyVocalized, suffix.suffix as any);
+                Stem8AssimilateTaVerb(augmentedRoot, params._legacyTense);
+            return DerivePrefix(augmentedRoot.symbols[0].tashkil as any, root.type, params).concat(augmentedRoot.symbols, suffix.suffix);
         }
 
-        return this.ConjugateLegacy(root, params);
+        return this._LegacyConjugate(root, params);
     }
 
-    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): (_LegacyPartiallyVocalized | _LegacyFullyVocalized | FullyVocalized)[]
+    public ConjugateParticiple(root: VerbRoot, stem: number, voice: _LegacyVoice, stem1Context?: Stem1Context): (_LegacyPartiallyVocalized | FullyVocalized)[]
     {
         switch(stem)
         {
@@ -129,10 +128,10 @@ export class MSAConjugator implements DialectConjugator
             case 10:
                 return GenerateParticipleStem10(root, voice);
         }
-        return [{letter: "TODO", shadda: false}];
+        return [{letter: "TODO ConjugateParticiple", shadda: false}];
     }
 
-    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | _LegacyFullyVocalized[] | FullyVocalized[])[]
+    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[]
     {
         switch(stem)
         {
@@ -154,7 +153,7 @@ export class MSAConjugator implements DialectConjugator
                 return [GenerateAllPossibleVerbalNounsStem10(root)];
         }
 
-        return ["TODO"];
+        return ["TODO GenerateAllPossibleVerbalNouns"];
     }
 
     //Legacy private methods    
@@ -177,26 +176,27 @@ export class MSAConjugator implements DialectConjugator
         return replaced;
     }
 
-    private ConjugateLegacy(root: VerbRoot, params: ConjugationParams): _LegacyPartiallyVocalized[]
+    //TODO: REMOVE WHOLE METHOD
+    private _LegacyConjugate(root: VerbRoot, params: ConjugationParams): _LegacyPartiallyVocalized[]
     {
-        const dialectDef = this.GetDialectDefiniton();
-        const rootType = params.stem1Context?.soundOverride ? RootType.Sound : root.type;
-        const ruleSet = this.ExtractRuleSet(dialectDef, params.stem, params.tense, params.voice, rootType);
+        const dialectDef = this._LegacyGetDialectDefiniton();
+        const rootType = params._legacyStem1Context?.soundOverride ? RootType.Sound : root.type;
+        const ruleSet = this.ExtractRuleSet(dialectDef, params.stem, params._legacyTense, params._legacyVoice, rootType);
         if(ruleSet !== undefined)
         {
             const rules = ruleSet.rules;
-            const rule = rules.find(r => (r.gender === params.gender) && (r.numerus === params.numerus) && (r.person === params.person) && (r.condition ? r.condition(root, params.stem1Context!) : true) );
+            const rule = rules.find(r => (r.gender === params._legacyGender) && (r.numerus === params._legacyNumerus) && (r.person === params._legacyPerson) && (r.condition ? r.condition(root, params._legacyStem1Context!) : true) );
             if(rule !== undefined)
                 return this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, rootType, rule.conjugation);
         }
 
         //call legacy api
-        const verb = CreateVerb(root.radicalsAsSeparateLetters.join(""), params.stem);
-        const x = verb.Conjugate(params.tense, params.voice, params.gender, params.person, params.numerus);
+        const verb = _LegacyCreateVerb(root.radicalsAsSeparateLetters.join(""), params.stem);
+        const x = verb.Conjugate(params._legacyTense, params._legacyVoice, params._legacyGender, params._legacyPerson, params._legacyNumerus);
         return ParseVocalizedText(x);
     }
 
-    private ExtractRuleSet(dialectDef: DialectDefinition, stem: number, tense: Tense, voice: Voice, rootType: RootType)
+    private ExtractRuleSet(dialectDef: DialectDefinition, stem: number, tense: _LegacyTense, voice: _LegacyVoice, rootType: RootType)
     {
         const stemData = dialectDef.stems[stem];
         if(stemData === undefined)
@@ -216,7 +216,7 @@ export class MSAConjugator implements DialectConjugator
         return (tenseData as StemTenseVoiceDefinition)[rootType];
     }
     
-    private GetDialectDefiniton()
+    private _LegacyGetDialectDefiniton()
     {
         return msaDef;
     }
@@ -226,7 +226,7 @@ export class MSAConjugator implements DialectConjugator
         switch(type)
         {
             case RootType.Assimilated:
-                return [WAW, A3EIN, LAM];
+                return [Letter.Waw, A3EIN, LAM];
             case RootType.Defective:
                 return [FA, A3EIN];
             case RootType.Hollow:

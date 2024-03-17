@@ -15,31 +15,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
+import { Tashkil } from "../../../Definitions";
 import { VerbRoot } from "../../../VerbRoot";
-import { VerbStem } from "./VerbStem";
-import { VerbStem8 } from "./VerbStem8";
+import { _LegacyVerbStem } from "./VerbStem";
+import { _LegacyVerbStem8 } from "./VerbStem8";
 
-export interface Stem1Context
-{
-    middleRadicalTashkil: string;
-    middleRadicalTashkilPresent: string;
-
-    /**
-     * Some hollow verbs like لَيسَ are actually conjugated as if they were sound, although the root is hollow.
-     */
-    soundOverride: boolean;
-}
-
-export function CreateVerb(root: string, stem: number): VerbStem
+//TODO: REMOVE
+export function _LegacyCreateVerb(root: string, stem: number): _LegacyVerbStem
 {
     const vRoot = new VerbRoot(root);
     switch(stem)
     {
         case 8:
-            return new VerbStem8(vRoot);
+            return new _LegacyVerbStem8(vRoot);
     }
     return {
-        Conjugate: () => "TODO",
+        Conjugate: () => "T" + Tashkil.Fatha + "O" + Tashkil.Fatha + "D" + Tashkil.Fatha + "O" + Tashkil.Fatha,
     };
 }

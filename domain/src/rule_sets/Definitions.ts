@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,9 +17,8 @@
  * */
 
 import { NumberDictionary } from "acts-util-core";
-import { Gender, Person, Numerus } from "./msa/_legacy/VerbStem";
-import { Stem1Context } from "./msa/_legacy/CreateVerb";
 import { VerbRoot } from "../VerbRoot";
+import { Gender, Numerus, _LegacyPerson, Stem1Context } from "../Definitions";
 
 export interface Stem1DefectiveContext
 {
@@ -30,7 +29,7 @@ interface ConjugationRule
 {
     condition?: (root: VerbRoot, stem1Context: Stem1Context) => boolean;
     gender: Gender;
-    person: Person;
+    person: _LegacyPerson;
     numerus: Numerus;
     conjugation: string;
 }

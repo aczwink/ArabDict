@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DHAMMA, FATHA, Letter, WAW } from "../../../Definitions";
+import { Letter, Tashkil } from "../../../Definitions";
 import { ReverseConjugationResult } from "../../../DialectConjugator";
 import { VerbRoot } from "../../../VerbRoot";
 import { _LegacyPartiallyVocalized } from "../../../Vocalization";
@@ -29,12 +29,12 @@ function TryMatchRootFromPresentWithoutPrefix(conjugated: _LegacyPartiallyVocali
             return [
                 {
                     //assimilated
-                    root: new VerbRoot(WAW + conjugated[0].letter + conjugated[1].letter),
+                    root: new VerbRoot(Letter.Waw + conjugated[0].letter + conjugated[1].letter),
                     tense: "present"
                 },
                 {
                     //hollow
-                    root: new VerbRoot(conjugated[0].letter + WAW + conjugated[1].letter),
+                    root: new VerbRoot(conjugated[0].letter + Letter.Waw + conjugated[1].letter),
                     tense: "present"
                 },
                 {
@@ -54,8 +54,8 @@ function TryMatchRootWithPrefix(conjugated: _LegacyPartiallyVocalized[])
         case Letter.Ya:
             switch(conjugated[0].tashkil)
             {
-                case DHAMMA:
-                case FATHA:
+                case Tashkil.Dhamma:
+                case Tashkil.Fatha:
                 case undefined:
                     return TryMatchRootFromPresentWithoutPrefix(conjugated.slice(1));
             }

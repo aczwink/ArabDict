@@ -17,14 +17,15 @@
  * */
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
-import { APIService } from "../APIService";
-import { FullWordData, VerbData, WordRelation, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
+import { APIService } from "../services/APIService";
+import { FullWordData, VerbData, WordFunctionData, WordRelation, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
 import { WordDerivationTypeFromWordToString, WordRelationshipTypeToString, WordTypeToText } from "../shared/words";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
-import { ConjugationService } from "../ConjugationService";
+import { ConjugationService } from "../services/ConjugationService";
 import { WordIdReferenceComponent } from "./WordReferenceComponent";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
+import { Subscription } from "../../../../ACTS-Util/core/dist/main";
 
 @Injectable
 export class ShowWordComponent extends Component
@@ -36,6 +37,7 @@ export class ShowWordComponent extends Component
         this.wordId = parseInt(routerState.routeParams.wordId!);
         this.data = null;
         this.rootRadicals = "";
+        this.editSubscription = this.conjugationService.canEdit.Subscribe(this.Update.bind(this));
     }
 
     protected Render(): RenderValue
@@ -43,20 +45,16 @@ export class ShowWordComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
+        const canEdit = this.conjugationService.canEdit.Get();
         return <fragment>
             <div className="row">
                 <div className="col"><h1>Word: {this.data.word}</h1></div>
                 <div className="col-auto">
-                    <Anchor route={"words/" + this.data.id + "/edit"}><MatIcon>edit</MatIcon></Anchor>
-                    <a href="#" className="link-danger" onclick={this.OnDeleteWord.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
+                    {canEdit ? this.RenderEditControls() : null}
                 </div>
             </div>
             <table>
                 <tbody>
-                    <tr>
-                        <th>Type:</th>
-                        <td>{WordTypeToText(this.data.type)}</td>
-                    </tr>
                     <tr>
                         <th>Gender:</th>
                         <td>{this.RenderGender(this.data.isMale)}</td>
@@ -67,18 +65,17 @@ export class ShowWordComponent extends Component
                         <td>{this.RenderRelations(this.data.related)}</td>
                     </tr>
                     <tr>
-                        <th>Translation:</th>
-                        <td>{RenderTranslations(this.data.translations)}</td>
+                        <th>Derived words/terms:</th>
+                        <td>{this.RenderDerivedTerms()}</td>
                     </tr>
+                    {this.RenderSingleFunction()}
                 </tbody>
             </table>
-
-            <br />
-            {this.RenderDerivedTerms()}
-
             <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(this.data.word)} target="_blank">See on Wiktionary</a>
             <br />
-            <RouterButton className="btn btn-primary" route={"/words/add?relatedWordId=" + this.wordId}><BootstrapIcon>plus</BootstrapIcon> Add related word</RouterButton>
+            {this.RenderMultipleFunctions()}
+            <br />
+            {canEdit ? <RouterButton className="btn btn-primary" route={"/words/add?relatedWordId=" + this.wordId}><BootstrapIcon>plus</BootstrapIcon> Add related word</RouterButton> : null}
         </fragment>;
     }
 
@@ -87,6 +84,7 @@ export class ShowWordComponent extends Component
     private data: FullWordData | null;
     private verb?: VerbData;
     private rootRadicals: string;
+    private editSubscription: Subscription;
 
     //Private methods
     private RelationshipToText(relationType: WordWordDerivationType, outgoing: boolean)
@@ -123,15 +121,6 @@ export class ShowWordComponent extends Component
         return this.RenderWordDerivationData(derivation);
     }
 
-    private RenderGender(isMale: boolean | null)
-    {
-        if(isMale)
-            return "male";
-        else if(isMale === false)
-            return "female";
-        return "unknown";
-    }
-
     private RenderDerivedTerm(outgoing: boolean, relation: WordWordDerivationLink)
     {
         return <fragment>{this.RelationshipToText(relation.relationType, outgoing)} of <WordIdReferenceComponent wordId={relation.refWordId} /></fragment>;
@@ -142,10 +131,50 @@ export class ShowWordComponent extends Component
         if(this.data!.derived.length === 0)
             return null;
 
+        return <ul>{this.data!.derived.map(x => <li>{this.RenderDerivedTerm(false, x)}</li>)}</ul>;
+    }
+
+    private RenderEditControls()
+    {
         return <fragment>
-            <h5>Derived words/terms</h5>
-            <ul>{this.data!.derived.map(x => <li>{this.RenderDerivedTerm(false, x)}</li>)}</ul>
+            <Anchor route={"words/" + this.data!.id + "/edit"}><MatIcon>edit</MatIcon></Anchor>
+            <a href="#" className="link-danger" onclick={this.OnDeleteWord.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
         </fragment>;
+    }
+    
+    private RenderFunction(func: WordFunctionData)
+    {
+        return <fragment>
+            <h4>{WordTypeToText(func.type)}</h4>
+            {RenderTranslations(func.translations)}
+        </fragment>;
+    }
+
+    private RenderGender(isMale: boolean | null)
+    {
+        if(isMale)
+            return "male";
+        else if(isMale === false)
+            return "female";
+        return "unknown";
+    }
+
+    private RenderMultipleFunctions()
+    {
+        if(this.data!.functions.length < 2)
+            return null;
+        
+        const result = [];
+
+        for (const func of this.data!.functions)
+        {
+            const rendered = this.RenderFunction(func);
+            if(result.length > 0)
+                result.push(<hr />);
+            result.push(rendered);
+        }
+
+        return result;
     }
 
     private RenderRelation(related: WordRelation)
@@ -168,6 +197,24 @@ export class ShowWordComponent extends Component
             <th>Derived from root:</th>
             <td><Anchor route={"/roots/" + rootData.rootId}>{this.rootRadicals.split("").join("-")}</Anchor></td>
         </tr>;
+    }
+
+    private RenderSingleFunction()
+    {
+        if(this.data!.functions.length !== 1)
+            return null;
+
+        const func = this.data!.functions[0];
+        return <fragment>
+            <tr>
+                <th>Type:</th>
+                <td>{WordTypeToText(func.type)}</td>
+            </tr>
+            <tr>
+                <th>Translation:</th>
+                <td>{RenderTranslations(func.translations)}</td>
+            </tr>
+        </fragment>;
     }
 
     private RenderVerbDerivationData(verbData: WordVerbDerivationData)
@@ -255,5 +302,10 @@ export class ShowWordComponent extends Component
             
         this.data = response.data;
         this.titleService.title = this.data.word;
+    }
+
+    override OnUnmounted(): void
+    {
+        this.editSubscription.Unsubscribe();
     }
 }

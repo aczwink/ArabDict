@@ -18,7 +18,7 @@
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router } from "acfrontend";
 import { WordCreationData, WordType, WordVerbDerivationType, WordWordDerivationType } from "../../dist/api";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { WordEditorComponent } from "./WordEditorComponent";
 
 @Injectable
@@ -29,11 +29,14 @@ export class AddWordComponent extends Component
         super();
 
         this.data = {
-            type: WordType.Adjective,
-            translations: [],
             word: "",
             isMale: null,
-            related: []
+            related: [],
+            functions: [{
+                id: -1,
+                translations: [],
+                type: WordType.Adjective,
+            }]
         };
         if(router.state.Get().queryParams.relatedWordId !== undefined)
         {
@@ -50,7 +53,7 @@ export class AddWordComponent extends Component
         }
         else if(router.state.Get().queryParams.verbId !== undefined)
         {
-            this.data.type = WordType.Noun;
+            this.data.functions[0].type = WordType.Noun;
             this.data.derivation = {
                 verbId: parseInt(router.state.Get().queryParams.verbId!),
                 type: WordVerbDerivationType.VerbalNoun
@@ -82,12 +85,11 @@ export class AddWordComponent extends Component
         this.loading = true;
 
         const response = await this.apiService.words.post({
-            type: this.data.type,
             word: this.data.word,
-            translations: this.data.translations,
             isMale: this.data.isMale,
             derivation: this.data.derivation,
-            related: this.data.related
+            related: this.data.related,
+            functions: this.data.functions
         });
 
         this.router.RouteTo("/words/" + response.data);

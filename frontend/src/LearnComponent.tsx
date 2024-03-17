@@ -17,9 +17,9 @@
  * */
 
 import { CheckBox, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
-import { APIService } from "./APIService";
+import { APIService } from "./services/APIService";
 import { FullWordData, VerbData } from "../dist/api";
-import { ConjugationService } from "./ConjugationService";
+import { ConjugationService } from "./services/ConjugationService";
 import { RemoveTashkilButKeepShadda } from "arabdict-domain/src/Util";
 import { RenderTranslations } from "./shared/translations";
 import { Stem1DataToStem1ContextOptional } from "./verbs/model";
@@ -51,7 +51,7 @@ export class LearnComponent extends Component
                     <h1>{title}</h1>
                     <div className="row">
                         <div className="col">
-                            {RenderTranslations(this.data.translations)}
+                            { "translations" in this.data ? RenderTranslations(this.data.translations) : alert("TODO: REIMPLEMENT ME!")}
                         </div>
                     </div>
                     <button type="button" className="btn btn-primary" onclick={this.LoadNextWord.bind(this)}>Next</button>

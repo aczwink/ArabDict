@@ -17,8 +17,7 @@
  * */
 import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest } from "../../shared";
-import { DHAMMA, FATHA, KASRA } from "arabdict-domain/dist/Definitions";
-import { Stem1Context } from "arabdict-domain/dist/rule_sets/msa/_legacy/CreateVerb";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 function RunDefectiveConjugationTest(rootRadicalsWithoutR3: string, stem: number | Stem1Context, conjugations: ConjugationTest[])
 {
@@ -108,7 +107,7 @@ It("Wikipedia defective stem1 type 1", () => {
         { expected: "اِرْمِينَ", gender: "female", person: "second", numerus: "plural", tense: "present", mood: "imperative" },
     ];
 
-    RunDefectiveConjugationTest("ر-م", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, conjugations);
+    RunDefectiveConjugationTest("ر-م", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
 });
 
 It("Wikipedia defective stem1 type 2", () => {
@@ -191,7 +190,7 @@ It("Wikipedia defective stem1 type 2", () => {
         { expected: "اُدْعُونَ", gender: "female", person: "second", numerus: "plural", tense: "present", mood: "imperative" },
     ];
 
-    RunDefectiveConjugationTest("د-ع", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: DHAMMA, soundOverride: false }, conjugations);
+    RunDefectiveConjugationTest("د-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, conjugations);
 });
 
 It("Wikipedia defective stem1 type 3", () => {
@@ -274,25 +273,25 @@ It("Wikipedia defective stem1 type 3", () => {
         { expected: "اِنْسَيْنَ", gender: "female", person: "second", numerus: "plural", tense: "present", mood: "imperative" },
     ];
 
-    RunDefectiveConjugationTest("ن-س", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: FATHA, soundOverride: false }, conjugations);
+    RunDefectiveConjugationTest("ن-س", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, conjugations);
 });
 
 It("Wikipedia defective stem table", () => {
-    RunDefectiveConjugationTest("ف-ع", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, [
+    RunDefectiveConjugationTest("ف-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, [
         { expected: "فَعَى" },
         { expected: "يَفْعِي", tense: "present" },
         { expected: "اِفْعِ", tense: "present", mood: "imperative", person: "second" },
         { voice: "passive", expected: "فُعِيَ" },
         { voice: "passive", expected: "يُفْعَى", tense: "present" },
     ]);
-    RunDefectiveConjugationTest("ف-ع", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: DHAMMA, soundOverride: false }, [
+    RunDefectiveConjugationTest("ف-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, [
         { expected: "فَعَا" },
         { expected: "يَفْعُو", tense: "present" },
         { expected: "اُفْعُ", tense: "present", mood: "imperative", person: "second" },
         { voice: "passive", expected: "فُعِيَ" },
         { voice: "passive", expected: "يُفْعَى", tense: "present" },
     ]);
-    RunDefectiveConjugationTest("ف-ع", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: FATHA, soundOverride: false }, [
+    RunDefectiveConjugationTest("ف-ع", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, [
         { expected: "فَعِيَ" },
         { expected: "يَفْعَى", tense: "present" },
         { expected: "اِفْعَ", tense: "present", mood: "imperative", person: "second" },
@@ -328,7 +327,15 @@ It("Wikipedia defective stem table", () => {
 
     //TODO: VI
     //TODO: VII
-    //TODO: VIII
+
+    RunDefectiveConjugationTest("ف-ع", 8, [
+        { expected: "اِفْتَعَى" },
+        { expected: "يَفْتَعِي", tense: "present" },
+        { expected: "اِفْتَعِ", tense: "present", mood: "imperative", person: "second" },
+        { voice: "passive", expected: "اُفْتُعِيَ" },
+        { voice: "passive", expected: "يُفْتَعَى", tense: "present" },
+    ]);
+
     //TODO: IX
     //TODO: X
 });

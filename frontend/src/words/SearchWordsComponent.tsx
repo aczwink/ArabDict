@@ -17,7 +17,7 @@
  * */
 
 import { BootstrapIcon, CheckBox, Component, FormField, Injectable, JSX_CreateElement, LineEdit, PaginationComponent, ProgressSpinner, RouterButton, Select } from "acfrontend";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { WordOverviewComponent } from "./WordOverviewComponent";
 import { FullWordData, WordSearchDerivation, WordType } from "../../dist/api";
 import { WordTypeToText, allWordTypes } from "../shared/words";

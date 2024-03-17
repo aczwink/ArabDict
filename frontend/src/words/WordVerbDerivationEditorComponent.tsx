@@ -18,10 +18,10 @@
 
 import { Component, FormField, Injectable, JSX_CreateElement, NumberSpinner, ProgressSpinner, Select } from "acfrontend";
 import { WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
-import { ConjugationService } from "../ConjugationService";
-import { APIService } from "../APIService";
-import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
+import { ConjugationService } from "../services/ConjugationService";
+import { APIService } from "../services/APIService";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
+import { Stem1Context } from "arabdict-domain/src/Definitions";
 
 interface WordVerbDerivationEditorInput
 {

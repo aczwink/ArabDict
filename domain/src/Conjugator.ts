@@ -15,15 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
-import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { Hamzate } from "./Hamza";
 import { VerbRoot } from "./VerbRoot";
-import { Gender, Mood, Numerus, Person, Voice } from "./rule_sets/msa/_legacy/VerbStem";
-import { ConjugationParams, DialectConjugator } from "./DialectConjugator";
+import { DialectConjugator } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
-import { CompareVocalized, _LegacyFullyVocalized, ParseVocalizedText, _LegacyPartiallyVocalized, FullyVocalized, VocalizedToString, PartiallyVocalized } from "./Vocalization";
-import { DHAMMA, FATHA, KASRA, SUKUN, Tashkil } from "./Definitions";
+import { CompareVocalized, ParseVocalizedText, _LegacyPartiallyVocalized, FullyVocalized, VocalizedToString, PartiallyVocalized } from "./Vocalization";
+import { ConjugationParams, PrimaryTashkil, Stem1Context, Tashkil, Tense, _LegacyVoice, _LegacyTense, Voice, Gender, _LegacyMood, Numerus, _LegacyPerson, Mood, Person } from "./Definitions";
 import { APCConjugator } from "./rule_sets/apc/APCConjugator";
 import { LebaneseConjugator } from "./rule_sets/lebanese/LebaneseConjugator";
 
@@ -34,10 +31,22 @@ export enum DialectType
     Lebanese
 }
 
+export interface StringConjugationParams
+{
+    tense: _LegacyTense;
+    voice: _LegacyVoice;
+    gender: Gender;
+    person: _LegacyPerson;
+    numerus: Numerus;
+    mood: _LegacyMood;
+    stem: number;
+    stem1Context?: Stem1Context;
+}
+
 export interface VerbReverseConjugationResult
 {
     root: VerbRoot;
-    params: ConjugationParams;
+    params: StringConjugationParams;
     score: number;
 }
 
@@ -50,15 +59,15 @@ export class Conjugator
         const analysisResults = dialectConjugator.AnalyzeConjugation(toAnalyze);
 
         const numeruses: Numerus[] = ["singular", "dual", "plural"];
-        const persons: Person[] = ["first", "second", "third"];
+        const persons: _LegacyPerson[] = ["first", "second", "third"];
         const genders: Gender[] = ["male", "female"];
-        const voices: Voice[] = ["active", "passive"];
+        const voices: _LegacyVoice[] = ["active", "passive"];
         const stems = [2, 3, 4, 5, 6, 7, 8, 10];
 
         const matches: VerbReverseConjugationResult[] = [];
         for (const result of analysisResults)
         {
-            const moods: Mood[] = (result.tense === "perfect") ? ["indicative"] : ["indicative", "subjunctive", "jussive"];
+            const moods: _LegacyMood[] = (result.tense === "perfect") ? ["indicative"] : ["indicative", "subjunctive", "jussive"];
             for (const voice of voices)
             {
                 for (const mood of moods)
@@ -72,7 +81,7 @@ export class Conjugator
                                 const context = this;
                                 function CompareAndAdd(stem: number, stem1Context?: Stem1Context)
                                 {
-                                    const params: ConjugationParams = {
+                                    const params: StringConjugationParams = {
                                         gender,
                                         mood: mood,
                                         numerus,
@@ -82,7 +91,7 @@ export class Conjugator
                                         voice,
                                         stem1Context,
                                     };
-                                    const conjugated = context.Conjugate(result.root, params, dialect);
+                                    const conjugated = context.ConjugateStringBased(result.root, params, dialect);
 
                                     const match = CompareVocalized(toAnalyze, ParseVocalizedText(conjugated));
                                     if(match > 0)
@@ -95,13 +104,13 @@ export class Conjugator
                                     }
                                 }
                                 
-                                for (const t1 of [DHAMMA, FATHA, KASRA])
+                                for (const t1 of [Tashkil.Dhamma, Tashkil.Fatha, Tashkil.Kasra])
                                 {
-                                    for (const t2 of [DHAMMA, FATHA, KASRA])
+                                    for (const t2 of [Tashkil.Dhamma, Tashkil.Fatha, Tashkil.Kasra])
                                     {
                                         const stem1ctx: Stem1Context = {
-                                            middleRadicalTashkil: t1,
-                                            middleRadicalTashkilPresent: t2,
+                                            middleRadicalTashkil: t1 as PrimaryTashkil,
+                                            middleRadicalTashkilPresent: t2 as PrimaryTashkil,
                                             soundOverride: false
                                         };
                                         CompareAndAdd(1, stem1ctx);
@@ -121,11 +130,14 @@ export class Conjugator
 
     public Conjugate(root: VerbRoot, params: ConjugationParams, dialect: DialectType)
     {
-        if( (params.mood === "imperative") && (params.voice === "passive") )
-            throw new Error("imperative and passive does not exist");
-        if( (params.mood === "imperative") && (params.person !== "second") )
-            return "";
-        if( (params.stem === 1) && (params.stem1Context === undefined) )
+        if( (params.tense === Tense.Present) && (params.mood === Mood.Imperative) )
+        {
+            if(params.voice === Voice.Passive)
+                throw new Error("imperative and passive does not exist");
+            if(params._legacyPerson !== "second")
+            throw new Error("imperative does only exist for second person");
+        }
+        if( (params.stem === 1) && (params._legacyStem1Context === undefined) )
             throw new Error("missing context for stem 1 conjugation");
 
         const dialectConjugator = this.CreateDialectConjugator(dialect);
@@ -135,7 +147,54 @@ export class Conjugator
         return this.ExecuteWordTransformationPipeline(pattern);
     }
 
-    public ConjugateParticiple(dialect: DialectType, root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): string
+    public ConjugateStringBased(root: VerbRoot, params: StringConjugationParams, dialect: DialectType)
+    {
+        function MapMood()
+        {
+            switch(params.mood)
+            {
+                case "imperative":
+                    return Mood.Imperative;
+                case "indicative":
+                    return Mood.Indicative;
+                case "jussive":
+                    return Mood.Jussive;
+                case "subjunctive":
+                    return Mood.Subjunctive;
+            }
+        }
+        function MapPerson()
+        {
+            switch(params.person)
+            {
+                case "first":
+                    return Person.First;
+                case "second":
+                    return Person.Second;
+                case "third":
+                    return Person.Third;
+            }
+        }
+
+        return this.Conjugate(root, {
+            mood: MapMood(),
+            person: MapPerson(),
+            stem: params.stem as any,
+            stem1Context: params.stem1Context as any,
+            tense: params.tense === "perfect" ? Tense.Perfect : Tense.Present,
+            voice: params.voice === "active" ? Voice.Active : Voice.Passive,
+
+            _legacyTense: params.tense,
+            _legacyVoice: params.voice,
+            _legacyGender: params.gender,
+            _legacyMood: params.mood,
+            _legacyNumerus: params.numerus,
+            _legacyPerson: params.person,
+            _legacyStem1Context: params.stem1Context,
+        }, dialect);
+    }
+
+    public ConjugateParticiple(dialect: DialectType, root: VerbRoot, stem: number, voice: _LegacyVoice, stem1Context?: Stem1Context): string
     {
         const dialectConjugator = this.CreateDialectConjugator(dialect);
         const pattern = dialectConjugator.ConjugateParticiple(root, stem, voice, stem1Context);
@@ -156,14 +215,14 @@ export class Conjugator
     }
 
     //Private methods
-    private CheckShaddaPattern(vocalized: _LegacyPartiallyVocalized[])
+    private CheckShaddaPattern(vocalized: (_LegacyPartiallyVocalized | FullyVocalized)[])
     {
         for(let i = 0; i < vocalized.length - 1; i++)
         {
             const current = vocalized[i];
             const next = vocalized[i + 1];
 
-            if((current.letter === next.letter) && (current.shadda === next.shadda) && (current.shadda === false) && (current.tashkil === SUKUN))
+            if((current.letter === next.letter) && (current.shadda === next.shadda) && (current.shadda === false) && (current.tashkil === Tashkil.Sukun))
             {
                 next.shadda = true;
                 vocalized.Remove(i);
@@ -185,7 +244,7 @@ export class Conjugator
         }
     }
 
-    private ExecuteWordTransformationPipeline(pattern: (_LegacyFullyVocalized | _LegacyPartiallyVocalized | FullyVocalized)[]): string
+    private ExecuteWordTransformationPipeline(pattern: (_LegacyPartiallyVocalized | FullyVocalized)[]): string
     {
         const migrated = this.MigrateLegacyVocalized(pattern);
         const hamzated = Hamzate(migrated);
@@ -194,9 +253,9 @@ export class Conjugator
         return this.ToString(partial);
     }
 
-    private MigrateLegacyVocalized(vocalized: (_LegacyFullyVocalized | _LegacyPartiallyVocalized | FullyVocalized)[]): FullyVocalized[]
+    private MigrateLegacyVocalized(vocalized: (_LegacyPartiallyVocalized | FullyVocalized)[]): FullyVocalized[]
     {
-        function MigrateTashkil(v: _LegacyPartiallyVocalized | _LegacyFullyVocalized | FullyVocalized): Tashkil
+        function MigrateTashkil(v: _LegacyPartiallyVocalized | FullyVocalized): Tashkil
         {
             switch(v.tashkil)
             {
@@ -206,14 +265,19 @@ export class Conjugator
                     return Tashkil.Fatha;
                 case Tashkil.Kasra:
                     return Tashkil.Kasra;
-                case Tashkil.Vowel:
-                    return Tashkil.Vowel;
-                case Tashkil.WordEnd:
-                    return Tashkil.WordEnd;
+                case Tashkil.LongVowelMarker:
+                    return Tashkil.LongVowelMarker;
+                case Tashkil.EndOfWordMarker:
+                    return Tashkil.EndOfWordMarker;
                 case Tashkil.Sukun:
                     return Tashkil.Sukun;
+                case Tashkil.Kasratan:
+                    return Tashkil.Kasratan;
+                case Tashkil.Fathatan:
+                    return Tashkil.Fathatan;
                 case undefined:
-                    console.log(vocalized);
+                    console.error(vocalized);
+                    alert("undefined is not allowed anymore");
                     throw new Error("undefined is not allowed anymore");
                 default:
                     throw new Error("Function not implemented: " + v.tashkil);
@@ -254,7 +318,7 @@ export class Conjugator
     private RemoveWordEndMarker(pattern: PartiallyVocalized[])
     {
         const last = pattern[pattern.length - 1];
-        if(last.tashkil === Tashkil.WordEnd)
+        if(last.tashkil === Tashkil.EndOfWordMarker)
             last.tashkil = undefined;
     }
 

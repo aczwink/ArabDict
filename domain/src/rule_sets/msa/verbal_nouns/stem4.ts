@@ -15,43 +15,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ALEF, FATHA, KASRA, Letter, SUKUN } from "../../../Definitions";
+import { Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { _LegacyFullyVocalized } from "../../../Vocalization";
+import { FullyVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem4(root: VerbRoot): _LegacyFullyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem4(root: VerbRoot): FullyVocalized[]
 {
     switch(root.type)
     {
         case RootType.Defective:
             return [
-                { letter: Letter.Hamza, shadda: false, tashkil: KASRA },
-                { letter: root.r1, shadda: false, tashkil: SUKUN },
-                { letter: root.r2, shadda: false, tashkil: FATHA },
-                { letter: ALEF, shadda: false, tashkil: FATHA },
-                { letter: Letter.Hamza, shadda: false, tashkil: SUKUN },
+                { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.Kasra },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.EndOfWordMarker },
             ];
 
         case RootType.Hollow:
             return [
-                { letter: Letter.Hamza, shadda: false, tashkil: KASRA },
-                { letter: root.r1, shadda: false, tashkil: FATHA },
-                { letter: ALEF, shadda: false, tashkil: FATHA },
-                { letter: root.r3, shadda: false, tashkil: FATHA },
-                { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
+                { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.Kasra },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.Sukun },
             ];
 
         case RootType.Sound:
             return [
-                { letter: Letter.Hamza, shadda: false, tashkil: KASRA },
-                { letter: root.r1, shadda: false, tashkil: SUKUN },
-                { letter: root.r2, shadda: false, tashkil: FATHA },
-                { letter: ALEF, shadda: false, tashkil: FATHA },
-                { letter: root.r3, shadda: false, tashkil: SUKUN },
+                { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.Kasra },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
             ];
         default:
             return [
-                {letter: "TODO", shadda: false, tashkil: SUKUN}
+                {letter: "TODO" as any, shadda: false, tashkil: Tashkil.Sukun}
             ];
     }
 }

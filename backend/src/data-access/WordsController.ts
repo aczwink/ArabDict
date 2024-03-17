@@ -93,14 +93,20 @@ interface WordVerbDerivationData
 
 type WordDerivationData = WordRootDerivationData | WordVerbDerivationData | WordWordDerivationLink;
 
+interface WordFunctionData
+{
+    id: number;
+    type: WordType;
+    translations: TranslationEntry[];
+}
+
 export interface WordCreationData
 {
     word: string;
-    type: WordType;
     isMale: boolean | null;
-    translations: TranslationEntry[];
     derivation?: WordDerivationData;
     related: WordRelation[];
+    functions: WordFunctionData[];
 }
 
 interface FullWordData extends WordCreationData
@@ -132,7 +138,6 @@ export class WordsController
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
         const result = await conn.InsertRow("words", {
-            type: data.type,
             word: data.word,
             isMale: data.isMale
         });
@@ -141,7 +146,7 @@ export class WordsController
         if(data.derivation !== undefined)
             await this.InsertDerivation(conn, data.derivation, wordId);
 
-        await this.translationsController.UpdateWordTranslations(wordId, data.translations);
+        await this.UpdateWordFunctions(wordId, data.functions);
         await this.UpdateWordRelations(wordId, data.related);
 
         return wordId;
@@ -184,7 +189,7 @@ export class WordsController
     public async QueryRootDerivedWords(rootId: number)
     {
         const query = `
-        SELECT w.id, w.word, w.type, w.isMale, wr.rootId
+        SELECT w.id, w.word, w.isMale, wr.rootId
         FROM words w
         INNER JOIN words_roots wr
             ON wr.wordId = w.id
@@ -200,7 +205,7 @@ export class WordsController
     public async QueryVerbDerivedWords(verbId: number)
     {
         const query = `
-        SELECT w.id, w.word, w.type, w.isMale, wv.verbId, wv.type AS derivationType
+        SELECT w.id, w.word, w.isMale, wv.verbId, wv.type AS derivationType
         FROM words w
         INNER JOIN words_verbs wv
             ON wv.wordId = w.id
@@ -216,7 +221,7 @@ export class WordsController
     public async QueryWord(wordId: number)
     {
         const query = `
-        SELECT w.id, w.word, w.type, w.isMale, wv.verbId, wv.type AS derivationType, wr.rootId, wd.sourceWordId, wd.relationship
+        SELECT w.id, w.word, w.isMale, wv.verbId, wv.type AS derivationType, wr.rootId, wd.sourceWordId, wd.relationship
         FROM words w
         LEFT JOIN words_derivations wd
             ON wd.derivedWordId = w.id
@@ -249,7 +254,7 @@ export class WordsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        await conn.UpdateRows("words", { type: data.type, word: data.word, isMale: data.isMale }, "id = ?", wordId);
+        await conn.UpdateRows("words", { word: data.word, isMale: data.isMale }, "id = ?", wordId);
 
         await conn.DeleteRows("words_derivations", "derivedWordId = ?", wordId);
         await conn.DeleteRows("words_roots", "wordId = ?", wordId);
@@ -257,7 +262,7 @@ export class WordsController
         if(data.derivation !== undefined)
             await this.InsertDerivation(conn, data.derivation, wordId);
 
-        await this.translationsController.UpdateWordTranslations(wordId, data.translations);
+        await this.UpdateWordFunctions(wordId, data.functions);
         await this.UpdateWordRelations(wordId, data.related);
     }
 
@@ -293,10 +298,22 @@ export class WordsController
             ]
         });
 
+        const wordsFunctionsTable = builder.AddJoin({
+            type: "LEFT",
+            tableName: "words_functions",
+            conditions: [
+                {
+                    column: "wordId",
+                    joinTable: wordsTable,
+                    joinTableColumn: "id",
+                    operator: "="
+                }
+            ]
+        });
+
         builder.SetColumns([
             { table: wordsTable, column: "id" },
             { table: wordsTable, column: "word" },
-            { table: wordsTable, column: "type" },
             { table: wordsTable, column: "isMale" },
             { table: wordsVerbsTable, column: "verbId" },
             { table: wordsVerbsTable, column: "type AS derivationType" },
@@ -317,13 +334,13 @@ export class WordsController
 
         if(filterCriteria.translation.trim().length > 0)
         {
-            const wordsTranslationsTable = builder.AddJoin({
+            const wordsFunctionsTranslationsTable = builder.AddJoin({
                 type: "INNER",
-                tableName: "words_translations",
+                tableName: "words_functions_translations",
                 conditions: [
                     {
-                        column: "wordId",
-                        joinTable: wordsTable,
+                        column: "wordFunctionId",
+                        joinTable: wordsFunctionsTable,
                         joinTableColumn: "id",
                         operator: "="
                     }
@@ -332,7 +349,7 @@ export class WordsController
 
             builder.AddCondition({
                 operand: {
-                    table: wordsTranslationsTable,
+                    table: wordsFunctionsTranslationsTable,
                     column: "text",
                 },
                 operator: "LIKE",
@@ -344,7 +361,7 @@ export class WordsController
         {
             builder.AddCondition({
                 operand: {
-                    table: wordsTable,
+                    table: wordsFunctionsTable,
                     column: "type",
                 },
                 operator: "=",
@@ -442,11 +459,10 @@ export class WordsController
         const result: FullWordData = {
             id: row.id,
             isMale: (row.isMale === null) ? null : (row.isMale !== 0),
-            translations: await this.translationsController.QueryWordTranslations(row.id),
-            type: row.type,
             word: row.word,
             derived: await this.QueryDerivedLinks(row.id),
             related: await this.QueryRelatedWords(row.id),
+            functions: await this.QueryWordFunctions(row.id)
         };
         if(typeof row.verbId === "number")
         {
@@ -482,6 +498,53 @@ export class WordsController
             relatedWordId: x.word1Id === wordId ? x.word2Id : x.word1Id,
             relationType: x.relationship
         }));
+    }
+
+    private async QueryWordFunctions(wordId: number)
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const rows = await conn.Select("SELECT id, type FROM words_functions WHERE wordId = ?", wordId);
+        const result: WordFunctionData[] = [];
+        for (const row of rows)
+        {
+            result.push({
+                id: row.id,
+                translations: await this.translationsController.QueryWordFunctionTranslations(row.id),
+                type: row.type
+            });
+        }
+        return result;
+    }
+
+    private async UpdateWordFunctions(wordId: number, functions: WordFunctionData[])
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+
+        const oldRows = await this.QueryWordFunctions(wordId);
+        for (const oldRow of oldRows)
+        {
+            const matchedNewRowIdx = functions.findIndex(x => x.id === oldRow.id);
+            if(matchedNewRowIdx === -1)
+            {
+                await this.translationsController.UpdateWordFunctionTranslations(oldRow.id, []);
+                await conn.DeleteRows("words_functions", "id = ?", oldRow.id);
+            }
+            else
+            {
+                const matchedNewRow = functions[matchedNewRowIdx];
+                await conn.UpdateRows("words_functions", { type: matchedNewRow.type }, "id = ?", oldRow.id);
+                await this.translationsController.UpdateWordFunctionTranslations(oldRow.id, matchedNewRow.translations);
+
+                functions.Remove(matchedNewRowIdx);
+            }
+        }
+
+        for (const newRow of functions)
+        {
+            const result = await conn.InsertRow("words_functions", { wordId, type: newRow.type });
+            await this.translationsController.UpdateWordFunctionTranslations(result.insertId, newRow.translations);
+        }
     }
 
     private async UpdateWordRelations(wordId: number, related: WordRelation[])

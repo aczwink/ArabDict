@@ -15,52 +15,61 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
-import { ALEF, BASE_TASHKIL, FATHA, KASRA, LONG_VOWEL, Letter, PRIMARY_TASHKIL } from "../../Definitions";
+import { Letter, Tashkil } from "../../Definitions";
 import { VerbRoot } from "../../VerbRoot";
-import { _LegacyPartiallyVocalized, _LegacyVerbVocalized } from "../../Vocalization";
+import { FullyVocalized } from "../../Vocalization";
 
-interface ConstantRootSymbolInput extends _LegacyPartiallyVocalized
+export enum SymbolName
 {
-    readonly symbolName: "ai1" | "apre1" | "apre2" | "apost1"; //augmented-(infix | postfix | prefix)
+    Infix,
+    Postfix,
+    Prefix1,
+    Prefix2,
+    R1,
+    R2,
+    R3,
+    R4,
 }
 
+type ConstantSymbolNames = SymbolName.Infix | SymbolName.Postfix | SymbolName.Prefix1 | SymbolName.Prefix2;
+interface ConstantRootSymbolInput extends FullyVocalized
+{
+    readonly symbolName: ConstantSymbolNames;
+}
+
+type VariableSymbolNames = SymbolName.R1 | SymbolName.R2 | SymbolName.R3 | SymbolName.R4;
 interface VariableRootSymbolInput
 {
     shadda: boolean;
-    readonly symbolName: "r1" | "r2" | "r3" | "r4";
+    readonly symbolName: VariableSymbolNames;
 }
 
 export type AugmentedRootSymbolInput = ConstantRootSymbolInput | VariableRootSymbolInput;
 
 interface AugmentedRootSymbol
 {
-    letter: string;
+    letter: Letter;
     shadda: boolean;
-    readonly symbolName: string;
-    tashkil?: BASE_TASHKIL;
+    readonly symbolName: SymbolName;
+    tashkil: Tashkil;
 }
 
+type RadicalNumber = 1 | 2 | 3 | 4;
 export class AugmentedRoot
 {
     constructor(inputSymbols: AugmentedRootSymbolInput[], private root: VerbRoot)
     {
-        this.symbols = inputSymbols.map(x => {
+        this._symbols = inputSymbols.map(x => {
             return {
-                letter: ("letter" in x) ? x.letter : (this.root.radicalsAsSeparateLetters[parseInt(x.symbolName.substring(1)) - 1]),
+                letter: ("letter" in x) ? x.letter : (this.root.radicalsAsSeparateLetters[x.symbolName - SymbolName.R1]),
                 shadda: x.shadda,
                 symbolName: x.symbolName,
-                tashkil: ("tashkil" in x) ? x.tashkil : undefined
+                tashkil: ("tashkil" in x) ? x.tashkil : Tashkil.EndOfWordMarker //create wrong data here. WordEnd is obviously only supported at the end, but after applying all tashkil, this should not happen
             };
         })
     }
 
     //Properties
-    public get partiallyVocalized()
-    {
-        return this.symbols as _LegacyPartiallyVocalized[];
-    }
-
     public get r1()
     {
         return this.GetRadical(1)!;
@@ -76,76 +85,119 @@ export class AugmentedRoot
         return this.GetRadical(3)!;
     }
 
+    public get symbols()
+    {
+        return this._symbols;
+    }
+
     public get type()
     {
         return this.root.type;
     }
 
     //Public methods
-    public ApplyTashkil(radical: number, taskil: BASE_TASHKIL)
+    public ApplyRadicalTashkil(radical: RadicalNumber, tashkil: Tashkil)
     {
-        const v = this.GetRadical(radical);
-        v!.tashkil = taskil;
+        this.ApplyTashkil(SymbolName.R1 + radical - 1, tashkil);
+    }
+
+    public ApplyTashkil(symbolName: SymbolName, tashkil: Tashkil)
+    {
+        const v = this.GetSymbol(symbolName);
+        v!.tashkil = tashkil;
     }
 
     public AssimilateRadical(radical: number)
     {
-        const idx = this.GetRadicalIndedx(radical);
+        const idx = this.GetRadicalIndedx(radical as any);
 
-        this.symbols[idx - 1].tashkil = this.symbols[idx].tashkil;
-        this.symbols.Remove(idx);
+        this._symbols[idx - 1].tashkil = this._symbols[idx].tashkil;
+        this._symbols.Remove(idx);
     }
 
     public DropRadial(radical: number)
     {
-        const idx = this.GetRadicalIndedx(radical);
-        this.symbols.Remove(idx);
+        const idx = this.GetRadicalIndedx(radical as any);
+        this._symbols.Remove(idx);
     }
 
-    public InsertLongVowel(radical: number, vowel: LONG_VOWEL)
+    public InsertLongVowel(radical: RadicalNumber, vowel: Letter.Alef | Letter.Ya)
     {
-        function LongVowelToShortVowel(vowel: LONG_VOWEL)
+        function LongVowelToShortVowel(vowel: Letter.Alef | Letter.Ya)
         {
             switch(vowel)
             {
-                case ALEF:
-                    return FATHA;
+                case Letter.Alef:
+                    return Tashkil.Fatha;
                 case Letter.Ya:
-                    return KASRA;
-                default:
-                    throw new Error("TODO: implement me");
+                    return Tashkil.Kasra;
             }
         }
 
         this.ReplaceRadical(radical, { letter: vowel, shadda: false, tashkil: LongVowelToShortVowel(vowel) });
-        this.ApplyTashkil(radical - 1, LongVowelToShortVowel(vowel));
+        this.ApplyRadicalTashkil(this.PrevRadicalNumber(radical), LongVowelToShortVowel(vowel));
     }
 
-    public InsertShortVowel(radical: number, shortVowel: PRIMARY_TASHKIL)
+    public InsertShortVowel(radical: RadicalNumber, shortVowel: (Tashkil.Dhamma | Tashkil.Fatha | Tashkil.Kasra))
     {
         this.DropRadial(radical);
-        this.ApplyTashkil(radical - 1, shortVowel);
+        this.ApplyRadicalTashkil(this.PrevRadicalNumber(radical), shortVowel);
     }
 
-    public ReplaceRadical(radical: number, replacement: _LegacyVerbVocalized)
+    public ReplaceRadical(radical: number, replacement: FullyVocalized)
     {
-        const v = this.GetRadical(radical);
+        const v = this.GetRadical(radical as any);
         v!.letter = replacement.letter;
         v!.shadda = replacement.shadda;
         v!.tashkil = replacement.tashkil;
     }
 
     //Private state
-    private symbols: AugmentedRootSymbol[];
+    private _symbols: AugmentedRootSymbol[];
 
     //Private methods
-    private GetRadical(n: number)
+    private GetRadical(radicalNumber: RadicalNumber)
     {
-        return this.symbols.find( x => x.symbolName === ("r" + n));
+        return this.GetSymbol(this.RadicalNumberToSymbolName(radicalNumber));
     }
 
-    private GetRadicalIndedx(n: number)
+    private GetRadicalIndedx(radicalNumber: RadicalNumber)
     {
-        return this.symbols.findIndex( x => x.symbolName === ("r" + n));
+        return this._symbols.findIndex( x => x.symbolName === this.RadicalNumberToSymbolName(radicalNumber));
+    }
+
+    private GetSymbol(symbolName: SymbolName)
+    {
+        return this._symbols.find( x => x.symbolName === symbolName);
+    }
+
+    private PrevRadicalNumber(radicalNumber: RadicalNumber): RadicalNumber
+    {
+        switch(radicalNumber)
+        {
+            case 1:
+                throw new Error("TODO: WHAT NOW?!");
+            case 2:
+                return 1;
+            case 3:
+                return 2;
+            case 4:
+                return 3;
+        }
+    }
+
+    private RadicalNumberToSymbolName(radicalNumber: RadicalNumber): SymbolName
+    {
+        switch(radicalNumber)
+        {
+            case 1:
+                return SymbolName.R1;
+            case 2:
+                return SymbolName.R2;
+            case 3:
+                return SymbolName.R3;
+            case 4:
+                return SymbolName.R4;
+        }
     }
 }

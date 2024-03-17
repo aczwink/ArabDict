@@ -15,34 +15,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
-import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
 import { VerbRoot } from "./VerbRoot";
-import { Tense, Voice, Gender, Person, Numerus, Mood } from "./rule_sets/msa/_legacy/VerbStem";
-import { FullyVocalized, _LegacyFullyVocalized, _LegacyPartiallyVocalized } from "./Vocalization";
-
-export interface ConjugationParams
-{
-    tense: Tense;
-    voice: Voice;
-    gender: Gender;
-    person: Person;
-    numerus: Numerus;
-    mood: Mood;
-    stem: number;
-    stem1Context?: Stem1Context;
-}
+import { FullyVocalized, _LegacyPartiallyVocalized } from "./Vocalization";
+import { ConjugationParams, Stem1Context, _LegacyVoice, _LegacyTense } from "./Definitions";
 
 export interface ReverseConjugationResult
 {
     root: VerbRoot;
-    tense: Tense;
+    tense: _LegacyTense;
 }
 
 export interface DialectConjugator
 {
     AnalyzeConjugation(conjugated: _LegacyPartiallyVocalized[]): ReverseConjugationResult[];
-    Conjugate(root: VerbRoot, params: ConjugationParams): _LegacyPartiallyVocalized[];
-    ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): (_LegacyPartiallyVocalized | _LegacyFullyVocalized | FullyVocalized)[];
-    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | _LegacyFullyVocalized[] | FullyVocalized[])[];
+    Conjugate(root: VerbRoot, params: ConjugationParams): (_LegacyPartiallyVocalized | FullyVocalized)[];
+    ConjugateParticiple(root: VerbRoot, stem: number, voice: _LegacyVoice, stem1Context?: Stem1Context): (_LegacyPartiallyVocalized | FullyVocalized)[];
+    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[];
 }

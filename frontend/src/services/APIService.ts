@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { APIServiceBase, HTTPService, Injectable } from "acfrontend";
-import { API } from "../dist/api";
-import { APIServiceInterceptor } from "./shared/APIServiceInterceptor";
+import { API } from "../../dist/api";
+import { APIServiceInterceptor } from "../shared/APIServiceInterceptor";
 
 export const g_backendHostname = process.env.ARABDICT_BACKEND_HOSTNAME!;
 export const g_backendPort = parseInt(process.env.ARABDICT_BACKEND_PORT!);

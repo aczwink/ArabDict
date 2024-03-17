@@ -17,38 +17,35 @@
  * */
 
 import { Injectable } from "acfrontend";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Dictionary } from "../../../../ACTS-Util/core/dist/Dictionary";
 import { APIService } from "./APIService";
-import { DialectData } from "../dist/api";
 
 @Injectable
-export class DialectsService
+export class ReverseLookupService
 {
     constructor(private apiService: APIService)
     {
+        this.cache = {};
     }
 
     //Public methods
-    public GetDialect(dialectId: number)
+    public async TryFindRootId(root: VerbRoot)
     {
-        if(this.dialects === undefined)
-            throw new Error("Method not implemented.");
-        return this.dialects.find(x => x.id === dialectId)!;
-    }
-
-    public async QueryDialects()
-    {
-        if(this.dialects === undefined)
-            this.dialects = await this.LoadDialects();
-        return this.dialects;
+        let rootId = this.cache[root.ToString()];
+        if(rootId !== undefined)
+            return rootId;
+        
+        const response = await this.apiService.roots.get({ prefix: root.radicalsAsSeparateLetters.join("") });
+        if(response.data.length !== 1)
+            throw new Error("TODO: implement me");
+        
+        rootId = response.data[0].id;
+        this.cache[root.ToString()] = rootId;
+        
+        return rootId;
     }
 
     //State
-    private dialects?: DialectData[];
-
-    //Private methods
-    private async LoadDialects()
-    {
-        const response = await this.apiService.dialects.get();
-        return response.data;
-    }
+    private cache: Dictionary<number>;
 }

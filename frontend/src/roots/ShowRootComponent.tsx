@@ -18,13 +18,12 @@
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
 import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { RootToString } from "./general";
-import { A3EIN, BA, FA, LETTER_RA, Letter, QAF, ZAY } from "arabdict-domain/src/Definitions";
-import { NUN } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
-import { ConjugationService } from "../ConjugationService";
+import { A3EIN, FA, HHA, LAM, LETTER_RA, Letter, QAF } from "arabdict-domain/src/Definitions";
+import { ConjugationService } from "../services/ConjugationService";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
 
 interface ShowRootData
@@ -51,7 +50,7 @@ export class ShowRootComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        const canEdit = this.conjugationService.canEdit.Get();        
+        const canEdit = this.conjugationService.canEdit.Get();
         return <fragment>
             <div className="row">
                 <div className="col"><h2>Root: {RootToString(this.data.root)}</h2></div>
@@ -59,7 +58,6 @@ export class ShowRootComponent extends Component
                     {canEdit ? this.RenderEditControls() : null}
                 </div>
             </div>
-
             {this.data!.root.description}
             <a href={"http://ejtaal.net/aa#bwq=" + this.ToBuckwalterTransilteration()} target="_blank">See on Mawrid reader</a>
 
@@ -113,25 +111,43 @@ export class ShowRootComponent extends Component
             {
                 case Letter.Hamza:
                     return "A";
-                case BA:
+                case Letter.Ba:
                     return "b";
+                case Letter.Tha:
+                    return "v";
                 case Letter.Jiim:
                     return "j";
+                case HHA:
+                    return "H";
+                case Letter.Kha:
+                    return "x";
+                case Letter.Dal:
+                    return "d";
                 case LETTER_RA:
                     return "r";
-                case ZAY:
+                case Letter.Zay:
                     return "z";
+                case Letter.Siin:
+                    return "s";
+                case Letter.Shiin:
+                    return "$";
                 case Letter.Saad:
                     return "S";
                 case Letter.Daad:
                     return "D";
+                case Letter.Tta:
+                    return "T";
                 case A3EIN:
                     return "E";
                 case FA:
                     return "f";
                 case QAF:
                     return "q";
-                case NUN:
+                case Letter.Kaf:
+                    return "k";
+                case LAM:
+                    return "l";
+                case Letter.Nun:
                     return "n";
                 case Letter.Ha:
                     return "h";

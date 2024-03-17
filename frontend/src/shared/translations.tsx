@@ -18,7 +18,7 @@
 
 import { JSX_CreateElement, RootInjector } from "acfrontend";
 import { TranslationEntry } from "../../dist/api";
-import { DialectsService } from "../DialectsService";
+import { DialectsService } from "../services/DialectsService";
 
 function RenderTranslationEntry(translationEntry: TranslationEntry)
 {

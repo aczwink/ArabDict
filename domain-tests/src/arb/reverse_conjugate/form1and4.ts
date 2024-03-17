@@ -18,7 +18,7 @@
 
 import { Expect, It } from "acts-util-test";
 import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
-import { A3EIN, DAL, DHAMMA, Letter } from "arabdict-domain/dist/Definitions";
+import { A3EIN, Letter, Tashkil } from "arabdict-domain/dist/Definitions";
 import { _LegacyPartiallyVocalized } from "arabdict-domain/dist/Vocalization";
 
 It("Reverse lookup يُعد", () => {
@@ -28,14 +28,14 @@ It("Reverse lookup يُعد", () => {
         {
             letter: Letter.Ya,
             shadda: false,
-            tashkil: DHAMMA
+            tashkil: Tashkil.Dhamma
         },
         {
             letter: A3EIN,
             shadda: false
         },
         {
-            letter: DAL,
+            letter: Letter.Dal,
             shadda: false
         }
     ];
@@ -64,8 +64,6 @@ It("Reverse lookup يُعد", () => {
     for (const entry of expected)
     {
         const gotStems = got[entry.root];
-        if(gotStems === undefined)
-            Expect(true).ToBe(false); //TODO: expect test capabilities
         Expect(gotStems).ToBe(entry.stems);
     }
 });

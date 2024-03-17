@@ -19,11 +19,10 @@
 import { Injectable } from "acfrontend";
 import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { Tense, Voice, Gender, Person, Numerus, Mood } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
-import { Property } from "../../../ACTS-Util/core/dist/Observables/Property";
+import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 import { ParseVocalizedText } from "arabdict-domain/src/Vocalization";
-import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
+import { Gender, Mood, Numerus, _LegacyPerson, Stem1Context, _LegacyMood, _LegacyTense, _LegacyVoice } from "arabdict-domain/src/Definitions";
 
 @Injectable
 export class ConjugationService
@@ -57,10 +56,10 @@ export class ConjugationService
         return this.conjugator.AnalyzeConjugation(this._globalDialect.Get(), ParseVocalizedText(conjugated));
     }
 
-    public Conjugate(rootRadicals: string, stem: number, tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus, mood: Mood, stem1Context?: Stem1Context)
+    public Conjugate(rootRadicals: string, stem: number, tense: _LegacyTense, voice: _LegacyVoice, gender: Gender, person: _LegacyPerson, numerus: Numerus, mood: _LegacyMood, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
-        return this.conjugator.Conjugate(root, {
+        return this.conjugator.ConjugateStringBased(root, {
             stem,
             tense,
             voice,
@@ -72,7 +71,7 @@ export class ConjugationService
         }, this._globalDialect.Get());
     }
 
-    public ConjugateParticiple(rootRadicals: string, stem: number, voice: Voice, stem1Context?: Stem1Context)
+    public ConjugateParticiple(rootRadicals: string, stem: number, voice: _LegacyVoice, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
         return this.conjugator.ConjugateParticiple(this._globalDialect.Get(), root, stem, voice, stem1Context);

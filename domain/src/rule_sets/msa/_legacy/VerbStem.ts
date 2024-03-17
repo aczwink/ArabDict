@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,18 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-export const TA = "\u062A";
-export const SIIN = "\u0633";
-export const NUN = "\u0646";
+import { _LegacyVoice, _LegacyTense, Gender, Numerus, _LegacyPerson } from "../../../Definitions";
 
-export type Tense = "perfect" | "present";
-export type Voice = "active" | "passive";
-export type Gender = "male" | "female";
-export type Person = "first" | "second" | "third";
-export type Numerus = "singular" | "dual" | "plural";
-export type Mood = "indicative" | "subjunctive" | "jussive" | "imperative";
-
-export interface VerbStem
+//TODO: REMOVE
+export interface _LegacyVerbStem
 {
-    Conjugate(tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus): string;
+    Conjugate(tense: _LegacyTense, voice: _LegacyVoice, gender: Gender, person: _LegacyPerson, numerus: Numerus): string;
 }

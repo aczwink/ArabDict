@@ -38,9 +38,9 @@ export class TranslationsController
         return this.QueryTranslations(verbId, "verb");
     }
 
-    public QueryWordTranslations(wordId: number)
+    public QueryWordFunctionTranslations(wordFunctionId: number)
     {
-        return this.QueryTranslations(wordId, "word");
+        return this.QueryTranslations(wordFunctionId, "words_function");
     }
 
     public async UpdateVerbTranslations(verbId: number, translations: TranslationEntry[])
@@ -48,20 +48,23 @@ export class TranslationsController
         await this.UpdateTranslations(verbId, "verb", translations);
     }
 
-    public async UpdateWordTranslations(wordId: number, translations: TranslationEntry[])
+    public async UpdateWordFunctionTranslations(wordFunctionId: number, translations: TranslationEntry[])
     {
-        await this.UpdateTranslations(wordId, "word", translations);
+        await this.UpdateTranslations(wordFunctionId, "words_function", translations);
     }
 
     //Private methods
-    private async InsertWordTranslations(id: number, type: "verb" | "word", translations: TranslationEntry[])
+    private async InsertTranslations(id: number, type: "verb" | "words_function", translations: TranslationEntry[])
     {
+        const idColumnName = (type === "verb") ? type : "wordFunction";
+        const fullIdColumnName = idColumnName + "Id";
+
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
         
         for(let i = 0; i < translations.length; i++)
         {
             await conn.InsertRow(type + "s_translations", {
-                [type + "Id"]: id,
+                [fullIdColumnName]: id,
                 ordering: i,
                 dialectId: translations[i].dialectId,
                 text: translations[i].text
@@ -69,18 +72,22 @@ export class TranslationsController
         }
     }
     
-    private async QueryTranslations(id: number, type: "verb" | "word")
+    private async QueryTranslations(id: number, type: "verb" | "words_function")
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        return await conn.Select<TranslationEntry>("SELECT dialectId, text FROM " + type + "s_translations WHERE " + type + "Id = ? ORDER BY ordering", id);
+        const idColumnName = (type === "verb") ? type : "wordFunction";
+
+        return await conn.Select<TranslationEntry>("SELECT dialectId, text FROM " + type + "s_translations WHERE " + idColumnName + "Id = ? ORDER BY ordering", id);
     }
 
-    private async UpdateTranslations(id: number, type: "verb" | "word", translations: TranslationEntry[])
+    private async UpdateTranslations(id: number, type: "verb" | "words_function", translations: TranslationEntry[])
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-        await conn.DeleteRows(type + "s_translations", type + "Id = ?", id);
+        const idColumnName = (type === "verb") ? type : "wordFunction";
 
-        await this.InsertWordTranslations(id, type, translations);
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        await conn.DeleteRows(type + "s_translations", idColumnName + "Id = ?", id);
+
+        await this.InsertTranslations(id, type, translations);
     }
 }

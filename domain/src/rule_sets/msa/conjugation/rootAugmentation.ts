@@ -16,11 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WAW, ALEF, ALEF_HAMZA } from "../../../Definitions";
-import { ConjugationParams } from "../../../DialectConjugator";
+import { ConjugationParams, Letter, Tashkil } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
-import { AugmentedRootSymbolInput } from "../AugmentedRoot";
-import { TA, NUN, SIIN } from "../_legacy/VerbStem";
+import { AugmentedRootSymbolInput, SymbolName } from "../AugmentedRoot";
 
 export function AugmentRoot(stem: number, rootType: RootType, params: ConjugationParams): AugmentedRootSymbolInput[] | undefined
 {
@@ -38,16 +36,16 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
-                        { symbolName: "r1", shadda: false },
-                        { symbolName: "r2", shadda: false },
-                        { symbolName: "r3", shadda: false },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { symbolName: SymbolName.R2, shadda: false },
+                        { symbolName: SymbolName.R3, shadda: false },
                     ];
                 case RootType.Quadriliteral:
                     return [
-                        { symbolName: "r1", shadda: false },
-                        { symbolName: "r2", shadda: false },
-                        { symbolName: "r3", shadda: false },
-                        { symbolName: "r4", shadda: false },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { symbolName: SymbolName.R2, shadda: false },
+                        { symbolName: SymbolName.R3, shadda: false },
+                        { symbolName: SymbolName.R4, shadda: false },
                     ];
             }
         }
@@ -62,9 +60,9 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
-                        { symbolName: "r1", shadda: false },
-                        { symbolName: "r2", shadda: true },
-                        { symbolName: "r3", shadda: false },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { symbolName: SymbolName.R2, shadda: true },
+                        { symbolName: SymbolName.R3, shadda: false },
                     ];
             }
         }
@@ -77,10 +75,10 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.Hollow:
                 case RootType.Sound:
                     return [
-                        { symbolName: "r1", shadda: false },
-                        { letter: ((params.tense === "perfect") && (params.voice === "passive")) ? WAW : ALEF, shadda: false, symbolName: "ai1" },
-                        { symbolName: "r2", shadda: false },
-                        { symbolName: "r3", shadda: false },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { letter: ((params._legacyTense === "perfect") && (params._legacyVoice === "passive")) ? Letter.Waw : Letter.Alef, shadda: false, symbolName: SymbolName.Infix, tashkil: Tashkil.LongVowelMarker },
+                        { symbolName: SymbolName.R2, shadda: false },
+                        { symbolName: SymbolName.R3, shadda: false },
                     ];
             }
         }
@@ -94,12 +92,12 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
-                        { symbolName: "r1", shadda: false },
-                        { symbolName: "r2", shadda: false },
-                        { symbolName: "r3", shadda: false },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { symbolName: SymbolName.R2, shadda: false },
+                        { symbolName: SymbolName.R3, shadda: false },
                     ];
-                    if(params.tense === "perfect")
-                        x.unshift({ letter: ALEF_HAMZA, shadda: false, symbolName: "apost1" });
+                    if(params._legacyTense === "perfect")
+                        x.unshift({ letter: Letter.Hamza, shadda: false, symbolName: SymbolName.Postfix, tashkil: (params._legacyVoice === "active") ? Tashkil.Fatha : Tashkil.Dhamma });
                     return x;
             }
         }
@@ -113,10 +111,10 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.Hollow:
                 case RootType.Sound:
                     return [
-                        { letter: TA, shadda: false, symbolName: "apre1" },
-                        { symbolName: "r1", shadda: false },
-                        { symbolName: "r2", shadda: true },
-                        { symbolName: "r3", shadda: false },
+                        { letter: Letter.Ta, shadda: false, symbolName: SymbolName.Prefix1, tashkil: (params._legacyVoice === "passive" && params._legacyTense === "perfect") ? Tashkil.Dhamma : Tashkil.Fatha },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { symbolName: SymbolName.R2, shadda: true },
+                        { symbolName: SymbolName.R3, shadda: false },
                     ];
             }
         }
@@ -127,11 +125,11 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
             {
                 case RootType.Sound:
                     return [
-                        { letter: TA, shadda: false, symbolName: "apre1" },
-                        { symbolName: "r1", shadda: false },
-                        { letter: ((params.tense === "perfect") && (params.voice === "passive")) ? WAW : ALEF, shadda: false, symbolName: "ai1" },
-                        { symbolName: "r2", shadda: false },
-                        { symbolName: "r3", shadda: false },
+                        { letter: Letter.Ta, shadda: false, symbolName: SymbolName.Prefix1, tashkil: (params._legacyVoice === "passive" && params._legacyTense === "perfect") ? Tashkil.Dhamma : Tashkil.Fatha },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { letter: ((params._legacyTense === "perfect") && (params._legacyVoice === "passive")) ? Letter.Waw : Letter.Alef, shadda: false, symbolName: SymbolName.Infix, tashkil: Tashkil.LongVowelMarker },
+                        { symbolName: SymbolName.R2, shadda: false },
+                        { symbolName: SymbolName.R3, shadda: false },
                     ];
             }
         }
@@ -143,13 +141,13 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
-                        { letter: NUN, shadda: false, symbolName: "apre1" },
-                        { symbolName: "r1", shadda: false },
-                        { symbolName: "r2", shadda: false },
-                        { symbolName: "r3", shadda: false },
+                        { letter: Letter.Nun, shadda: false, symbolName: SymbolName.Prefix1, tashkil: Tashkil.Sukun },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { symbolName: SymbolName.R2, shadda: false },
+                        { symbolName: SymbolName.R3, shadda: false },
                     ];
-                    if(params.tense === "perfect")
-                        x.unshift({ letter: ALEF, shadda: false, symbolName: "apost1" });
+                    if(params._legacyTense === "perfect")
+                        x.unshift({ letter: Letter.Alef, shadda: false, symbolName: SymbolName.Postfix, tashkil: (params._legacyVoice === "active") ? Tashkil.Kasra : Tashkil.Dhamma });
                     return x;
             }
         }
@@ -158,15 +156,16 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
         {
             switch(rootType)
             {
+                case RootType.Defective:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
-                        { symbolName: "r1", shadda: false },
-                        { letter: TA, shadda: false, symbolName: "ai1" },
-                        { symbolName: "r2", shadda: false },
-                        { symbolName: "r3", shadda: false },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { letter: Letter.Ta, shadda: false, symbolName: SymbolName.Infix, tashkil: ((params._legacyTense === "perfect") && (params._legacyVoice === "passive")) ? Tashkil.Dhamma : Tashkil.Fatha },
+                        { symbolName: SymbolName.R2, shadda: false },
+                        { symbolName: SymbolName.R3, shadda: false },
                     ];
-                    if(params.tense === "perfect")
-                        x.unshift({ letter: ALEF, shadda: false, symbolName: "apost1" });
+                    if(params._legacyTense === "perfect")
+                        x.unshift({ letter: Letter.Alef, shadda: false, symbolName: SymbolName.Postfix, tashkil: (params._legacyVoice === "active") ? Tashkil.Kasra : Tashkil.Dhamma });
                     return x;
             }
         }
@@ -182,11 +181,11 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
-                        { letter: SIIN, shadda: false, symbolName: "apre1" },
-                        { letter: TA, shadda: false, symbolName: "apre2" },
-                        { symbolName: "r1", shadda: false },
-                        { symbolName: "r2", shadda: false },
-                        { symbolName: "r3", shadda: false },
+                        { letter: Letter.Siin, shadda: false, symbolName: SymbolName.Prefix1, tashkil: Tashkil.Sukun },
+                        { letter: Letter.Ta, shadda: false, symbolName: SymbolName.Prefix2, tashkil: ((params._legacyTense === "perfect") && (params._legacyVoice === "passive")) ? Tashkil.Dhamma : Tashkil.Fatha },
+                        { symbolName: SymbolName.R1, shadda: false },
+                        { symbolName: SymbolName.R2, shadda: false },
+                        { symbolName: SymbolName.R3, shadda: false },
                     ];
             }
         }

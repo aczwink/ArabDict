@@ -17,7 +17,7 @@
  * */
 import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest } from "../../shared";
-import { FATHA, KASRA } from "arabdict-domain/dist/Definitions";
+import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D9%88%D8%B9%D9%89
 
@@ -169,5 +169,5 @@ It("doubly weak verb وَعَى test", () => {
         { voice: "passive", expected: "نُوعَ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("و-ع-ي", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, conjugations);
+    RunConjugationTest("و-ع-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
 });

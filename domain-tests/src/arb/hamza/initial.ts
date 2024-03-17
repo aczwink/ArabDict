@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
  * */
 import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest } from "../../shared";
-import { DHAMMA } from "arabdict-domain/dist/Definitions";
+import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 It("Double hamza initially", () => {
     const conjugations: ConjugationTest[] = [
@@ -33,8 +33,8 @@ It("Alif madda initially", () => {
     ];
 
     RunConjugationTest("ء-ص-ل", {
-        middleRadicalTashkil: DHAMMA,
-        middleRadicalTashkilPresent: DHAMMA,
+        middleRadicalTashkil: Tashkil.Dhamma,
+        middleRadicalTashkilPresent: Tashkil.Dhamma,
         soundOverride: false
     }, conjugations);
 });

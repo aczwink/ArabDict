@@ -21,16 +21,24 @@
 export enum Letter
 {
     Alef = "\u0627",
+    Ba = "\u0628",
+    Ta = "\u062A",
     Tha = "\u062B",
     Jiim = "\u062C",
+    Kha = "\u062E",
+    Dal = "\u062F",
     Thal = "\u0630",
     Zay = "\u0632",
+    Siin = "\u0633",
+    Shiin = "\u0634",
     Saad = "\u0635",
     Daad = "\u0636",
     Tta = "\u0637",
     Ththa = "\u0638",
     Ghain = "\u063A",
     Kaf = "\u0643",
+    Mim = "\u0645",
+    Nun = "\u0646",
     Ha = "\u0647",
     Waw = "\u0648",
     Ya = "\u064A",
@@ -42,42 +50,112 @@ export enum Letter
     AlefHamzaBelow = "\u0625",
     YaHamza = "\u0626",
     TaMarbuta = "\u0629",
+    AlefMaksura = "\u0649"
 }
 
 export enum Tashkil
 {
     Dhamma = "\u064F",
     Fatha = "\u064E",
+    Fathatan = "\u064B",
     Kasra = "\u0650",
+    Kasratan = "\u064D",
     Sukun = "\u0652",
-    Vowel = 0, //marks this as the tashkil of the long vowel letter
-    WordEnd = 1, //marks the end of words (not verbs)
+    LongVowelMarker = 0, //marks this as the tashkil of the long vowel letter
+    EndOfWordMarker = 1, //marks the end of words (not verbs)
 }
 
-export const ALEF = "\u0627"; //TODO: REMOVE
-export const ALEF_HAMZA = "\u0623"; //TODO: REMOVE
-export const ALEF_MAKSURA = "\u0649";
-export const BA = "\u0628";
+export type PrimaryTashkil = Tashkil.Dhamma | Tashkil.Fatha | Tashkil.Kasra;
+
+export interface Stem1Context
+{
+    middleRadicalTashkil: PrimaryTashkil | "";
+    middleRadicalTashkilPresent: PrimaryTashkil | "";
+
+    /**
+     * Some hollow verbs like لَيسَ are actually conjugated as if they were sound, although the root is hollow.
+     */
+    soundOverride: boolean;
+}
+
+export const TASHKIL_SHADDA = "\u0651";
+
+//TODO: REMOVE THE FOLLOWING:
 export const HHA = "\u062D";
-export const DAL = "\u062F";
 export const LETTER_RA = "\u0631";
-export const ZAY = "\u0632"; //TODO: REMOVE
 export const A3EIN = "\u0639";
 export const FA = "\u0641";
 export const QAF = "\u0642";
 export const LAM = "\u0644";
-export const MIM = "\u0645";
-export const WAW = "\u0648"; //TODO: REMOVE
+//TODO: end of REMOVE THE FOLLOWING
 
-export const FATHA = "\u064E"; //TODO: REMOVE
-export const FATHATAN = "\u064B";
-export const DHAMMA = "\u064F"; //TODO: REMOVE
-export const KASRA = "\u0650"; //TODO: REMOVE
-export const KASRATAN = "\u064D";
-export const SHADDA = "\u0651";
-export const SUKUN = "\u0652"; //TODO: remove
+export type Gender = "male" | "female";
+export type _LegacyMood = "indicative" | "subjunctive" | "jussive" | "imperative";
+export type Numerus = "singular" | "dual" | "plural";
+export type _LegacyPerson = "first" | "second" | "third";
+export type _LegacyTense = "perfect" | "present";
+export type _LegacyVoice = "active" | "passive";
 
-export type PRIMARY_TASHKIL = "\u064E" | "\u064F" | "\u0650";
-export type BASE_TASHKIL = PRIMARY_TASHKIL | "\u0652";
-export type FULL_TASHKIL = BASE_TASHKIL | "\u064B" | "\u064D";
-export type LONG_VOWEL = "\u0627" | "\u064A";
+type AdvancedStem = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 10;
+export enum Mood
+{
+    Indicative,
+    Subjunctive,
+    Jussive,
+    Imperative
+}
+export enum Person
+{
+    First,
+    Second,
+    Third
+}
+export enum Tense
+{
+    Perfect,
+    Present
+}
+export enum Voice
+{
+    Active,
+    Passive
+}
+
+interface Stem1Params
+{
+    readonly stem: 1;
+    readonly stem1Context: Stem1Context;
+}
+interface AdvancedStemParams
+{
+    readonly stem: AdvancedStem;
+}
+type StemParams = Stem1Params | AdvancedStemParams;
+
+interface PerfectTenseParams
+{
+    readonly tense: Tense.Perfect;
+}
+interface PresentTenseParams
+{
+    readonly tense: Tense.Present;
+    readonly mood: Mood;
+}
+type TenseParams = PerfectTenseParams | PresentTenseParams;
+
+interface BasicConjugationParams
+{
+    readonly person: Person;
+    readonly voice: Voice;
+
+    //TODO: LEGACY REMOVE
+    readonly _legacyGender: Gender;
+    readonly _legacyMood: _LegacyMood;
+    readonly _legacyNumerus: Numerus;
+    readonly _legacyPerson: _LegacyPerson;
+    readonly _legacyStem1Context?: Stem1Context;
+    readonly _legacyTense: _LegacyTense;
+    readonly _legacyVoice: _LegacyVoice;
+}
+
+export type ConjugationParams = BasicConjugationParams & StemParams & TenseParams;

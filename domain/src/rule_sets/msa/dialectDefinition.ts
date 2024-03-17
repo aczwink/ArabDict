@@ -21,7 +21,8 @@ import { stem2 } from "./_legacy/2/stem2";
 import { stem3 } from "./_legacy/3/stem3";
 import { stem8 } from "./_legacy/8/stem8";
 
-export const definition: DialectDefinition = {
+//TODO: REMOVE
+export const _Legacydefinition: DialectDefinition = {
     stems: {
         2: stem2,
         3: stem3,

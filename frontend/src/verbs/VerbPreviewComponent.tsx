@@ -18,14 +18,14 @@
 
 import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { RenderTranslations } from "../shared/translations";
-import { ConjugationService } from "../ConjugationService";
-import { KASRA } from "arabdict-domain/src/Definitions";
+import { ConjugationService } from "../services/ConjugationService";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Stem1DataToStem1ContextOptional } from "./model";
+import { Tashkil } from "arabdict-domain/src/Definitions";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
@@ -42,7 +42,7 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
         const verbData = this.input.verbData;
         const root = new VerbRoot(this.input.root.radicals);
         const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", "indicative", Stem1DataToStem1ContextOptional(verbData.stem1Data));
-        const conjugationReference = this.conjugationService.Conjugate(this.input.root.radicals, 1, "perfect", "active", "male", "third", "singular", "indicative", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: "", soundOverride: false });
+        const conjugationReference = this.conjugationService.Conjugate(this.input.root.radicals, 1, "perfect", "active", "male", "third", "singular", "indicative", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: "", soundOverride: false });
         const verbPresentation = (verbData.stem === 1) ? conjugated : RenderWithDiffHighlights(conjugated, conjugationReference);
 
         return <div className="border border-3 rounded-2 p-2 my-2 shadow-sm">
@@ -66,7 +66,7 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
         return <div className="row">
             <div className="col">
                 <h6 className="d-inline me-2">{derivedWord.word}</h6>
-                {RenderTranslations(derivedWord.translations)}
+                {RenderTranslations(derivedWord.functions[0].translations)}
             </div>
         </div>;
     }

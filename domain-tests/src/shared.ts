@@ -17,13 +17,10 @@
  * */
 import "acts-util-core";
 import { Expect } from "acts-util-test";
-import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
-import { A3EIN, ALEF, ALEF_HAMZA, ALEF_MAKSURA, BA, BASE_TASHKIL, DAL, DHAMMA, FATHA, KASRA, LAM, Letter, MIM, SUKUN, Tashkil, WAW } from "arabdict-domain/dist/Definitions";
-import { ConjugationParams } from "arabdict-domain/dist/DialectConjugator";
+import { Conjugator, DialectType, StringConjugationParams } from "arabdict-domain/dist/Conjugator";
+import { A3EIN, Gender, LAM, Letter, Mood, Numerus, Person, Stem1Context, Tashkil, Voice, _LegacyMood, _LegacyPerson, _LegacyTense, _LegacyVoice } from "arabdict-domain/dist/Definitions";
 import { VerbRoot } from "arabdict-domain/dist/VerbRoot";
-import { ParseVocalizedText, PartiallyVocalized, _LegacyPartiallyVocalized } from "arabdict-domain/dist/Vocalization";
-import { Stem1Context } from "arabdict-domain/dist/rule_sets/msa/_legacy/CreateVerb";
-import { Gender, Mood, NUN, Numerus, Person, SIIN, TA, Tense, Voice } from "arabdict-domain/dist/rule_sets/msa/_legacy/VerbStem";
+import { ParseVocalizedText, _LegacyPartiallyVocalized } from "arabdict-domain/dist/Vocalization";
 
 function ToDisplayVersion(v: _LegacyPartiallyVocalized[])
 {
@@ -31,23 +28,23 @@ function ToDisplayVersion(v: _LegacyPartiallyVocalized[])
     {
         switch(c)
         {
-            case ALEF:
+            case Letter.Alef:
                 return "alef";
-            case BA:
+            case Letter.Ba:
                 return "ba";
-            case TA:
+            case Letter.Ta:
                 return "ta";
             //tha
             case Letter.Jiim:
                 return "jiim";
             //7aa
             //kha
-            case DAL:
+            case Letter.Dal:
                 return "dal";
             //dhal
             //ra
             //zay
-            case SIIN:
+            case Letter.Siin:
                 return "siin";
             //shin
             //Saad
@@ -62,18 +59,18 @@ function ToDisplayVersion(v: _LegacyPartiallyVocalized[])
             //kaf
             case LAM:
                 return "laam";
-            case MIM:
+            case Letter.Mim:
                 return "mim";
-            case NUN:
+            case Letter.Nun:
                 return "nun";
             //haa
-            case WAW:
+            case Letter.Waw:
                 return "waw";
             case Letter.Ya:
                 return "ya";
             case Letter.Hamza:
                 return "hamza";
-            case ALEF_HAMZA:
+            case Letter.AlefHamza:
                 return "alef_hamza";
             //waw hamza
             //ya hamza
@@ -81,25 +78,25 @@ function ToDisplayVersion(v: _LegacyPartiallyVocalized[])
             //ta marbuta
             case Letter.AlefHamzaBelow:
                 return "alef_hamza_below";
-            case ALEF_MAKSURA:
+            case Letter.AlefMaksura:
                 return "alef_maksura";
         }
         return "TODO: " + c + " " + c.codePointAt(0);
     }
 
-    function conv_tashkil(t: BASE_TASHKIL | undefined)
+    function conv_tashkil(t: Tashkil | undefined)
     {
         if(t === undefined)
             return "";
         switch(t)
         {
-            case DHAMMA:
+            case Tashkil.Dhamma:
                 return "/dhamma";
-            case FATHA:
+            case Tashkil.Fatha:
                 return "/fatha";
-            case KASRA:
+            case Tashkil.Kasra:
                 return "/kasra";
-            case SUKUN:
+            case Tashkil.Sukun:
                 return "/sukun";
         }
     }
@@ -108,13 +105,13 @@ function ToDisplayVersion(v: _LegacyPartiallyVocalized[])
     {
         const l = conv_letter(v.letter);
 
-        return l + conv_tashkil(v.tashkil) + (v.shadda ? "shadda" : "");
+        return l + conv_tashkil(v.tashkil as any) + (v.shadda ? "shadda" : "");
     }
 
     return v.map(conv);
 }
 
-function Test(expected: string, got: string, params: ConjugationParams)
+function Test(expected: string, got: string, params: StringConjugationParams)
 {
     const a = ParseVocalizedText(expected);
     const b = ParseVocalizedText(got);
@@ -141,7 +138,7 @@ export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], st
     {
         const root = new VerbRoot(test.root.split("-").join(""));
 
-        const params1: ConjugationParams = {
+        const params1: StringConjugationParams = {
             gender: "male",
             numerus: "singular",
             person: "third",
@@ -150,10 +147,10 @@ export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], st
             voice: "active",
             mood: "indicative"
         };
-        const pastResult = conjugator.Conjugate(root, params1, DialectType.ModernStandardArabic);
+        const pastResult = conjugator.ConjugateStringBased(root, params1, DialectType.ModernStandardArabic);
         Test(test.past, pastResult, params1);
 
-        const params2: ConjugationParams = {
+        const params2: StringConjugationParams = {
             gender: "male",
             numerus: "singular",
             person: "third",
@@ -162,7 +159,7 @@ export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], st
             voice: "active",
             mood: "indicative"
         };
-        const presentResult = conjugator.Conjugate(root, params2, DialectType.ModernStandardArabic);
+        const presentResult = conjugator.ConjugateStringBased(root, params2, DialectType.ModernStandardArabic);
         Test(test.present, presentResult, params2);
     }
 }
@@ -171,11 +168,11 @@ export interface ConjugationTest
 {
     expected: string;
     gender?: Gender;
-    mood?: Mood;
+    mood?: _LegacyMood;
     numerus?: Numerus;
-    person?: Person;
-    tense?: Tense;
-    voice?: Voice;
+    person?: _LegacyPerson;
+    tense?: _LegacyTense;
+    voice?: _LegacyVoice;
 }
 export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Context, conjugations: ConjugationTest[], dialect: DialectType = DialectType.ModernStandardArabic)
 {
@@ -195,7 +192,7 @@ export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Con
             voice: test.voice ?? "active",
             mood: test.mood ?? "indicative"
         };
-        const pastResult = conjugator.Conjugate(root, params, dialect);
+        const pastResult = conjugator.ConjugateStringBased(root, params, dialect);
         Test(test.expected, pastResult, params);
     }
 }

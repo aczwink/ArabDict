@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { SUKUN, FATHA, KASRA, DHAMMA } from "../../../Definitions";
-import { ConjugationParams } from "../../../DialectConjugator";
+import { ConjugationParams, Tashkil } from "../../../Definitions";
 import { AugmentedRoot } from "../AugmentedRoot";
 
 export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: ConjugationParams)
@@ -25,23 +24,23 @@ export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: C
     if(params.stem === 2)
         return;
     
-    if(augmentedRoot.r3.tashkil !== SUKUN)
+    if(augmentedRoot.r3.tashkil !== Tashkil.Sukun)
     {
         if(params.stem === 1)
         {
-            if(params.voice === "passive")
-                augmentedRoot.r1.tashkil = DHAMMA;
-            else if(params.tense === "perfect")
-                augmentedRoot.r1.tashkil = params.stem1Context!.middleRadicalTashkil as any;
+            if(params._legacyVoice === "passive")
+                augmentedRoot.r1.tashkil = Tashkil.Dhamma;
+            else if(params._legacyTense === "perfect")
+                augmentedRoot.r1.tashkil = params._legacyStem1Context!.middleRadicalTashkil as any;
             else
-                augmentedRoot.r1.tashkil = params.stem1Context!.middleRadicalTashkilPresent as any;
+                augmentedRoot.r1.tashkil = params._legacyStem1Context!.middleRadicalTashkilPresent as any;
         }
         else
         {
-            const cond = ((params.tense === "perfect") && (params.voice === "active")) || (((params.tense === "present") && (params.voice === "passive")));
-            augmentedRoot.r1.tashkil = cond ? FATHA : KASRA; //two sukuns after each other are forbidden
+            const cond = ((params._legacyTense === "perfect") && (params._legacyVoice === "active")) || (((params._legacyTense === "present") && (params._legacyVoice === "passive")));
+            augmentedRoot.r1.tashkil = cond ? Tashkil.Fatha : Tashkil.Kasra; //two sukuns after each other are forbidden
         }
         augmentedRoot.r3.shadda = true;
-        augmentedRoot.partiallyVocalized.Remove(augmentedRoot.partiallyVocalized.length - 2); //assimilate r2
+        augmentedRoot.symbols.Remove(augmentedRoot.symbols.length - 2); //assimilate r2
     }
 }

@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,20 +17,19 @@
  * */
 
 import { BootstrapIcon, Component, FormField, JSX_CreateElement, LineEdit, NumberSpinner, Select } from "acfrontend";
-import { TranslationEntry, WordRelation, WordRelationshipType, WordRootDerivationData, WordType, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
-import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
-import { WordMayHaveGender, WordRelationshipTypeToString, WordTypeToText, allWordTypes } from "../shared/words";
+import { WordFunctionData, WordRelation, WordRelationshipType, WordRootDerivationData, WordType, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
+import { WordMayHaveGender, WordRelationshipTypeToString } from "../shared/words";
 import { WordWordDerivationEditorComponent } from "./WordWordDerivationEditorComponent";
 import { WordVerbDerivationEditorComponent } from "./WordVerbDerivationEditorComponent";
+import { WordFunctionEditorComponent } from "./WordFunctionEditorComponent";
 
 interface WordBaseData
 {
     word: string;
     isMale: boolean | null;
     derivation?: WordRootDerivationData | WordVerbDerivationData | WordWordDerivationLink;
-    type: WordType;
-    translations: TranslationEntry[];
     related: WordRelation[];
+    functions: WordFunctionData[];
 }
 
 export class WordEditorComponent extends Component<{ data: WordBaseData; onDataChanged: () => void }>
@@ -38,26 +37,23 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     protected Render(): RenderValue
     {
         return <fragment>
-            <FormField title="Type">
-                <Select onChanged={this.OnWordTypeChanged.bind(this)}>
-                    {allWordTypes.map(x => <option selected={x === this.input.data.type} value={x}>{WordTypeToText(x)}</option>)}
-                </Select>
-            </FormField>
-
             <FormField title="Word" description="Enter with full tashkil">
                 <LineEdit value={this.input.data.word} onChanged={this.OnWordChanged.bind(this)} />
             </FormField>
 
             {this.RenderGender()}
-
-            <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.input.onDataChanged} />
-
             {this.RenderDerivation()}
             {this.RenderRelations()}
+            {this.RenderFunctions()}
         </fragment>;
     }
 
     //Private methods
+    private MayWordHaveGender()
+    {
+        return this.input.data.functions.Values().Map(x => WordMayHaveGender(x.type)).AnyTrue();
+    }
+
     private RenderDerivation()
     {
         return <div className="row">
@@ -87,9 +83,26 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
         return <WordWordDerivationEditorComponent derivationLink={this.input.data.derivation} onDataChanged={this.input.onDataChanged} />;
     }
 
+    private RenderFunctions()
+    {
+        const result = [];
+
+        for (const func of this.input.data.functions)
+        {
+            if(result.length !== 0)
+                result.push(<hr />);
+            result.push(<WordFunctionEditorComponent data={func} onDataChanged={this.OnFunctionDataChanged.bind(this)} onDeleteFunction={this.OnFunctionDeleted.bind(this, func)} />);
+        }
+
+        return <fragment>
+            {result}
+            <button type="button" className="btn btn-secondary" onclick={this.OnAddFunction.bind(this)}><BootstrapIcon>plus</BootstrapIcon></button>
+        </fragment>;
+    }
+
     private RenderGender()
     {
-        if(!WordMayHaveGender(this.input.data.type))
+        if(!this.MayWordHaveGender())
             return null;
 
         return <FormField title="Gender">
@@ -128,7 +141,6 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     private RenderRelations()
     {
         return <fragment>
-            <hr />
             <h6>Relations</h6>
             {this.input.data.related.map(this.RenderRelation.bind(this))}
             <button className="btn btn-secondary" type="button" onclick={this.OnAddRelation.bind(this)}><BootstrapIcon>plus</BootstrapIcon></button>
@@ -144,6 +156,16 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     }
 
     //Event handlers
+    private OnAddFunction()
+    {
+        this.input.data.functions.push({
+            id: -1,
+            translations: [],
+            type: WordType.Adjective
+        });
+        this.input.onDataChanged();
+    }
+
     private OnAddRelation()
     {
         this.input.data.related.push({
@@ -172,13 +194,29 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
                 this.input.data.derivation = { rootId: 0 };
                 break;
             case "Verb":
-                this.input.data.type = WordType.Noun;
                 this.input.data.derivation = { type: WordVerbDerivationType.VerbalNoun, verbId: 0 };
                 break;
             case "Word":
                 this.input.data.derivation = { refWordId: 0, relationType: WordWordDerivationType.Feminine };
                 break;
         }
+        this.input.onDataChanged();
+    }
+
+    private OnFunctionDataChanged()
+    {
+        const shouldHaveGender = this.MayWordHaveGender();
+        if(shouldHaveGender && (this.input.data.isMale === null))
+            this.input.data.isMale = true;
+        else if(!shouldHaveGender)
+            this.input.data.isMale = null;
+        this.input.onDataChanged();
+    }
+
+    private OnFunctionDeleted(func: WordFunctionData)
+    {
+        const idx = this.input.data.functions.indexOf(func);
+        this.input.data.functions.Remove(idx);
         this.input.onDataChanged();
     }
 
@@ -211,16 +249,6 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     private OnWordRelationshipTypeChanged(relation: WordRelation, newValue: string[])
     {
         relation.relationType = parseInt(newValue[0]);
-        this.input.onDataChanged();
-    }
-
-    private OnWordTypeChanged(newValue: string[])
-    {
-        this.input.data.type = parseInt(newValue[0]);
-        if(this.input.data.type === WordType.Noun)
-            this.input.data.isMale = true;
-        else
-            this.input.data.isMale = null;
         this.input.onDataChanged();
     }
 }

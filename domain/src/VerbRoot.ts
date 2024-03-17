@@ -15,9 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
-import { Stem1Context } from "./rule_sets/msa/_legacy/CreateVerb";
-import { DHAMMA, FATHA, KASRA, Letter, PRIMARY_TASHKIL, WAW } from "./Definitions";
+import { Letter, PrimaryTashkil, Stem1Context, Tashkil } from "./Definitions";
 import { GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching } from "./rule_sets/msa/conjugation/defective_special_cases";
 
 export enum RootType
@@ -50,8 +48,8 @@ export enum RootType
 
 interface Stem1ContextChoice
 {
-    past: PRIMARY_TASHKIL[];
-    present: PRIMARY_TASHKIL[];
+    past: PrimaryTashkil[];
+    present: PrimaryTashkil[];
     soundOverride: boolean[];
 }
 
@@ -107,20 +105,20 @@ export class VerbRoot
         if(this.r2 === this.r3)
             return RootType.SecondConsonantDoubled;
 
-        if( (this.r1 === WAW) && ( (this.r3 === WAW) || (this.r3 === Letter.Ya) ) )
+        if( (this.r1 === Letter.Waw) && ( (this.r3 === Letter.Waw) || (this.r3 === Letter.Ya) ) )
             return RootType.DoublyWeak_WawOnR1_WawOrYaOnR3;
 
-        if((this.r1 === WAW) || (this.r1 === Letter.Ya))
+        if((this.r1 === Letter.Waw) || (this.r1 === Letter.Ya))
             return RootType.Assimilated;
 
-        if((this.r2 === WAW) || (this.r2 === Letter.Ya))
+        if((this.r2 === Letter.Waw) || (this.r2 === Letter.Ya))
         {
-            if((this.r3 === WAW) || (this.r3 === Letter.Ya))
+            if((this.r3 === Letter.Waw) || (this.r3 === Letter.Ya))
                 return RootType.Defective;
             return RootType.Hollow;
         }
 
-        if((this.r3 === WAW) || (this.r3 === Letter.Ya))
+        if((this.r3 === Letter.Waw) || (this.r3 === Letter.Ya))
             return RootType.Defective;
         if(this.r1 === Letter.Hamza)
             return RootType.HamzaOnR1;
@@ -136,16 +134,16 @@ export class VerbRoot
             case RootType.HamzaOnR1:
             case RootType.Sound:
             {
-                let present: PRIMARY_TASHKIL[];
-                if(stem1Context.middleRadicalTashkil === DHAMMA)
-                    present = [DHAMMA];
-                else if(stem1Context.middleRadicalTashkil === KASRA)
-                    present = [FATHA, KASRA];
+                let present: PrimaryTashkil[];
+                if(stem1Context.middleRadicalTashkil === Tashkil.Dhamma)
+                    present = [Tashkil.Dhamma];
+                else if(stem1Context.middleRadicalTashkil === Tashkil.Kasra)
+                    present = [Tashkil.Fatha, Tashkil.Kasra];
                 else
-                    present = [FATHA, DHAMMA, KASRA];
+                    present = [Tashkil.Fatha, Tashkil.Dhamma, Tashkil.Kasra];
 
                 return {
-                    past: [FATHA, DHAMMA, KASRA],
+                    past: [Tashkil.Fatha, Tashkil.Dhamma, Tashkil.Kasra],
                     present,
                     soundOverride: [false]
                 }
@@ -162,23 +160,23 @@ export class VerbRoot
                 }
                 
                 return {
-                    past: [(stem1Context.middleRadicalTashkilPresent === FATHA) ? KASRA : FATHA],
-                    present: [FATHA, DHAMMA, KASRA],
+                    past: [(stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha) ? Tashkil.Kasra : Tashkil.Fatha],
+                    present: [Tashkil.Fatha, Tashkil.Dhamma, Tashkil.Kasra],
                     soundOverride: [false]
                 };
             case RootType.Hollow:
                 {
-                    let past: PRIMARY_TASHKIL[];
-                    if(stem1Context.middleRadicalTashkilPresent === KASRA)
-                        past = [KASRA];
-                    else if(stem1Context.middleRadicalTashkilPresent === DHAMMA)
-                        past = [DHAMMA];
+                    let past: PrimaryTashkil[];
+                    if(stem1Context.middleRadicalTashkilPresent === Tashkil.Kasra)
+                        past = [Tashkil.Kasra];
+                    else if(stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma)
+                        past = [Tashkil.Dhamma];
                     else
-                        past = [DHAMMA, KASRA];
+                        past = [Tashkil.Dhamma, Tashkil.Kasra];
 
                     return {
                         past,
-                        present: [FATHA, (this.r2 === WAW) ? DHAMMA : KASRA],
+                        present: [Tashkil.Fatha, (this.r2 === Letter.Waw) ? Tashkil.Dhamma : Tashkil.Kasra],
                         soundOverride: [false, true]
                     };
                 }
@@ -191,15 +189,15 @@ export class VerbRoot
             case RootType.SecondConsonantDoubled:
                 {
                     return {
-                        past: [FATHA, KASRA],
-                        present: (stem1Context.middleRadicalTashkil === KASRA) ? [FATHA] : [FATHA, DHAMMA, KASRA],
+                        past: [Tashkil.Fatha, Tashkil.Kasra],
+                        present: (stem1Context.middleRadicalTashkil === Tashkil.Kasra) ? [Tashkil.Fatha] : [Tashkil.Fatha, Tashkil.Dhamma, Tashkil.Kasra],
                         soundOverride: [false]
                     };
                 }
             case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 return {
-                    past: [FATHA],
-                    present: [KASRA],
+                    past: [Tashkil.Fatha],
+                    present: [Tashkil.Kasra],
                     soundOverride: []
                 };
             default:

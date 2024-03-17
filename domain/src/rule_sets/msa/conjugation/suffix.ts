@@ -16,53 +16,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, SUKUN, DHAMMA, FATHA, KASRA, MIM, ALEF, WAW, Letter, Tashkil } from "../../../Definitions";
-import { ConjugationParams } from "../../../DialectConjugator";
+import { ConjugationParams, Gender, Letter, Numerus, _LegacyPerson, Tashkil } from "../../../Definitions";
 import { FullyVocalized, _LegacyPartiallyVocalized } from "../../../Vocalization";
-import { TA, NUN, Person, Numerus, Gender } from "../_legacy/VerbStem";
 
-function DeriveSuffixPerfect(params: ConjugationParams): { suffix: (_LegacyPartiallyVocalized | FullyVocalized)[]; preSuffixTashkil: BASE_TASHKIL}
+function DeriveSuffixPerfect(params: ConjugationParams): { suffix: FullyVocalized[]; preSuffixTashkil: Tashkil}
 {
-    switch(params.numerus)
+    switch(params._legacyNumerus)
     {
         case "singular":
         {
-            switch(params.person)
+            switch(params._legacyPerson)
             {
                 case "first":
                     return {
-                        preSuffixTashkil: SUKUN,
-                        suffix: [{ letter: TA, shadda: false, tashkil: DHAMMA }]
+                        preSuffixTashkil: Tashkil.Sukun,
+                        suffix: [{ letter: Letter.Ta, shadda: false, tashkil: Tashkil.Dhamma }]
                     };
                 case "second":
                 {
-                    switch(params.gender)
+                    switch(params._legacyGender)
                     {
                         case "male":
                             return {
-                                preSuffixTashkil: SUKUN,
-                                suffix: [{ letter: TA, shadda: false, tashkil: FATHA },]
+                                preSuffixTashkil: Tashkil.Sukun,
+                                suffix: [{ letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },]
                             };
                         case "female":
                             return {
-                                preSuffixTashkil: SUKUN,
-                                suffix: [{ letter: TA, shadda: false, tashkil: KASRA },]
+                                preSuffixTashkil: Tashkil.Sukun,
+                                suffix: [{ letter: Letter.Ta, shadda: false, tashkil: Tashkil.Kasra },]
                             };
                     }
                 }
                 case "third":
                 {
-                    switch(params.gender)
+                    switch(params._legacyGender)
                     {
                         case "male":
                             return {
-                                preSuffixTashkil: FATHA,
+                                preSuffixTashkil: Tashkil.Fatha,
                                 suffix: [],
                             };
                         case "female":
                             return {
-                                preSuffixTashkil: FATHA,
-                                suffix: [{ letter: TA, shadda: false, tashkil: SUKUN },],
+                                preSuffixTashkil: Tashkil.Fatha,
+                                suffix: [{ letter: Letter.Ta, shadda: false, tashkil: Tashkil.Sukun },],
                             };
                     }
                 }
@@ -71,34 +69,34 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: (_LegacyParti
 
         case "dual":
         {
-            switch(params.person)
+            switch(params._legacyPerson)
             {
                 case "second":
                     return {
-                        preSuffixTashkil: SUKUN,
+                        preSuffixTashkil: Tashkil.Sukun,
                         suffix: [
-                            { letter: TA, shadda: false, tashkil: DHAMMA },
-                            { letter: MIM, shadda: false, tashkil: FATHA },
-                            { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
+                            { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Dhamma },
+                            { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Fatha },
+                            { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
                         ],
                     };
                 case "third":
                 {
-                    switch(params.gender)
+                    switch(params._legacyGender)
                     {
                         case "male":
                             return {
-                                preSuffixTashkil: FATHA,
+                                preSuffixTashkil: Tashkil.Fatha,
                                 suffix: [
-                                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
+                                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
                                 ],
                             };
                         case "female":
                             return {
-                                preSuffixTashkil: FATHA,
+                                preSuffixTashkil: Tashkil.Fatha,
                                 suffix: [
-                                    { letter: TA, shadda: false, tashkil: FATHA },
-                                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
+                                    { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
+                                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
                                 ],
                             };
                     }
@@ -108,55 +106,55 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: (_LegacyParti
 
         case "plural":
         {
-            switch(params.person)
+            switch(params._legacyPerson)
             {
                 case "first":
                     return {
-                        preSuffixTashkil: SUKUN,
+                        preSuffixTashkil: Tashkil.Sukun,
                         suffix: [
-                            { letter: NUN, shadda: false, tashkil: FATHA },
-                            { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
+                            { letter: Letter.Nun, shadda: false, tashkil: Tashkil.Fatha },
+                            { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
                         ],
                     };
                 case "second":
                 {
-                    switch(params.gender)
+                    switch(params._legacyGender)
                     {
                         case "male":
                             return {
-                                preSuffixTashkil: SUKUN,
+                                preSuffixTashkil: Tashkil.Sukun,
                                 suffix: [
-                                    { letter: TA, shadda: false, tashkil: DHAMMA },
-                                    { letter: MIM, shadda: false, tashkil: SUKUN },
+                                    { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Dhamma },
+                                    { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Sukun },
                                 ],
                             };
                         case "female":
                             return {
-                                preSuffixTashkil: SUKUN,
+                                preSuffixTashkil: Tashkil.Sukun,
                                 suffix: [
-                                    { letter: TA, shadda: false, tashkil: DHAMMA },
-                                    { letter: NUN, shadda: true, tashkil: FATHA },
+                                    { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Dhamma },
+                                    { letter: Letter.Nun, shadda: true, tashkil: Tashkil.Fatha },
                                 ],
                             };
                     }
                 }
                 case "third":
                 {
-                    switch(params.gender)
+                    switch(params._legacyGender)
                     {
                         case "male":
                             return {
-                                preSuffixTashkil: DHAMMA,
+                                preSuffixTashkil: Tashkil.Dhamma,
                                 suffix: [
-                                    { letter: Letter.Waw, shadda: false, tashkil: Tashkil.Vowel },
-                                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.WordEnd },
+                                    { letter: Letter.Waw, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.EndOfWordMarker },
                                 ],
                             };
                         case "female":
                             return {
-                                preSuffixTashkil: SUKUN,
+                                preSuffixTashkil: Tashkil.Sukun,
                                 suffix: [
-                                    { letter: NUN, shadda: false, tashkil: FATHA },
+                                    { letter: Letter.Nun, shadda: false, tashkil: Tashkil.Fatha },
                                 ],
                             };
                     }
@@ -166,36 +164,36 @@ function DeriveSuffixPerfect(params: ConjugationParams): { suffix: (_LegacyParti
     }
 }
 
-function DeriveSuffixPresent(params: ConjugationParams): { suffix: (_LegacyPartiallyVocalized | FullyVocalized)[]; preSuffixTashkil: BASE_TASHKIL}
+function DeriveSuffixPresent(params: ConjugationParams): { suffix: FullyVocalized[]; preSuffixTashkil: Tashkil}
 {
-    let defTashkil: BASE_TASHKIL = DHAMMA;
-    if(params.mood === "subjunctive")
-        defTashkil = FATHA;
-    else if(params.mood === "jussive")
-        defTashkil = SUKUN;
-    else if(params.mood === "imperative")
-        defTashkil = SUKUN;
+    let defTashkil: Tashkil = Tashkil.Dhamma;
+    if(params._legacyMood === "subjunctive")
+        defTashkil = Tashkil.Fatha;
+    else if(params._legacyMood === "jussive")
+        defTashkil = Tashkil.Sukun;
+    else if(params._legacyMood === "imperative")
+        defTashkil = Tashkil.Sukun;
 
-    switch(params.numerus)
+    switch(params._legacyNumerus)
     {
         case "singular":
         {
-            if((params.person === "second") && (params.gender === "female"))
+            if((params._legacyPerson === "second") && (params._legacyGender === "female"))
             {
-                if((params.mood === "subjunctive") || (params.mood === "jussive") || (params.mood === "imperative"))
+                if((params._legacyMood === "subjunctive") || (params._legacyMood === "jussive") || (params._legacyMood === "imperative"))
                 {
                     return {
-                        preSuffixTashkil: KASRA,
+                        preSuffixTashkil: Tashkil.Kasra,
                         suffix: [
-                            { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Vowel },
+                            { letter: Letter.Ya, shadda: false, tashkil: Tashkil.LongVowelMarker },
                         ]
                     };
                 }
                 return {
-                    preSuffixTashkil: KASRA,
+                    preSuffixTashkil: Tashkil.Kasra,
                     suffix: [
-                        { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Vowel },
-                        { letter: NUN, shadda: false, tashkil: FATHA }
+                        { letter: Letter.Ya, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                        { letter: Letter.Nun, shadda: false, tashkil: Tashkil.Fatha }
                     ]
                 };
             }
@@ -208,72 +206,72 @@ function DeriveSuffixPresent(params: ConjugationParams): { suffix: (_LegacyParti
 
         case "dual":
         {
-            if((params.mood === "subjunctive") || (params.mood === "jussive") || (params.mood === "imperative"))
+            if((params._legacyMood === "subjunctive") || (params._legacyMood === "jussive") || (params._legacyMood === "imperative"))
             {
                 return {
-                    preSuffixTashkil: FATHA,
+                    preSuffixTashkil: Tashkil.Fatha,
                     suffix: [
-                        { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
+                        { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
                     ]
                 };
             }
 
             return {
-                preSuffixTashkil: FATHA,
+                preSuffixTashkil: Tashkil.Fatha,
                 suffix: [
-                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
-                    { letter: NUN, shadda: false, tashkil: KASRA }
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                    { letter: Letter.Nun, shadda: false, tashkil: Tashkil.Kasra }
                 ]
             };
         }
 
         case "plural":
         {
-            if(params.person === "first")
+            if(params._legacyPerson === "first")
                 return {
                     preSuffixTashkil: defTashkil,
                     suffix: []
                 };
 
-            if(params.gender === "male")
+            if(params._legacyGender === "male")
             {
-                if((params.mood === "subjunctive") || (params.mood === "jussive") || (params.mood === "imperative"))
+                if((params._legacyMood === "subjunctive") || (params._legacyMood === "jussive") || (params._legacyMood === "imperative"))
                 {
                     return {
-                        preSuffixTashkil: DHAMMA,
+                        preSuffixTashkil: Tashkil.Dhamma,
                         suffix: [
-                            { letter: Letter.Waw, shadda: false, tashkil: Tashkil.Vowel },
-                            { letter: Letter.Alef, shadda: false, tashkil: Tashkil.WordEnd }
+                            { letter: Letter.Waw, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                            { letter: Letter.Alef, shadda: false, tashkil: Tashkil.EndOfWordMarker }
                         ]
                     };
                 }
                 return {
-                    preSuffixTashkil: DHAMMA,
+                    preSuffixTashkil: Tashkil.Dhamma,
                     suffix: [
-                        { letter: Letter.Waw, shadda: false, tashkil: Tashkil.Vowel },
-                        { letter: NUN, shadda: false, tashkil: FATHA }
+                        { letter: Letter.Waw, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                        { letter: Letter.Nun, shadda: false, tashkil: Tashkil.Fatha }
                     ]
                 };
             }
 
             return {
-                preSuffixTashkil: SUKUN,
+                preSuffixTashkil: Tashkil.Sukun,
                 suffix: [
-                    { letter: NUN, shadda: false, tashkil: FATHA }
+                    { letter: Letter.Nun, shadda: false, tashkil: Tashkil.Fatha }
                 ]
             };
         }
     }
 }
 
-export function DeriveSuffix(params: ConjugationParams): { suffix: (_LegacyPartiallyVocalized | FullyVocalized)[]; preSuffixTashkil: BASE_TASHKIL}
+export function DeriveSuffix(params: ConjugationParams): { suffix: FullyVocalized[]; preSuffixTashkil: Tashkil}
 {
-    if(params.tense === "perfect")
+    if(params._legacyTense === "perfect")
         return DeriveSuffixPerfect(params);
     return DeriveSuffixPresent(params);
 }
 
-export function DoesPresentSuffixStartWithWawOrYa(person: Person, numerus: Numerus, gender: Gender)
+export function DoesPresentSuffixStartWithWawOrYa(person: _LegacyPerson, numerus: Numerus, gender: Gender)
 {
     const singular = (person === "second") && (numerus === "singular") && (gender === "female");
     //dual has always alef

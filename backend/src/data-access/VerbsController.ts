@@ -209,8 +209,8 @@ export class VerbsController
 
         const root = new VerbRoot(rootData.radicals);
         const choices = root.GetStem1ContextChoices({
-            middleRadicalTashkil: data.stem1Data.middleRadicalTashkil,
-            middleRadicalTashkilPresent: data.stem1Data.middleRadicalTashkilPresent,
+            middleRadicalTashkil: data.stem1Data.middleRadicalTashkil as any,
+            middleRadicalTashkilPresent: data.stem1Data.middleRadicalTashkilPresent as any,
             soundOverride: (data.stem1Data.flags & 1) !== 0
         });
         if(choices.past.length === 0)

@@ -16,25 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BASE_TASHKIL, DHAMMA, FATHA, FULL_TASHKIL, KASRA, Letter, SHADDA, SUKUN, Tashkil } from "./Definitions";
+import { Letter, TASHKIL_SHADDA, Tashkil } from "./Definitions";
 
-export interface _LegacyPartiallyVocalized
+export type BASE_TASHKIL = "\u064E" | "\u064F" | "\u0650" | "\u0652"; //TODO: remove
+
+export interface _LegacyPartiallyVocalized //TODO: REMOVE
 {
     letter: string;
     tashkil?: BASE_TASHKIL;
-    shadda: boolean;
-}
-export interface _LegacyVerbVocalized
-{
-    letter: string;
-    tashkil: BASE_TASHKIL;
-    shadda: boolean;
-}
-
-export interface _LegacyFullyVocalized
-{
-    letter: string;
-    tashkil: FULL_TASHKIL;
     shadda: boolean;
 }
 
@@ -88,9 +77,10 @@ export function CompareVocalized(a: _LegacyPartiallyVocalized[], b: _LegacyParti
 
 export function IsLongVowel(vocalized: FullyVocalized, predecessor?: FullyVocalized)
 {
-    const isYa = (vocalized.letter === Letter.Ya) && (vocalized.tashkil === Tashkil.Vowel) && (predecessor?.tashkil === Tashkil.Kasra);
+    const isLongYa = (vocalized.letter === Letter.Ya) && (vocalized.tashkil === Tashkil.LongVowelMarker) && (predecessor?.tashkil === Tashkil.Kasra);
+    const isLongWaw = (vocalized.letter === Letter.Waw) && (vocalized.tashkil === Tashkil.LongVowelMarker) && (predecessor?.tashkil === Tashkil.Dhamma);
 
-    return isYa;
+    return isLongYa || isLongWaw;
 }
 
 export function ParseVocalizedText(text: string)
@@ -108,34 +98,34 @@ export function ParseVocalizedText(text: string)
         {
             switch(text[i])
             {
-                case DHAMMA:
+                case Tashkil.Dhamma:
                     if(tashkil !== undefined)
                         throw new Error("Doubled tashkil");
-                    tashkil = DHAMMA;
+                    tashkil = Tashkil.Dhamma;
                     i++;
                     break;
-                case FATHA:
+                case Tashkil.Fatha:
                     if(tashkil !== undefined)
                         throw new Error("Doubled tashkil");
-                    tashkil = FATHA;
+                    tashkil = Tashkil.Fatha;
                     i++;
                     break;
-                case KASRA:
+                case Tashkil.Kasra:
                     if(tashkil !== undefined)
                         throw new Error("Doubled tashkil");
-                    tashkil = KASRA;
+                    tashkil = Tashkil.Kasra;
                     i++;
                     break;
-                case SHADDA:
+                case TASHKIL_SHADDA:
                     if(shadda)
                         throw new Error("Multiple shaddas are not allowed");
                     shadda = true;
                     i++;
                     break;
-                case SUKUN:
+                case Tashkil.Sukun:
                     if(tashkil !== undefined)
                         throw new Error("Doubled tashkil");
-                    tashkil = SUKUN;
+                    tashkil = Tashkil.Sukun;
                     i++;
                     break;
                 default:
@@ -153,17 +143,12 @@ export function ParseVocalizedText(text: string)
     return result;
 }
 
-export function Vocalize(letter: string, tashkil: BASE_TASHKIL): _LegacyPartiallyVocalized
+export function _LegacyVocalizedToString(v: _LegacyPartiallyVocalized) //TODO: REMOVE
 {
-    return { letter, tashkil, shadda: false };
-}
-
-export function _LegacyVocalizedToString(v: _LegacyPartiallyVocalized)
-{
-    return v.letter + (v.shadda ? SHADDA : "") + (v.tashkil ? v.tashkil : "");
+    return v.letter + (v.shadda ? TASHKIL_SHADDA : "") + (v.tashkil ? v.tashkil : "");
 }
 
 export function VocalizedToString(v: PartiallyVocalized)
 {
-    return v.letter + (v.shadda ? SHADDA : "") + (v.tashkil ? v.tashkil : "");
+    return v.letter + (v.shadda ? TASHKIL_SHADDA : "") + (v.tashkil ? v.tashkil : "");
 }

@@ -17,7 +17,7 @@
  * */
 
 import { Letter, Tashkil } from "./Definitions";
-import { _LegacyFullyVocalized, FullyVocalized, _LegacyPartiallyVocalized, _LegacyVocalizedToString, IsLongVowel } from "./Vocalization";
+import { FullyVocalized, IsLongVowel } from "./Vocalization";
 
 //Source: https://en.wikipedia.org/wiki/Hamza#Detailed_description
 
@@ -81,17 +81,15 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
     }
 
     const predecessorIsLongVowel = ( (predecessor?.letter === Letter.Alef) && (predecessor.tashkil === Tashkil.Fatha) )
-        || ( (predecessor?.letter === Letter.Waw) && (predecessor.tashkil === Tashkil.Dhamma) )
         || ( (predecessor !== undefined) && IsLongVowel(predecessor, prepredecessor) );
     const diphtongPreceedes = IsDiphtong(predecessor, prepredecessor);
 
-    let decidingTashkil: Tashkil | undefined;
+    let decidingTashkil: Tashkil | null;
     if(isFinal)
     {
-        if(predecessorIsLongVowel)
-            decidingTashkil = undefined;
-        else
-            decidingTashkil = predecessor?.tashkil;
+        decidingTashkil = predecessor!.tashkil;
+        if((decidingTashkil === Tashkil.Sukun) || (decidingTashkil === Tashkil.LongVowelMarker))
+            decidingTashkil = null;
     }
     else if(predecessorIsLongVowel || diphtongPreceedes)
     {
@@ -100,7 +98,7 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
         else if(predecessor?.letter === Letter.Ya)
             decidingTashkil = Tashkil.Kasra;
         else
-            decidingTashkil = undefined;
+            decidingTashkil = null;
     }
     else
     {
@@ -116,12 +114,12 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
         case Tashkil.Kasra:
             return { letter: Letter.YaHamza, shadda: false, tashkil: followingShortVowel };
         case Tashkil.Sukun: //the article doesn't talk about sukun but this was found through tests
-            console.log(arguments);
+            console.error(arguments);
             throw new Error("check it again and write test! 1");
-        case undefined:
+        case null:
             return { letter: Letter.Hamza, shadda: false, tashkil: followingShortVowel };
         default:
-            console.log(arguments);
+            console.error(arguments);
             throw new Error("TODO: implement me" + decidingTashkil);
     }
 }
@@ -133,17 +131,20 @@ function MaddahCheck(current: FullyVocalized, prev?: FullyVocalized)
         if(current.letter === Letter.Hamza)
         {
             if( (current.tashkil === Tashkil.Sukun) && (prev.tashkil === Tashkil.Fatha))
+            {
+                throw new Error("TODO: NOT IMPLEMENTED"); //create test case
                 return true; //this case was not documented anywhere but was found through tests
+            }
 
-            console.log("HERE MaddahCheck", current.tashkil, prev.tashkil);
+            console.error("HERE MaddahCheck", current.tashkil, prev.tashkil);
             throw new Error("TODO: NOT IMPLEMENTED");
         }
         else if(current.letter === Letter.Alef)
         {
-            if(current.tashkil === undefined)
+            if( (prev.tashkil === Tashkil.Fatha) && (current.tashkil === Tashkil.LongVowelMarker) )
                 return true;
 
-            console.log("HERE MaddahCheck 2", current.tashkil, prev.tashkil);
+            console.error("HERE MaddahCheck 2 -> ", current.tashkil, prev.tashkil);
             throw new Error("TODO: NOT IMPLEMENTED");
         }
     }
@@ -160,7 +161,7 @@ export function Hamzate(vocalized: FullyVocalized[])
         const next = (vocalized[i].letter === Letter.Hamza) ? DetermineHamzaSeat(i === 0, i === (vocalized.length - 1), vocalized[i].tashkil, prev, result[result.length - 2]) : vocalized[i];
 
         if(MaddahCheck(next, prev))
-            result[result.length - 1] = { letter: Letter.AlefMadda, shadda: false, tashkil: Tashkil.Vowel };
+            result[result.length - 1] = { letter: Letter.AlefMadda, shadda: false, tashkil: Tashkil.LongVowelMarker };
         else
             result.push(next);
     }

@@ -18,13 +18,13 @@
 
 import { It } from "acts-util-test";
 import { RunConjugationTest } from "../../shared";
-import { DHAMMA, FATHA, KASRA } from "arabdict-domain/dist/Definitions";
+import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 //TODO: the conjugation table from https://en.wikipedia.org/wiki/Arabic_verbs#Doubled_roots
 
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Doubled_verbs
 It("Wikipedia doubled roots stem table", () => {
-    RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: DHAMMA, soundOverride: false }, [
+    RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, [
         { expected: "فَلَّ" },
         { expected: "فَلَلْتُ", person: "first" },
         { expected: "يَفُلُّ", tense: "present" },
@@ -32,7 +32,7 @@ It("Wikipedia doubled roots stem table", () => {
         { expected: "فُلَّ", voice: "passive" },
         { expected: "يُفَلُّ", voice: "passive", tense: "present" },
     ]);
-    RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, [
+    RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, [
         { expected: "فَلَّ" },
         { expected: "فَلَلْتُ", person: "first" },
         { expected: "يَفِلُّ", tense: "present" },
@@ -40,7 +40,7 @@ It("Wikipedia doubled roots stem table", () => {
         { expected: "فُلَّ", voice: "passive" },
         { expected: "يُفَلُّ", voice: "passive", tense: "present" },
     ]);
-    RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: FATHA, soundOverride: false }, [
+    RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, [
         { expected: "فَلَّ" },
         { expected: "فَلَلْتُ", person: "first" },
         { expected: "يَفَلُّ", tense: "present" },
@@ -48,7 +48,7 @@ It("Wikipedia doubled roots stem table", () => {
         { expected: "فُلَّ", voice: "passive" },
         { expected: "يُفَلُّ", voice: "passive", tense: "present" },
     ]);
-    RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: FATHA, soundOverride: false }, [
+    RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, [
         { expected: "فَلَّ" },
         { expected: "فَلِلْتُ", person: "first" },
         { expected: "يَفَلُّ", tense: "present" },

@@ -18,7 +18,7 @@
 
 import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, SingleSelect, Textarea } from "acfrontend";
 import { DialectData, TranslationEntry } from "../../dist/api";
-import { DialectsService } from "../DialectsService";
+import { DialectsService } from "../services/DialectsService";
 
 interface DialectRenderInfo
 {

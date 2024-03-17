@@ -19,8 +19,7 @@
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { RootCreationData, RootOverviewData } from "../../dist/api";
 import { IsFlagSet, RootFlags } from "../shared/flags";
-import { A3EIN, BA, DAL, FA, HHA, LAM, LETTER_RA, Letter, MIM, QAF, WAW, ZAY } from "arabdict-domain/src/Definitions";
-import { NUN, SIIN, TA } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
+import { A3EIN, FA, HHA, LAM, LETTER_RA, Letter, QAF } from "arabdict-domain/src/Definitions";
 
 export function AreValidRootCharacters(rootRadicals: string)
 {
@@ -45,16 +44,18 @@ export function IsValidRootRadical(char: string)
     switch(char)
     {
         case Letter.Hamza:
-        case BA:
-        case TA:
+        case Letter.Ba:
+        case Letter.Ta:
         case Letter.Tha:
         case Letter.Jiim:
         case HHA:
-        case DAL:
+        case Letter.Kha:
+        case Letter.Dal:
         case Letter.Thal:
         case LETTER_RA:
-        case ZAY:
-        case SIIN:
+        case Letter.Zay:
+        case Letter.Siin:
+        case Letter.Shiin:
         case Letter.Saad:
         case Letter.Daad:
         case Letter.Tta:
@@ -65,10 +66,10 @@ export function IsValidRootRadical(char: string)
         case QAF:
         case Letter.Kaf:
         case LAM:
-        case MIM:
-        case NUN:
+        case Letter.Mim:
+        case Letter.Nun:
         case Letter.Ha:
-        case WAW:
+        case Letter.Waw:
         case Letter.Ya:
             return true;
     }

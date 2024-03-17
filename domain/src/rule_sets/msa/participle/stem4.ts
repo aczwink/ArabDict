@@ -16,31 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { MIM, DHAMMA, KASRA, FATHA, ALEF, SUKUN, Letter } from "../../../Definitions";
+import { Letter, Tashkil, _LegacyVoice } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { _LegacyPartiallyVocalized } from "../../../Vocalization";
-import { Voice } from "../_legacy/VerbStem";
+import { FullyVocalized } from "../../../Vocalization";
 
-export function GenerateParticipleStem4(root: VerbRoot, voice: Voice): _LegacyPartiallyVocalized[]
+export function GenerateParticipleStem4(root: VerbRoot, voice: _LegacyVoice): FullyVocalized[]
 {
-    const voicingTashkil = (voice === "active") ? KASRA : FATHA;
+    const voicingTashkil = (voice === "active") ? Tashkil.Kasra : Tashkil.Fatha;
     switch(root.type)
     {
         case RootType.Hollow:
             return [
-                { letter: MIM, shadda: false, tashkil: DHAMMA },
+                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
                 { letter: root.r1, shadda: false, tashkil: voicingTashkil },
-                { letter: (voice === "active") ? Letter.Ya : ALEF, shadda: false },
-                { letter: root.r3, shadda: false },
+                { letter: (voice === "active") ? Letter.Ya : Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
             ];
 
         case RootType.Sound:
             return [
-                { letter: MIM, shadda: false, tashkil: DHAMMA },
-                { letter: root.r1, shadda: false, tashkil: SUKUN },
+                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
                 { letter: root.r2, shadda: false, tashkil: voicingTashkil },
-                { letter: root.r3, shadda: false },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
             ];
     }
-    return [{letter: "TODO", shadda: false}];
+    return [
+        {
+            letter: ("TODO: implement me: " + root.type) as any,
+            shadda: false,
+            tashkil: Tashkil.EndOfWordMarker
+        }
+    ];
 }

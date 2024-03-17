@@ -18,21 +18,20 @@
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
 import { FullWordData, RootCreationData, VerbData, VerbRelation } from "../../dist/api";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
-import { ConjugationService } from "../ConjugationService";
+import { ConjugationService } from "../services/ConjugationService";
 import { RenderTranslations } from "../shared/translations";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { Tense, Voice, Mood, Gender, Person, Numerus } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
 import { WordRelationshipTypeToString } from "../shared/words";
 import { VerbIdReferenceComponent } from "./VerbReferenceComponent";
 import { RootToString } from "../roots/general";
 import { Stem1DataToStem1ContextOptional } from "./model";
-import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
+import { Gender, Mood, Numerus, _LegacyPerson, Stem1Context, _LegacyMood, _LegacyTense, _LegacyVoice } from "arabdict-domain/src/Definitions";
 
 @Injectable
 export class ShowVerbComponent extends Component
@@ -125,10 +124,10 @@ export class ShowVerbComponent extends Component
         </div>;
     }
 
-    private RenderConjugationTable(tenseTitle: string, stem1ctx: Stem1Context | undefined, tempus: Tense, voice: Voice, mood: Mood, base: (g: Gender, p: Person, n: Numerus) => string)
+    private RenderConjugationTable(tenseTitle: string, stem1ctx: Stem1Context | undefined, tempus: _LegacyTense, voice: _LegacyVoice, mood: _LegacyMood, base: (g: Gender, p: _LegacyPerson, n: Numerus) => string)
     {
-        const conjugate = (g: Gender, p: Person, n: Numerus) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, tempus, voice, g, p, n, mood, stem1ctx);
-        const renderEntry = (g: Gender, p: Person, n: Numerus) => RenderWithDiffHighlights(conjugate(g, p, n), base(g, p, n));
+        const conjugate = (g: Gender, p: _LegacyPerson, n: Numerus) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, tempus, voice, g, p, n, mood, stem1ctx);
+        const renderEntry = (g: Gender, p: _LegacyPerson, n: Numerus) => RenderWithDiffHighlights(conjugate(g, p, n), base(g, p, n));
 
         const dual = this.conjugationService.globalDialectMetaData.hasDual ? [
             <tr>
@@ -199,10 +198,10 @@ export class ShowVerbComponent extends Component
         </fragment>;
     }
 
-    private RenderConjugationTableImperative(tenseTitle: string, stem1ctx: Stem1Context | undefined, tempus: Tense, voice: Voice, mood: Mood, base: (g: Gender, p: Person, n: Numerus) => string)
+    private RenderConjugationTableImperative(tenseTitle: string, stem1ctx: Stem1Context | undefined, tempus: _LegacyTense, voice: _LegacyVoice, mood: _LegacyMood, base: (g: Gender, p: _LegacyPerson, n: Numerus) => string)
     {
-        const conjugate = (g: Gender, p: Person, n: Numerus) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, tempus, voice, g, p, n, mood, stem1ctx);
-        const renderEntry = (g: Gender, p: Person, n: Numerus) => RenderWithDiffHighlights(conjugate(g, p, n), base(g, p, n));
+        const conjugate = (g: Gender, p: _LegacyPerson, n: Numerus) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, tempus, voice, g, p, n, mood, stem1ctx);
+        const renderEntry = (g: Gender, p: _LegacyPerson, n: Numerus) => RenderWithDiffHighlights(conjugate(g, p, n), base(g, p, n));
 
         const dual = this.conjugationService.globalDialectMetaData.hasDual ? [
             <tr>

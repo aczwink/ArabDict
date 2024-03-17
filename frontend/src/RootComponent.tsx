@@ -30,7 +30,6 @@ export class RootComponent extends Component
                     <NavItem route="/verbs">Verbs</NavItem>
                     <NavItem route="/words">Words</NavItem>
                     <NavItem route="/roots">Roots</NavItem>
-                    <NavItem route="/analysis">Verb analysis</NavItem>
                     <NavItem route="/learn">Learn</NavItem>
                     <NavItem route="/statistics">Statistics</NavItem>
                 </ul>

@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,10 +22,8 @@ import { routes as verbsRoutes } from "./verbs/routing";
 import { routes as wordsRoutes } from "./words/routing";
 import { LearnComponent } from "./LearnComponent";
 import { StatisticsComponent } from "./StatisticsComponent";
-import { WordAnalysisComponent } from "./WordAnalysisComponent";
 
 export const routes : Routes = [
-    { path: "analysis", component: WordAnalysisComponent },
     { path: "learn", component: LearnComponent },
     { path: "roots", children: rootRoutes },
     { path: "statistics", component: StatisticsComponent },

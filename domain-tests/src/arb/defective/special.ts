@@ -17,7 +17,7 @@
  * */
 import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest } from "../../shared";
-import { FATHA, KASRA } from "arabdict-domain/dist/Definitions";
+import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D8%B1%D8%A3%D9%89
 It("Specially irregular defective رَأَى", () => {
@@ -168,7 +168,7 @@ It("Specially irregular defective رَأَى", () => {
         { voice: "passive", expected: "نُرَ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("ر-ء-ي", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, conjugations);
+    RunConjugationTest("ر-ء-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
 });
 
 //Source: https://en.wiktionary.org/wiki/%D8%A3%D8%B1%D9%89#Arabic

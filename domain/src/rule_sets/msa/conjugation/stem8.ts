@@ -15,23 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { DAL, ZAY } from "../../../Definitions";
-import { _LegacyFullyVocalized } from "../../../Vocalization";
+import { Letter, _LegacyTense } from "../../../Definitions";
+import { FullyVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
-import { Tense } from "../_legacy/VerbStem";
 
-export function Stem8AssimilateTa(vocalized: _LegacyFullyVocalized[], r1idx: number)
+export function Stem8AssimilateTa(vocalized: FullyVocalized[], r1idx: number)
 {
     switch(vocalized[r1idx].letter)
     {
-        case ZAY:
-            vocalized[r1idx + 1].letter = DAL;
+        case Letter.Zay:
+            vocalized[r1idx + 1].letter = Letter.Dal;
             break;
     }
 }
 
-export function Stem8AssimilateTaVerb(augmentedRoot: AugmentedRoot, tense: Tense)
+export function Stem8AssimilateTaVerb(augmentedRoot: AugmentedRoot, tense: _LegacyTense)
 {
     const r1idx = (tense === "perfect") ? 1 : 0;
-    Stem8AssimilateTa(augmentedRoot.partiallyVocalized as any, r1idx);
+    Stem8AssimilateTa(augmentedRoot.symbols, r1idx);
 }

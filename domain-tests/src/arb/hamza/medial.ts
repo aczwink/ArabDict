@@ -17,12 +17,12 @@
  * */
 import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest } from "../../shared";
-import { DHAMMA } from "arabdict-domain/dist/Definitions";
+import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 It("Ya as consonant before hamza", () => {
     const conjugations: ConjugationTest[] = [
         { expected: "يَأْمُنُ", tense: "present" }
     ];
 
-    RunConjugationTest("ء-م-ن", { middleRadicalTashkil: DHAMMA, middleRadicalTashkilPresent: DHAMMA, soundOverride: false }, conjugations);
+    RunConjugationTest("ء-م-ن", { middleRadicalTashkil: Tashkil.Dhamma, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, conjugations);
 });

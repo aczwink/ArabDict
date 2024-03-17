@@ -17,7 +17,7 @@
  * */
 
 import { JSX_CreateElement } from "acfrontend";
-import { SHADDA } from "arabdict-domain/src/Definitions";
+import { TASHKIL_SHADDA } from "arabdict-domain/src/Definitions";
 import { ParseVocalizedText, _LegacyVocalizedToString } from "arabdict-domain/src/Vocalization";
 
 export function RenderWithDiffHighlights(word: string, reference: string)
@@ -61,7 +61,7 @@ export function RenderWithDiffHighlights(word: string, reference: string)
         {
             Add(parsedWord[0].letter, false);
             if(parsedWord[0].shadda)
-                Add(SHADDA, !parsedRef[0].shadda);
+                Add(TASHKIL_SHADDA, !parsedRef[0].shadda);
             if(parsedWord[0].tashkil !== undefined)
                 Add(parsedWord[0].tashkil, parsedWord[0].tashkil !== parsedRef[0].tashkil);
 

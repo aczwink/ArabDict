@@ -15,12 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { FATHA, DHAMMA, KASRATAN, SUKUN } from "../../../Definitions";
+import { Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { _LegacyFullyVocalized } from "../../../Vocalization";
-import { TA } from "../_legacy/VerbStem";
+import { FullyVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): _LegacyFullyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): FullyVocalized[]
 {
     switch(root.type)
     {
@@ -28,19 +27,19 @@ export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): _LegacyFull
         case RootType.Hollow:
         case RootType.Sound:
             return [
-                { letter: TA, shadda: false, tashkil: FATHA },
-                { letter: root.r1, shadda: false, tashkil: FATHA },
-                { letter: root.r2, shadda: true, tashkil: DHAMMA },
-                { letter: root.r3, shadda: false, tashkil: SUKUN },
+                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r2, shadda: true, tashkil: Tashkil.Dhamma },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
             ];
 
         case RootType.Defective:
             return [
-                { letter: TA, shadda: false, tashkil: FATHA },
-                { letter: root.r1, shadda: false, tashkil: FATHA },
-                { letter: root.r2, shadda: true, tashkil: KASRATAN },
+                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r2, shadda: true, tashkil: Tashkil.Kasratan },
             ];
         default:
-            return [{letter: "TODO", shadda: false, tashkil: SUKUN}];
+            return [{letter: "TODO" as any, shadda: false, tashkil: Tashkil.Sukun}];
     }
 }

@@ -18,7 +18,7 @@
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
 import { WordEditorComponent } from "./WordEditorComponent";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { FullWordData } from "../../dist/api";
 
 @Injectable

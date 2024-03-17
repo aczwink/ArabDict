@@ -18,8 +18,8 @@
 
 import { Component, Injectable, JSX_CreateElement } from "acfrontend";
 import { DialectData } from "../dist/api";
-import { ConjugationService } from "./ConjugationService";
-import { DialectsService } from "./DialectsService";
+import { ConjugationService } from "./services/ConjugationService";
+import { DialectsService } from "./services/DialectsService";
 import { DialectType } from "arabdict-domain/src/Conjugator";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 

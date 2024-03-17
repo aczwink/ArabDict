@@ -19,13 +19,11 @@
 import { BootstrapIcon, CheckBox, Component, FormField, Injectable, JSX_CreateElement, NumberSpinner, Select, SingleSelect } from "acfrontend";
 import { TranslationEntry, VerbRelation, WordRelationshipType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
-import { ConjugationService } from "../ConjugationService";
+import { ConjugationService } from "../services/ConjugationService";
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { DHAMMA, FATHA, KASRA, PRIMARY_TASHKIL } from "arabdict-domain/src/Definitions";
+import { PrimaryTashkil, Stem1Context, Tashkil, _LegacyTense } from "arabdict-domain/src/Definitions";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
-import { Tense } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
 import { WordRelationshipTypeToString } from "../shared/words";
-import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
 
 export interface VerbEditorData
 {
@@ -139,12 +137,12 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         return null;
     }
 
-    private RenderChoice(tashkil: PRIMARY_TASHKIL, tense: Tense)
+    private RenderChoice(tashkil: PrimaryTashkil, tense: _LegacyTense)
     {
         const tashkilDisplayName = {
-            [FATHA]: "فتحة",
-            [DHAMMA]: "ضمة",
-            [KASRA]: "كسرة",
+            [Tashkil.Fatha]: "فتحة",
+            [Tashkil.Dhamma]: "ضمة",
+            [Tashkil.Kasra]: "كسرة",
         };
 
         const stem1Ctx: Stem1Context = {
@@ -155,7 +153,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         return tashkilDisplayName[tashkil] + "  " + tashkil + " : " + this.RenderConjugation(tense, stem1Ctx);
     }
 
-    private RenderConjugation(tense: Tense, stem1Ctx?: Stem1Context)
+    private RenderConjugation(tense: _LegacyTense, stem1Ctx?: Stem1Context)
     {
         const conjugation = this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, tense, "active", "male", "third", "singular", "indicative", stem1Ctx);
         return conjugation;
@@ -186,7 +184,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         );
     }
 
-    private RenderTashkilField(tense: string, choices: PRIMARY_TASHKIL[], value: string, onChanged: (newValue: string) => void)
+    private RenderTashkilField(tense: string, choices: PrimaryTashkil[], value: string, onChanged: (newValue: PrimaryTashkil) => void)
     {
         const conjTense = (tense === "past") ? "perfect" : "present";
         return <FormField title={"Tashkil for middle radical (" + tense + ")"}>
@@ -194,7 +192,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         </FormField>
     }
 
-    private RenderTashkilSelect(choices: PRIMARY_TASHKIL[], tense: Tense, value: string, onChanged: (newValue: string) => void)
+    private RenderTashkilSelect(choices: PrimaryTashkil[], tense: _LegacyTense, value: string, onChanged: (newValue: PrimaryTashkil) => void)
     {
         if(choices.length === 0)
             return <div>{this.RenderConjugation(tense, this.input.data.stem1Context)}</div>;
@@ -217,8 +215,8 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         if(this.input.data.stem1Context === undefined)
         {
             this.input.data.stem1Context = {
-                middleRadicalTashkil: FATHA,
-                middleRadicalTashkilPresent: FATHA,
+                middleRadicalTashkil: Tashkil.Fatha,
+                middleRadicalTashkilPresent: Tashkil.Fatha,
                 soundOverride: false
             };
         }

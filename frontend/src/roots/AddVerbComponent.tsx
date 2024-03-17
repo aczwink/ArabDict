@@ -17,7 +17,7 @@
  * */
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { RootCreationData } from "../../dist/api";
 import { VerbEditorComponent, VerbEditorData } from "../verbs/VerbEditorComponent";
 import { Stem1ContextToStem1DataOptional } from "../verbs/model";

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Stem1Context } from "arabdict-domain/src/rule_sets/msa/_legacy/CreateVerb";
+import { Stem1Context } from "arabdict-domain/src/Definitions";
 import { Stem1ExtraData } from "../../dist/api";
 import { IsFlagSet } from "../shared/flags";
 
@@ -45,8 +45,8 @@ export function Stem1ContextToStem1DataOptional(data?: Stem1Context)
 export function Stem1DataToStem1Context(data: Stem1ExtraData): Stem1Context
 {
     return {
-        middleRadicalTashkil: data.middleRadicalTashkil,
-        middleRadicalTashkilPresent: data.middleRadicalTashkilPresent,
+        middleRadicalTashkil: data.middleRadicalTashkil as any,
+        middleRadicalTashkilPresent: data.middleRadicalTashkilPresent as any,
         soundOverride: IsFlagSet(data.flags, VerbFlags.SoundOverride)
     };
 }

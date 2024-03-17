@@ -16,27 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, ALEF_MAKSURA, DHAMMA, FATHA, KASRA, Letter, SUKUN, Tashkil } from "../../../Definitions";
-import { ConjugationParams } from "../../../DialectConjugator";
-import { FullyVocalized, _LegacyPartiallyVocalized, _LegacyVerbVocalized } from "../../../Vocalization";
+import { ConjugationParams, Letter, Numerus, _LegacyPerson, Stem1Context, Tashkil } from "../../../Definitions";
+import { FullyVocalized, _LegacyPartiallyVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
-import { Stem1Context } from "../_legacy/CreateVerb";
-import { Numerus, Person } from "../_legacy/VerbStem";
 import { DoesPresentSuffixStartWithWawOrYa } from "./suffix";
 
 function AlterDefectiveEndingActivePerfect(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    if(params.stem1Context?.middleRadicalTashkilPresent === FATHA)
+    if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Fatha)
     {
         //past tense is for type 3 quite regular
-        if( (params.person === "third") && (params.numerus === "plural") && (params.gender === "male") )
+        if( (params._legacyPerson === "third") && (params._legacyNumerus === "plural") && (params._legacyGender === "male") )
         {
             augmentedRoot.DropRadial(3);
-            augmentedRoot.ApplyTashkil(2, DHAMMA);
+            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
         }
         else
         {
-            const tashkil = (params.person === "third") && (params.numerus !== "plural") ? FATHA : KASRA;
+            const tashkil = (params._legacyPerson === "third") && (params._legacyNumerus !== "plural") ? Tashkil.Fatha : Tashkil.Kasra;
 
             //replacing is important because roots with waw as 3rd radical are still conjugated with ya in this case
             augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, shadda: false, tashkil: tashkil });
@@ -44,122 +41,122 @@ function AlterDefectiveEndingActivePerfect(augmentedRoot: AugmentedRoot, params:
     }
     else
     {
-        let ending: _LegacyVerbVocalized = { letter: ALEF_MAKSURA, shadda: false, tashkil: FATHA };
-        if(params.stem1Context?.middleRadicalTashkilPresent === DHAMMA)
-            ending = { letter: ALEF, shadda: false, tashkil: FATHA };
+        let ending: FullyVocalized = { letter: Letter.AlefMaksura, shadda: false, tashkil: Tashkil.Fatha };
+        if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Dhamma)
+            ending = { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha };
 
-        if(params.person === "third")
+        if(params._legacyPerson === "third")
         {
-            if(params.numerus === "singular")
+            if(params._legacyNumerus === "singular")
             {
-                if(params.gender === "male")
+                if(params._legacyGender === "male")
                     augmentedRoot.ReplaceRadical(3, ending);
                 else
                     augmentedRoot.AssimilateRadical(3);
             }
-            else if(params.numerus === "dual")
+            else if(params._legacyNumerus === "dual")
             {
-                if(params.gender === "female")
+                if(params._legacyGender === "female")
                     augmentedRoot.AssimilateRadical(3);
             }
-            else if(params.numerus === "plural")
+            else if(params._legacyNumerus === "plural")
             {
-                if(params.gender === "male")
+                if(params._legacyGender === "male")
                     augmentedRoot.DropRadial(3);
             }
         }
     }
 }
 
-function IsShorteningCase(numerus: Numerus, person: Person)
+function IsShorteningCase(numerus: Numerus, person: _LegacyPerson)
 {
     return (numerus === "singular") || ( (numerus === "plural") && (person === "first") );
 }
 
-function IsDefectiveType3SpecialCase(numerus: Numerus, person: Person, stem1Context?: Stem1Context)
+function IsDefectiveType3SpecialCase(numerus: Numerus, person: _LegacyPerson, stem1Context?: Stem1Context)
 {
     //Pre-condition to this method: DoesPresentSuffixStartWithWawOrYa is false!
 
-    const isType3 = stem1Context?.middleRadicalTashkilPresent === FATHA;
+    const isType3 = stem1Context?.middleRadicalTashkilPresent === Tashkil.Fatha;
     return isType3 && IsShorteningCase(numerus, person);
 }
 
 function AlterDefectiveEndingActivePresentIndicative(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    if(DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender))
+    if(DoesPresentSuffixStartWithWawOrYa(params._legacyPerson, params._legacyNumerus, params._legacyGender))
     {
         augmentedRoot.DropRadial(3);
-        if( (params.stem1Context?.middleRadicalTashkilPresent !== FATHA) && (params.numerus === "singular"))
-            augmentedRoot.ApplyTashkil(2, KASRA);
-        else if(params.stem1Context?.middleRadicalTashkilPresent === KASRA)
-            augmentedRoot.ApplyTashkil(2, DHAMMA);
+        if( (params._legacyStem1Context?.middleRadicalTashkilPresent !== Tashkil.Fatha) && (params._legacyNumerus === "singular"))
+            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Kasra);
+        else if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Kasra)
+            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
     }
-    else if(IsDefectiveType3SpecialCase(params.numerus, params.person, params.stem1Context))
+    else if(IsDefectiveType3SpecialCase(params._legacyNumerus, params._legacyPerson, params._legacyStem1Context))
     {
-        augmentedRoot.ReplaceRadical(3, { letter: ALEF_MAKSURA, shadda: false, tashkil: FATHA });
+        augmentedRoot.ReplaceRadical(3, { letter: Letter.AlefMaksura, shadda: false, tashkil: Tashkil.Fatha });
     }
-    else if( (params.numerus === "plural") && (params.gender === "female") )
+    else if( (params._legacyNumerus === "plural") && (params._legacyGender === "female") )
     {
-        if(params.stem1Context?.middleRadicalTashkilPresent === DHAMMA)
-            augmentedRoot.ApplyTashkil(3, DHAMMA);
-        else if(params.stem1Context?.middleRadicalTashkilPresent === KASRA)
-            augmentedRoot.ApplyTashkil(3, KASRA);
+        if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Dhamma)
+            augmentedRoot.ApplyRadicalTashkil(3, Tashkil.Dhamma);
+        else if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Kasra)
+            augmentedRoot.ApplyRadicalTashkil(3, Tashkil.Kasra);
     }
-    else if( (params.stem1Context?.middleRadicalTashkilPresent === KASRA) && IsShorteningCase(params.numerus, params.person))
+    else if( (params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Kasra) && IsShorteningCase(params._legacyNumerus, params._legacyPerson))
     {
-        augmentedRoot.ApplyTashkil(3, KASRA);
+        augmentedRoot.ApplyRadicalTashkil(3, Tashkil.Kasra);
     }
 }
 
 function AlterDefectiveEndingActivePresentSubjunctive(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    if(DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender))
+    if(DoesPresentSuffixStartWithWawOrYa(params._legacyPerson, params._legacyNumerus, params._legacyGender))
     {
         augmentedRoot.DropRadial(3);
-        if( (params.stem1Context?.middleRadicalTashkilPresent !== FATHA) && (params.numerus === "singular"))
-            augmentedRoot.ApplyTashkil(2, KASRA);
-        else if(params.stem1Context?.middleRadicalTashkilPresent === KASRA)
-            augmentedRoot.ApplyTashkil(2, DHAMMA);
+        if( (params._legacyStem1Context?.middleRadicalTashkilPresent !== Tashkil.Fatha) && (params._legacyNumerus === "singular"))
+            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Kasra);
+        else if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Kasra)
+            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
     }
-    else if(params.stem1Context?.middleRadicalTashkilPresent === FATHA)
+    else if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Fatha)
         AlterDefectiveEndingActivePresentIndicative(augmentedRoot, params);
-    else if( (params.numerus === "plural") && (params.gender === "female") )
+    else if( (params._legacyNumerus === "plural") && (params._legacyGender === "female") )
     {
-        if(params.stem1Context?.middleRadicalTashkilPresent === DHAMMA)
-            augmentedRoot.ApplyTashkil(3, DHAMMA);
-        else if(params.stem1Context?.middleRadicalTashkilPresent === KASRA)
-            augmentedRoot.ApplyTashkil(3, KASRA);
+        if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Dhamma)
+            augmentedRoot.ApplyRadicalTashkil(3, Tashkil.Dhamma);
+        else if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Kasra)
+            augmentedRoot.ApplyRadicalTashkil(3, Tashkil.Kasra);
     }
 }
 
 function AlterDefectiveEndingActivePresentJussiveOrImperative(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
     if(
-        DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender)
+        DoesPresentSuffixStartWithWawOrYa(params._legacyPerson, params._legacyNumerus, params._legacyGender)
         ||
-        IsDefectiveType3SpecialCase(params.numerus, params.person, params.stem1Context)
+        IsDefectiveType3SpecialCase(params._legacyNumerus, params._legacyPerson, params._legacyStem1Context)
     )
     {
         augmentedRoot.DropRadial(3);
-        if( (params.stem1Context?.middleRadicalTashkilPresent !== FATHA) && (params.numerus === "singular"))
-            augmentedRoot.ApplyTashkil(2, KASRA);
-        else if(params.stem1Context?.middleRadicalTashkilPresent === KASRA)
-            augmentedRoot.ApplyTashkil(2, DHAMMA);
+        if( (params._legacyStem1Context?.middleRadicalTashkilPresent !== Tashkil.Fatha) && (params._legacyNumerus === "singular"))
+            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Kasra);
+        else if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Kasra)
+            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
     }
-    else if( (params.stem1Context?.middleRadicalTashkilPresent !== FATHA) && IsShorteningCase(params.numerus, params.person))
+    else if( (params._legacyStem1Context?.middleRadicalTashkilPresent !== Tashkil.Fatha) && IsShorteningCase(params._legacyNumerus, params._legacyPerson))
     {
         augmentedRoot.DropRadial(3);
-        if(params.stem1Context?.middleRadicalTashkilPresent === DHAMMA)
-            augmentedRoot.ApplyTashkil(2, DHAMMA);
+        if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Dhamma)
+            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
         else
-            augmentedRoot.ApplyTashkil(2, KASRA);
+            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Kasra);
     }
-    else if( (params.numerus === "plural") && (params.gender === "female") )
+    else if( (params._legacyNumerus === "plural") && (params._legacyGender === "female") )
     {
-        if(params.stem1Context?.middleRadicalTashkilPresent === DHAMMA)
-            augmentedRoot.ApplyTashkil(3, DHAMMA);
-        else if(params.stem1Context?.middleRadicalTashkilPresent === KASRA)
-            augmentedRoot.ApplyTashkil(3, KASRA);
+        if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Dhamma)
+            augmentedRoot.ApplyRadicalTashkil(3, Tashkil.Dhamma);
+        else if(params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Kasra)
+            augmentedRoot.ApplyRadicalTashkil(3, Tashkil.Kasra);
     }
 }
 
@@ -171,63 +168,63 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
         case 2:
         case 10:
         {
-            if(params.voice === "passive")
+            if(params._legacyVoice === "passive")
             {
-                if(params.tense === "perfect")
+                if(params._legacyTense === "perfect")
                 {
-                    if((params.gender === "male") && (params.numerus === "plural") && (params.person === "third"))
+                    if((params._legacyGender === "male") && (params._legacyNumerus === "plural") && (params._legacyPerson === "third"))
                         augmentedRoot.AssimilateRadical(3);
-                    else if((params.gender === "female") && (params.numerus === "plural") && (params.person === "third"))
-                        augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, shadda: false, tashkil: KASRA});
+                    else if((params._legacyGender === "female") && (params._legacyNumerus === "plural") && (params._legacyPerson === "third"))
+                        augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Kasra});
                     else
-                        augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, shadda: false, tashkil: (params.person === "third") ? FATHA : KASRA});
+                        augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, shadda: false, tashkil: (params._legacyPerson === "third") ? Tashkil.Fatha : Tashkil.Kasra});
                 }
                 else
                 {
-                    if(params.mood === "jussive")
+                    if(params._legacyMood === "jussive")
                     {
-                        if((params.numerus !== "dual") && !( (params.numerus === "plural") && (params.gender === "female")))
+                        if((params._legacyNumerus !== "dual") && !( (params._legacyNumerus === "plural") && (params._legacyGender === "female")))
                         {
                             augmentedRoot.AssimilateRadical(3);
-                            augmentedRoot.ApplyTashkil(2, FATHA);
+                            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Fatha);
                         }
                         else
                             augmentedRoot.r3.letter = Letter.Ya;
                     }
                     else
                     {
-                        if((params.person === "second") && (params.numerus === "singular") && (params.gender === "female"))
+                        if((params._legacyPerson === "second") && (params._legacyNumerus === "singular") && (params._legacyGender === "female"))
                         {
                             augmentedRoot.AssimilateRadical(3);
-                            augmentedRoot.ApplyTashkil(2, FATHA);
+                            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Fatha);
                         }
-                        else if(params.numerus === "dual")
+                        else if(params._legacyNumerus === "dual")
                         {
                             augmentedRoot.r3.letter = Letter.Ya;
                         }
-                        else if((params.numerus === "plural") && (params.gender === "female"))
+                        else if((params._legacyNumerus === "plural") && (params._legacyGender === "female"))
                         {
                             augmentedRoot.r3.letter = Letter.Ya;
                         }
-                        else if((params.person !== "first") && (params.numerus === "plural") && (params.gender === "male"))
+                        else if((params._legacyPerson !== "first") && (params._legacyNumerus === "plural") && (params._legacyGender === "male"))
                         {
                             augmentedRoot.AssimilateRadical(3);
-                            augmentedRoot.ApplyTashkil(2, FATHA);
+                            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Fatha);
                         }
                         else
-                            augmentedRoot.ReplaceRadical(3, { letter: ALEF_MAKSURA, shadda: false, tashkil: FATHA });
+                            augmentedRoot.ReplaceRadical(3, { letter: Letter.AlefMaksura, shadda: false, tashkil: Tashkil.Fatha });
                     }
                 }
                 return;
             }
 
-            if(params.tense === "perfect")
+            if(params._legacyTense === "perfect")
                 AlterDefectiveEndingActivePerfect(augmentedRoot, params);
-            else if(params.mood === "indicative")
+            else if(params._legacyMood === "indicative")
                 AlterDefectiveEndingActivePresentIndicative(augmentedRoot, params);
-            else if(params.mood === "subjunctive")
+            else if(params._legacyMood === "subjunctive")
                 AlterDefectiveEndingActivePresentSubjunctive(augmentedRoot, params);
-            else if( (params.mood === "jussive") || (params.mood === "imperative") )
+            else if( (params._legacyMood === "jussive") || (params._legacyMood === "imperative") )
                 AlterDefectiveEndingActivePresentJussiveOrImperative(augmentedRoot, params);
         }
         break;
@@ -236,13 +233,13 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
 
 export function AlterDefectiveSuffix(params: ConjugationParams, suffix: (FullyVocalized | _LegacyPartiallyVocalized)[])
 {
-    if(params.voice === "active")
+    if(params._legacyVoice === "active")
     {
-        if( (params.tense === "perfect") && (params.stem1Context?.middleRadicalTashkilPresent !== FATHA) && (params.numerus === "plural") && (params.person === "third") && (params.gender === "male"))
+        if( (params._legacyTense === "perfect") && (params._legacyStem1Context?.middleRadicalTashkilPresent !== Tashkil.Fatha) && (params._legacyNumerus === "plural") && (params._legacyPerson === "third") && (params._legacyGender === "male"))
             suffix[0].tashkil = Tashkil.Sukun;
-        else if(params.tense === "present")
+        else if(params._legacyTense === "present")
         {
-            if( DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender) && (params.stem1Context?.middleRadicalTashkilPresent === FATHA))
+            if( DoesPresentSuffixStartWithWawOrYa(params._legacyPerson, params._legacyNumerus, params._legacyGender) && (params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Fatha))
                 suffix[0].tashkil = Tashkil.Sukun;
         }
     }

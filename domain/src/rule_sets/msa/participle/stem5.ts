@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,32 +16,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { MIM, DHAMMA, FATHA, KASRA, KASRATAN, FATHATAN, SUKUN } from "../../../Definitions";
+import { Letter, Tashkil, _LegacyVoice } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { _LegacyFullyVocalized } from "../../../Vocalization";
-import { TA, Voice } from "../_legacy/VerbStem";
+import { FullyVocalized } from "../../../Vocalization";
 
-export function GenerateParticipleStem5(root: VerbRoot, voice: Voice): _LegacyFullyVocalized[]
+export function GenerateParticipleStem5(root: VerbRoot, voice: _LegacyVoice): FullyVocalized[]
 {
     switch(root.type)
     {
         case RootType.Defective:
             return [
-                { letter: MIM, shadda: false, tashkil: DHAMMA },
-                { letter: TA, shadda: false, tashkil: FATHA },
-                { letter: root.r1, shadda: false, tashkil: FATHA },
-                { letter: root.r2, shadda: true, tashkil: (voice === "active" ? KASRATAN : FATHATAN) },
+                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
+                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r2, shadda: true, tashkil: (voice === "active" ? Tashkil.Kasratan : Tashkil.Fathatan) },
             ];
 
         case RootType.SecondConsonantDoubled:
         case RootType.Sound:
             return [
-                { letter: MIM, shadda: false, tashkil: DHAMMA },
-                { letter: TA, shadda: false, tashkil: FATHA },
-                { letter: root.r1, shadda: false, tashkil: FATHA },
-                { letter: root.r2, shadda: true, tashkil: (voice === "active" ? KASRA : FATHA) },
-                { letter: root.r3, shadda: false, tashkil: SUKUN },
+                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
+                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r2, shadda: true, tashkil: (voice === "active" ? Tashkil.Kasra : Tashkil.Fatha) },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
             ];
     }
-    return [{letter: "TODO", shadda: false, tashkil: SUKUN }];
+    return [{letter: "TODO" as any, shadda: false, tashkil: Tashkil.Sukun }];
 }

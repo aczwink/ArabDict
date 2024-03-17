@@ -18,7 +18,7 @@
 import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest } from "../../shared";
 import { DialectType } from "arabdict-domain/dist/Conjugator";
-import { DHAMMA, FATHA } from "arabdict-domain/dist/Definitions";
+import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar#Regular_verb_conjugation
 
@@ -63,5 +63,5 @@ It("apc: Stem1 basic conjugation test", () => {
         { tense: "present", mood: "imperative", numerus: "plural", person: "second", expected: "كْتِبُو" },
     ];
 
-    RunConjugationTest("ك-ت-ب", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: DHAMMA, soundOverride: false }, conjugations, DialectType.NorthLevantineArabic);
+    RunConjugationTest("ك-ت-ب", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, conjugations, DialectType.NorthLevantineArabic);
 });

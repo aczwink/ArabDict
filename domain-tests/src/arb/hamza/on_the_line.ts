@@ -17,7 +17,7 @@
  * */
 import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest } from "../../shared";
-import { KASRA } from "arabdict-domain/dist/Definitions";
+import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D8%AC%D8%A7%D8%A1
 
@@ -27,5 +27,5 @@ It("Hamza on the line", () => {
         { expected: "جَاءَتْ", gender: "female" },
     ];
 
-    RunConjugationTest("ج-ي-ء", { middleRadicalTashkil: KASRA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, conjugations);
+    RunConjugationTest("ج-ي-ء", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
 });

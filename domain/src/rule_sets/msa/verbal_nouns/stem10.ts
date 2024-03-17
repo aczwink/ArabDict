@@ -15,12 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ALEF, FATHA, KASRA, Letter, SUKUN } from "../../../Definitions";
+import { Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { _LegacyFullyVocalized } from "../../../Vocalization";
-import { SIIN, TA } from "../_legacy/VerbStem";
+import { FullyVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem10(root: VerbRoot): _LegacyFullyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem10(root: VerbRoot): FullyVocalized[]
 {
     switch(root.type)
     {
@@ -28,26 +27,26 @@ export function GenerateAllPossibleVerbalNounsStem10(root: VerbRoot): _LegacyFul
         case RootType.SecondConsonantDoubled:
         case RootType.Sound:
             return [
-                { letter: ALEF, shadda: false, tashkil: KASRA },
-                { letter: SIIN, shadda: false, tashkil: SUKUN },
-                { letter: TA, shadda: false, tashkil: KASRA },
-                { letter: root.r1, shadda: false, tashkil: SUKUN },
-                { letter: root.r2, shadda: false, tashkil: FATHA },
-                { letter: ALEF, shadda: false, tashkil: FATHA },
-                { letter: root.r3, shadda: false, tashkil: FATHA },
+                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Kasra },
+                { letter: Letter.Siin, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Kasra },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
             ];
 
         case RootType.Hollow:
             return [
-                { letter: ALEF, shadda: false, tashkil: KASRA },
-                { letter: SIIN, shadda: false, tashkil: SUKUN },
-                { letter: TA, shadda: false, tashkil: KASRA },
-                { letter: root.r1, shadda: false, tashkil: FATHA },
-                { letter: ALEF, shadda: false, tashkil: FATHA },
-                { letter: root.r3, shadda: false, tashkil: FATHA },
-                { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
+                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Kasra },
+                { letter: Letter.Siin, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Kasra },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.Sukun },
             ];
     }
 
-    return [{letter: "TODO", shadda: false, tashkil: FATHA}];
+    return [{letter: "TODO" as any, shadda: false, tashkil: Tashkil.Fatha}];
 }

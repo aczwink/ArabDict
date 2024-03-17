@@ -18,8 +18,8 @@
 
 import { Injectable, Component, Anchor, ProgressSpinner, JSX_CreateElement } from "acfrontend";
 import { RootCreationData, VerbData } from "../../dist/api";
-import { APIService } from "../APIService";
-import { ConjugationService } from "../ConjugationService";
+import { APIService } from "../services/APIService";
+import { ConjugationService } from "../services/ConjugationService";
 import { Stem1DataToStem1ContextOptional } from "./model";
 
 @Injectable

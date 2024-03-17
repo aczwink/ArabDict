@@ -89,7 +89,7 @@ export class StatisticsController
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
         const verbs = await conn.Select("SELECT COUNT(DISTINCT verbId) as cnt, dialectId FROM `verbs_translations` GROUP BY dialectId");
-        const words = await conn.Select("SELECT COUNT(DISTINCT wordId) as cnt, dialectId FROM `words_translations` GROUP BY dialectId");
+        const words = await conn.Select("SELECT COUNT(DISTINCT wf.id) as cnt, wft.dialectId FROM `words_functions` wf INNER JOIN `words_functions_translations` wft ON wft.wordFunctionId = wf.id GROUP BY wft.dialectId");
 
         const dialectCounts: DialectStatistics[] = [];
         for (const row of verbs)

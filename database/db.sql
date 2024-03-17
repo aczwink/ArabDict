@@ -117,7 +117,6 @@ DROP TABLE IF EXISTS `words`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `words` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `type` tinyint(3) unsigned NOT NULL,
   `word` text NOT NULL,
   `isMale` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -139,6 +138,42 @@ CREATE TABLE `words_derivations` (
   KEY `words_relations_toWordId` (`sourceWordId`),
   CONSTRAINT `words_relations_fromWordId` FOREIGN KEY (`derivedWordId`) REFERENCES `words` (`id`),
   CONSTRAINT `words_relations_toWordId` FOREIGN KEY (`sourceWordId`) REFERENCES `words` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `words_functions`
+--
+
+DROP TABLE IF EXISTS `words_functions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `words_functions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `wordId` int(10) unsigned NOT NULL,
+  `type` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `words_functions_wordId` (`wordId`),
+  CONSTRAINT `words_functions_wordId` FOREIGN KEY (`wordId`) REFERENCES `words` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `words_functions_translations`
+--
+
+DROP TABLE IF EXISTS `words_functions_translations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `words_functions_translations` (
+  `wordFunctionId` int(10) unsigned NOT NULL,
+  `ordering` tinyint(3) unsigned NOT NULL,
+  `dialectId` int(10) unsigned NOT NULL,
+  `text` text NOT NULL,
+  PRIMARY KEY (`wordFunctionId`,`ordering`),
+  KEY `words_translations_dialectId` (`dialectId`),
+  CONSTRAINT `words_translations_dialectId` FOREIGN KEY (`dialectId`) REFERENCES `dialects` (`id`),
+  CONSTRAINT `words_translations_wordFunctionId` FOREIGN KEY (`wordFunctionId`) REFERENCES `words_functions` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -174,25 +209,6 @@ CREATE TABLE `words_roots` (
   KEY `words_roots_rootId` (`rootId`),
   CONSTRAINT `words_roots_rootId` FOREIGN KEY (`rootId`) REFERENCES `roots` (`id`),
   CONSTRAINT `words_roots_wordId` FOREIGN KEY (`wordId`) REFERENCES `words` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `words_translations`
---
-
-DROP TABLE IF EXISTS `words_translations`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `words_translations` (
-  `wordId` int(10) unsigned NOT NULL,
-  `ordering` tinyint(3) unsigned NOT NULL,
-  `dialectId` int(10) unsigned NOT NULL,
-  `text` text NOT NULL,
-  PRIMARY KEY (`wordId`,`ordering`),
-  KEY `words_translations_dialectId` (`dialectId`),
-  CONSTRAINT `words_translations_dialectId` FOREIGN KEY (`dialectId`) REFERENCES `dialects` (`id`),
-  CONSTRAINT `words_translations_wordId` FOREIGN KEY (`wordId`) REFERENCES `words` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -271,4 +287,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-03 22:58:49
+-- Dump completed on 2024-03-17 23:02:43

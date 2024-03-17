@@ -16,13 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { FATHA, ALEF, KASRATAN, MIM, SUKUN, DHAMMA, KASRA, WAW, Letter, Tashkil } from "../../../Definitions";
+import { Letter, Tashkil, Stem1Context, _LegacyVoice } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
 import { FullyVocalized, _LegacyPartiallyVocalized } from "../../../Vocalization";
-import { Stem1Context } from "../_legacy/CreateVerb";
-import { Voice } from "../_legacy/VerbStem";
 
-export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Context: Stem1Context): (_LegacyPartiallyVocalized | FullyVocalized)[]
+export function GenerateParticipleStem1(root: VerbRoot, voice: _LegacyVoice, stem1Context: Stem1Context): (_LegacyPartiallyVocalized | FullyVocalized)[]
 {
     switch(root.type)
     {
@@ -31,41 +29,41 @@ export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Conte
             if(voice === "active")
             {
                 return [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false },
-                    { letter: root.r2, shadda: false, tashkil: KASRATAN as any },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Kasratan },
                 ];
             }
             return [
-                { letter: MIM, shadda: false, tashkil: FATHA },
-                { letter: root.r1, shadda: false, tashkil: SUKUN },
-                { letter: root.r2, shadda: false, tashkil: (stem1Context.middleRadicalTashkilPresent === DHAMMA) ? DHAMMA : KASRA },
-                { letter: (stem1Context.middleRadicalTashkilPresent === DHAMMA) ? WAW : Letter.Ya, shadda: true },
+                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: root.r2, shadda: false, tashkil: (stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma) ? Tashkil.Dhamma : Tashkil.Kasra },
+                { letter: (stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma) ? Letter.Waw : Letter.Ya, shadda: true },
             ];
 
         case RootType.Hollow:
             if(voice === "active")
             {
                 return [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Vowel },
-                    { letter: Letter.Hamza, shadda: false, tashkil: KASRA },
-                    { letter: root.r3, shadda: false, tashkil: Tashkil.WordEnd },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                    { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.Kasra },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
                 ];
             }
             return [
-                { letter: MIM, shadda: false, tashkil: FATHA },
-                { letter: root.r1, shadda: false, tashkil: (stem1Context.middleRadicalTashkil === KASRA) ? KASRA : DHAMMA },
-                { letter: (stem1Context.middleRadicalTashkil === KASRA) ? Letter.Ya : Letter.Waw, shadda: false, tashkil: Tashkil.Vowel },
-                { letter: root.r3, shadda: false, tashkil: Tashkil.WordEnd },
+                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r1, shadda: false, tashkil: (stem1Context.middleRadicalTashkil === Tashkil.Kasra) ? Tashkil.Kasra : Tashkil.Dhamma },
+                { letter: (stem1Context.middleRadicalTashkil === Tashkil.Kasra) ? Letter.Ya : Letter.Waw, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
             ];
 
         case RootType.Quadriliteral:
             return [
-                { letter: MIM, shadda: false, tashkil: DHAMMA },
-                { letter: root.r1, shadda: false, tashkil: FATHA },
-                { letter: root.r2, shadda: false, tashkil: SUKUN },
-                { letter: root.r3, shadda: false, tashkil: (voice === "active") ? KASRA : FATHA },
+                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: root.r3, shadda: false, tashkil: (voice === "active") ? Tashkil.Kasra : Tashkil.Fatha },
                 { letter: root.r4, shadda: false },
             ];
 
@@ -73,35 +71,35 @@ export function GenerateParticipleStem1(root: VerbRoot, voice: Voice, stem1Conte
             if(voice === "active")
             {
                 return [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: true, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: true, tashkil: Tashkil.Sukun },
                 ];
             }
             return [
-                { letter: MIM, shadda: false, tashkil: FATHA },
-                { letter: root.r1, shadda: false, tashkil: SUKUN },
-                { letter: root.r2, shadda: false, tashkil: DHAMMA },
-                { letter: WAW, shadda: false, tashkil: DHAMMA },
-                { letter: root.r2, shadda: false, tashkil: SUKUN },
+                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: root.r2, shadda: false, tashkil: Tashkil.Dhamma },
+                { letter: Letter.Waw, shadda: false, tashkil: Tashkil.Dhamma },
+                { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
             ];
 
         case RootType.Sound:
             if(voice === "active")
             {
                 return [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false },
-                    { letter: root.r2, shadda: false, tashkil: KASRA },
-                    { letter: root.r3, shadda: false },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Kasra },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
                 ];
             }
             return [
-                { letter: MIM, shadda: false, tashkil: FATHA },
-                { letter: root.r1, shadda: false, tashkil: SUKUN },
-                { letter: root.r2, shadda: false, tashkil: DHAMMA },
-                { letter: WAW, shadda: false },
-                { letter: root.r3, shadda: false },
+                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Fatha },
+                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: root.r2, shadda: false, tashkil: Tashkil.Dhamma },
+                { letter: Letter.Waw, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
             ];
     }
     return [{letter: "TODO", shadda: false}];

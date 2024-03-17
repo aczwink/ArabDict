@@ -17,7 +17,7 @@
  * */
 
 import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Textarea } from "acfrontend";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { RootCreationData } from "../../dist/api";
 import { RootEditorComponent } from "./RootEditorComponent";
 import { DoRootCharactersFormValidRoot } from "./general";

@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,67 +16,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ALEF, KASRA, SUKUN, FATHA, ALEF_MAKSURA } from "../../../Definitions";
+import { Letter, Tashkil, _LegacyVoice, _LegacyTense, Gender, Numerus, _LegacyPerson } from "../../../Definitions";
 import { VerbRoot, RootType } from "../../../VerbRoot";
-import { Gender, Numerus, Person, TA, Tense, VerbStem, Voice } from "./VerbStem";
+import { _LegacyVerbStem } from "./VerbStem";
 
-export class VerbStem8 implements VerbStem
+//TODO: REMOVE
+export class _LegacyVerbStem8 implements _LegacyVerbStem
 {
     constructor(private root: VerbRoot)
     {
     }
 
     //Public methods
-    public Conjugate(tense: Tense, voice: Voice, gender: Gender, person: Person, numerus: Numerus): string
+    public Conjugate(tense: _LegacyTense, voice: _LegacyVoice, gender: Gender, person: _LegacyPerson, numerus: Numerus): string
     {
         switch(tense)
         {
             case "perfect":
                 return this.ConjugatePerfect(voice, gender, person, numerus);
             case "present":
-                return "TODO";
+                return "T" + Tashkil.Fatha + "O" + Tashkil.Fatha + "D" + Tashkil.Fatha + "O" + Tashkil.Fatha;
         }
     }
 
     //Private methods
-    private ConjugatePerfect(voice: Voice, gender: Gender, person: Person, numerus: Numerus)
+    private ConjugatePerfect(voice: _LegacyVoice, gender: Gender, person: _LegacyPerson, numerus: Numerus)
     {
         if(voice === "active")
             return this.ConjugatePerfectActive(gender, person, numerus);
-        return "TODO";
+        return "T" + Tashkil.Fatha + "O" + Tashkil.Fatha + "D" + Tashkil.Fatha + "O" + Tashkil.Fatha;
     }
 
-    private ConjugatePerfectActive(gender: Gender, person: Person, numerus: Numerus)
+    private ConjugatePerfectActive(gender: Gender, person: _LegacyPerson, numerus: Numerus)
     {
         switch(numerus)
         {
-            case "dual":
-            case "plural":
-                return "TODO";
             case "singular":
                 switch(person)
                 {
-                    case "first":
-                    case "second":
-                        return "TODO";
                     case "third":
                         {
                             switch(gender)
                             {
-                                case "female":
-                                    return "TODO";
                                 case "male":
                                     switch(this.root.type)
                                     {
-                                        case RootType.Defective:
-                                            return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + this.root.r2 + FATHA + ALEF_MAKSURA;
                                         case RootType.Hollow:
-                                            return ALEF + KASRA + this.root.r1 + SUKUN + TA + FATHA + ALEF + this.root.r3 + FATHA;
+                                            return Letter.Alef + Tashkil.Kasra + this.root.r1 + Tashkil.Sukun + Letter.Ta + Tashkil.Fatha + Letter.Alef + this.root.r3 + Tashkil.Fatha;
                                     }
-                                    return "TODO";
                             }
                         }
                 }
         }
+        return "T" + Tashkil.Fatha + "O" + Tashkil.Fatha + "D" + Tashkil.Fatha + "O" + Tashkil.Fatha;
     }
 }

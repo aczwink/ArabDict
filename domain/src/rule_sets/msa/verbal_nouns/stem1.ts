@@ -16,115 +16,114 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { FATHA, SUKUN, KASRA, ALEF, ALEF_HAMZA, WAW, MIM, SHADDA, DHAMMA, FATHATAN, ALEF_MAKSURA, Letter, Tashkil } from "../../../Definitions";
+import { TASHKIL_SHADDA, Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized, _LegacyFullyVocalized } from "../../../Vocalization";
-import { NUN } from "../_legacy/VerbStem";
+import { FullyVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | _LegacyFullyVocalized[] | FullyVocalized[])[]
+export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | FullyVocalized[])[]
 {
     switch(root.type)
     {
         case RootType.Assimilated:
             return [
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: DHAMMA },
-                    { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Dhamma },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r2, shadda: false, tashkil: KASRA },
-                    { letter: root.r3, shadda: false, tashkil: FATHA },
-                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Kasra },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.Sukun },
                 ],
             ];
 
         case RootType.Defective:
             return [
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: Letter.Hamza, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: FATHATAN },
-                    { letter: ALEF_MAKSURA, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Fathatan },
+                    { letter: Letter.AlefMaksura, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: WAW, shadda: false, tashkil: DHAMMA },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: Letter.Waw, shadda: false, tashkil: Tashkil.Dhamma },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: Letter.Ya, shadda: false, tashkil: FATHA },
-                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: KASRA },
-                    { letter: root.r2, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: Letter.Hamza, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Kasra },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: KASRA },
-                    { letter: root.r2, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: Letter.Ya, shadda: false, tashkil: FATHA },
-                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Kasra },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.Sukun },
                 ],
             ];
 
         case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
             return  [
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: Letter.Ya, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Sukun },
                 ],
             ];
             
         case RootType.HamzaOnR1:
             return [
-                ALEF_HAMZA + FATHA + root.r2 + FATHA + root.r3,
-                ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3,
-                ALEF_HAMZA + FATHA + root.r2 + FATHA + ALEF + root.r3 + FATHA + Letter.TaMarbuta,
-                Letter.Hamza + KASRA + root.r2 + FATHA + ALEF + root.r3 + FATHA + Letter.TaMarbuta
+                Letter.AlefHamza + Tashkil.Fatha + root.r2 + Tashkil.Fatha + root.r3,
+                Letter.AlefHamza + Tashkil.Fatha + root.r2 + Tashkil.Fatha + Letter.Alef + root.r3,
+                Letter.AlefHamza + Tashkil.Fatha + root.r2 + Tashkil.Fatha + Letter.Alef + root.r3 + Tashkil.Fatha + Letter.TaMarbuta,
+                Letter.Hamza + Tashkil.Kasra + root.r2 + Tashkil.Fatha + Letter.Alef + root.r3 + Tashkil.Fatha + Letter.TaMarbuta
             ];
 
         case RootType.Hollow:
             return [
-                root.r1 + FATHA + WAW + SUKUN + root.r3,
-                root.r1 + FATHA + WAW + SUKUN + root.r3 + FATHA + Letter.TaMarbuta,
-                root.r1 + FATHA + WAW + FATHA + ALEF + root.r3,
+                root.r1 + Tashkil.Fatha + Letter.Waw + Tashkil.Sukun + root.r3,
+                root.r1 + Tashkil.Fatha + Letter.Waw + Tashkil.Sukun + root.r3 + Tashkil.Fatha + Letter.TaMarbuta,
+                root.r1 + Tashkil.Fatha + Letter.Waw + Tashkil.Fatha + Letter.Alef + root.r3,
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: Letter.Ya, shadda: false, tashkil: FATHA },
-                    { letter: root.r3, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: NUN, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Nun, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
                     { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Sukun },
-                    { letter: root.r3, shadda: false, tashkil: Tashkil.WordEnd },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
                     { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
                     { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Sukun },
                     { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
-                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.WordEnd }
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.EndOfWordMarker }
                 ],
-                root.r1 + KASRA + Letter.Ya + FATHA + ALEF + root.r3,
-                MIM + FATHA + root.r1 + FATHA + ALEF + root.r3,
+                root.r1 + Tashkil.Kasra + Letter.Ya + Tashkil.Fatha + Letter.Alef + root.r3,
+                Letter.Mim + Tashkil.Fatha + root.r1 + Tashkil.Fatha + Letter.Alef + root.r3,
             ];
 
         case RootType.Quadriliteral:
@@ -134,87 +133,87 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | _
                     { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun, },
                     { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha, },
                     { letter: root.r4, shadda: false, tashkil: Tashkil.Fatha, },
-                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.WordEnd },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.EndOfWordMarker },
                 ]
             ];
 
         case RootType.SecondConsonantDoubled:
             return [
-                root.r1 + DHAMMA + root.r2 + DHAMMA + WAW + root.r3,
-                root.r1 + FATHA + root.r2 + FATHA + ALEF + root.r3,
-                root.r1 + FATHA + root.r2 + KASRA + Letter.Ya + root.r3,
+                root.r1 + Tashkil.Dhamma + root.r2 + Tashkil.Dhamma + Letter.Waw + root.r3,
+                root.r1 + Tashkil.Fatha + root.r2 + Tashkil.Fatha + Letter.Alef + root.r3,
+                root.r1 + Tashkil.Fatha + root.r2 + Tashkil.Kasra + Letter.Ya + root.r3,
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: true, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: true, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: KASRA },
-                    { letter: root.r2, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Kasra },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: KASRA },
-                    { letter: root.r2, shadda: true, tashkil: FATHA },
-                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Kasra },
+                    { letter: root.r2, shadda: true, tashkil: Tashkil.Fatha },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: KASRA },
-                    { letter: root.r2, shadda: true, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Kasra },
+                    { letter: root.r2, shadda: true, tashkil: Tashkil.Sukun },
                 ],
-                MIM + FATHA + root.r1 + FATHA + root.r2 + SHADDA + FATHA + Letter.TaMarbuta
+                Letter.Mim + Tashkil.Fatha + root.r1 + Tashkil.Fatha + root.r2 + TASHKIL_SHADDA + Tashkil.Fatha + Letter.TaMarbuta
             ];
 
         case RootType.Sound:
             return [
                 [
-                    { letter: root.r1, shadda: false, tashkil: DHAMMA },
-                    { letter: root.r2, shadda: false, tashkil: DHAMMA },
-                    { letter: WAW, shadda: false, tashkil: DHAMMA },
-                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Dhamma },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Dhamma },
+                    { letter: Letter.Waw, shadda: false, tashkil: Tashkil.Dhamma },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: DHAMMA },
-                    { letter: root.r2, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Dhamma },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: DHAMMA },
-                    { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Dhamma },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: FATHA },
-                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: FATHA },
-                    { letter: ALEF, shadda: false, tashkil: FATHA },
-                    { letter: root.r3, shadda: false, tashkil: FATHA },
-                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: root.r3, shadda: false, tashkil: FATHA },
-                    { letter: Letter.TaMarbuta, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.Sukun },
                 ],
                 [
-                    { letter: root.r1, shadda: false, tashkil: FATHA },
-                    { letter: root.r2, shadda: false, tashkil: SUKUN },
-                    { letter: root.r3, shadda: false, tashkil: SUKUN },
+                    { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, shadda: false, tashkil: Tashkil.Sukun },
+                    { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
                 ],
-                root.r1 + KASRA + root.r2 + FATHA + ALEF + root.r3 + FATHA + Letter.TaMarbuta,
-                root.r1 + KASRA + root.r2 + SUKUN + root.r3,
+                root.r1 + Tashkil.Kasra + root.r2 + Tashkil.Fatha + Letter.Alef + root.r3 + Tashkil.Fatha + Letter.TaMarbuta,
+                root.r1 + Tashkil.Kasra + root.r2 + Tashkil.Sukun + root.r3,
             ];
 
         default:

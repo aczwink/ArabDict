@@ -17,7 +17,7 @@
  * */
 
 import { BootstrapIcon, Component, Injectable, JSX_CreateElement } from "acfrontend";
-import { ConjugationService } from "./ConjugationService";
+import { ConjugationService } from "./services/ConjugationService";
 
 @Injectable
 export class SessionComponent extends Component

@@ -18,7 +18,7 @@
 import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest } from "../../shared";
 import { DialectType } from "arabdict-domain/dist/Conjugator";
-import { DHAMMA, FATHA, KASRA } from "arabdict-domain/dist/Definitions";
+import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
 
@@ -63,5 +63,5 @@ It("Lebanese: Stem1 basic defective", () => {
         { tense: "present", mood: "imperative", numerus: "plural", person: "second", expected: "حْكُوا" },
     ];
 
-    RunConjugationTest("ح-ك-ي", { middleRadicalTashkil: FATHA, middleRadicalTashkilPresent: KASRA, soundOverride: false }, conjugations, DialectType.Lebanese);
+    RunConjugationTest("ح-ك-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations, DialectType.Lebanese);
 });

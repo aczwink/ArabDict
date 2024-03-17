@@ -17,9 +17,9 @@
  * */
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
-import { APIService } from "./APIService";
+import { APIService } from "./services/APIService";
 import { DialectStatistics, DictionaryStatistics, RootType } from "../dist/api";
-import { DialectsService } from "./DialectsService";
+import { DialectsService } from "./services/DialectsService";
 import { Dictionary } from "../../../ACTS-Util/core/dist/Dictionary";
 
 @Injectable

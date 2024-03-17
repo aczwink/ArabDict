@@ -34,21 +34,7 @@ export const stem2_past_active: StemTenseVoiceDefinition = {
 
     [RootType.Quadriliteral]: {
         rules: [
-            { numerus: "singular", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "singular", person: "second", gender: "female", conjugation: "TODO" },
             { numerus: "singular", person: "third", gender: "male", conjugation: "تَفَعْلَقَ" },
-            { numerus: "singular", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "dual", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "dual", person: "third", gender: "female", conjugation: "TODO" },
-
-            { numerus: "plural", person: "first", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "second", gender: "female", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "male", conjugation: "TODO" },
-            { numerus: "plural", person: "third", gender: "female", conjugation: "TODO" },
         ]
     },
 };

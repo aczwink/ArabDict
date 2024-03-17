@@ -17,7 +17,7 @@
  * */
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { RootOverviewData } from "../../dist/api";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { AreValidRootCharacters, RootToString } from "./general";

@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,17 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import "acts-util-core";
-import { DHAMMA, FATHA, KASRA, SHADDA, SUKUN } from "./Definitions";
+import { TASHKIL_SHADDA, Tashkil } from "./Definitions";
 
 export function RemoveTashkil(text: string)
 {
-    return RemoveTashkilButKeepShadda(text).ReplaceAll(SHADDA, "");
+    return RemoveTashkilButKeepShadda(text).ReplaceAll(TASHKIL_SHADDA, "");
 }
 
 export function RemoveTashkilButKeepShadda(text: string)
 {
-    return text.ReplaceAll(DHAMMA, "")
-        .ReplaceAll(FATHA, "")
-        .ReplaceAll(KASRA, "")
-        .ReplaceAll(SUKUN, "");
+    return text.ReplaceAll(Tashkil.Dhamma, "")
+        .ReplaceAll(Tashkil.Fatha, "")
+        .ReplaceAll(Tashkil.Kasra, "")
+        .ReplaceAll(Tashkil.Sukun, "");
 }

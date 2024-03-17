@@ -17,7 +17,7 @@
  * */
 
 import { Component, Injectable, JSX_CreateElement, Router } from "acfrontend";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { RootEditorComponent } from "./RootEditorComponent";
 import { RootCreationData } from "../../dist/api";
 import { DoRootCharactersFormValidRoot } from "./general";

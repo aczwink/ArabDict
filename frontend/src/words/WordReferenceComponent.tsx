@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
  * */
 
 import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
-import { APIService } from "../APIService";
+import { APIService } from "../services/APIService";
 import { FullWordData, WordVerbDerivationType } from "../../dist/api";
 import { WordGenderToAbbreviation, WordTypeToAbbreviationText } from "../shared/words";
 
@@ -30,7 +30,7 @@ export class WordReferenceComponent extends Component<{ word: FullWordData; }>
         return <fragment>
             <Anchor route={"/words/" + x.id}>{x.word}</Anchor>
             {" " + this.TypeToString()}
-            <i>{WordGenderToAbbreviation(x.type, x.isMale)}</i>
+            <i>{WordGenderToAbbreviation(x.functions[0].type, x.isMale)}</i>
         </fragment>;
     }
 
@@ -50,7 +50,7 @@ export class WordReferenceComponent extends Component<{ word: FullWordData; }>
                     return "(verbal noun)";
             }
         }
-        return WordTypeToAbbreviationText(word.type);
+        return WordTypeToAbbreviationText(word.functions[0].type);
     }
 }
 

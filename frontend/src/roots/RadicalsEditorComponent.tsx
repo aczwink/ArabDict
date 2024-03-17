@@ -18,8 +18,7 @@
 
 import { Component, JSX_CreateElement } from "acfrontend";
 import { IsValidRootRadical } from "./general";
-import { A3EIN, BA, Letter, HHA, LAM, MIM, QAF, LETTER_RA, WAW, DAL, FA, ZAY } from "arabdict-domain/src/Definitions";
-import { NUN, SIIN, TA } from "arabdict-domain/src/rule_sets/msa/_legacy/VerbStem";
+import { A3EIN, Letter, HHA, LAM, QAF, LETTER_RA, FA } from "arabdict-domain/src/Definitions";
 
 export class RadicalsEditorComponent extends Component<{ radicals: string; onDataChanged: (newValue: string) => void; joinBeginning?: boolean }>
 {
@@ -59,7 +58,7 @@ export class RadicalsEditorComponent extends Component<{ radicals: string; onDat
                 className = "rounded-0 rounded-start";
             else
                 className = "rounded-0";
-            edits.push(<input type="text" value={radical} onkeydown={this.OnKeyDown.bind(this)} onkeyup={this.OnKeyUp.bind(this, i)} placeholder={"r" + (i+1)} className={"form-control form-control-sm " + className} maxLength={1} />);
+            edits.push(<input type="text" value={radical} onkeydown={this.OnKeyDown.bind(this)} onkeyup={this.OnKeyUp.bind(this, i)} onchange={this.OnChange.bind(this, i)} placeholder={"r" + (i+1)} className={"form-control form-control-sm " + className} maxLength={1} />);
         }
         return <div className="row">
             {edits.map((x, i) => <div id={"rootRadicalInput" + (3 - i)} className={"col-auto " + PaddingClass(i)} style={"width: " + Width(i) + ";"}>{x}</div>)}
@@ -87,9 +86,9 @@ export class RadicalsEditorComponent extends Component<{ radicals: string; onDat
             case "a":
                 return Letter.Hamza;
             case "b":
-                return BA;
+                return Letter.Ba;
             case "d":
-                return DAL;
+                return Letter.Dal;
             case "D":
                 return Letter.Daad;
             case "f":
@@ -107,27 +106,27 @@ export class RadicalsEditorComponent extends Component<{ radicals: string; onDat
             case "l":
                 return LAM;
             case "m":
-                return MIM;
+                return Letter.Mim;
             case "n":
-                return NUN;
+                return Letter.Nun;
             case "q":
                 return QAF;
             case "r":
                 return LETTER_RA;
             case "s":
-                return SIIN;
+                return Letter.Siin;
             case "S":
                 return Letter.Saad;
             case "t":
-                return TA;
+                return Letter.Ta;
             case "T":
                 return Letter.Tta;
             case "w":
-                return WAW;
+                return Letter.Waw;
             case "y":
                 return Letter.Ya;
             case "z":
-                return ZAY;
+                return Letter.Zay;
         }
         return "";
     }
@@ -154,6 +153,15 @@ export class RadicalsEditorComponent extends Component<{ radicals: string; onDat
     }
 
     //Event handlers
+    private OnChange(index: number, event: Event)
+    {
+        const newValue = (event.target as HTMLInputElement).value;
+        const rootChar = this.MapToRootCharacter(newValue);
+        const result = this.OnRadicalChanged(index, rootChar);
+            if(result.newChar !== "")
+                this.Select(index + 1);
+    }
+
     override OnInitiated(): void
     {
         this.UpdateState();

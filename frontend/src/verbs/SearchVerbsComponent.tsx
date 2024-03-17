@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,67 +16,250 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner } from "acfrontend";
-import { APIService } from "../APIService";
-import { RootCreationData, VerbData } from "../../dist/api";
+import { Anchor, Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner } from "acfrontend";
+import { APIService } from "../services/APIService";
 import { VerbPreviewComponent } from "./VerbPreviewComponent";
+import { VerbReverseConjugationResult } from "arabdict-domain/src/Conjugator";
+import { ConjugationService } from "../services/ConjugationService";
+import { EqualsAny } from "../../../../ACTS-Util/core/dist/EqualsAny";
+import { Stem1DataToStem1ContextOptional } from "./model";
+import { CachedAPIService, FullVerbData } from "../services/CachedAPIService";
+import { ReverseLookupService } from "../services/ReverseLookupService";
+import { Stem1Context } from "arabdict-domain/src/Definitions";
+
+enum FilterCase
+{
+    ByBoth,
+    ByConjugation,
+    ByTranslation
+}
+
+interface RootMatchData extends VerbReverseConjugationResult
+{
+    rootId: number;
+}
+
+interface VerbMatchData extends RootMatchData
+{
+    verbId: number;
+}
+
+interface Matches
+{
+    verbFound: VerbMatchData[];
+    rootFound: RootMatchData[];
+    notFound: VerbReverseConjugationResult[];
+}
 
 @Injectable
 export class SearchVerbsComponent extends Component
 {
-    constructor(private apiService: APIService)
+    constructor(private apiService: APIService, private conjugationService: ConjugationService, private cachedAPIService: CachedAPIService, private reverseLookupService: ReverseLookupService)
     {
         super();
 
-        this.filter = "";
+        this.verbFilter = "";
+        this.translationFilter = "";
         this.data = [];
-        this.roots = [];
+        this.showAnyMatches = false;
     }
     
     protected Render(): RenderValue
     {
         return <fragment>
             <h3>Verbs</h3>
-            <FormField title="Translation">
-                <LineEdit value={this.filter} onChanged={newValue => this.filter = newValue} />
-            </FormField>
-            <button type="button" onclick={this.LoadData.bind(this)}>Search</button>
 
-            {this.RenderTable()}
+            <div className="row">
+                <div className="col">
+                    <FormField title="Verb" description="Any conjugation allowed">
+                        <LineEdit value={this.verbFilter} onChanged={newValue => this.verbFilter = newValue} />
+                    </FormField>
+                </div>
+                <div className="col">
+                    <FormField title="Translation">
+                        <LineEdit value={this.translationFilter} onChanged={newValue => this.translationFilter = newValue} />
+                    </FormField>
+                </div>
+            </div>
+
+            <button type="button" className="btn btn-primary" onclick={this.PerformSearch.bind(this)}>Search</button>
+
+            {this.RenderResults()}
         </fragment>;
     }
 
     //Private state
-    private filter: string;
-    private data: VerbData[] | null;
-    private roots: RootCreationData[];
+    private verbFilter: string;
+    private translationFilter: string;
+    private data: Matches | FullVerbData[] | null;
+    private showAnyMatches: boolean;
 
     //Private methods
-    private async LoadData()
+    private get filterCase(): FilterCase
+    {
+        const t1 = this.verbFilter.trim();
+        const t2 = this.translationFilter.trim();
+
+        if((t1.length > 0) && (t2.length > 0))
+            return FilterCase.ByBoth;
+        else if(t1.length > 0)
+            return FilterCase.ByConjugation;
+        return FilterCase.ByTranslation;
+    }
+
+    private async LoadByBoth()
+    {
+        const results1 = await this.LoadByTranslationData();
+        const results2 = await this.LoadByConjugationData();
+
+        function DoesMatch(verbData: FullVerbData)
+        {
+            return results2.verbFound.find(x => x.verbId === verbData.verbData.id) !== undefined;
+        }
+
+        return results1.Values().Filter(DoesMatch).ToArray()
+    }
+
+    private async LoadByConjugationData(): Promise<Matches>
+    {
+        const analyzed = this.conjugationService.AnalyzeConjugation(this.verbFilter);
+
+        const verbFound = [];
+        const rootFound = [];
+        const notFound = [];
+
+        for (const entry of analyzed)
+        {
+            const rootId = await this.reverseLookupService.TryFindRootId(entry.root);
+            const verbId = await this.TryFindVerb(rootId, entry.params.stem, entry.params.stem1Context);
+
+            if(verbId !== undefined)
+                verbFound.push({ rootId, verbId, ...entry });
+            else if(rootId !== undefined)
+                rootFound.push({ rootId, ...entry });
+            else
+                notFound.push(entry);
+        }
+
+        return {
+            notFound,
+            rootFound,
+            verbFound
+        };
+    }
+
+    private async LoadByTranslationData()
+    {
+        const response = await this.apiService.verbs.search.get({ byTranslation: this.translationFilter });
+        const result = response.data;
+
+        return result.Values().Map(x => this.cachedAPIService.QueryFullVerbData(x)).PromiseAll();
+    }
+
+    private async PerformSearch()
     {
         this.data = null;
 
-        const response = await this.apiService.verbs.search.get({ byTranslation: this.filter });
-        const result = response.data;
-
-        const response2 = await result.Values().Map(async x => {
-            const res = await this.apiService.roots._any_.get(x.rootId);
-            if(res.statusCode !== 200)
-                throw new Error("HERE");
-            return res.data;
-        }).PromiseAll();
-
-        this.roots = response2;
-        this.data = result;
+        switch(this.filterCase)
+        {
+            case FilterCase.ByBoth:
+                this.data = await this.LoadByBoth();
+                break;
+            case FilterCase.ByConjugation:
+                this.data = await this.LoadByConjugationData();
+                break;
+            case FilterCase.ByTranslation:
+                this.data = await this.LoadByTranslationData();
+                break;
+        }
     }
 
-    private RenderTable()
+    private RenderByConjugationData(results: Matches)
+    {
+        return <fragment>
+            <FormField title="Show only existing verbs">
+                <input type="checkbox" checked={!this.showAnyMatches} onclick={() => this.showAnyMatches = !this.showAnyMatches} />
+            </FormField>
+            {this.RenderByConjugationTable(results)}
+        </fragment>;
+    }
+
+    private RenderByConjugationTable(results: Matches)
+    {
+        return <table className="table table-sm">
+            <thead>
+                <th>Conjugated Verb</th>
+                <th>Base Verb</th>
+                <th>Score</th>
+                <th>Root</th>
+                <th>Parameters</th>
+            </thead>
+            <tbody>
+                {results.verbFound.map(this.RenderRow.bind(this))}
+                {this.showAnyMatches ? results.rootFound.map(this.RenderRow.bind(this)) : null}
+                {this.showAnyMatches ? results.notFound.map(this.RenderRow.bind(this)) : null}
+            </tbody>
+        </table>;
+    }
+
+    private RenderByTranslationTable(data: FullVerbData[])
+    {
+        return <div className="row">
+            {data.map( (x, i) => <VerbPreviewComponent root={x.rootData} verbData={x.verbData} />)}
+        </div>;
+    }
+
+    private RenderResults()
     {
         if(this.data === null)
             return <ProgressSpinner />;
 
-        return <div className="row">
-            {this.data.map( (x, i) => <VerbPreviewComponent root={this.roots[i]} verbData={x} />)}
-        </div>;
+        if(Array.isArray(this.data))
+            return this.RenderByTranslationTable(this.data);
+        return this.RenderByConjugationData(this.data);
+    }
+
+    private RenderRow(result: VerbReverseConjugationResult | RootMatchData | VerbMatchData)
+    {
+        const conjugated = this.conjugationService.Conjugate(result.root.radicalsAsSeparateLetters.join(""), result.params.stem, result.params.tense, result.params.voice, result.params.gender, result.params.person, result.params.numerus, result.params.mood, result.params.stem1Context);
+        const base = this.conjugationService.Conjugate(result.root.radicalsAsSeparateLetters.join(""), result.params.stem, "perfect", "active", "male", "third", "singular", "indicative", result.params.stem1Context);
+        const ctx = (result.params.stem !== 1) ? "" : (" tashkil: " + result.params.stem1Context?.middleRadicalTashkil + " present: " + result.params.stem1Context?.middleRadicalTashkilPresent);
+
+        const root = ("rootId" in result) ? <Anchor route={"/roots/" + result.rootId}>{result.root.ToString()}</Anchor> : result.root.ToString();
+        const renderedVerb = ("verbId" in result) ? <Anchor route={"/verbs/" + result.verbId}>{base}</Anchor> : base;
+
+        return <tr>
+            <td>{conjugated}</td>
+            <td>{renderedVerb}</td>
+            <td>{result.score}</td>
+            <td>{root}</td>
+            <td>
+                {result.params.person}-person {result.params.gender} {result.params.numerus} {result.params.tense} {result.params.voice} {result.params.mood} {"stem " + result.params.stem} {ctx}
+            </td>
+        </tr>;
+    }
+
+    private async TryFindVerb(rootId: number | undefined, stem: number, stem1Context?: Stem1Context)
+    {
+        if(rootId === undefined)
+            return undefined;
+
+        const verbs = await this.cachedAPIService.QueryVerbsOfRoot(rootId);
+
+        for (const entry of verbs)
+        {
+            if(entry.stem === stem)
+            {
+                if(stem === 1)
+                {
+                    if(EqualsAny(Stem1DataToStem1ContextOptional(entry.stem1Data), stem1Context))
+                        return entry.id;
+                }
+                else
+                    return entry.id;
+            }
+        }
+
+        return undefined;
     }
 }
