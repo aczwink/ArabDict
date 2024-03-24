@@ -116,13 +116,13 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
             case WordVerbDerivationType.ActiveParticiple:
             {
                 const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, "active", this.currentVerb.stem1Context);
-                this.input.onUpdateWord(word);
+                this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
             }
             break;
             case WordVerbDerivationType.PassiveParticiple:
             {
                 const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, "passive", this.currentVerb.stem1Context);
-                this.input.onUpdateWord(word);
+                this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
             }
             break;
         }
@@ -147,7 +147,7 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
                 else
                 {
                     const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, "active", this.currentVerb.stem1Context);
-                    this.input.onUpdateWord(word);
+                    this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
                 }
                 break;
             case "2":
@@ -157,7 +157,7 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
                 else
                 {
                     const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, "passive", this.currentVerb.stem1Context);
-                    this.input.onUpdateWord(word);
+                    this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
                 }
                 break;
             case "3":

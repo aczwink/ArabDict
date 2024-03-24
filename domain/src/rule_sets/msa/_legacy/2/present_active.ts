@@ -16,27 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { Gender, Numerus, Person } from "../../../../Definitions";
 import { RootType } from "../../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../../Definitions";
 
 export const stem2_present_active: StemTenseVoiceDefinition = {
     [RootType.Assimilated]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُوَعِّلُ" }
+            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يُوَعِّلُ" }
         ]
     },
 
     [RootType.Hollow]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَعِّلُ" }
+            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يُفَعِّلُ" }
         ]
     },
 
     [RootType.Quadriliteral]: {
         rules: [
-            { numerus: "singular", person: "second", gender: "male", conjugation: "تَتَفَعْلَقُ" },
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُتَفَعْلِقُ" },
-            { numerus: "singular", person: "third", gender: "female", conjugation: "تَتَفَعْلَقُ" },
+            { numerus: Numerus.Singular, person: Person.Second, gender: Gender.Male, conjugation: "تَتَفَعْلَقُ" },
+            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يُتَفَعْلِقُ" },
+            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Female, conjugation: "تَتَفَعْلَقُ" },
         ]
     },
 };

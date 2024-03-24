@@ -16,34 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Letter, TASHKIL_SHADDA, Tashkil } from "./Definitions";
+import { BaseTashkil, Letter, TASHKIL_SHADDA, Tashkil } from "./Definitions";
 
-export type BASE_TASHKIL = "\u064E" | "\u064F" | "\u0650" | "\u0652"; //TODO: remove
-
-export interface _LegacyPartiallyVocalized //TODO: REMOVE
-{
-    letter: string;
-    tashkil?: BASE_TASHKIL;
-    shadda: boolean;
-}
-
-interface Vocalized
+type DisplayTashkil = BaseTashkil | Tashkil.Fathatan | Tashkil.Kasratan;
+export interface DisplayVocalized
 {
     letter: Letter;
+    tashkil?: DisplayTashkil;
     shadda: boolean;
+    emphasis: boolean;
 }
 
-export interface PartiallyVocalized extends Vocalized
+export interface ConjugationVocalized
 {
-    tashkil?: Tashkil;
-}
-
-export interface FullyVocalized extends Vocalized
-{
+    letter: Letter;
     tashkil: Tashkil;
+    emphasis?: boolean;
 }
 
-function cmp(a: _LegacyPartiallyVocalized, b: _LegacyPartiallyVocalized)
+function cmp(a: DisplayVocalized, b: DisplayVocalized)
 {
     if(a.letter === b.letter)
     {
@@ -59,10 +50,12 @@ function cmp(a: _LegacyPartiallyVocalized, b: _LegacyPartiallyVocalized)
     return 0;
 }
 
-export function CompareVocalized(a: _LegacyPartiallyVocalized[], b: _LegacyPartiallyVocalized[])
+export function CompareVocalized(a: DisplayVocalized[], b: DisplayVocalized[])
 {
     if(a.length !== b.length)
         return -1;
+    if(a.length === 0)
+        return 1;
 
     let sum = 0;
     for(let i = 0; i < a.length; i++)
@@ -75,7 +68,7 @@ export function CompareVocalized(a: _LegacyPartiallyVocalized[], b: _LegacyParti
     return sum / a.length;
 }
 
-export function IsLongVowel(vocalized: FullyVocalized, predecessor?: FullyVocalized)
+export function IsLongVowel(vocalized: ConjugationVocalized, predecessor?: ConjugationVocalized)
 {
     const isLongYa = (vocalized.letter === Letter.Ya) && (vocalized.tashkil === Tashkil.LongVowelMarker) && (predecessor?.tashkil === Tashkil.Kasra);
     const isLongWaw = (vocalized.letter === Letter.Waw) && (vocalized.tashkil === Tashkil.LongVowelMarker) && (predecessor?.tashkil === Tashkil.Dhamma);
@@ -85,12 +78,12 @@ export function IsLongVowel(vocalized: FullyVocalized, predecessor?: FullyVocali
 
 export function ParseVocalizedText(text: string)
 {
-    const result: _LegacyPartiallyVocalized[] = [];
+    const result: DisplayVocalized[] = [];
 
     for(let i = 0; i < text.length;)
     {
         const letter = text[i++];
-        let tashkil: BASE_TASHKIL | undefined = undefined;
+        let tashkil: Tashkil | undefined = undefined;
         let shadda = false;
 
         let parseTashkil = true;
@@ -134,21 +127,98 @@ export function ParseVocalizedText(text: string)
         }
 
         result.push({
-            letter,
+            letter: letter as any,
             tashkil,
-            shadda
+            shadda,
+            emphasis: false,
         });
     }
 
     return result;
 }
 
-export function _LegacyVocalizedToString(v: _LegacyPartiallyVocalized) //TODO: REMOVE
+interface VocalizedDiff
 {
-    return v.letter + (v.shadda ? TASHKIL_SHADDA : "") + (v.tashkil ? v.tashkil : "");
+    diff: boolean;
+    char: string;
+    emphasis: boolean;
+}
+export function ToDiffStream(vocalized: DisplayVocalized[], reference: DisplayVocalized[]): VocalizedDiff[]
+{
+    function Convert(v: DisplayVocalized, diff: boolean)
+    {
+        const result: VocalizedDiff[] = [
+            { char: v.letter, diff, emphasis: v.emphasis },
+        ];
+        if(v.shadda)
+            result.push({ char: TASHKIL_SHADDA, diff, emphasis: false });
+        if(v.tashkil !== undefined)
+            result.push({ char: v.tashkil, diff, emphasis: false });
+
+        return result;
+    }
+    function ConvertCheckTashkil(v: DisplayVocalized, r: DisplayVocalized)
+    {
+        const result: VocalizedDiff[] = [
+            { char: v.letter, diff: false, emphasis: (v.emphasis === true) },
+        ];
+        if(v.shadda)
+        {
+            const isEqual = (v.shadda === r.shadda) && (v.tashkil === r.tashkil);
+            result.push({ char: TASHKIL_SHADDA, diff: !isEqual, emphasis: false });
+            if(v.tashkil !== undefined)
+                result.push({ char: v.tashkil, diff: !isEqual, emphasis: false });
+        }
+        else if(v.tashkil !== undefined)
+            result.push({ char: v.tashkil, diff: !(v.tashkil === r.tashkil), emphasis: false });
+
+        return result;
+    }
+    function ToDiffStreamInner(vocalized: DisplayVocalized[], reference: DisplayVocalized[]): VocalizedDiff[]
+    {
+        //empty cases
+        if(vocalized.length === 0)
+        {
+            if(reference.length > 0)
+            {
+                return [
+                    { char: "\u2610", diff: true, emphasis: false }
+                ];
+            }
+            return [];
+        }
+        else if(reference.length === 0)
+            return vocalized.Values().Map(x => Convert(x, true).Values()).Flatten().ToArray();
+
+        //check for lam-alef
+        if( (vocalized.length > 1) && (vocalized[0].letter === Letter.Lam) && (vocalized[1].letter === Letter.Alef) )
+        {
+            if( (reference.length > 1) && (reference[0].letter === Letter.Lam) && (reference[1].letter === Letter.Alef) )
+                return ConvertCheckTashkil(vocalized[0], reference[0]).concat(ConvertCheckTashkil(vocalized[1], reference[1]), ToDiffStreamInner(vocalized.slice(2), reference.slice(2)));
+            return Convert(vocalized[0], true).concat(Convert(vocalized[1], true), ToDiffStreamInner(vocalized.slice(2), reference.slice(2)));
+        }
+
+        //default cases
+        if(vocalized[0].letter === reference[0].letter)
+            return ConvertCheckTashkil(vocalized[0], reference[0]).concat(ToDiffStreamInner(vocalized.slice(1), reference.slice(1)));
+        else if(vocalized.length > reference.length)
+            return Convert(vocalized[0], true).concat(ToDiffStreamInner(vocalized.slice(1), reference));
+        else
+            return ToDiffStreamInner(vocalized, reference.slice(1));
+    }
+
+    const missingAtBeginning = (vocalized[0].letter !== reference[0].letter) && (reference.length > vocalized.length);
+    if(missingAtBeginning)
+    {
+        const result: VocalizedDiff[] = [
+            { char: "\u2610", diff: true, emphasis: false }
+        ];
+        return result.concat(ToDiffStreamInner(vocalized, reference));
+    }
+    return ToDiffStreamInner(vocalized, reference);
 }
 
-export function VocalizedToString(v: PartiallyVocalized)
+export function VocalizedToString(v: DisplayVocalized)
 {
     return v.letter + (v.shadda ? TASHKIL_SHADDA : "") + (v.tashkil ? v.tashkil : "");
 }

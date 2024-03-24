@@ -17,69 +17,72 @@
  * */
 import "acts-util-core";
 import { Expect } from "acts-util-test";
-import { Conjugator, DialectType, StringConjugationParams } from "arabdict-domain/dist/Conjugator";
-import { A3EIN, Gender, LAM, Letter, Mood, Numerus, Person, Stem1Context, Tashkil, Voice, _LegacyMood, _LegacyPerson, _LegacyTense, _LegacyVoice } from "arabdict-domain/dist/Definitions";
+import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
+import { AdvancedStemNumber, ConjugationParams, Gender, GenderString, Letter, Mood, MoodString, Numerus, NumerusString, Person, PersonString, Stem1Context, Tashkil, Tense, TenseString, Voice, VoiceString } from "arabdict-domain/dist/Definitions";
 import { VerbRoot } from "arabdict-domain/dist/VerbRoot";
-import { ParseVocalizedText, _LegacyPartiallyVocalized } from "arabdict-domain/dist/Vocalization";
+import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/dist/Vocalization";
 
-function ToDisplayVersion(v: _LegacyPartiallyVocalized[])
+function ToDisplayVersion(v: DisplayVocalized[])
 {
     function conv_letter(c: string)
     {
         switch(c)
         {
             case Letter.Alef:
-                return "alef";
+                return "a";
             case Letter.Ba:
-                return "ba";
+                return "b";
             case Letter.Ta:
-                return "ta";
+                return "t";
             //tha
             case Letter.Jiim:
-                return "jiim";
-            //7aa
+                return "j";
+            case Letter.Hha:
+                return "7";
             //kha
             case Letter.Dal:
-                return "dal";
+                return "d";
             //dhal
             //ra
             //zay
             case Letter.Siin:
-                return "siin";
+                return "s";
             //shin
             //Saad
             //Daad
             //Taa
             //Tha
-            case A3EIN:
-                return "a3ein";
+            case Letter.A3ein:
+                return "3";
             //ghayn
-            //fa
+            case Letter.Fa:
+                return "f";
             //qaf
-            //kaf
-            case LAM:
-                return "laam";
+            case Letter.Kaf:
+                return "k";
+            case Letter.Lam:
+                return "l";
             case Letter.Mim:
-                return "mim";
+                return "m";
             case Letter.Nun:
-                return "nun";
+                return "n";
             //haa
             case Letter.Waw:
-                return "waw";
+                return "w";
             case Letter.Ya:
-                return "ya";
+                return "y";
             case Letter.Hamza:
-                return "hamza";
+                return "2";
             case Letter.AlefHamza:
-                return "alef_hamza";
+                return "I^2";
             //waw hamza
             //ya hamza
             //alif maddah
             //ta marbuta
             case Letter.AlefHamzaBelow:
-                return "alef_hamza_below";
+                return "I_2";
             case Letter.AlefMaksura:
-                return "alef_maksura";
+                return "~";
         }
         return "TODO: " + c + " " + c.codePointAt(0);
     }
@@ -91,36 +94,57 @@ function ToDisplayVersion(v: _LegacyPartiallyVocalized[])
         switch(t)
         {
             case Tashkil.Dhamma:
-                return "/dhamma";
+                return "&";
             case Tashkil.Fatha:
-                return "/fatha";
+                return "'";
             case Tashkil.Kasra:
-                return "/kasra";
+                return ",";
             case Tashkil.Sukun:
-                return "/sukun";
+                return "°";
         }
     }
 
-    function conv(v: _LegacyPartiallyVocalized)
+    function conv(v: DisplayVocalized)
     {
         const l = conv_letter(v.letter);
 
-        return l + conv_tashkil(v.tashkil as any) + (v.shadda ? "shadda" : "");
+        return l + conv_tashkil(v.tashkil) + (v.shadda ? "-w" : "");
     }
 
-    return v.map(conv);
+    return v.map(conv).join("");
 }
 
-function Test(expected: string, got: string, params: StringConjugationParams)
+function CompareVocalized(a: DisplayVocalized[], b: DisplayVocalized[])
+{
+    //comparison is of strings is non trivial because the position of the shadda can be before or after the primary tashkil, also we have the emphasis optional field
+    if(a.length !== b.length)
+        return false;
+
+    for (let i = 0; i < a.length; i++)
+    {
+        if(a[i].letter !== b[i].letter)
+            return false;
+        if(a[i].shadda !== b[i].shadda)
+            return false;
+        if(a[i].tashkil !== b[i].tashkil)
+            return false;
+    }
+
+    return true;
+}
+
+function Test(expected: string, got: DisplayVocalized[], params: ConjugationParams)
 {
     const a = ParseVocalizedText(expected);
-    const b = ParseVocalizedText(got);
+    const gotStr = got.Values().Map(VocalizedToString).Join("");
+    Expect(CompareVocalized(a, got)).ToBe(true, "expected: " + expected + " / " + ToDisplayVersion(a) + " got: " + gotStr + " / " + ToDisplayVersion(got) + " tense: " + params.tense + ", numerus: " + params.numerus + ", person: " + params.person + ", gender: " + params.gender);
+}
 
-    if(!a.Equals(b))
-    {
-        //console.error("conjugation params:", params);
-        Expect(expected).Equals(got, "expected: " + ToDisplayVersion(a) + " got: " + ToDisplayVersion(b) + " tense: " + params.tense + ", numerus: " + params.numerus + ", person: " + params.person + ", gender: " + params.gender);
-    }
+function TestParticiple(expected: string, got: DisplayVocalized[], voice: VoiceString)
+{
+    const a = ParseVocalizedText(expected);
+    const gotStr = got.Values().Map(VocalizedToString).Join(""); 
+    Expect(CompareVocalized(a, got)).ToBe(true, "expected: " + expected + " / " + ToDisplayVersion(a) + " got: " + gotStr + " / " + ToDisplayVersion(got) + " voice: " + voice);
 }
 
 interface BasicConjugationTest
@@ -130,7 +154,7 @@ interface BasicConjugationTest
     present: string;
 }
 
-export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], stem: number)
+export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], stem: AdvancedStemNumber)
 {
     const conjugator = new Conjugator();
     
@@ -138,28 +162,27 @@ export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], st
     {
         const root = new VerbRoot(test.root.split("-").join(""));
 
-        const params1: StringConjugationParams = {
-            gender: "male",
-            numerus: "singular",
-            person: "third",
+        const params1: ConjugationParams = {
+            gender: Gender.Male,
+            numerus: Numerus.Singular,
+            person: Person.Third,
             stem,
-            tense: "perfect",
-            voice: "active",
-            mood: "indicative"
+            tense: Tense.Perfect,
+            voice: Voice.Active,
         };
-        const pastResult = conjugator.ConjugateStringBased(root, params1, DialectType.ModernStandardArabic);
+        const pastResult = conjugator.Conjugate(root, params1, DialectType.ModernStandardArabic);
         Test(test.past, pastResult, params1);
 
-        const params2: StringConjugationParams = {
-            gender: "male",
-            numerus: "singular",
-            person: "third",
+        const params2: ConjugationParams = {
+            gender: Gender.Male,
+            numerus: Numerus.Singular,
+            person: Person.Third,
             stem,
-            tense: "present",
-            voice: "active",
-            mood: "indicative"
+            tense: Tense.Present,
+            voice: Voice.Active,
+            mood: Mood.Indicative,
         };
-        const presentResult = conjugator.ConjugateStringBased(root, params2, DialectType.ModernStandardArabic);
+        const presentResult = conjugator.Conjugate(root, params2, DialectType.ModernStandardArabic);
         Test(test.present, presentResult, params2);
     }
 }
@@ -167,32 +190,94 @@ export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], st
 export interface ConjugationTest
 {
     expected: string;
-    gender?: Gender;
-    mood?: _LegacyMood;
-    numerus?: Numerus;
-    person?: _LegacyPerson;
-    tense?: _LegacyTense;
-    voice?: _LegacyVoice;
+    gender?: GenderString;
+    mood?: MoodString;
+    numerus?: NumerusString;
+    person?: PersonString;
+    tense?: TenseString;
+    voice?: VoiceString;
 }
-export function RunConjugationTest(rootRadicals: string, stem: number | Stem1Context, conjugations: ConjugationTest[], dialect: DialectType = DialectType.ModernStandardArabic)
+export function RunConjugationTest(rootRadicals: string, stem: AdvancedStemNumber | Stem1Context, conjugations: ConjugationTest[], dialect: DialectType = DialectType.ModernStandardArabic)
 {
+    function MapMood(mood: MoodString)
+    {
+        switch(mood)
+        {
+            case "imperative":
+                return Mood.Imperative;
+            case "indicative":
+                return Mood.Indicative;
+            case "jussive":
+                return Mood.Jussive;
+            case "subjunctive":
+                return Mood.Subjunctive;
+        }
+    }
+    function MapNumerus(numerus: NumerusString)
+    {
+        switch(numerus)
+        {
+            case "dual":
+                return Numerus.Dual;
+            case "plural":
+                return Numerus.Plural;
+            case "singular":
+                return Numerus.Singular;
+        }
+    }
+    function MapPerson(person: PersonString)
+    {
+        switch(person)
+        {
+            case "first":
+                return Person.First;
+            case "second":
+                return Person.Second;
+            case "third":
+                return Person.Third;
+        }
+    }
+
     const conjugator = new Conjugator();
-    
+
+    const root = new VerbRoot(rootRadicals.split("-").join(""));    
     for (const test of conjugations)
     {
-        const root = new VerbRoot(rootRadicals.split("-").join(""));
-
-        const params = {
+        const stringParams = {
             gender: test.gender ?? "male",
             numerus: test.numerus ?? "singular",
             person: test.person ?? "third",
-            stem: (typeof stem === "number") ? stem : 1,
             stem1Context: (typeof stem === "number") ? undefined : stem,
             tense: test.tense ?? "perfect",
             voice: test.voice ?? "active",
             mood: test.mood ?? "indicative"
         };
-        const pastResult = conjugator.ConjugateStringBased(root, params, dialect);
+        const params: ConjugationParams = {
+            gender: (stringParams.gender === "female") ? Gender.Female : Gender.Male,
+            mood: MapMood(stringParams.mood),
+            numerus: MapNumerus(stringParams.numerus),
+            person: MapPerson(stringParams.person),
+            stem: ((typeof stem === "number") ? stem : 1) as any,
+            stem1Context: stem as any,
+            tense: stringParams.tense === "perfect" ? Tense.Perfect : Tense.Present,
+            voice: stringParams.voice === "active" ? Voice.Active : Voice.Passive,
+        };
+        const pastResult = conjugator.Conjugate(root, params, dialect);
         Test(test.expected, pastResult, params);
     }
+}
+
+export function RunParticipleTest(rootRadicals: string, stem: number | Stem1Context, activeExpected: string, passiveExpected: string)
+{
+    const conjugator = new Conjugator();
+
+    const stemNumber = (typeof stem === "number") ? stem : 1;
+    const ctx = (typeof stem === "number") ? undefined : stem;
+
+    const root = new VerbRoot(rootRadicals.split("-").join(""));
+    const activeGot = conjugator.ConjugateParticiple(DialectType.ModernStandardArabic, root, stemNumber, "active", ctx);
+    TestParticiple(activeExpected, activeGot, "active");
+
+    const passiveGot = conjugator.ConjugateParticiple(DialectType.ModernStandardArabic, root, stemNumber, "passive", ctx);
+    TestParticiple(passiveExpected, passiveGot, "passive");
 }

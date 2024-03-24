@@ -17,30 +17,33 @@
  * */
 
 import { Expect, It } from "acts-util-test";
-import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
-import { A3EIN, Letter, Tashkil } from "arabdict-domain/dist/Definitions";
-import { _LegacyPartiallyVocalized } from "arabdict-domain/dist/Vocalization";
+import { DialectType } from "arabdict-domain/dist/Conjugator";
+import { ReverseConjugator } from "arabdict-domain/dist/ReverseConjugator";
+import { Letter, Tashkil } from "arabdict-domain/dist/Definitions";
+import { DisplayVocalized } from "arabdict-domain/dist/Vocalization";
 
 It("Reverse lookup يُعد", () => {
-    const conjugator = new Conjugator();
-
-    const conjugated: _LegacyPartiallyVocalized[] = [
+    const conjugated: DisplayVocalized[] = [
         {
             letter: Letter.Ya,
             shadda: false,
-            tashkil: Tashkil.Dhamma
+            tashkil: Tashkil.Dhamma,
+            emphasis: false,
         },
         {
-            letter: A3EIN,
-            shadda: false
+            letter: Letter.A3ein,
+            shadda: false,
+            emphasis: false,
         },
         {
             letter: Letter.Dal,
-            shadda: false
+            shadda: false,
+            emphasis: false,
         }
     ];
 
-    const analyzed = conjugator.AnalyzeConjugation(DialectType.ModernStandardArabic, conjugated);
+    const conjugator = new ReverseConjugator(DialectType.ModernStandardArabic, conjugated);
+    const analyzed = conjugator.AnalyzeConjugation();
     const got = analyzed.Values().GroupBy(x => x.root.ToString()).Map(x => ({
         key: x.key,
         stems: x.value.Values().Map(x => x.params.stem).ToSet()
@@ -63,7 +66,7 @@ It("Reverse lookup يُعد", () => {
 
     for (const entry of expected)
     {
-        const gotStems = got[entry.root];
-        Expect(gotStems).ToBe(entry.stems);
+        const gotStems = got[entry.root] as number[];
+        Expect(gotStems).ToBe(entry.stems, entry.root);
     }
 });

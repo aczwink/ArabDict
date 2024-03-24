@@ -208,14 +208,9 @@ export class VerbsController
             throw new Error("Root not found");
 
         const root = new VerbRoot(rootData.radicals);
-        const choices = root.GetStem1ContextChoices({
-            middleRadicalTashkil: data.stem1Data.middleRadicalTashkil as any,
-            middleRadicalTashkilPresent: data.stem1Data.middleRadicalTashkilPresent as any,
-            soundOverride: (data.stem1Data.flags & 1) !== 0
-        });
-        if(choices.past.length === 0)
-            data.stem1Data.middleRadicalTashkil = "";
-        else if(choices.present.length === 0)
-            data.stem1Data.middleRadicalTashkilPresent = "";
+        const choices = root.GetStem1ContextChoices();
+        const r2choice = choices.r2options.find(x => (x.past === data.stem1Data?.middleRadicalTashkil) && (x.present === data.stem1Data?.middleRadicalTashkilPresent));
+        if(r2choice === undefined)
+            throw new Error("Illegal stem1 context");
     }
 }

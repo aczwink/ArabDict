@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { _LegacyCreateVerb } from "./_legacy/CreateVerb";
-import { A3EIN, LAM, FA, QAF, Letter, Stem1Context, ConjugationParams, _LegacyTense, _LegacyVoice } from "../../Definitions";
-import { DialectConjugator, ReverseConjugationResult } from "../../DialectConjugator";
+import { QAF, Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString } from "../../Definitions";
+import { DialectConjugator } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { ParseVocalizedText, _LegacyPartiallyVocalized, FullyVocalized } from "../../Vocalization";
+import { ParseVocalizedText, ConjugationVocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
 import { AugmentedRoot } from "./AugmentedRoot";
 import { _Legacydefinition as msaDef } from "./dialectDefinition";
@@ -48,90 +48,44 @@ import { GenerateAllPossibleVerbalNounsStem4 } from "./verbal_nouns/stem4";
 import { GenerateAllPossibleVerbalNounsStem6 } from "./verbal_nouns/stem6";
 import { GenerateAllPossibleVerbalNounsStem2 } from "./verbal_nouns/stem2";
 import { GenerateParticipleStem10 } from "./participle/stem10";
-import { ReverseConjugate } from "./reverse/conjugate";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
 export class MSAConjugator implements DialectConjugator
 {
     //Public methods
-    public AnalyzeConjugation(conjugated: _LegacyPartiallyVocalized[]): ReverseConjugationResult[]
+    public Conjugate(root: VerbRoot, params: ConjugationParams): ConjugationVocalized[]
     {
-        return ReverseConjugate(conjugated);
+        const result = this.ProcessConjugationPipeline(root, params);
+        if(result === undefined)
+            return this._LegacyConjugate(root, params);
+        return DerivePrefix(result.augmentedRoot.symbols[0].tashkil as any, root.type, params).concat(result.augmentedRoot.symbols, result.suffix.suffix);
     }
 
-    public Conjugate(root: VerbRoot, params: ConjugationParams): (_LegacyPartiallyVocalized | FullyVocalized)[]
+    public ConjugateParticiple(root: VerbRoot, stem: number, voice: VoiceString, stem1Context?: Stem1Context): ConjugationVocalized[]
     {
-        const maybeAugmentedRoot = AugmentRoot(params.stem, root.type, params);
-        if(maybeAugmentedRoot !== undefined)
-        {
-            const augmentedRoot = new AugmentedRoot(maybeAugmentedRoot, root);
-
-            ApplyRootTashkil(augmentedRoot, params);
-
-            const suffix = DeriveSuffix(params);
-            augmentedRoot.ApplyRadicalTashkil(root.radicalsAsSeparateLetters.length as any, suffix.preSuffixTashkil);
-
-            const rootType = params._legacyStem1Context?.soundOverride ? RootType.Sound : root.type;
-            switch(rootType)
-            {
-                case RootType.Assimilated:
-                    DropOutR1(augmentedRoot, params);
-                break;
-                case RootType.Defective:
-                    if(IsSpeciallyIrregularDefective(root, params.stem))
-                        AlterSpeciallyIrregularDefective(root, augmentedRoot, params);
-                    else
-                    {
-                        AlterDefectiveSuffix(params, suffix.suffix);
-                        AlterDefectiveEnding(augmentedRoot, params);
-                    }
-                break;
-                case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-                    if(params.stem === 1)
-                        DropOutR1(augmentedRoot, params);
-                    AlterDefectiveSuffix(params, suffix.suffix);
-                    AlterDefectiveEnding(augmentedRoot, params);
-                break;
-                case RootType.Hollow:
-                    ShortenOrAlefizeR2(augmentedRoot, params);
-                break;
-                case RootType.SecondConsonantDoubled:
-                    GeminateDoubledConsonant(augmentedRoot, params);
-                break;
-            }
-
-            if(params.stem === 8)
-                Stem8AssimilateTaVerb(augmentedRoot, params._legacyTense);
-            return DerivePrefix(augmentedRoot.symbols[0].tashkil as any, root.type, params).concat(augmentedRoot.symbols, suffix.suffix);
-        }
-
-        return this._LegacyConjugate(root, params);
-    }
-
-    public ConjugateParticiple(root: VerbRoot, stem: number, voice: _LegacyVoice, stem1Context?: Stem1Context): (_LegacyPartiallyVocalized | FullyVocalized)[]
-    {
+        const voiceNew = voice === "active" ? Voice.Active : Voice.Passive;
         switch(stem)
         {
             case 1:
                 return GenerateParticipleStem1(root, voice, stem1Context!);
             case 2:
-                return GenerateParticipleStem2(root, voice);
+                return GenerateParticipleStem2(this.ConjugateBasicForm(root, stem), voiceNew);
             case 3:
                 return GenerateParticipleStem3(root, voice);
             case 4:
                 return GenerateParticipleStem4(root, voice);
             case 5:
-                return GenerateParticipleStem5(root, voice);
+                return GenerateParticipleStem5(root, this.ConjugateBasicForm(root, stem), voiceNew);
             case 8:
                 return GenerateParticipleStem8(root, voice);
             case 10:
                 return GenerateParticipleStem10(root, voice);
         }
-        return [{letter: "TODO ConjugateParticiple", shadda: false}];
+        return [{letter: "TODO ConjugateParticiple" as any, tashkil: Tashkil.Dhamma}];
     }
 
-    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[]
+    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | ConjugationVocalized[])[]
     {
         switch(stem)
         {
@@ -177,31 +131,44 @@ export class MSAConjugator implements DialectConjugator
     }
 
     //TODO: REMOVE WHOLE METHOD
-    private _LegacyConjugate(root: VerbRoot, params: ConjugationParams): _LegacyPartiallyVocalized[]
+    private _LegacyConjugate(root: VerbRoot, params: ConjugationParams): ConjugationVocalized[]
     {
         const dialectDef = this._LegacyGetDialectDefiniton();
-        const rootType = params._legacyStem1Context?.soundOverride ? RootType.Sound : root.type;
-        const ruleSet = this.ExtractRuleSet(dialectDef, params.stem, params._legacyTense, params._legacyVoice, rootType);
+        const stem1ctx = (params.stem === 1) ? params.stem1Context : undefined;
+        const rootType = stem1ctx?.soundOverride ? RootType.Sound : root.type;
+        const ruleSet = this.ExtractRuleSet(dialectDef, params.stem, params.tense, (params.voice === Voice.Active ? "active" : "passive"), rootType);
         if(ruleSet !== undefined)
         {
             const rules = ruleSet.rules;
-            const rule = rules.find(r => (r.gender === params._legacyGender) && (r.numerus === params._legacyNumerus) && (r.person === params._legacyPerson) && (r.condition ? r.condition(root, params._legacyStem1Context!) : true) );
+            const rule = rules.find(r => (r.gender === params.gender) && (r.numerus === params.numerus) && (r.person === params.person) && (r.condition ? r.condition(root, stem1ctx!) : true) );
             if(rule !== undefined)
-                return this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, rootType, rule.conjugation);
+                return this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, rootType, rule.conjugation) as any;
         }
 
         //call legacy api
         const verb = _LegacyCreateVerb(root.radicalsAsSeparateLetters.join(""), params.stem);
-        const x = verb.Conjugate(params._legacyTense, params._legacyVoice, params._legacyGender, params._legacyPerson, params._legacyNumerus);
-        return ParseVocalizedText(x);
+        const x = verb.Conjugate(params.tense, (params.voice === Voice.Active ? "active" : "passive"), params.gender, params.person, params.numerus);
+        return ParseVocalizedText(x) as any;
     }
 
-    private ExtractRuleSet(dialectDef: DialectDefinition, stem: number, tense: _LegacyTense, voice: _LegacyVoice, rootType: RootType)
+    private ConjugateBasicForm(root: VerbRoot, stem: AdvancedStemNumber)
+    {
+        return this.ProcessConjugationPipeline(root, {
+            gender: Gender.Male,
+            numerus: Numerus.Singular,
+            person: Person.Third,
+            stem,
+            tense: Tense.Perfect,
+            voice: Voice.Active,
+        })!.augmentedRoot;
+    }
+
+    private ExtractRuleSet(dialectDef: DialectDefinition, stem: number, tense: Tense, voice: VoiceString, rootType: RootType)
     {
         const stemData = dialectDef.stems[stem];
         if(stemData === undefined)
             return undefined;
-        const tenseData = stemData[tense];
+        const tenseData = (tense === Tense.Perfect) ? stemData.perfect : stemData.present;
         if(tenseData === undefined)
             return undefined;
         if("active" in tenseData)
@@ -226,20 +193,71 @@ export class MSAConjugator implements DialectConjugator
         switch(type)
         {
             case RootType.Assimilated:
-                return [Letter.Waw, A3EIN, LAM];
+                return [Letter.Waw, Letter.A3ein, Letter.Lam];
             case RootType.Defective:
-                return [FA, A3EIN];
+                return [Letter.Fa, Letter.A3ein];
             case RootType.Hollow:
-                return [FA, A3EIN, LAM];
+                return [Letter.Fa, Letter.A3ein, Letter.Lam];
             case RootType.Quadriliteral:
-                return [FA, A3EIN, LAM, QAF];
+                return [Letter.Fa, Letter.A3ein, Letter.Lam, QAF];
             case RootType.Sound:
-                return [FA, A3EIN, LAM];
+                return [Letter.Fa, Letter.A3ein, Letter.Lam];
             case RootType.SecondConsonantDoubled:
-                return [FA, LAM];
+                return [Letter.Fa, Letter.Lam];
             case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-                return [FA, A3EIN];
+                return [Letter.Fa, Letter.A3ein];
         }
         throw new Error("Method not implemented.");
+    }
+
+    private ProcessConjugationPipeline(root: VerbRoot, params: ConjugationParams)
+    {
+        const maybeAugmentedRoot = AugmentRoot(params.stem, root, params);
+        if(maybeAugmentedRoot === undefined)
+            return undefined;
+        
+        const augmentedRoot = new AugmentedRoot(maybeAugmentedRoot, root);
+
+        ApplyRootTashkil(augmentedRoot, params);
+
+        const suffix = DeriveSuffix(params);
+        augmentedRoot.ApplyRadicalTashkil(root.radicalsAsSeparateLetters.length as any, suffix.preSuffixTashkil);
+
+        const stem1ctx = (params.stem === 1) ? params.stem1Context : undefined;
+        const rootType = stem1ctx?.soundOverride ? RootType.Sound : root.type;
+        switch(rootType)
+        {
+            case RootType.Assimilated:
+                DropOutR1(augmentedRoot, params);
+            break;
+            case RootType.Defective:
+                if(IsSpeciallyIrregularDefective(root, params.stem))
+                    AlterSpeciallyIrregularDefective(root, augmentedRoot, params);
+                else
+                {
+                    AlterDefectiveSuffix(params, suffix.suffix);
+                    AlterDefectiveEnding(augmentedRoot, params);
+                }
+            break;
+            case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+                if(params.stem === 1)
+                    DropOutR1(augmentedRoot, params);
+                AlterDefectiveSuffix(params, suffix.suffix);
+                AlterDefectiveEnding(augmentedRoot, params);
+            break;
+            case RootType.Hollow:
+                ShortenOrAlefizeR2(augmentedRoot, params);
+            break;
+            case RootType.SecondConsonantDoubled:
+                GeminateDoubledConsonant(augmentedRoot, params);
+            break;
+        }
+
+        if(params.stem === 8)
+            Stem8AssimilateTaVerb(augmentedRoot, params.tense);
+        return {
+            augmentedRoot,
+            suffix
+        };
     }
 }

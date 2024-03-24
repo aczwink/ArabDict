@@ -15,20 +15,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Letter } from "../../../../Definitions";
+import { Gender, Letter, Numerus, Person } from "../../../../Definitions";
 import { RootType } from "../../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../../Definitions";
 
 export const stem8_present_active: StemTenseVoiceDefinition = {
     [RootType.Assimilated]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يَتَّعِلُ" }
+            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يَتَّعِلُ" }
         ]
     },
 
     [RootType.Hollow]: {
         rules: [
-            { condition: (root, _) => root.r1 === Letter.Zay, numerus: "singular", person: "third", gender: "male", conjugation: "يَفْدَالُ" }
+            { condition: (root, _) => root.r1 === Letter.Zay, numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يَفْدَالُ" }
         ]
     },
 };

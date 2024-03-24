@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, Tashkil } from "../../../Definitions";
+import { ConjugationParams, Tashkil, Tense, Voice } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
 import { AugmentedRoot } from "../AugmentedRoot";
 
@@ -28,17 +28,17 @@ interface RootTashkil
 
 function DerivePastRootTashkil(params: ConjugationParams): RootTashkil
 {
-    const r1stem = ((params.stem === 4) || (params.stem === 8) || (params.stem === 10)) ? Tashkil.Sukun : ((params._legacyVoice === "active") ? Tashkil.Fatha : Tashkil.Dhamma);
-    const r2active = (params.stem === 1) ? (params._legacyStem1Context!.middleRadicalTashkil as any) : Tashkil.Fatha;
+    const r1stem = ((params.stem === 4) || (params.stem === 8) || (params.stem === 10)) ? Tashkil.Sukun : ((params.voice === Voice.Active) ? Tashkil.Fatha : Tashkil.Dhamma);
+    const r2active = (params.stem === 1) ? (params.stem1Context.middleRadicalTashkil) : Tashkil.Fatha;
     return {
         r1: r1stem,
-        r2: (params._legacyVoice === "active") ? r2active : Tashkil.Kasra
+        r2: (params.voice === Voice.Active) ? r2active : Tashkil.Kasra
     };
 }
 
 function Derive3RadicalRootTashkil(params: ConjugationParams): RootTashkil
 {
-    if(params._legacyTense === "perfect")
+    if(params.tense === Tense.Perfect)
         return DerivePastRootTashkil(params);
 
     function R2Active(): Tashkil
@@ -46,7 +46,7 @@ function Derive3RadicalRootTashkil(params: ConjugationParams): RootTashkil
         switch(params.stem)
         {
             case 1:
-                return params._legacyStem1Context!.middleRadicalTashkilPresent as any;
+                return params.stem1Context.middleRadicalTashkilPresent;
             case 2:
             case 3:
             case 4:
@@ -58,25 +58,24 @@ function Derive3RadicalRootTashkil(params: ConjugationParams): RootTashkil
             case 6:
                 return Tashkil.Fatha;
         }
-        throw new Error("Unknown stem");
     }
 
     return {
         r1: ((params.stem === 1) || (params.stem === 4) || (params.stem === 8) || (params.stem === 10)) ? Tashkil.Sukun : Tashkil.Fatha,
-        r2: (params._legacyVoice === "active") ? R2Active() : Tashkil.Fatha
+        r2: (params.voice === Voice.Active) ? R2Active() : Tashkil.Fatha
     };
 }
 
 function Derive4RadicalRootTashkil(params: ConjugationParams): RootTashkil & { r3: Tashkil }
 {
     let r3: Tashkil;
-    if(params._legacyVoice === "active")
-        r3 = (params._legacyTense === "perfect") ? Tashkil.Fatha : Tashkil.Kasra;
+    if(params.voice === Voice.Active)
+        r3 = (params.tense === Tense.Perfect) ? Tashkil.Fatha : Tashkil.Kasra;
     else
-        r3 = (params._legacyTense === "perfect") ? Tashkil.Kasra : Tashkil.Fatha;
+        r3 = (params.tense === Tense.Perfect) ? Tashkil.Kasra : Tashkil.Fatha;
 
     return {
-        r1: ( (params._legacyTense === "perfect") && (params._legacyVoice === "passive") ) ? Tashkil.Dhamma : Tashkil.Fatha,
+        r1: ( (params.tense === Tense.Perfect) && (params.voice === Voice.Passive) ) ? Tashkil.Dhamma : Tashkil.Fatha,
         r2: Tashkil.Sukun,
         r3
     };

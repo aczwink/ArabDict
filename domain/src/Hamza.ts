@@ -17,11 +17,11 @@
  * */
 
 import { Letter, Tashkil } from "./Definitions";
-import { FullyVocalized, IsLongVowel } from "./Vocalization";
+import { ConjugationVocalized, IsLongVowel } from "./Vocalization";
 
 //Source: https://en.wikipedia.org/wiki/Hamza#Detailed_description
 
-function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShortVowel: Tashkil, predecessor?: FullyVocalized, prepredecessor?: FullyVocalized): FullyVocalized
+function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShortVowel: Tashkil, predecessor?: ConjugationVocalized, prepredecessor?: ConjugationVocalized): ConjugationVocalized
 {
     /*
     function VowelToTashkil(vowel: string)
@@ -61,7 +61,7 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
         return MaxPrecedence(t1, t2);
     }
 
-    function IsDiphtong(v: FullyVocalized | undefined, predecessor: FullyVocalized | undefined)
+    function IsDiphtong(v: ConjugationVocalized | undefined, predecessor: ConjugationVocalized | undefined)
     {
         //diphtongs are /aj/ or /aw/, i.e. a ya or waw with sukun above it, while the predecessor needs to have a fatha
         return (
@@ -76,8 +76,8 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
     if(isInitial)
     {
         if(followingShortVowel === Tashkil.Kasra)
-            return { letter: Letter.AlefHamzaBelow, tashkil: followingShortVowel, shadda: false };
-        return { letter: Letter.AlefHamza, tashkil: followingShortVowel, shadda: false };
+            return { letter: Letter.AlefHamzaBelow, tashkil: followingShortVowel };
+        return { letter: Letter.AlefHamza, tashkil: followingShortVowel };
     }
 
     const predecessorIsLongVowel = ( (predecessor?.letter === Letter.Alef) && (predecessor.tashkil === Tashkil.Fatha) )
@@ -108,23 +108,23 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
     switch(decidingTashkil)
     {
         case Tashkil.Dhamma:
-            return { letter: Letter.WawHamza, shadda: false, tashkil: followingShortVowel };
+            return { letter: Letter.WawHamza, tashkil: followingShortVowel };
         case Tashkil.Fatha:
-            return { letter: Letter.AlefHamza, tashkil: followingShortVowel, shadda: false };
+            return { letter: Letter.AlefHamza, tashkil: followingShortVowel };
         case Tashkil.Kasra:
-            return { letter: Letter.YaHamza, shadda: false, tashkil: followingShortVowel };
+            return { letter: Letter.YaHamza, tashkil: followingShortVowel };
         case Tashkil.Sukun: //the article doesn't talk about sukun but this was found through tests
             console.error(arguments);
             throw new Error("check it again and write test! 1");
         case null:
-            return { letter: Letter.Hamza, shadda: false, tashkil: followingShortVowel };
+            return { letter: Letter.Hamza, tashkil: followingShortVowel };
         default:
             console.error(arguments);
             throw new Error("TODO: implement me" + decidingTashkil);
     }
 }
 
-function MaddahCheck(current: FullyVocalized, prev?: FullyVocalized)
+function MaddahCheck(current: ConjugationVocalized, prev?: ConjugationVocalized)
 {
     if(prev?.letter === Letter.AlefHamza)
     {
@@ -152,16 +152,16 @@ function MaddahCheck(current: FullyVocalized, prev?: FullyVocalized)
     return false;
 }
 
-export function Hamzate(vocalized: FullyVocalized[])
+export function Hamzate(vocalized: ConjugationVocalized[])
 {
-    const result: FullyVocalized[] = [];
+    const result: ConjugationVocalized[] = [];
     for(let i = 0; i < vocalized.length; i++)
     {
         const prev = result[result.length - 1];
         const next = (vocalized[i].letter === Letter.Hamza) ? DetermineHamzaSeat(i === 0, i === (vocalized.length - 1), vocalized[i].tashkil, prev, result[result.length - 2]) : vocalized[i];
 
         if(MaddahCheck(next, prev))
-            result[result.length - 1] = { letter: Letter.AlefMadda, shadda: false, tashkil: Tashkil.LongVowelMarker };
+            result[result.length - 1] = { letter: Letter.AlefMadda, tashkil: Tashkil.LongVowelMarker };
         else
             result.push(next);
     }

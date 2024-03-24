@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Letter, PrimaryTashkil, Stem1Context, Tashkil } from "./Definitions";
+import { BaseTashkil, Letter, Tashkil } from "./Definitions";
 import { GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching } from "./rule_sets/msa/conjugation/defective_special_cases";
 
 export enum RootType
@@ -46,10 +46,15 @@ export enum RootType
     DoublyWeak_WawOnR1_WawOrYaOnR3,
 }
 
+export interface Stem1ContextChoiceTashkil
+{
+    past: BaseTashkil;
+    present: BaseTashkil;
+}
+
 interface Stem1ContextChoice
 {
-    past: PrimaryTashkil[];
-    present: PrimaryTashkil[];
+    r2options: Stem1ContextChoiceTashkil[];
     soundOverride: boolean[];
 }
 
@@ -126,7 +131,7 @@ export class VerbRoot
     }
 
     //Public methods
-    public GetStem1ContextChoices(stem1Context: Stem1Context): Stem1ContextChoice
+    public GetStem1ContextChoices(): Stem1ContextChoice
     {
         switch(this.type)
         {
@@ -134,17 +139,15 @@ export class VerbRoot
             case RootType.HamzaOnR1:
             case RootType.Sound:
             {
-                let present: PrimaryTashkil[];
-                if(stem1Context.middleRadicalTashkil === Tashkil.Dhamma)
-                    present = [Tashkil.Dhamma];
-                else if(stem1Context.middleRadicalTashkil === Tashkil.Kasra)
-                    present = [Tashkil.Fatha, Tashkil.Kasra];
-                else
-                    present = [Tashkil.Fatha, Tashkil.Dhamma, Tashkil.Kasra];
-
                 return {
-                    past: [Tashkil.Fatha, Tashkil.Dhamma, Tashkil.Kasra],
-                    present,
+                    r2options: [
+                        { past: Tashkil.Fatha, present: Tashkil.Dhamma },
+                        { past: Tashkil.Fatha, present: Tashkil.Kasra },
+                        { past: Tashkil.Fatha, present: Tashkil.Fatha },
+                        { past: Tashkil.Kasra, present: Tashkil.Fatha },
+                        { past: Tashkil.Kasra, present: Tashkil.Kasra },
+                        { past: Tashkil.Dhamma, present: Tashkil.Dhamma },
+                    ],
                     soundOverride: [false]
                 }
             }
@@ -153,52 +156,56 @@ export class VerbRoot
                 if(special !== undefined)
                 {
                     return {
-                        past: [special.past],
-                        present: [special.present],
+                        r2options: [special],
                         soundOverride: [false]
                     };
                 }
                 
                 return {
-                    past: [(stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha) ? Tashkil.Kasra : Tashkil.Fatha],
-                    present: [Tashkil.Fatha, Tashkil.Dhamma, Tashkil.Kasra],
+                    r2options: [
+                        { past: Tashkil.Fatha, present: Tashkil.Kasra },
+                        { past: Tashkil.Fatha, present: Tashkil.Dhamma },
+                        { past: Tashkil.Kasra, present: Tashkil.Fatha },
+                    ],
                     soundOverride: [false]
                 };
             case RootType.Hollow:
                 {
-                    let past: PrimaryTashkil[];
-                    if(stem1Context.middleRadicalTashkilPresent === Tashkil.Kasra)
-                        past = [Tashkil.Kasra];
-                    else if(stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma)
-                        past = [Tashkil.Dhamma];
-                    else
-                        past = [Tashkil.Dhamma, Tashkil.Kasra];
-
+                    const vowelTashkil = (this.r2 === Letter.Waw) ? Tashkil.Dhamma : Tashkil.Kasra;
                     return {
-                        past,
-                        present: [Tashkil.Fatha, (this.r2 === Letter.Waw) ? Tashkil.Dhamma : Tashkil.Kasra],
+                        r2options: [
+                            { past: vowelTashkil, present: vowelTashkil },
+                            { past: Tashkil.Kasra, present: Tashkil.Fatha },
+                            { past: Tashkil.Dhamma, present: Tashkil.Fatha },
+                        ],
                         soundOverride: [false, true]
                     };
                 }
             case RootType.Quadriliteral:
                 return {
-                    past: [],
-                    present: [],
-                    soundOverride: []
+                    r2options: [
+                        { past: Tashkil.Sukun, present: Tashkil.Sukun },
+                    ],
+                    soundOverride: [false]
                 };
             case RootType.SecondConsonantDoubled:
                 {
                     return {
-                        past: [Tashkil.Fatha, Tashkil.Kasra],
-                        present: (stem1Context.middleRadicalTashkil === Tashkil.Kasra) ? [Tashkil.Fatha] : [Tashkil.Fatha, Tashkil.Dhamma, Tashkil.Kasra],
+                        r2options: [
+                            { past: Tashkil.Fatha, present: Tashkil.Dhamma },
+                            { past: Tashkil.Fatha, present: Tashkil.Kasra },
+                            { past: Tashkil.Fatha, present: Tashkil.Fatha },
+                            { past: Tashkil.Kasra, present: Tashkil.Fatha },
+                        ],
                         soundOverride: [false]
                     };
                 }
             case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 return {
-                    past: [Tashkil.Fatha],
-                    present: [Tashkil.Kasra],
-                    soundOverride: []
+                    r2options: [
+                        { past: Tashkil.Fatha, present: Tashkil.Kasra },
+                    ],
+                    soundOverride: [false]
                 };
             default:
                 throw new Error("TODO: implement me");

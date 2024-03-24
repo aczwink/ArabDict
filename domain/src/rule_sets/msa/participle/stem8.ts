@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Tashkil, Letter, _LegacyVoice } from "../../../Definitions";
+import { Tashkil, Letter, VoiceString } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { ConjugationVocalized } from "../../../Vocalization";
 
-export function GenerateParticipleStem8(root: VerbRoot, voice: _LegacyVoice): FullyVocalized[]
+export function GenerateParticipleStem8(root: VerbRoot, voice: VoiceString): ConjugationVocalized[]
 {
     const voicingTashkil = (voice === "active") ? Tashkil.Kasra : Tashkil.Fatha;
     switch(root.type)
@@ -29,29 +29,29 @@ export function GenerateParticipleStem8(root: VerbRoot, voice: _LegacyVoice): Fu
             if(voice === "active")
             {
                 return [
-                    { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
-                    { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
-                    { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
-                    { letter: root.r2, shadda: false, tashkil: Tashkil.Kasratan },
+                    { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
+                    { letter: root.r1, tashkil: Tashkil.Sukun },
+                    { letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                    { letter: root.r2, tashkil: Tashkil.Kasratan },
                 ];
     
             }
             return [
-                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
-                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r2, shadda: false, tashkil: Tashkil.Fathatan },
-                { letter: Letter.AlefMaksura, shadda: false, tashkil: Tashkil.EndOfWordMarker },
+                { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
+                { letter: root.r1, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                { letter: root.r2, tashkil: Tashkil.Fathatan },
+                { letter: Letter.AlefMaksura, tashkil: Tashkil.EndOfWordMarker },
             ];
 
         case RootType.Sound:
             return [
-                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
-                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r2, shadda: false, tashkil: voicingTashkil },
-                { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
+                { letter: root.r1, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                { letter: root.r2, tashkil: voicingTashkil },
+                { letter: root.r3, tashkil: Tashkil.Sukun },
             ];
     }
-    return [{letter: "TODO" as any, shadda: false, tashkil: Tashkil.Sukun}];
+    return [{letter: "TODO" as any, tashkil: Tashkil.Sukun}];
 }

@@ -18,7 +18,7 @@
 
 import { NumberDictionary } from "acts-util-core";
 import { VerbRoot } from "../VerbRoot";
-import { Gender, Numerus, _LegacyPerson, Stem1Context } from "../Definitions";
+import { Gender, Numerus, Person, Stem1Context } from "../Definitions";
 
 export interface Stem1DefectiveContext
 {
@@ -29,7 +29,7 @@ interface ConjugationRule
 {
     condition?: (root: VerbRoot, stem1Context: Stem1Context) => boolean;
     gender: Gender;
-    person: _LegacyPerson;
+    person: Person;
     numerus: Numerus;
     conjugation: string;
 }

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, Letter, Tashkil } from "../../../Definitions";
+import { ConjugationParams, Letter, Tashkil, Tense, Voice } from "../../../Definitions";
 import { AugmentedRoot } from "../AugmentedRoot";
 
 export function DropOutR1(augmentedRoot: AugmentedRoot, params: ConjugationParams)
@@ -25,9 +25,9 @@ export function DropOutR1(augmentedRoot: AugmentedRoot, params: ConjugationParam
     {
         case 1:
         {
-            if( (params._legacyTense === "present") && (augmentedRoot.r1.letter === Letter.Waw))
+            if( (params.tense === Tense.Present) && (augmentedRoot.r1.letter === Letter.Waw))
             {
-                if(params._legacyVoice === "active")
+                if(params.voice === Voice.Active)
                     augmentedRoot.DropRadial(1);
                 else
                     augmentedRoot.ApplyRadicalTashkil(1, Tashkil.Dhamma);

@@ -16,13 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest } from "../../shared";
-import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
+import { AdvancedStemNumber, Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
-function RunDefectiveConjugationTest(rootRadicalsWithoutR3: string, stem: number | Stem1Context, conjugations: ConjugationTest[])
+function RunDefectiveConjugationTest(rootRadicalsWithoutR3: string, stem: AdvancedStemNumber | Stem1Context, conjugations: ConjugationTest[])
 {
     RunConjugationTest(rootRadicalsWithoutR3 + "-و", stem, conjugations);
     RunConjugationTest(rootRadicalsWithoutR3 + "-ي", stem, conjugations);
+}
+
+function RunDefectiveParticipleTest(rootRadicalsWithoutR3: string, stem: number | Stem1Context, activeExpected: string, passiveExpected: string)
+{
+    RunParticipleTest(rootRadicalsWithoutR3 + "-و", stem, activeExpected, passiveExpected);
+    RunParticipleTest(rootRadicalsWithoutR3 + "-ي", stem, activeExpected, passiveExpected);
 }
 
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Defective_(third-weak)_roots
@@ -284,6 +290,7 @@ It("Wikipedia defective stem table", () => {
         { voice: "passive", expected: "فُعِيَ" },
         { voice: "passive", expected: "يُفْعَى", tense: "present" },
     ]);
+    RunDefectiveParticipleTest("ف-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "فَاعٍ", "مَفْعِيّ");
     RunDefectiveConjugationTest("ف-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, [
         { expected: "فَعَا" },
         { expected: "يَفْعُو", tense: "present" },
@@ -291,6 +298,7 @@ It("Wikipedia defective stem table", () => {
         { voice: "passive", expected: "فُعِيَ" },
         { voice: "passive", expected: "يُفْعَى", tense: "present" },
     ]);
+    RunDefectiveParticipleTest("ف-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, "فَاعٍ", "مَفْعُوّ");
     RunDefectiveConjugationTest("ف-ع", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, [
         { expected: "فَعِيَ" },
         { expected: "يَفْعَى", tense: "present" },
@@ -298,6 +306,7 @@ It("Wikipedia defective stem table", () => {
         { voice: "passive", expected: "فُعِيَ" },
         { voice: "passive", expected: "يُفْعَى", tense: "present" },
     ]);
+    RunDefectiveParticipleTest("ف-ع", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, "فَاعٍ", "مَفْعِيّ");
 
     RunDefectiveConjugationTest("ف-ع", 2, [
         { expected: "فَعَّى" },
@@ -324,6 +333,7 @@ It("Wikipedia defective stem table", () => {
         { voice: "passive", expected: "تُفُعِّيَ" },
         { voice: "passive", expected: "يُتَفَعَّى", tense: "present" },
     ]);
+    RunDefectiveParticipleTest("ف-ع", 5, "مُتَفَعٍّ", "مُتَفَعًّى");
 
     //TODO: VI
     //TODO: VII

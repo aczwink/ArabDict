@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Letter, Tashkil, PrimaryTashkil, ConjugationParams } from "../../../Definitions";
+import { Letter, Tashkil, PrimaryTashkil, ConjugationParams, Voice, Tense, Person, Numerus, Gender, Mood } from "../../../Definitions";
 import { RootType } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { ConjugationVocalized } from "../../../Vocalization";
 
 function DerivePrefixTashkil(rootType: RootType, params: ConjugationParams)
 {
@@ -36,67 +36,66 @@ function DerivePrefixTashkil(rootType: RootType, params: ConjugationParams)
         case 7:
         case 8:
         case 10:
-            return (params._legacyVoice === "active") ? Tashkil.Fatha : Tashkil.Dhamma;
+            return (params.voice === Voice.Active) ? Tashkil.Fatha : Tashkil.Dhamma;
         case 2:
         case 3:
         case 4:
             return Tashkil.Dhamma;
     }
-
-    throw new Error("Should never happen");
 }
 
-export function DerivePrefix(prevTashkil: (PrimaryTashkil | Tashkil.Sukun), rootType: RootType, params: ConjugationParams): FullyVocalized[]
+export function DerivePrefix(prevTashkil: (PrimaryTashkil | Tashkil.Sukun), rootType: RootType, params: ConjugationParams): ConjugationVocalized[]
 {
-    if(params._legacyTense === "perfect")
+    if(params.tense === Tense.Perfect)
     {
         if(prevTashkil === Tashkil.Sukun)
         {
             //insert hamzat al wasl
-            return [{ letter: Letter.Alef, shadda: false, tashkil: (params._legacyVoice === "active") ? Tashkil.Kasra : Tashkil.Dhamma}];
+            return [{ letter: Letter.Alef, tashkil: (params.voice === Voice.Active) ? Tashkil.Kasra : Tashkil.Dhamma}];
         }
         return [];
     }
 
-    if(params._legacyMood === "imperative")
+    if(params.mood === Mood.Imperative)
     {
         if(params.stem === 4)
-            return [{ letter: Letter.AlefHamza, shadda: false, tashkil: Tashkil.Fatha}];
+            return [{ letter: Letter.AlefHamza, tashkil: Tashkil.Fatha}];
 
         if(prevTashkil === Tashkil.Sukun)
         {
+            const stem1ctx = (params.stem === 1) ? params.stem1Context : undefined;
             //insert hamzat al wasl
-            return [{ letter: Letter.Alef, shadda: false, tashkil: (params._legacyStem1Context?.middleRadicalTashkilPresent === Tashkil.Dhamma) ? Tashkil.Dhamma : Tashkil.Kasra}];
+            return [{ letter: Letter.Alef, tashkil: (stem1ctx?.middleRadicalTashkilPresent === Tashkil.Dhamma) ? Tashkil.Dhamma : Tashkil.Kasra}];
         }
         return [];
     }
 
     const tashkil = DerivePrefixTashkil(rootType, params);
-    switch(params._legacyPerson)
+    switch(params.person)
     {
-        case "first":
+        case Person.First:
         {
-            switch(params._legacyNumerus)
+            switch(params.numerus)
             {
-                case "singular":
-                    return [{ letter: Letter.AlefHamza, shadda: false, tashkil }];
-                case "plural":
-                    return [{ letter: Letter.Nun, shadda: false, tashkil }];
+                case Numerus.Singular:
+                    return [{ letter: Letter.AlefHamza, tashkil }];
+                case Numerus.Plural:
+                    return [{ letter: Letter.Nun, tashkil }];
             }
         }
-        case "second":
-            return [{ letter: Letter.Ta, shadda: false, tashkil }];
-        case "third":
+        case Person.Second:
+            return [{ letter: Letter.Ta, tashkil }];
+        case Person.Third:
         {
-            if((params._legacyNumerus === "plural") && (params._legacyGender === "female"))
-                return [{ letter: Letter.Ya, shadda: false, tashkil }];
+            if((params.numerus === Numerus.Plural) && (params.gender === Gender.Female))
+                return [{ letter: Letter.Ya, tashkil }];
             
-            switch(params._legacyGender)
+            switch(params.gender)
             {
-                case "male":
-                    return [{ letter: Letter.Ya, shadda: false, tashkil }];
-                case "female":
-                    return [{ letter: Letter.Ta, shadda: false, tashkil }];
+                case Gender.Male:
+                    return [{ letter: Letter.Ya, tashkil }];
+                case Gender.Female:
+                    return [{ letter: Letter.Ta, tashkil }];
             }
         }
     }

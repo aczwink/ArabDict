@@ -18,11 +18,12 @@
 
 import { Injectable } from "acfrontend";
 import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
+import { ReverseConjugator } from "arabdict-domain/src/ReverseConjugator";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
-import { ParseVocalizedText } from "arabdict-domain/src/Vocalization";
-import { Gender, Mood, Numerus, _LegacyPerson, Stem1Context, _LegacyMood, _LegacyTense, _LegacyVoice } from "arabdict-domain/src/Definitions";
+import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
+import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString } from "arabdict-domain/src/Definitions";
 
 @Injectable
 export class ConjugationService
@@ -53,25 +54,38 @@ export class ConjugationService
     //Public methods
     public AnalyzeConjugation(conjugated: string)
     {
-        return this.conjugator.AnalyzeConjugation(this._globalDialect.Get(), ParseVocalizedText(conjugated));
+        const reverser = new ReverseConjugator(this._globalDialect.Get(), ParseVocalizedText(conjugated));
+        return reverser.AnalyzeConjugation();
     }
 
-    public Conjugate(rootRadicals: string, stem: number, tense: _LegacyTense, voice: _LegacyVoice, gender: Gender, person: _LegacyPerson, numerus: Numerus, mood: _LegacyMood, stem1Context?: Stem1Context)
+    public Conjugate(rootRadicals: string, stem: number, tense: TenseString, voice: VoiceString, gender: Gender, person: Person, numerus: Numerus, mood: Mood, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
-        return this.conjugator.ConjugateStringBased(root, {
-            stem,
-            tense,
-            voice,
+        return this.conjugator.Conjugate(root, {
+            stem: stem as any,
+            tense: (tense === "perfect") ? Tense.Perfect : Tense.Present,
+            voice: (voice === "active" ? Voice.Active : Voice.Passive),
             gender,
             person,
             numerus,
             mood,
-            stem1Context
+            stem1Context: stem1Context as any,
         }, this._globalDialect.Get());
     }
 
-    public ConjugateParticiple(rootRadicals: string, stem: number, voice: _LegacyVoice, stem1Context?: Stem1Context)
+    public ConjugateToString(root: VerbRoot, params: ConjugationParams)
+    {
+        const vocalized = this.conjugator.Conjugate(root, params, this._globalDialect.Get());
+        return this.VocalizedToString(vocalized);
+    }
+
+    public ConjugateToStringArgs(rootRadicals: string, stem: number, tense: TenseString, voice: VoiceString, gender: Gender, person: Person, numerus: Numerus, mood: Mood, stem1Context?: Stem1Context)
+    {
+        const vocalized = this.Conjugate(rootRadicals, stem, tense, voice, gender, person, numerus, mood, stem1Context);
+        return this.VocalizedToString(vocalized);
+    }
+
+    public ConjugateParticiple(rootRadicals: string, stem: number, voice: VoiceString, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
         return this.conjugator.ConjugateParticiple(this._globalDialect.Get(), root, stem, voice, stem1Context);
@@ -80,7 +94,13 @@ export class ConjugationService
     public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: number)
     {
         const root = new VerbRoot(rootRadicals);
-        return this.conjugator.GenerateAllPossibleVerbalNouns(this._globalDialect.Get(), root, stem);
+        const nouns = this.conjugator.GenerateAllPossibleVerbalNouns(this._globalDialect.Get(), root, stem);
+        return nouns.map(this.VocalizedToString.bind(this));
+    }
+
+    public VocalizedToString(vocalized: DisplayVocalized[]): string
+    {
+        return vocalized.Values().Map(VocalizedToString).Join("");
     }
 
     //Private state

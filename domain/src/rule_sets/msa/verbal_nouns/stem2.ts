@@ -17,9 +17,9 @@
  * */
 import { Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { ConjugationVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem2(root: VerbRoot): FullyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem2(root: VerbRoot): ConjugationVocalized[]
 {
     switch(root.type)
     {
@@ -28,13 +28,13 @@ export function GenerateAllPossibleVerbalNounsStem2(root: VerbRoot): FullyVocali
         case RootType.SecondConsonantDoubled:
         case RootType.Sound:
             return [
-                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
-                { letter: root.r2, shadda: false, tashkil: Tashkil.Kasra },
-                { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Kasra },
-                { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                { letter: root.r1, tashkil: Tashkil.Sukun },
+                { letter: root.r2, tashkil: Tashkil.Kasra },
+                { letter: Letter.Ya, tashkil: Tashkil.Kasra },
+                { letter: root.r3, tashkil: Tashkil.Sukun },
             ];
     }
 
-    return [{letter: "TODO" as any, shadda: false, tashkil: Tashkil.Fatha}];
+    return [{letter: "TODO" as any, tashkil: Tashkil.Fatha}];
 }

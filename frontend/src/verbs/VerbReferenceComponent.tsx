@@ -21,6 +21,7 @@ import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { ConjugationService } from "../services/ConjugationService";
 import { Stem1DataToStem1ContextOptional } from "./model";
+import { Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
 
 @Injectable
 export class VerbReferenceComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
@@ -33,7 +34,7 @@ export class VerbReferenceComponent extends Component<{ root: RootCreationData; 
     protected Render(): RenderValue
     {
         const verbData = this.input.verbData;
-        const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", "male", "third", "singular", "indicative", Stem1DataToStem1ContextOptional(verbData.stem1Data));
+        const conjugated = this.conjugationService.ConjugateToStringArgs(this.input.root.radicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(verbData.stem1Data));
 
         return <Anchor route={"/verbs/" + verbData.id}>{conjugated}</Anchor>;
     }

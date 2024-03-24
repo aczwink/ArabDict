@@ -23,6 +23,7 @@ import { ConjugationService } from "./services/ConjugationService";
 import { RemoveTashkilButKeepShadda } from "arabdict-domain/src/Util";
 import { RenderTranslations } from "./shared/translations";
 import { Stem1DataToStem1ContextOptional } from "./verbs/model";
+import { Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
 
 @Injectable
 export class LearnComponent extends Component
@@ -42,7 +43,7 @@ export class LearnComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        const title = ("rootId" in this.data) ? this.conjugationService.Conjugate(this.rootRadicals, this.data.stem, "perfect", "active", "male", "third", "singular", "indicative", Stem1DataToStem1ContextOptional(this.data.stem1Data)) : this.data.word;
+        const title = ("rootId" in this.data) ? this.conjugationService.ConjugateToStringArgs(this.rootRadicals, this.data.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(this.data.stem1Data)) : this.data.word;
 
         if(this.resolve)
         {

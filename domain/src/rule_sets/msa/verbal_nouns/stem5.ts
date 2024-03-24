@@ -17,9 +17,9 @@
  * */
 import { Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { ConjugationVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): FullyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): ConjugationVocalized[]
 {
     switch(root.type)
     {
@@ -27,19 +27,21 @@ export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): FullyVocali
         case RootType.Hollow:
         case RootType.Sound:
             return [
-                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r2, shadda: true, tashkil: Tashkil.Dhamma },
-                { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                { letter: root.r1, tashkil: Tashkil.Fatha },
+                { letter: root.r2, tashkil: Tashkil.Sukun },
+                { letter: root.r2, tashkil: Tashkil.Dhamma },
+                { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
             ];
 
         case RootType.Defective:
             return [
-                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r2, shadda: true, tashkil: Tashkil.Kasratan },
+                { letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                { letter: root.r1, tashkil: Tashkil.Fatha },
+                { letter: root.r2, tashkil: Tashkil.Sukun },
+                { letter: root.r2, tashkil: Tashkil.Kasratan },
             ];
         default:
-            return [{letter: "TODO" as any, shadda: false, tashkil: Tashkil.Sukun}];
+            return [{letter: "TODO" as any, tashkil: Tashkil.Sukun}];
     }
 }

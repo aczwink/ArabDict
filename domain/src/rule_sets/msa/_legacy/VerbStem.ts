@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { _LegacyVoice, _LegacyTense, Gender, Numerus, _LegacyPerson } from "../../../Definitions";
+import { Gender, Numerus, Person, Tense, VoiceString } from "../../../Definitions";
 
 //TODO: REMOVE
 export interface _LegacyVerbStem
 {
-    Conjugate(tense: _LegacyTense, voice: _LegacyVoice, gender: Gender, person: _LegacyPerson, numerus: Numerus): string;
+    Conjugate(tense: Tense, voice: VoiceString, gender: Gender, person: Person, numerus: Numerus): string;
 }

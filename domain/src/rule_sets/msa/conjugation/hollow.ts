@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, Letter, Tashkil } from "../../../Definitions";
+import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Tashkil, Tense, Voice } from "../../../Definitions";
 import { AugmentedRoot } from "../AugmentedRoot";
 
 function DoesPresentSuffixStartWithVowel(params: ConjugationParams)
 {
-    if( (params._legacyNumerus === "singular") && (params._legacyPerson === "second") && (params._legacyGender === "female") )
+    if( (params.numerus === Numerus.Singular) && (params.person === Person.Second) && (params.gender === Gender.Female) )
         return true;
-    if(params._legacyNumerus === "dual")
+    if(params.numerus === Numerus.Dual)
         return true;
-    if( (params._legacyNumerus === "plural") && (params._legacyPerson !== "first") && (params._legacyGender === "male") )
+    if( (params.numerus === Numerus.Plural) && (params.person !== Person.First) && (params.gender === Gender.Male) )
         return true;
     return false;
 }
@@ -38,62 +38,63 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
         {
             const vowelTashkil = (augmentedRoot.r2.letter === Letter.Waw) ? Tashkil.Dhamma : Tashkil.Kasra;
 
-            if(params._legacyTense === "perfect")
+            if(params.tense === Tense.Perfect)
             {
-                if((params._legacyPerson === "third") && !((params._legacyNumerus === "plural") && (params._legacyGender === "female")))
+                if((params.person === Person.Third) && !((params.numerus === Numerus.Plural) && (params.gender === Gender.Female)))
                 {
-                    if(params._legacyVoice === "active")
-                        augmentedRoot.ReplaceRadical(2, { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha });
+                    if(params.voice === Voice.Active)
+                        augmentedRoot.InsertLongVowel(2, Letter.Alef);
                     else
                         augmentedRoot.InsertLongVowel(2, Letter.Ya);
                 }
                 else
                 {
                     //shorten vowel
-                    augmentedRoot.ApplyRadicalTashkil(2, (params._legacyVoice === "active") ? vowelTashkil : Tashkil.Kasra);
+                    augmentedRoot.ApplyRadicalTashkil(2, (params.voice === Voice.Active) ? vowelTashkil : Tashkil.Kasra);
                     augmentedRoot.AssimilateRadical(2);
                 }
             }
             else
             {
-                let shortenVowel = (params._legacyNumerus === "plural") && (params._legacyGender === "female");
+                let shortenVowel = (params.numerus === Numerus.Plural) && (params.gender === Gender.Female);
 
-                if((params._legacyMood === "jussive") || (params._legacyMood === "imperative"))
+                if((params.mood === Mood.Jussive) || (params.mood === Mood.Imperative))
                 {
                     shortenVowel = !DoesPresentSuffixStartWithVowel(params);
                 }
 
                 if(shortenVowel)
                     augmentedRoot.AssimilateRadical(2);
-                else if(params._legacyVoice === "passive")
-                    augmentedRoot.ReplaceRadical(2, { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha });
+                else if(params.voice === Voice.Passive)
+                    augmentedRoot.ReplaceRadical(2, { letter: Letter.Alef, tashkil: Tashkil.Fatha });
 
-                augmentedRoot.ApplyRadicalTashkil(1, (params._legacyVoice === "active") ? vowelTashkil : Tashkil.Fatha);
+                augmentedRoot.ApplyRadicalTashkil(1, (params.voice === Voice.Active) ? vowelTashkil : Tashkil.Fatha);
             }
         }
         break;
+        case 4:
         case 10:
         {
-            if(params._legacyTense === "perfect")
+            if(params.tense === Tense.Perfect)
             {
-                if((params._legacyPerson === "third") && !((params._legacyNumerus === "plural") && (params._legacyGender === "female")))
-                    augmentedRoot.InsertLongVowel(2, (params._legacyVoice === "active") ? Letter.Alef : Letter.Ya);
+                if((params.person === Person.Third) && !((params.numerus === Numerus.Plural) && (params.gender === Gender.Female)))
+                    augmentedRoot.InsertLongVowel(2, (params.voice === Voice.Active) ? Letter.Alef : Letter.Ya);
                 else
-                    augmentedRoot.InsertShortVowel(2, (params._legacyVoice === "active") ? Tashkil.Fatha : Tashkil.Kasra);
+                    augmentedRoot.InsertShortVowel(2, (params.voice === Voice.Active) ? Tashkil.Fatha : Tashkil.Kasra);
             }
             else
             {
-                let shortenVowel = (params._legacyNumerus === "plural") && (params._legacyGender === "female");
+                let shortenVowel = (params.numerus === Numerus.Plural) && (params.gender === Gender.Female);
 
-                if((params._legacyMood === "jussive") || (params._legacyMood === "imperative"))
+                if((params.mood === Mood.Jussive) || (params.mood === Mood.Imperative))
                 {
                     shortenVowel = !DoesPresentSuffixStartWithVowel(params);
                 }
 
                 if(shortenVowel)
                     augmentedRoot.AssimilateRadical(2);
-                else if(params._legacyVoice === "passive")
-                    augmentedRoot.InsertLongVowel(2, (params._legacyVoice === "passive") ? Letter.Alef : Letter.Ya);
+                else
+                    augmentedRoot.InsertLongVowel(2, (params.voice === Voice.Passive) ? Letter.Alef : Letter.Ya);
             }
         }
         break;

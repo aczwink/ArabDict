@@ -16,19 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { VerbRoot } from "./VerbRoot";
-import { FullyVocalized, _LegacyPartiallyVocalized } from "./Vocalization";
-import { ConjugationParams, Stem1Context, _LegacyVoice, _LegacyTense } from "./Definitions";
-
-export interface ReverseConjugationResult
-{
-    root: VerbRoot;
-    tense: _LegacyTense;
-}
+import { ConjugationVocalized } from "./Vocalization";
+import { ConjugationParams, Stem1Context, VoiceString } from "./Definitions";
 
 export interface DialectConjugator
 {
-    AnalyzeConjugation(conjugated: _LegacyPartiallyVocalized[]): ReverseConjugationResult[];
-    Conjugate(root: VerbRoot, params: ConjugationParams): (_LegacyPartiallyVocalized | FullyVocalized)[];
-    ConjugateParticiple(root: VerbRoot, stem: number, voice: _LegacyVoice, stem1Context?: Stem1Context): (_LegacyPartiallyVocalized | FullyVocalized)[];
-    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | FullyVocalized[])[];
+    Conjugate(root: VerbRoot, params: ConjugationParams): ConjugationVocalized[];
+    ConjugateParticiple(root: VerbRoot, stem: number, voice: VoiceString, stem1Context?: Stem1Context): ConjugationVocalized[];
+    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | ConjugationVocalized[])[];
 }

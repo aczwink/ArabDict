@@ -15,8 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
-import { Letter, Tashkil, _LegacyVoice, _LegacyTense, Gender, Numerus, _LegacyPerson } from "../../../Definitions";
+import { Letter, Tashkil, Tense, Person, VoiceString, Numerus, Gender } from "../../../Definitions";
 import { VerbRoot, RootType } from "../../../VerbRoot";
 import { _LegacyVerbStem } from "./VerbStem";
 
@@ -28,37 +27,37 @@ export class _LegacyVerbStem8 implements _LegacyVerbStem
     }
 
     //Public methods
-    public Conjugate(tense: _LegacyTense, voice: _LegacyVoice, gender: Gender, person: _LegacyPerson, numerus: Numerus): string
+    public Conjugate(tense: Tense, voice: VoiceString, gender: Gender, person: Person, numerus: Numerus): string
     {
         switch(tense)
         {
-            case "perfect":
+            case Tense.Perfect:
                 return this.ConjugatePerfect(voice, gender, person, numerus);
-            case "present":
+            case Tense.Present:
                 return "T" + Tashkil.Fatha + "O" + Tashkil.Fatha + "D" + Tashkil.Fatha + "O" + Tashkil.Fatha;
         }
     }
 
     //Private methods
-    private ConjugatePerfect(voice: _LegacyVoice, gender: Gender, person: _LegacyPerson, numerus: Numerus)
+    private ConjugatePerfect(voice: VoiceString, gender: Gender, person: Person, numerus: Numerus)
     {
         if(voice === "active")
             return this.ConjugatePerfectActive(gender, person, numerus);
         return "T" + Tashkil.Fatha + "O" + Tashkil.Fatha + "D" + Tashkil.Fatha + "O" + Tashkil.Fatha;
     }
 
-    private ConjugatePerfectActive(gender: Gender, person: _LegacyPerson, numerus: Numerus)
+    private ConjugatePerfectActive(gender: Gender, person: Person, numerus: Numerus)
     {
         switch(numerus)
         {
-            case "singular":
+            case Numerus.Singular:
                 switch(person)
                 {
-                    case "third":
+                    case Person.Third:
                         {
                             switch(gender)
                             {
-                                case "male":
+                                case Gender.Male:
                                     switch(this.root.type)
                                     {
                                         case RootType.Hollow:

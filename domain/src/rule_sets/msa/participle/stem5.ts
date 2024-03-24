@@ -16,31 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Letter, Tashkil, _LegacyVoice } from "../../../Definitions";
+import { Letter, Tashkil, Voice } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { ConjugationVocalized } from "../../../Vocalization";
+import { AugmentedRoot } from "../AugmentedRoot";
+import { GenerateParticipleRegular } from "./regular";
 
-export function GenerateParticipleStem5(root: VerbRoot, voice: _LegacyVoice): FullyVocalized[]
+export function GenerateParticipleStem5(root: VerbRoot, baseForm: AugmentedRoot, voice: Voice): ConjugationVocalized[]
 {
     switch(root.type)
     {
         case RootType.Defective:
+            if(voice === Voice.Active)
+            {
+                baseForm.r2.tashkil = Tashkil.Kasratan;
+                baseForm.DropRadial(3);
+            }
+            else
+            {
+                baseForm.r2.tashkil = Tashkil.Fathatan;
+                baseForm.r3.tashkil = Tashkil.EndOfWordMarker;
+            }
+    
             return [
-                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
-                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r2, shadda: true, tashkil: (voice === "active" ? Tashkil.Kasratan : Tashkil.Fathatan) },
+                { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
+                ...baseForm.symbols
             ];
 
         case RootType.SecondConsonantDoubled:
         case RootType.Sound:
-            return [
-                { letter: Letter.Mim, shadda: false, tashkil: Tashkil.Dhamma },
-                { letter: Letter.Ta, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r2, shadda: true, tashkil: (voice === "active" ? Tashkil.Kasra : Tashkil.Fatha) },
-                { letter: root.r3, shadda: false, tashkil: Tashkil.Sukun },
-            ];
+            return GenerateParticipleRegular(baseForm, voice);
     }
-    return [{letter: "TODO" as any, shadda: false, tashkil: Tashkil.Sukun }];
+    return [{letter: "TODO" as any, tashkil: Tashkil.Sukun }];
 }

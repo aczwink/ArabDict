@@ -17,7 +17,7 @@
  * */
 import { Letter, Tashkil } from "../../Definitions";
 import { VerbRoot } from "../../VerbRoot";
-import { FullyVocalized } from "../../Vocalization";
+import { ConjugationVocalized } from "../../Vocalization";
 
 export enum SymbolName
 {
@@ -32,7 +32,7 @@ export enum SymbolName
 }
 
 type ConstantSymbolNames = SymbolName.Infix | SymbolName.Postfix | SymbolName.Prefix1 | SymbolName.Prefix2;
-interface ConstantRootSymbolInput extends FullyVocalized
+interface ConstantRootSymbolInput extends ConjugationVocalized
 {
     readonly symbolName: ConstantSymbolNames;
 }
@@ -40,7 +40,6 @@ interface ConstantRootSymbolInput extends FullyVocalized
 type VariableSymbolNames = SymbolName.R1 | SymbolName.R2 | SymbolName.R3 | SymbolName.R4;
 interface VariableRootSymbolInput
 {
-    shadda: boolean;
     readonly symbolName: VariableSymbolNames;
 }
 
@@ -49,9 +48,9 @@ export type AugmentedRootSymbolInput = ConstantRootSymbolInput | VariableRootSym
 interface AugmentedRootSymbol
 {
     letter: Letter;
-    shadda: boolean;
     readonly symbolName: SymbolName;
     tashkil: Tashkil;
+    emphasis: boolean;
 }
 
 type RadicalNumber = 1 | 2 | 3 | 4;
@@ -62,9 +61,9 @@ export class AugmentedRoot
         this._symbols = inputSymbols.map(x => {
             return {
                 letter: ("letter" in x) ? x.letter : (this.root.radicalsAsSeparateLetters[x.symbolName - SymbolName.R1]),
-                shadda: x.shadda,
                 symbolName: x.symbolName,
-                tashkil: ("tashkil" in x) ? x.tashkil : Tashkil.EndOfWordMarker //create wrong data here. WordEnd is obviously only supported at the end, but after applying all tashkil, this should not happen
+                tashkil: ("tashkil" in x) ? x.tashkil : Tashkil.EndOfWordMarker, //create wrong data here. WordEnd is obviously only supported at the end, but after applying all tashkil, this should not happen
+                emphasis: false
             };
         })
     }
@@ -134,7 +133,7 @@ export class AugmentedRoot
             }
         }
 
-        this.ReplaceRadical(radical, { letter: vowel, shadda: false, tashkil: LongVowelToShortVowel(vowel) });
+        this.ReplaceRadical(radical, { letter: vowel, tashkil: Tashkil.LongVowelMarker });
         this.ApplyRadicalTashkil(this.PrevRadicalNumber(radical), LongVowelToShortVowel(vowel));
     }
 
@@ -144,11 +143,10 @@ export class AugmentedRoot
         this.ApplyRadicalTashkil(this.PrevRadicalNumber(radical), shortVowel);
     }
 
-    public ReplaceRadical(radical: number, replacement: FullyVocalized)
+    public ReplaceRadical(radical: number, replacement: ConjugationVocalized)
     {
         const v = this.GetRadical(radical as any);
         v!.letter = replacement.letter;
-        v!.shadda = replacement.shadda;
         v!.tashkil = replacement.tashkil;
     }
 

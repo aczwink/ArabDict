@@ -16,14 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { Gender, Numerus, Person } from "../../../../Definitions";
 import { RootType } from "../../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../../Definitions";
 
 export const stem3_present_active: StemTenseVoiceDefinition = {
     [RootType.Defective]: {
         rules: [
-            { numerus: "singular", person: "first", gender: "male", conjugation: "أُفَاعِي" },
-            { numerus: "singular", person: "third", gender: "male", conjugation: "يُفَاعِي" },
+            { numerus: Numerus.Singular, person: Person.First, gender: Gender.Male, conjugation: "أُفَاعِي" },
+            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يُفَاعِي" },
         ]
     },
 };

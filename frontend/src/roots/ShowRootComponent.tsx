@@ -22,7 +22,7 @@ import { APIService } from "../services/APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { RootToString } from "./general";
-import { A3EIN, FA, HHA, LAM, LETTER_RA, Letter, QAF } from "arabdict-domain/src/Definitions";
+import { LETTER_RA, Letter, QAF } from "arabdict-domain/src/Definitions";
 import { ConjugationService } from "../services/ConjugationService";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
 
@@ -117,7 +117,7 @@ export class ShowRootComponent extends Component
                     return "v";
                 case Letter.Jiim:
                     return "j";
-                case HHA:
+                case Letter.Hha:
                     return "H";
                 case Letter.Kha:
                     return "x";
@@ -137,15 +137,15 @@ export class ShowRootComponent extends Component
                     return "D";
                 case Letter.Tta:
                     return "T";
-                case A3EIN:
+                case Letter.A3ein:
                     return "E";
-                case FA:
+                case Letter.Fa:
                     return "f";
                 case QAF:
                     return "q";
                 case Letter.Kaf:
                     return "k";
-                case LAM:
+                case Letter.Lam:
                     return "l";
                 case Letter.Nun:
                     return "n";

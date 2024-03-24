@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, HHA, LETTER_RA, Letter, PrimaryTashkil, Tashkil } from "../../../Definitions";
+import { ConjugationParams, LETTER_RA, Letter, PrimaryTashkil, Tashkil, Tense } from "../../../Definitions";
 import { VerbRoot } from "../../../VerbRoot";
 import { AugmentedRoot } from "../AugmentedRoot";
 import { AlterDefectiveEnding } from "./defective";
@@ -27,18 +27,18 @@ Currently known ones are: رأى, أرى, حيي
 
 function AlterSpecialCaseHayiya(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    if(params._legacyTense === "perfect")
-        augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, shadda: false, tashkil: Tashkil.Fatha });
+    if(params.tense === Tense.Perfect)
+        augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, tashkil: Tashkil.Fatha });
     else
     {
-        augmentedRoot.ReplaceRadical(3, { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha });
+        augmentedRoot.ReplaceRadical(3, { letter: Letter.Alef, tashkil: Tashkil.Fatha });
     }
 }
 
 function AlterSpecialCaseRa2a(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
     AlterDefectiveEnding(augmentedRoot, params);
-    if(params._legacyTense !== "perfect")
+    if(params.tense !== Tense.Perfect)
         augmentedRoot.DropRadial(2);
 }
 
@@ -46,7 +46,7 @@ export function AlterSpeciallyIrregularDefective(root: VerbRoot, augmentedRoot: 
 {
     if(params.stem === 1)
     {
-        if(root.radicalsAsSeparateLetters.Equals([HHA, Letter.Ya, Letter.Waw]))
+        if(root.radicalsAsSeparateLetters.Equals([Letter.Hha, Letter.Ya, Letter.Waw]))
             AlterSpecialCaseHayiya(augmentedRoot, params);
         else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, Letter.Hamza, Letter.Ya]))
             AlterSpecialCaseRa2a(augmentedRoot, params);
@@ -57,7 +57,7 @@ export function GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching(r
 {
     if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, Letter.Hamza, Letter.Ya]))
         return { past: Tashkil.Fatha, present: Tashkil.Kasra };
-    if(root.radicalsAsSeparateLetters.Equals([HHA, Letter.Ya, Letter.Waw]))
+    if(root.radicalsAsSeparateLetters.Equals([Letter.Hha, Letter.Ya, Letter.Waw]))
         return { past: Tashkil.Kasra, present: Tashkil.Fatha };
     return undefined;
 }

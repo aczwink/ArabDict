@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, Tashkil } from "../../../Definitions";
+import { ConjugationParams, Tashkil, Tense, Voice } from "../../../Definitions";
 import { AugmentedRoot } from "../AugmentedRoot";
 
 export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: ConjugationParams)
@@ -28,19 +28,18 @@ export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: C
     {
         if(params.stem === 1)
         {
-            if(params._legacyVoice === "passive")
+            if(params.voice === Voice.Passive)
                 augmentedRoot.r1.tashkil = Tashkil.Dhamma;
-            else if(params._legacyTense === "perfect")
-                augmentedRoot.r1.tashkil = params._legacyStem1Context!.middleRadicalTashkil as any;
+            else if(params.tense === Tense.Perfect)
+                augmentedRoot.r1.tashkil = params.stem1Context.middleRadicalTashkil;
             else
-                augmentedRoot.r1.tashkil = params._legacyStem1Context!.middleRadicalTashkilPresent as any;
+                augmentedRoot.r1.tashkil = params.stem1Context.middleRadicalTashkilPresent;
         }
         else
         {
-            const cond = ((params._legacyTense === "perfect") && (params._legacyVoice === "active")) || (((params._legacyTense === "present") && (params._legacyVoice === "passive")));
+            const cond = ((params.tense === Tense.Perfect) && (params.voice === Voice.Active)) || (((params.tense === Tense.Present) && (params.voice === Voice.Passive)));
             augmentedRoot.r1.tashkil = cond ? Tashkil.Fatha : Tashkil.Kasra; //two sukuns after each other are forbidden
         }
-        augmentedRoot.r3.shadda = true;
         augmentedRoot.symbols.Remove(augmentedRoot.symbols.length - 2); //assimilate r2
     }
 }

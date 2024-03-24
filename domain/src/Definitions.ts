@@ -25,6 +25,7 @@ export enum Letter
     Ta = "\u062A",
     Tha = "\u062B",
     Jiim = "\u062C",
+    Hha = "\u062D",
     Kha = "\u062E",
     Dal = "\u062F",
     Thal = "\u0630",
@@ -35,8 +36,11 @@ export enum Letter
     Daad = "\u0636",
     Tta = "\u0637",
     Ththa = "\u0638",
+    A3ein = "\u0639",
     Ghain = "\u063A",
+    Fa = "\u0641",
     Kaf = "\u0643",
+    Lam = "\u0644",
     Mim = "\u0645",
     Nun = "\u0646",
     Ha = "\u0647",
@@ -66,11 +70,12 @@ export enum Tashkil
 }
 
 export type PrimaryTashkil = Tashkil.Dhamma | Tashkil.Fatha | Tashkil.Kasra;
+export type BaseTashkil = (PrimaryTashkil | Tashkil.Sukun);
 
 export interface Stem1Context
 {
-    middleRadicalTashkil: PrimaryTashkil | "";
-    middleRadicalTashkilPresent: PrimaryTashkil | "";
+    middleRadicalTashkil: BaseTashkil;
+    middleRadicalTashkilPresent: BaseTashkil;
 
     /**
      * Some hollow verbs like لَيسَ are actually conjugated as if they were sound, although the root is hollow.
@@ -81,28 +86,28 @@ export interface Stem1Context
 export const TASHKIL_SHADDA = "\u0651";
 
 //TODO: REMOVE THE FOLLOWING:
-export const HHA = "\u062D";
 export const LETTER_RA = "\u0631";
-export const A3EIN = "\u0639";
-export const FA = "\u0641";
 export const QAF = "\u0642";
-export const LAM = "\u0644";
 //TODO: end of REMOVE THE FOLLOWING
 
-export type Gender = "male" | "female";
-export type _LegacyMood = "indicative" | "subjunctive" | "jussive" | "imperative";
-export type Numerus = "singular" | "dual" | "plural";
-export type _LegacyPerson = "first" | "second" | "third";
-export type _LegacyTense = "perfect" | "present";
-export type _LegacyVoice = "active" | "passive";
-
-type AdvancedStem = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 10;
+export type AdvancedStemNumber = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 10;
+export enum Gender
+{
+    Male,
+    Female
+}
 export enum Mood
 {
     Indicative,
     Subjunctive,
     Jussive,
     Imperative
+}
+export enum Numerus
+{
+    Singular,
+    Dual,
+    Plural
 }
 export enum Person
 {
@@ -121,6 +126,13 @@ export enum Voice
     Passive
 }
 
+export type GenderString = "male" | "female";
+export type MoodString = "indicative" | "subjunctive" | "jussive" | "imperative";
+export type NumerusString = "singular" | "dual" | "plural";
+export type PersonString = "first" | "second" | "third";
+export type TenseString = "perfect" | "present";
+export type VoiceString = "active" | "passive";
+
 interface Stem1Params
 {
     readonly stem: 1;
@@ -128,7 +140,7 @@ interface Stem1Params
 }
 interface AdvancedStemParams
 {
-    readonly stem: AdvancedStem;
+    readonly stem: AdvancedStemNumber;
 }
 type StemParams = Stem1Params | AdvancedStemParams;
 
@@ -145,17 +157,10 @@ type TenseParams = PerfectTenseParams | PresentTenseParams;
 
 interface BasicConjugationParams
 {
+    readonly gender: Gender;
+    readonly numerus: Numerus;
     readonly person: Person;
     readonly voice: Voice;
-
-    //TODO: LEGACY REMOVE
-    readonly _legacyGender: Gender;
-    readonly _legacyMood: _LegacyMood;
-    readonly _legacyNumerus: Numerus;
-    readonly _legacyPerson: _LegacyPerson;
-    readonly _legacyStem1Context?: Stem1Context;
-    readonly _legacyTense: _LegacyTense;
-    readonly _legacyVoice: _LegacyVoice;
 }
 
 export type ConjugationParams = BasicConjugationParams & StemParams & TenseParams;

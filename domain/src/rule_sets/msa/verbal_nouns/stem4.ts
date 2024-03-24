@@ -17,41 +17,41 @@
  * */
 import { Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
-import { FullyVocalized } from "../../../Vocalization";
+import { ConjugationVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem4(root: VerbRoot): FullyVocalized[]
+export function GenerateAllPossibleVerbalNounsStem4(root: VerbRoot): ConjugationVocalized[]
 {
     switch(root.type)
     {
         case RootType.Defective:
             return [
-                { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.Kasra },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
-                { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
-                { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.EndOfWordMarker },
+                { letter: Letter.Hamza, tashkil: Tashkil.Kasra },
+                { letter: root.r1, tashkil: Tashkil.Sukun },
+                { letter: root.r2, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                { letter: Letter.Hamza, tashkil: Tashkil.EndOfWordMarker },
             ];
 
         case RootType.Hollow:
             return [
-                { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.Kasra },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: root.r3, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: Letter.TaMarbuta, shadda: false, tashkil: Tashkil.Sukun },
+                { letter: Letter.Hamza, tashkil: Tashkil.Kasra },
+                { letter: root.r1, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, tashkil: Tashkil.Fatha },
+                { letter: root.r3, tashkil: Tashkil.Fatha },
+                { letter: Letter.TaMarbuta, tashkil: Tashkil.Sukun },
             ];
 
         case RootType.Sound:
             return [
-                { letter: Letter.Hamza, shadda: false, tashkil: Tashkil.Kasra },
-                { letter: root.r1, shadda: false, tashkil: Tashkil.Sukun },
-                { letter: root.r2, shadda: false, tashkil: Tashkil.Fatha },
-                { letter: Letter.Alef, shadda: false, tashkil: Tashkil.LongVowelMarker },
-                { letter: root.r3, shadda: false, tashkil: Tashkil.EndOfWordMarker },
+                { letter: Letter.Hamza, tashkil: Tashkil.Kasra },
+                { letter: root.r1, tashkil: Tashkil.Sukun },
+                { letter: root.r2, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
             ];
         default:
             return [
-                {letter: "TODO" as any, shadda: false, tashkil: Tashkil.Sukun}
+                {letter: "TODO" as any, tashkil: Tashkil.Sukun}
             ];
     }
 }

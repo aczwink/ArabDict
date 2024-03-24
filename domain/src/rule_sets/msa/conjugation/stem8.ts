@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Letter, _LegacyTense } from "../../../Definitions";
-import { FullyVocalized } from "../../../Vocalization";
+import { Letter, Tense } from "../../../Definitions";
+import { ConjugationVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
 
-export function Stem8AssimilateTa(vocalized: FullyVocalized[], r1idx: number)
+export function Stem8AssimilateTa(vocalized: ConjugationVocalized[], r1idx: number)
 {
     switch(vocalized[r1idx].letter)
     {
@@ -29,8 +29,8 @@ export function Stem8AssimilateTa(vocalized: FullyVocalized[], r1idx: number)
     }
 }
 
-export function Stem8AssimilateTaVerb(augmentedRoot: AugmentedRoot, tense: _LegacyTense)
+export function Stem8AssimilateTaVerb(augmentedRoot: AugmentedRoot, tense: Tense)
 {
-    const r1idx = (tense === "perfect") ? 1 : 0;
+    const r1idx = (tense === Tense.Perfect) ? 1 : 0;
     Stem8AssimilateTa(augmentedRoot.symbols, r1idx);
 }

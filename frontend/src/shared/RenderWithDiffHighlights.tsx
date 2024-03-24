@@ -15,80 +15,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
 import { JSX_CreateElement } from "acfrontend";
-import { TASHKIL_SHADDA } from "arabdict-domain/src/Definitions";
-import { ParseVocalizedText, _LegacyVocalizedToString } from "arabdict-domain/src/Vocalization";
+import { ToDiffStream, DisplayVocalized } from "arabdict-domain/src/Vocalization";
 
-export function RenderWithDiffHighlights(word: string, reference: string)
+export function RenderWithDiffHighlights(word: DisplayVocalized[], reference: DisplayVocalized[])
 {
-    const result: any[] = [];
-    let red = false;
-    let current = "";
+    const diff = ToDiffStream(word, reference);
 
-    function FinishBlock()
+    let hasLeadingDiff = false;
+    if(diff[0].char === "\u2610")
     {
-        if(current.length == 0)
-            return;
-
-        if(red)
-            result.push(<span className="text-danger">{current}</span>);
-        else
-            result.push(current);
-
-        current = "";
+        hasLeadingDiff = true;
+        diff.Remove(0);
+    }
+    let hasTrailingDiff = false;
+    if(diff[diff.length - 1].char === "\u2610")
+    {
+        hasTrailingDiff = true;
+        diff.Remove(diff.length - 1);
     }
 
-    function Add(c: string, r: boolean)
-    {
-        if(r !== red)
-        {
-            FinishBlock();
-            red = r;
-        }
+    const rendered = diff.Values().GroupAdjacent(x => x.diff.toString()).Map(x => {
+        const text = x.map(y => y.emphasis ? <span style="text-emphasis: triangle var(--bs-primary);">{y.char}</span> : y.char);
+        if(x[0].diff)
+            return <span className="text-danger">{text}</span>;
+        return text;
+    }).ToArray();
 
-        current += c;
-    }
+    //trailing and beginning need to be switched
+    if(hasLeadingDiff)
+        rendered.push(<span className="text-danger">{"\u2610"}</span>);
+    if(hasTrailingDiff)
+        rendered.unshift(<span className="text-danger">{"\u2610"}</span>);
 
-    const parsedWord = ParseVocalizedText(word);
-    const parsedRef = ParseVocalizedText(reference);
-
-    const missingAtBeginning = (parsedWord[0].letter !== parsedRef[0].letter) && (parsedRef.length > parsedWord.length);
-
-    while( parsedWord.length > 0 )
-    {
-        if(parsedWord[0].letter === parsedRef[0]?.letter)
-        {
-            Add(parsedWord[0].letter, false);
-            if(parsedWord[0].shadda)
-                Add(TASHKIL_SHADDA, !parsedRef[0].shadda);
-            if(parsedWord[0].tashkil !== undefined)
-                Add(parsedWord[0].tashkil, parsedWord[0].tashkil !== parsedRef[0].tashkil);
-
-            parsedWord.Remove(0);
-            parsedRef.Remove(0);
-        }
-        else if(parsedWord.length > parsedRef.length)
-        {
-            Add(_LegacyVocalizedToString(parsedWord[0]), true);
-            parsedWord.Remove(0);
-        }
-        else
-        {
-            parsedRef.Remove(0);
-        }
-    }
-
-    if(parsedRef.length > 0)
-    {
-        FinishBlock();
-        result.unshift(<span className="text-danger">{"\u2610"}</span>);
-    }
-
-    FinishBlock();
-
-    if(missingAtBeginning)
-        result.push(<span className="text-danger">{"\u2610"}</span>);
-
-    return result;
+    return rendered;
 }

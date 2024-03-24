@@ -16,25 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { Gender, Numerus, Person } from "../../../../Definitions";
 import { RootType } from "../../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../../Definitions";
 
 export const stem2_past_active: StemTenseVoiceDefinition = {
     [RootType.Assimilated]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "وَعَّلَ" }
+            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "وَعَّلَ" }
         ]
     },
 
     [RootType.Hollow]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "فَعَّلَ" }
+            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "فَعَّلَ" }
         ]
     },
 
     [RootType.Quadriliteral]: {
         rules: [
-            { numerus: "singular", person: "third", gender: "male", conjugation: "تَفَعْلَقَ" },
+            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "تَفَعْلَقَ" },
         ]
     },
 };

@@ -25,7 +25,7 @@ import { EqualsAny } from "../../../../ACTS-Util/core/dist/EqualsAny";
 import { Stem1DataToStem1ContextOptional } from "./model";
 import { CachedAPIService, FullVerbData } from "../services/CachedAPIService";
 import { ReverseLookupService } from "../services/ReverseLookupService";
-import { Stem1Context } from "arabdict-domain/src/Definitions";
+import { ConjugationParams, Gender, Mood, MoodString, Numerus, Person, Stem1Context, Tense } from "arabdict-domain/src/Definitions";
 
 enum FilterCase
 {
@@ -131,7 +131,7 @@ export class SearchVerbsComponent extends Component
         for (const entry of analyzed)
         {
             const rootId = await this.reverseLookupService.TryFindRootId(entry.root);
-            const verbId = await this.TryFindVerb(rootId, entry.params.stem, entry.params.stem1Context);
+            const verbId = await this.TryFindVerb(rootId, entry.params);
 
             if(verbId !== undefined)
                 verbFound.push({ rootId, verbId, ...entry });
@@ -154,6 +154,21 @@ export class SearchVerbsComponent extends Component
         const result = response.data;
 
         return result.Values().Map(x => this.cachedAPIService.QueryFullVerbData(x)).PromiseAll();
+    }
+
+    private MoodToString(mood: Mood): MoodString
+    {
+        switch(mood)
+        {
+            case Mood.Imperative:
+                return "imperative";
+            case Mood.Indicative:
+                return "indicative";
+            case Mood.Jussive:
+                return "jussive";
+            case Mood.Subjunctive:
+                return "subjunctive";
+        }
     }
 
     private async PerformSearch()
@@ -221,12 +236,15 @@ export class SearchVerbsComponent extends Component
 
     private RenderRow(result: VerbReverseConjugationResult | RootMatchData | VerbMatchData)
     {
-        const conjugated = this.conjugationService.Conjugate(result.root.radicalsAsSeparateLetters.join(""), result.params.stem, result.params.tense, result.params.voice, result.params.gender, result.params.person, result.params.numerus, result.params.mood, result.params.stem1Context);
-        const base = this.conjugationService.Conjugate(result.root.radicalsAsSeparateLetters.join(""), result.params.stem, "perfect", "active", "male", "third", "singular", "indicative", result.params.stem1Context);
+        const conjugated = this.conjugationService.ConjugateToString(result.root, result.params);
+        const stem1ctx = (result.params.stem === 1) ? result.params.stem1Context : undefined;
+        const base = this.conjugationService.ConjugateToStringArgs(result.root.radicalsAsSeparateLetters.join(""), result.params.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
         const ctx = (result.params.stem !== 1) ? "" : (" tashkil: " + result.params.stem1Context?.middleRadicalTashkil + " present: " + result.params.stem1Context?.middleRadicalTashkilPresent);
 
         const root = ("rootId" in result) ? <Anchor route={"/roots/" + result.rootId}>{result.root.ToString()}</Anchor> : result.root.ToString();
         const renderedVerb = ("verbId" in result) ? <Anchor route={"/verbs/" + result.verbId}>{base}</Anchor> : base;
+
+        const moodString = (result.params.tense === Tense.Present) ? this.MoodToString(result.params.mood) : "";
 
         return <tr>
             <td>{conjugated}</td>
@@ -234,12 +252,12 @@ export class SearchVerbsComponent extends Component
             <td>{result.score}</td>
             <td>{root}</td>
             <td>
-                {result.params.person}-person {result.params.gender} {result.params.numerus} {result.params.tense} {result.params.voice} {result.params.mood} {"stem " + result.params.stem} {ctx}
+                {result.params.person}-person {result.params.gender} {result.params.numerus} {result.params.tense} {result.params.voice} {moodString} {"stem " + result.params.stem} {ctx}
             </td>
         </tr>;
     }
 
-    private async TryFindVerb(rootId: number | undefined, stem: number, stem1Context?: Stem1Context)
+    private async TryFindVerb(rootId: number | undefined, params: ConjugationParams)
     {
         if(rootId === undefined)
             return undefined;
@@ -248,11 +266,11 @@ export class SearchVerbsComponent extends Component
 
         for (const entry of verbs)
         {
-            if(entry.stem === stem)
+            if(entry.stem === params.stem)
             {
-                if(stem === 1)
+                if(params.stem === 1)
                 {
-                    if(EqualsAny(Stem1DataToStem1ContextOptional(entry.stem1Data), stem1Context))
+                    if(EqualsAny(Stem1DataToStem1ContextOptional(entry.stem1Data), params.stem1Context))
                         return entry.id;
                 }
                 else

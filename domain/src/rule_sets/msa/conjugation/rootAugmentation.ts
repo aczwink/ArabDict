@@ -16,17 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, Letter, Tashkil } from "../../../Definitions";
-import { RootType } from "../../../VerbRoot";
+import { ConjugationParams, Letter, Tashkil, Tense, Voice } from "../../../Definitions";
+import { RootType, VerbRoot } from "../../../VerbRoot";
 import { AugmentedRootSymbolInput, SymbolName } from "../AugmentedRoot";
 
-export function AugmentRoot(stem: number, rootType: RootType, params: ConjugationParams): AugmentedRootSymbolInput[] | undefined
+export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationParams): AugmentedRootSymbolInput[] | undefined
 {
     switch(stem)
     {
         case 1:
         {
-            switch(rootType)
+            switch(root.type)
             {
                 case RootType.Assimilated:
                 case RootType.Defective:
@@ -36,22 +36,22 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { symbolName: SymbolName.R2, shadda: false },
-                        { symbolName: SymbolName.R3, shadda: false },
+                        { symbolName: SymbolName.R1 },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
                     ];
                 case RootType.Quadriliteral:
                     return [
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { symbolName: SymbolName.R2, shadda: false },
-                        { symbolName: SymbolName.R3, shadda: false },
-                        { symbolName: SymbolName.R4, shadda: false },
+                        { symbolName: SymbolName.R1 },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
+                        { symbolName: SymbolName.R4 },
                     ];
             }
         }
         case 2:
         {
-            switch(rootType)
+            switch(root.type)
             {
                 case RootType.Defective:
                 case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
@@ -60,119 +60,121 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { symbolName: SymbolName.R2, shadda: true },
-                        { symbolName: SymbolName.R3, shadda: false },
+                        { symbolName: SymbolName.R1 },
+                        { symbolName: SymbolName.Infix, letter: root.r2, tashkil: Tashkil.Sukun },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
                     ];
             }
         }
         break;
         case 3:
         {
-            switch(rootType)
+            switch(root.type)
             {
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:
                 case RootType.Sound:
                     return [
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { letter: ((params._legacyTense === "perfect") && (params._legacyVoice === "passive")) ? Letter.Waw : Letter.Alef, shadda: false, symbolName: SymbolName.Infix, tashkil: Tashkil.LongVowelMarker },
-                        { symbolName: SymbolName.R2, shadda: false },
-                        { symbolName: SymbolName.R3, shadda: false },
+                        { symbolName: SymbolName.R1 },
+                        { letter: ((params.tense === Tense.Perfect) && (params.voice === Voice.Passive)) ? Letter.Waw : Letter.Alef, symbolName: SymbolName.Infix, tashkil: Tashkil.LongVowelMarker },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
                     ];
             }
         }
         break;
         case 4:
         {
-            switch(rootType)
+            switch(root.type)
             {
                 case RootType.Defective:
                 case RootType.Hollow:
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { symbolName: SymbolName.R2, shadda: false },
-                        { symbolName: SymbolName.R3, shadda: false },
+                        { symbolName: SymbolName.R1 },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
                     ];
-                    if(params._legacyTense === "perfect")
-                        x.unshift({ letter: Letter.Hamza, shadda: false, symbolName: SymbolName.Postfix, tashkil: (params._legacyVoice === "active") ? Tashkil.Fatha : Tashkil.Dhamma });
+                    if(params.tense === Tense.Perfect)
+                        x.unshift({ letter: Letter.Hamza, symbolName: SymbolName.Postfix, tashkil: (params.voice === Voice.Active) ? Tashkil.Fatha : Tashkil.Dhamma });
                     return x;
             }
         }
         break;
         case 5:
         {
-            switch(rootType)
+            switch(root.type)
             {
                 case RootType.Assimilated:
                 case RootType.Defective:
                 case RootType.Hollow:
                 case RootType.Sound:
                     return [
-                        { letter: Letter.Ta, shadda: false, symbolName: SymbolName.Prefix1, tashkil: (params._legacyVoice === "passive" && params._legacyTense === "perfect") ? Tashkil.Dhamma : Tashkil.Fatha },
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { symbolName: SymbolName.R2, shadda: true },
-                        { symbolName: SymbolName.R3, shadda: false },
+                        { letter: Letter.Ta, symbolName: SymbolName.Prefix1, tashkil: (params.voice === Voice.Passive && params.tense === Tense.Perfect) ? Tashkil.Dhamma : Tashkil.Fatha },
+                        { symbolName: SymbolName.R1 },
+                        { symbolName: SymbolName.Infix, letter: root.r2, tashkil: Tashkil.Sukun },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
                     ];
             }
         }
         break;
         case 6:
         {
-            switch(rootType)
+            switch(root.type)
             {
                 case RootType.Sound:
                     return [
-                        { letter: Letter.Ta, shadda: false, symbolName: SymbolName.Prefix1, tashkil: (params._legacyVoice === "passive" && params._legacyTense === "perfect") ? Tashkil.Dhamma : Tashkil.Fatha },
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { letter: ((params._legacyTense === "perfect") && (params._legacyVoice === "passive")) ? Letter.Waw : Letter.Alef, shadda: false, symbolName: SymbolName.Infix, tashkil: Tashkil.LongVowelMarker },
-                        { symbolName: SymbolName.R2, shadda: false },
-                        { symbolName: SymbolName.R3, shadda: false },
+                        { letter: Letter.Ta, symbolName: SymbolName.Prefix1, tashkil: (params.voice === Voice.Passive && params.tense === Tense.Perfect) ? Tashkil.Dhamma : Tashkil.Fatha },
+                        { symbolName: SymbolName.R1 },
+                        { letter: ((params.tense === Tense.Perfect) && (params.voice === Voice.Passive)) ? Letter.Waw : Letter.Alef, symbolName: SymbolName.Infix, tashkil: Tashkil.LongVowelMarker },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
                     ];
             }
         }
         break;
         case 7:
         {
-            switch(rootType)
+            switch(root.type)
             {
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
-                        { letter: Letter.Nun, shadda: false, symbolName: SymbolName.Prefix1, tashkil: Tashkil.Sukun },
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { symbolName: SymbolName.R2, shadda: false },
-                        { symbolName: SymbolName.R3, shadda: false },
+                        { letter: Letter.Nun, symbolName: SymbolName.Prefix1, tashkil: Tashkil.Sukun },
+                        { symbolName: SymbolName.R1 },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
                     ];
-                    if(params._legacyTense === "perfect")
-                        x.unshift({ letter: Letter.Alef, shadda: false, symbolName: SymbolName.Postfix, tashkil: (params._legacyVoice === "active") ? Tashkil.Kasra : Tashkil.Dhamma });
+                    if(params.tense === Tense.Perfect)
+                        x.unshift({ letter: Letter.Alef, symbolName: SymbolName.Postfix, tashkil: (params.voice === Voice.Active) ? Tashkil.Kasra : Tashkil.Dhamma });
                     return x;
             }
         }
         break;
         case 8:
         {
-            switch(rootType)
+            switch(root.type)
             {
                 case RootType.Defective:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { letter: Letter.Ta, shadda: false, symbolName: SymbolName.Infix, tashkil: ((params._legacyTense === "perfect") && (params._legacyVoice === "passive")) ? Tashkil.Dhamma : Tashkil.Fatha },
-                        { symbolName: SymbolName.R2, shadda: false },
-                        { symbolName: SymbolName.R3, shadda: false },
+                        { symbolName: SymbolName.R1 },
+                        { letter: Letter.Ta, symbolName: SymbolName.Infix, tashkil: ((params.tense === Tense.Perfect) && (params.voice === Voice.Passive)) ? Tashkil.Dhamma : Tashkil.Fatha },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
                     ];
-                    if(params._legacyTense === "perfect")
-                        x.unshift({ letter: Letter.Alef, shadda: false, symbolName: SymbolName.Postfix, tashkil: (params._legacyVoice === "active") ? Tashkil.Kasra : Tashkil.Dhamma });
+                    if(params.tense === Tense.Perfect)
+                        x.unshift({ letter: Letter.Alef, symbolName: SymbolName.Postfix, tashkil: (params.voice === Voice.Active) ? Tashkil.Kasra : Tashkil.Dhamma });
                     return x;
             }
         }
         break;
         case 10:
         {
-            switch(rootType)
+            switch(root.type)
             {
                 case RootType.Assimilated:
                 case RootType.Defective:
@@ -181,11 +183,11 @@ export function AugmentRoot(stem: number, rootType: RootType, params: Conjugatio
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
-                        { letter: Letter.Siin, shadda: false, symbolName: SymbolName.Prefix1, tashkil: Tashkil.Sukun },
-                        { letter: Letter.Ta, shadda: false, symbolName: SymbolName.Prefix2, tashkil: ((params._legacyTense === "perfect") && (params._legacyVoice === "passive")) ? Tashkil.Dhamma : Tashkil.Fatha },
-                        { symbolName: SymbolName.R1, shadda: false },
-                        { symbolName: SymbolName.R2, shadda: false },
-                        { symbolName: SymbolName.R3, shadda: false },
+                        { letter: Letter.Siin, symbolName: SymbolName.Prefix1, tashkil: Tashkil.Sukun },
+                        { letter: Letter.Ta, symbolName: SymbolName.Prefix2, tashkil: ((params.tense === Tense.Perfect) && (params.voice === Voice.Passive)) ? Tashkil.Dhamma : Tashkil.Fatha },
+                        { symbolName: SymbolName.R1 },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.R3 },
                     ];
             }
         }

@@ -20,8 +20,8 @@ import { BootstrapIcon, CheckBox, Component, FormField, Injectable, JSX_CreateEl
 import { TranslationEntry, VerbRelation, WordRelationshipType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 import { ConjugationService } from "../services/ConjugationService";
-import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { PrimaryTashkil, Stem1Context, Tashkil, _LegacyTense } from "arabdict-domain/src/Definitions";
+import { RootType, Stem1ContextChoiceTashkil, VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Gender, Mood, Numerus, Person, Stem1Context, Tashkil } from "arabdict-domain/src/Definitions";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { WordRelationshipTypeToString } from "../shared/words";
 
@@ -54,9 +54,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
             </FormField>
             
             <div className="row">
-                <div className="col">{this.RenderTashkilChoice("past")}</div>
-                <div className="col">{this.RenderTashkilChoice("present")}</div>
-                <div className="col">{this.RenderTashkilHelp()}</div>
+                <div className="col">{this.RenderTashkilChoice()}</div>
                 <div className="col">{this.RenderStem1Context()}</div>
             </div>
             <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.DataChanged.bind(this)} />
@@ -115,9 +113,8 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
 
         if( cond )
         {
-            return <FormField title="Perfect 1st person male singular">
-                <div>{this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, "perfect", "active", "male", "first", "singular", "indicative", this.input.data.stem1Context)}</div>
-            </FormField>;
+            const conj = this.conjugatorService.ConjugateToStringArgs(this.input.rootRadicals, this.input.data.stem, "perfect", "active", Gender.Male, Person.First, Numerus.Singular, Mood.Indicative, this.input.data.stem1Context);
+            return "Perfect 1st person male singular: " + conj;
         }
 
         return null;
@@ -129,7 +126,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
 
         if(this.input.data.stem === 1)
         {
-            const choices = root.GetStem1ContextChoices(this.input.data.stem1Context!);
+            const choices = root.GetStem1ContextChoices();
             if(choices.soundOverride.length > 1)
                 return this.RenderSoundOverride();
         }
@@ -137,26 +134,28 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         return null;
     }
 
-    private RenderChoice(tashkil: PrimaryTashkil, tense: _LegacyTense)
+    private RenderChoice(tashkil: Stem1ContextChoiceTashkil)
     {
-        const tashkilDisplayName = {
-            [Tashkil.Fatha]: "فتحة",
-            [Tashkil.Dhamma]: "ضمة",
-            [Tashkil.Kasra]: "كسرة",
-        };
-
         const stem1Ctx: Stem1Context = {
-            middleRadicalTashkil: (tense === "perfect") ? tashkil : this.input.data.stem1Context!.middleRadicalTashkil,
-            middleRadicalTashkilPresent: (tense === "present") ? tashkil : this.input.data.stem1Context!.middleRadicalTashkilPresent,
+            middleRadicalTashkil: tashkil.past,
+            middleRadicalTashkilPresent: tashkil.present,
             soundOverride: this.input.data.stem1Context!.soundOverride
         };
-        return tashkilDisplayName[tashkil] + "  " + tashkil + " : " + this.RenderConjugation(tense, stem1Ctx);
+        return this.RenderConjugation(stem1Ctx);
     }
 
-    private RenderConjugation(tense: _LegacyTense, stem1Ctx?: Stem1Context)
+    private RenderConjugation(stem1Ctx?: Stem1Context)
     {
-        const conjugation = this.conjugatorService.Conjugate(this.input.rootRadicals, this.input.data.stem, tense, "active", "male", "third", "singular", "indicative", stem1Ctx);
-        return conjugation;
+        const past = this.conjugatorService.ConjugateToStringArgs(this.input.rootRadicals, this.input.data.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1Ctx);
+        const present = this.conjugatorService.ConjugateToStringArgs(this.input.rootRadicals, this.input.data.stem, "present", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1Ctx);
+
+        return <span style="white-space: pre;">
+            Past: {past}
+            {"\t"}
+            Present: {present}
+            {"\t"}
+            {this.RenderTashkilHelp()}
+        </span>;
     }
 
     private RenderSoundOverride()
@@ -166,41 +165,42 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         </FormField>;
     }
 
-    private RenderTashkilChoice(tense: "past" | "present")
+    private RenderTashkilChoice()
     {
         if(this.input.data.stem !== 1)
-            return this.RenderTashkilField(tense, [], "", () => null);
+            return this.RenderTashkilField([], 0, () => null);
 
         const root = new VerbRoot(this.input.rootRadicals);
-        const choices = root.GetStem1ContextChoices(this.input.data.stem1Context!);
+        const choices = root.GetStem1ContextChoices();
+        const selectedIndex = choices.r2options.findIndex(x => (x.past === this.input.data.stem1Context?.middleRadicalTashkil) && (x.present === this.input.data.stem1Context.middleRadicalTashkilPresent));
+        const validatedIndex = (selectedIndex === -1) ? 0 : selectedIndex;
 
-        const key = tense === "present" ? "middleRadicalTashkilPresent" : "middleRadicalTashkil";
-        return this.RenderTashkilField(tense, choices[tense], this.input.data.stem1Context![key], newValue =>
+        return this.RenderTashkilField(choices.r2options, validatedIndex, newValue =>
             {
-                this.input.data.stem1Context![key] = newValue;
+                this.input.data.stem1Context!.middleRadicalTashkil = newValue.past;
+                this.input.data.stem1Context!.middleRadicalTashkilPresent = newValue.present;
                 this.ValidateStem1Context();
                 this.DataChanged();
             }
         );
     }
 
-    private RenderTashkilField(tense: string, choices: PrimaryTashkil[], value: string, onChanged: (newValue: PrimaryTashkil) => void)
+    private RenderTashkilField(choices: Stem1ContextChoiceTashkil[], selectedIndex: number, onChanged: (newValue: Stem1ContextChoiceTashkil) => void)
     {
-        const conjTense = (tense === "past") ? "perfect" : "present";
-        return <FormField title={"Tashkil for middle radical (" + tense + ")"}>
-            {this.RenderTashkilSelect(choices, conjTense, value, onChanged)}
+        return <FormField title={"Tashkil"}>
+            {this.RenderTashkilSelect(choices, selectedIndex, onChanged)}
         </FormField>
     }
 
-    private RenderTashkilSelect(choices: PrimaryTashkil[], tense: _LegacyTense, value: string, onChanged: (newValue: PrimaryTashkil) => void)
+    private RenderTashkilSelect(choices: Stem1ContextChoiceTashkil[], selectedIndex: number, onChanged: (newValue: Stem1ContextChoiceTashkil) => void)
     {
         if(choices.length === 0)
-            return <div>{this.RenderConjugation(tense, this.input.data.stem1Context)}</div>;
+            return <div>{this.RenderConjugation(this.input.data.stem1Context)}</div>;
         if(choices.length === 1)
-            return <div>{this.RenderChoice(choices[0], tense)}</div>
+            return <div>{this.RenderChoice(choices[0])}</div>
 
-        return <SingleSelect onSelectionChanged={newIndex => onChanged(choices[newIndex])} selectedIndex={choices.indexOf(value as any)}>
-            {choices.map(x => this.RenderChoice(x, tense))}
+        return <SingleSelect onSelectionChanged={newIndex => onChanged(choices[newIndex])} selectedIndex={selectedIndex}>
+            {choices.map(x => this.RenderChoice(x))}
         </SingleSelect>;
     }
 
@@ -224,26 +224,12 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         const ctx = this.input.data.stem1Context;
         const root = new VerbRoot(this.input.rootRadicals);
 
-        const choices = root.GetStem1ContextChoices(ctx);
-        if(choices.past.length === 0)
+        const choices = root.GetStem1ContextChoices();
+        const r2choice = choices.r2options.find(x => (x.past === ctx.middleRadicalTashkil) && (x.present === ctx.middleRadicalTashkilPresent));
+        if(r2choice === undefined)
         {
-            ctx.middleRadicalTashkil = "";
-            this.DataChanged();
-        }
-        else if(!choices.past.includes(ctx.middleRadicalTashkil as any))
-        {
-            ctx.middleRadicalTashkil = choices.past[0];
-            this.DataChanged();
-        }
-
-        if(choices.present.length === 0)
-        {
-            ctx.middleRadicalTashkilPresent = "";
-            this.DataChanged();
-        }
-        else if(!choices.present.includes(ctx.middleRadicalTashkilPresent as any))
-        {
-            ctx.middleRadicalTashkilPresent = choices.present[0];
+            ctx.middleRadicalTashkil = choices.r2options[0].past;
+            ctx.middleRadicalTashkilPresent = choices.r2options[0].present;
             this.DataChanged();
         }
     }

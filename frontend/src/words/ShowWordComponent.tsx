@@ -26,6 +26,7 @@ import { ConjugationService } from "../services/ConjugationService";
 import { WordIdReferenceComponent } from "./WordReferenceComponent";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
+import { Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
 
 @Injectable
 export class ShowWordComponent extends Component
@@ -233,7 +234,7 @@ export class ShowWordComponent extends Component
                     return "verbal noun of ";
             }
         }
-        const conjugated = this.conjugationService.Conjugate(this.rootRadicals, this.verb!.stem, "perfect", "active", "male", "third", "singular", "indicative", Stem1DataToStem1ContextOptional(this.verb!.stem1Data));
+        const conjugated = this.conjugationService.ConjugateToStringArgs(this.rootRadicals, this.verb!.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(this.verb!.stem1Data));
 
         return <tr>
             <th>Derived from verb:</th>
