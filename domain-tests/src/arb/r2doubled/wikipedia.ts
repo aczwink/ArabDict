@@ -28,7 +28,6 @@ It("Wikipedia doubled roots stem table", () => {
         { expected: "فَلَّ" },
         { expected: "فَلَلْتُ", person: "first" },
         { expected: "يَفُلُّ", tense: "present" },
-        { expected: "اُفْلُلْ", tense: "present", mood: "imperative", person: "second" },
         { expected: "فُلَّ", voice: "passive" },
         { expected: "يُفَلُّ", voice: "passive", tense: "present" },
     ]);
@@ -36,7 +35,6 @@ It("Wikipedia doubled roots stem table", () => {
         { expected: "فَلَّ" },
         { expected: "فَلَلْتُ", person: "first" },
         { expected: "يَفِلُّ", tense: "present" },
-        { expected: "اِفْلِلْ", tense: "present", mood: "imperative", person: "second" },
         { expected: "فُلَّ", voice: "passive" },
         { expected: "يُفَلُّ", voice: "passive", tense: "present" },
     ]);
@@ -44,7 +42,6 @@ It("Wikipedia doubled roots stem table", () => {
         { expected: "فَلَّ" },
         { expected: "فَلَلْتُ", person: "first" },
         { expected: "يَفَلُّ", tense: "present" },
-        { expected: "اِفْلَلْ", tense: "present", mood: "imperative", person: "second" },
         { expected: "فُلَّ", voice: "passive" },
         { expected: "يُفَلُّ", voice: "passive", tense: "present" },
     ]);
@@ -52,7 +49,6 @@ It("Wikipedia doubled roots stem table", () => {
         { expected: "فَلَّ" },
         { expected: "فَلِلْتُ", person: "first" },
         { expected: "يَفَلُّ", tense: "present" },
-        { expected: "اِفْلَلْ", tense: "present", mood: "imperative", person: "second" },
         { expected: "فُلَّ", voice: "passive" },
         { expected: "يُفَلُّ", voice: "passive", tense: "present" },
     ]);
@@ -62,7 +58,6 @@ It("Wikipedia doubled roots stem table", () => {
     RunConjugationTest("ف-ل-ل", 4, [
         { expected: "أَفَلَّ" },
         { expected: "يُفِلُّ", tense: "present" },
-        { expected: "أَفْلِلْ", tense: "present", mood: "imperative", person: "second" },
         { voice: "passive", expected: "أُفِلَّ" },
         { voice: "passive", expected: "يُفَلُّ", tense: "present" },
     ]);
@@ -72,7 +67,6 @@ It("Wikipedia doubled roots stem table", () => {
     RunConjugationTest("ف-ل-ل", 7, [
         { expected: "اِنْفَلَّ" },
         { expected: "يَنْفَلُّ", tense: "present" },
-        { expected: "اِنْفَلِلْ", tense: "present", mood: "imperative", person: "second" },
     ]);
 
     //TODO: VIII

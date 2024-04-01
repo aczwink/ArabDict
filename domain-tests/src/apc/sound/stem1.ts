@@ -36,13 +36,13 @@ It("apc: Stem1 basic conjugation test", () => {
         { tense: "perfect", numerus: "plural", person: "first", expected: "كَتَبْنَا" },
 
         //present
-        { tense: "present", mood: "indicative", numerus: "singular", person: "third", gender: "male", expected: "بْيكْتُبْ" },
+        { tense: "present", mood: "indicative", numerus: "singular", person: "third", gender: "male", expected: "بْيِكْتُبْ" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "third", gender: "female", expected: "بْتِكْتُبْ" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "second", gender: "male", expected: "بْتِكْتُبْ" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "second", gender: "female", expected: "بْتِكْتْبِي" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "first", gender: "male", expected: "بِكْتُبْ" },
 
-        { tense: "present", mood: "indicative", numerus: "plural", person: "third", expected: "بْيكْتْبُو" },
+        { tense: "present", mood: "indicative", numerus: "plural", person: "third", expected: "بْيِكْتْبُو" },
         { tense: "present", mood: "indicative", numerus: "plural", person: "second", expected: "بْتِكْتْبُو" },
         { tense: "present", mood: "indicative", numerus: "plural", person: "first", expected: "مْنِكْتُبْ" },
 

@@ -113,7 +113,7 @@ It("Wikipedia defective stem1 type 1", () => {
         { expected: "اِرْمِينَ", gender: "female", person: "second", numerus: "plural", tense: "present", mood: "imperative" },
     ];
 
-    RunDefectiveConjugationTest("ر-م", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
+    RunConjugationTest("ر-م-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
 });
 
 It("Wikipedia defective stem1 type 2", () => {
@@ -196,7 +196,7 @@ It("Wikipedia defective stem1 type 2", () => {
         { expected: "اُدْعُونَ", gender: "female", person: "second", numerus: "plural", tense: "present", mood: "imperative" },
     ];
 
-    RunDefectiveConjugationTest("د-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, conjugations);
+    RunConjugationTest("د-ع-و", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, conjugations);
 });
 
 It("Wikipedia defective stem1 type 3", () => {
@@ -283,7 +283,7 @@ It("Wikipedia defective stem1 type 3", () => {
 });
 
 It("Wikipedia defective stem table", () => {
-    RunDefectiveConjugationTest("ف-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, [
+    RunConjugationTest("ف-ع-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, [
         { expected: "فَعَى" },
         { expected: "يَفْعِي", tense: "present" },
         { expected: "اِفْعِ", tense: "present", mood: "imperative", person: "second" },

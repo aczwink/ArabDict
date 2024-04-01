@@ -22,9 +22,11 @@ import { APIService } from "../services/APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { RootToString } from "./general";
-import { LETTER_RA, Letter, QAF } from "arabdict-domain/src/Definitions";
 import { ConjugationService } from "../services/ConjugationService";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
+import { Buckwalter } from "arabdict-domain/dist/Transliteration";
+import { Letter } from "arabdict-domain/src/Definitions";
+import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 interface ShowRootData
 {
@@ -59,7 +61,7 @@ export class ShowRootComponent extends Component
                 </div>
             </div>
             {this.data!.root.description}
-            <a href={"http://ejtaal.net/aa#bwq=" + this.ToBuckwalterTransilteration()} target="_blank">See on Mawrid reader</a>
+            <a href={"http://ejtaal.net/aa#bwq=" + this.ToEjtaalQuery()} target="_blank">See on Mawrid reader</a>
 
             <h4>Verbs</h4>
             {this.data.verbs.map(x => <VerbPreviewComponent root={this.data!.root} verbData={x} />)}
@@ -103,59 +105,24 @@ export class ShowRootComponent extends Component
         </fragment>;
     }
 
-    private ToBuckwalterTransilteration()
+    private ToEjtaalQuery()
     {
-        function ejtaal(char: string)
+        const root = new VerbRoot(this.data!.root.radicals);
+        const radicals = root.radicalsAsSeparateLetters;
+        if(root.type === RootType.SecondConsonantDoubled)
+            radicals.Remove(2);
+
+        function ejtaal(letter: Letter)
         {
-            switch(char)
+            switch(letter)
             {
                 case Letter.Hamza:
-                    return "A";
-                case Letter.Ba:
-                    return "b";
-                case Letter.Tha:
-                    return "v";
-                case Letter.Jiim:
-                    return "j";
-                case Letter.Hha:
-                    return "H";
-                case Letter.Kha:
-                    return "x";
-                case Letter.Dal:
-                    return "d";
-                case LETTER_RA:
-                    return "r";
-                case Letter.Zay:
-                    return "z";
-                case Letter.Siin:
-                    return "s";
-                case Letter.Shiin:
-                    return "$";
-                case Letter.Saad:
-                    return "S";
-                case Letter.Daad:
-                    return "D";
-                case Letter.Tta:
-                    return "T";
-                case Letter.A3ein:
-                    return "E";
-                case Letter.Fa:
-                    return "f";
-                case QAF:
-                    return "q";
-                case Letter.Kaf:
-                    return "k";
-                case Letter.Lam:
-                    return "l";
-                case Letter.Nun:
-                    return "n";
-                case Letter.Ha:
-                    return "h";
-                case Letter.Ya:
-                    return "y";
+                    return Buckwalter.CharToString(Letter.Alef);
             }
+            return Buckwalter.CharToString(letter);
         }
-        return this.data!.root.radicals.split("").map(ejtaal).join("");
+
+        return radicals.map(ejtaal).join("");
     }
 
     //Event handlers

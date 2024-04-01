@@ -80,8 +80,7 @@ function DetermineHamzaSeat(isInitial: boolean, isFinal: boolean, followingShort
         return { letter: Letter.AlefHamza, tashkil: followingShortVowel };
     }
 
-    const predecessorIsLongVowel = ( (predecessor?.letter === Letter.Alef) && (predecessor.tashkil === Tashkil.Fatha) )
-        || ( (predecessor !== undefined) && IsLongVowel(predecessor, prepredecessor) );
+    const predecessorIsLongVowel = (predecessor !== undefined) && IsLongVowel(predecessor, prepredecessor);
     const diphtongPreceedes = IsDiphtong(predecessor, prepredecessor);
 
     let decidingTashkil: Tashkil | null;
@@ -128,23 +127,20 @@ function MaddahCheck(current: ConjugationVocalized, prev?: ConjugationVocalized)
 {
     if(prev?.letter === Letter.AlefHamza)
     {
-        if(current.letter === Letter.Hamza)
-        {
-            if( (current.tashkil === Tashkil.Sukun) && (prev.tashkil === Tashkil.Fatha))
-            {
-                throw new Error("TODO: NOT IMPLEMENTED"); //create test case
-                return true; //this case was not documented anywhere but was found through tests
-            }
-
-            console.error("HERE MaddahCheck", current.tashkil, prev.tashkil);
-            throw new Error("TODO: NOT IMPLEMENTED");
-        }
-        else if(current.letter === Letter.Alef)
+        if(current.letter === Letter.Alef)
         {
             if( (prev.tashkil === Tashkil.Fatha) && (current.tashkil === Tashkil.LongVowelMarker) )
                 return true;
 
             console.error("HERE MaddahCheck 2 -> ", current.tashkil, prev.tashkil);
+            throw new Error("TODO: NOT IMPLEMENTED");
+        }
+        else if(current.letter === Letter.AlefHamza)
+        {
+            if( (prev.tashkil === Tashkil.Fatha) && (current.tashkil === Tashkil.Sukun) )
+                return true; //this case was not documented anywhere but was found through tests
+
+            console.error("HERE MaddahCheck 3 -> ", current.tashkil, prev.tashkil);
             throw new Error("TODO: NOT IMPLEMENTED");
         }
     }

@@ -66,7 +66,8 @@ export enum Tashkil
     Kasratan = "\u064D",
     Sukun = "\u0652",
     LongVowelMarker = 0, //marks this as the tashkil of the long vowel letter
-    EndOfWordMarker = 1, //marks the end of words (not verbs)
+    AlefMaksuraMarker = 1, //only used for marking a final alef maksura
+    EndOfWordMarker = 2, //marks the end of words (not verbs)
 }
 
 export type PrimaryTashkil = Tashkil.Dhamma | Tashkil.Fatha | Tashkil.Kasra;

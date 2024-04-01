@@ -26,6 +26,7 @@ import { Stem1DataToStem1ContextOptional } from "./model";
 import { CachedAPIService, FullVerbData } from "../services/CachedAPIService";
 import { ReverseLookupService } from "../services/ReverseLookupService";
 import { ConjugationParams, Gender, Mood, MoodString, Numerus, Person, Stem1Context, Tense } from "arabdict-domain/src/Definitions";
+import { MoodToString } from "arabdict-domain/src/Util";
 
 enum FilterCase
 {
@@ -156,21 +157,6 @@ export class SearchVerbsComponent extends Component
         return result.Values().Map(x => this.cachedAPIService.QueryFullVerbData(x)).PromiseAll();
     }
 
-    private MoodToString(mood: Mood): MoodString
-    {
-        switch(mood)
-        {
-            case Mood.Imperative:
-                return "imperative";
-            case Mood.Indicative:
-                return "indicative";
-            case Mood.Jussive:
-                return "jussive";
-            case Mood.Subjunctive:
-                return "subjunctive";
-        }
-    }
-
     private async PerformSearch()
     {
         this.data = null;
@@ -244,7 +230,7 @@ export class SearchVerbsComponent extends Component
         const root = ("rootId" in result) ? <Anchor route={"/roots/" + result.rootId}>{result.root.ToString()}</Anchor> : result.root.ToString();
         const renderedVerb = ("verbId" in result) ? <Anchor route={"/verbs/" + result.verbId}>{base}</Anchor> : base;
 
-        const moodString = (result.params.tense === Tense.Present) ? this.MoodToString(result.params.mood) : "";
+        const moodString = (result.params.tense === Tense.Present) ? MoodToString(result.params.mood) : "";
 
         return <tr>
             <td>{conjugated}</td>

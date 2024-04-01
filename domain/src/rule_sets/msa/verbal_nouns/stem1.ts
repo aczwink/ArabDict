@@ -108,8 +108,8 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
                     { letter: root.r1, tashkil: Tashkil.Fatha },
                     { letter: Letter.Ya, tashkil: Tashkil.Fatha },
                     { letter: root.r3, tashkil: Tashkil.Fatha },
-                    { letter: Letter.Alef, tashkil: Tashkil.Fatha },
-                    { letter: Letter.Nun, tashkil: Tashkil.Sukun },
+                    { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                    { letter: Letter.Nun, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
                     { letter: root.r1, tashkil: Tashkil.Fatha },

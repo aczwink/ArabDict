@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { RunConjugationTest } from "../../shared";
+import { RunConjugationTest, RunParticipleTest } from "../../shared";
 
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Hollow_(second-weak)_verbs
 
@@ -25,7 +25,7 @@ It("Wikipedia hollow stem table", () => {
 
     RunConjugationTest("ف-و-ل", 4, [
         { expected: "أَفَالَ" },
-        { expected: "أَفَلْت", person: "first" },
+        { expected: "أَفَلْتُ", person: "first" },
         { expected: "يُفِيلُ", tense: "present" },
         { expected: "أَفِلْ", tense: "present", mood: "imperative", person: "second" },
         { expected: "أُفِيلَ", voice: "passive" },
@@ -33,13 +33,14 @@ It("Wikipedia hollow stem table", () => {
     ]);
 
     //TODO: VII
-    //TODO: VIII
-
-    RunConjugationTest("ف-و-ل", 10, [
-        { expected: "اِسْتَفَالَ" },
-        { expected: "يَسْتَفْيلُ", tense: "present" },
-        { expected: "اِسْتَفِلْ", tense: "present", mood: "imperative", person: "second" },
-        { expected: "اُسْتُفِيلَ", voice: "passive" },
-        { expected: "يُسْتَفَالُ", voice: "passive", tense: "present" },
+    
+    RunConjugationTest("ف-و-ل", 8, [
+        { expected: "اِفْتَالَ" },
+        { expected: "اِفْتَلْت", person: "first" },
+        { expected: "يَفْتَالُ", tense: "present" },
+        { expected: "اِفْتَلْ", tense: "present", mood: "imperative", person: "second" },
+        { expected: "اُفْتيلَ", voice: "passive" },
+        { expected: "يُفْتَالُ", voice: "passive", tense: "present" },
     ]);
+    RunParticipleTest("ف-و-ل", 8, "مُفْتَال", "مُفْتَال");
 });

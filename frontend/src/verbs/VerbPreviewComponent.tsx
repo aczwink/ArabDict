@@ -42,7 +42,7 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
         const verbData = this.input.verbData;
         const root = new VerbRoot(this.input.root.radicals);
         const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(verbData.stem1Data));
-        const conjugationReference = this.conjugationService.Conjugate(this.input.root.radicals, 1, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Sukun, soundOverride: false });
+        const conjugationReference = this.conjugationService.Conjugate(this.input.root.radicals, 1, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false });
         const verbPresentation = (verbData.stem === 1) ? this.conjugationService.VocalizedToString(conjugated) : RenderWithDiffHighlights(conjugated, conjugationReference);
 
         return <div className="border border-3 rounded-2 p-2 my-2 shadow-sm">

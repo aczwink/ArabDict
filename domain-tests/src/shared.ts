@@ -16,103 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import "acts-util-core";
-import { Expect } from "acts-util-test";
+import { Fail } from "acts-util-test";
 import { Conjugator, DialectType } from "arabdict-domain/dist/Conjugator";
-import { AdvancedStemNumber, ConjugationParams, Gender, GenderString, Letter, Mood, MoodString, Numerus, NumerusString, Person, PersonString, Stem1Context, Tashkil, Tense, TenseString, Voice, VoiceString } from "arabdict-domain/dist/Definitions";
+import { AdvancedStemNumber, ConjugationParams, Gender, GenderString, Mood, MoodString, Numerus, NumerusString, Person, PersonString, Stem1Context, Tashkil, Tense, TenseString, Voice, VoiceString } from "arabdict-domain/dist/Definitions";
 import { VerbRoot } from "arabdict-domain/dist/VerbRoot";
+import { GenderToString, MoodToString, NumerusToString, PersonToString, TenseToString, VoiceToString } from "arabdict-domain/dist/Util";
 import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/dist/Vocalization";
-
-function ToDisplayVersion(v: DisplayVocalized[])
-{
-    function conv_letter(c: string)
-    {
-        switch(c)
-        {
-            case Letter.Alef:
-                return "a";
-            case Letter.Ba:
-                return "b";
-            case Letter.Ta:
-                return "t";
-            //tha
-            case Letter.Jiim:
-                return "j";
-            case Letter.Hha:
-                return "7";
-            //kha
-            case Letter.Dal:
-                return "d";
-            //dhal
-            //ra
-            //zay
-            case Letter.Siin:
-                return "s";
-            //shin
-            //Saad
-            //Daad
-            //Taa
-            //Tha
-            case Letter.A3ein:
-                return "3";
-            //ghayn
-            case Letter.Fa:
-                return "f";
-            //qaf
-            case Letter.Kaf:
-                return "k";
-            case Letter.Lam:
-                return "l";
-            case Letter.Mim:
-                return "m";
-            case Letter.Nun:
-                return "n";
-            //haa
-            case Letter.Waw:
-                return "w";
-            case Letter.Ya:
-                return "y";
-            case Letter.Hamza:
-                return "2";
-            case Letter.AlefHamza:
-                return "I^2";
-            //waw hamza
-            //ya hamza
-            //alif maddah
-            //ta marbuta
-            case Letter.AlefHamzaBelow:
-                return "I_2";
-            case Letter.AlefMaksura:
-                return "~";
-        }
-        return "TODO: " + c + " " + c.codePointAt(0);
-    }
-
-    function conv_tashkil(t: Tashkil | undefined)
-    {
-        if(t === undefined)
-            return "";
-        switch(t)
-        {
-            case Tashkil.Dhamma:
-                return "&";
-            case Tashkil.Fatha:
-                return "'";
-            case Tashkil.Kasra:
-                return ",";
-            case Tashkil.Sukun:
-                return "°";
-        }
-    }
-
-    function conv(v: DisplayVocalized)
-    {
-        const l = conv_letter(v.letter);
-
-        return l + conv_tashkil(v.tashkil) + (v.shadda ? "-w" : "");
-    }
-
-    return v.map(conv).join("");
-}
+import { Buckwalter } from "arabdict-domain/dist/Transliteration";
 
 function CompareVocalized(a: DisplayVocalized[], b: DisplayVocalized[])
 {
@@ -137,14 +47,23 @@ function Test(expected: string, got: DisplayVocalized[], params: ConjugationPara
 {
     const a = ParseVocalizedText(expected);
     const gotStr = got.Values().Map(VocalizedToString).Join("");
-    Expect(CompareVocalized(a, got)).ToBe(true, "expected: " + expected + " / " + ToDisplayVersion(a) + " got: " + gotStr + " / " + ToDisplayVersion(got) + " tense: " + params.tense + ", numerus: " + params.numerus + ", person: " + params.person + ", gender: " + params.gender);
+    if(!CompareVocalized(a, got))
+    {
+        const stemData = (params.stem === 1) ? (params.stem + " (past:" + Buckwalter.TashkilToString(params.stem1Context.middleRadicalTashkil) + " present:" + Buckwalter.TashkilToString(params.stem1Context.middleRadicalTashkilPresent) + ")") : params.stem;
+        const context = ["stem " + stemData, TenseToString(params.tense), VoiceToString(params.voice)];
+        if(params.tense === Tense.Present)
+            context.push(MoodToString(params.mood));
+        context.push(NumerusToString(params.numerus), PersonToString(params.person), GenderToString(params.gender));
+        Fail("expected: " + expected + " / " + Buckwalter.ToString(a) + " got: " + gotStr + " / " + Buckwalter.ToString(got) + " " + context.join(" "));
+    }
 }
 
 function TestParticiple(expected: string, got: DisplayVocalized[], voice: VoiceString)
 {
     const a = ParseVocalizedText(expected);
     const gotStr = got.Values().Map(VocalizedToString).Join(""); 
-    Expect(CompareVocalized(a, got)).ToBe(true, "expected: " + expected + " / " + ToDisplayVersion(a) + " got: " + gotStr + " / " + ToDisplayVersion(got) + " voice: " + voice);
+    if(!CompareVocalized(a, got))
+        Fail("expected: " + expected + " / " + Buckwalter.ToString(a) + " got: " + gotStr + " / " + Buckwalter.ToString(got) + " voice: " + voice);
 }
 
 interface BasicConjugationTest

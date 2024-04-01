@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { _LegacyCreateVerb } from "./_legacy/CreateVerb";
 import { QAF, Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString } from "../../Definitions";
 import { DialectConjugator } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
@@ -144,11 +143,24 @@ export class MSAConjugator implements DialectConjugator
             if(rule !== undefined)
                 return this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, rootType, rule.conjugation) as any;
         }
-
-        //call legacy api
-        const verb = _LegacyCreateVerb(root.radicalsAsSeparateLetters.join(""), params.stem);
-        const x = verb.Conjugate(params.tense, (params.voice === Voice.Active ? "active" : "passive"), params.gender, params.person, params.numerus);
-        return ParseVocalizedText(x) as any;
+        return [
+            {
+                letter: "T" as any,
+                tashkil: Tashkil.AlefMaksuraMarker
+            },
+            {
+                letter: "O" as any,
+                tashkil: Tashkil.AlefMaksuraMarker
+            },
+            {
+                letter: "D" as any,
+                tashkil: Tashkil.AlefMaksuraMarker
+            },
+            {
+                letter: "O" as any,
+                tashkil: Tashkil.AlefMaksuraMarker
+            }
+        ];
     }
 
     private ConjugateBasicForm(root: VerbRoot, stem: AdvancedStemNumber)
@@ -232,7 +244,7 @@ export class MSAConjugator implements DialectConjugator
             break;
             case RootType.Defective:
                 if(IsSpeciallyIrregularDefective(root, params.stem))
-                    AlterSpeciallyIrregularDefective(root, augmentedRoot, params);
+                    AlterSpeciallyIrregularDefective(root, augmentedRoot, suffix.suffix, params);
                 else
                 {
                     AlterDefectiveSuffix(params, suffix.suffix);

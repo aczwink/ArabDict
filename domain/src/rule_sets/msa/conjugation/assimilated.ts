@@ -30,7 +30,7 @@ export function DropOutR1(augmentedRoot: AugmentedRoot, params: ConjugationParam
                 if(params.voice === Voice.Active)
                     augmentedRoot.DropRadial(1);
                 else
-                    augmentedRoot.ApplyRadicalTashkil(1, Tashkil.Dhamma);
+                    augmentedRoot.ApplyRadicalTashkil(1, Tashkil.LongVowelMarker);
             }
         }
         break;

@@ -67,6 +67,6 @@ It("Reverse lookup يُعد", () => {
     for (const entry of expected)
     {
         const gotStems = got[entry.root] as number[];
-        Expect(gotStems).ToBe(entry.stems, entry.root);
+        Expect(gotStems).Equals(entry.stems, entry.root);
     }
 });

@@ -33,6 +33,7 @@ export function GenerateParticipleStem4(root: VerbRoot, voice: VoiceString): Con
                 { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
             ];
 
+        case RootType.HamzaOnR1:
         case RootType.Sound:
             return [
                 { letter: Letter.Mim, tashkil: Tashkil.Dhamma },

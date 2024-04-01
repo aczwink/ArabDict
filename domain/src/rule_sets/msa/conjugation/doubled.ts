@@ -21,25 +21,38 @@ import { AugmentedRoot } from "../AugmentedRoot";
 
 export function GeminateDoubledConsonant(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    if(params.stem === 2)
-        return;
-    
-    if(augmentedRoot.r3.tashkil !== Tashkil.Sukun)
+    switch(params.stem)
     {
-        if(params.stem === 1)
-        {
-            if(params.voice === Voice.Passive)
-                augmentedRoot.r1.tashkil = Tashkil.Dhamma;
-            else if(params.tense === Tense.Perfect)
-                augmentedRoot.r1.tashkil = params.stem1Context.middleRadicalTashkil;
-            else
-                augmentedRoot.r1.tashkil = params.stem1Context.middleRadicalTashkilPresent;
-        }
-        else
-        {
-            const cond = ((params.tense === Tense.Perfect) && (params.voice === Voice.Active)) || (((params.tense === Tense.Present) && (params.voice === Voice.Passive)));
-            augmentedRoot.r1.tashkil = cond ? Tashkil.Fatha : Tashkil.Kasra; //two sukuns after each other are forbidden
-        }
-        augmentedRoot.symbols.Remove(augmentedRoot.symbols.length - 2); //assimilate r2
+        case 1:
+            if( (params.tense === Tense.Perfect) && (augmentedRoot.r3.tashkil !== Tashkil.Sukun) )
+                augmentedRoot.r2.tashkil = Tashkil.Sukun;
+            else if(params.tense === Tense.Present)
+            {
+                if(params.voice === Voice.Active)
+                    augmentedRoot.r1.tashkil = params.stem1Context.middleRadicalTashkilPresent;
+                else
+                    augmentedRoot.r1.tashkil = Tashkil.Fatha;
+                augmentedRoot.r2.tashkil = Tashkil.Sukun;
+            }
+            break;
+        case 4:
+            if(params.tense === Tense.Perfect)
+                augmentedRoot.r1.tashkil = (params.voice === Voice.Active) ? Tashkil.Fatha : Tashkil.Kasra;
+            else if(params.tense === Tense.Present)
+            {
+                if(params.voice === Voice.Active)
+                    augmentedRoot.r1.tashkil = Tashkil.Kasra;
+                else
+                    augmentedRoot.r1.tashkil = Tashkil.Fatha;
+            }
+            augmentedRoot.r2.tashkil = Tashkil.Sukun;
+            break;
+        case 7:
+            if(params.tense === Tense.Perfect)
+                augmentedRoot.r1.tashkil = (params.voice === Voice.Active) ? Tashkil.Fatha : Tashkil.Kasra;
+            else if(params.tense === Tense.Present)
+                augmentedRoot.r1.tashkil = Tashkil.Fatha;
+            augmentedRoot.r2.tashkil = Tashkil.Sukun;
+            break;
     }
 }

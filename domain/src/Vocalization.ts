@@ -70,10 +70,11 @@ export function CompareVocalized(a: DisplayVocalized[], b: DisplayVocalized[])
 
 export function IsLongVowel(vocalized: ConjugationVocalized, predecessor?: ConjugationVocalized)
 {
+    const isLongAlef = (vocalized.letter === Letter.Alef) && (vocalized.tashkil === Tashkil.LongVowelMarker) && (predecessor?.tashkil === Tashkil.Fatha);
     const isLongYa = (vocalized.letter === Letter.Ya) && (vocalized.tashkil === Tashkil.LongVowelMarker) && (predecessor?.tashkil === Tashkil.Kasra);
     const isLongWaw = (vocalized.letter === Letter.Waw) && (vocalized.tashkil === Tashkil.LongVowelMarker) && (predecessor?.tashkil === Tashkil.Dhamma);
 
-    return isLongYa || isLongWaw;
+    return isLongAlef || isLongYa || isLongWaw;
 }
 
 export function ParseVocalizedText(text: string)
@@ -107,6 +108,12 @@ export function ParseVocalizedText(text: string)
                     if(tashkil !== undefined)
                         throw new Error("Doubled tashkil");
                     tashkil = Tashkil.Kasra;
+                    i++;
+                    break;
+                case Tashkil.Kasratan:
+                    if(tashkil !== undefined)
+                        throw new Error("Doubled tashkil");
+                    tashkil = Tashkil.Kasratan;
                     i++;
                     break;
                 case TASHKIL_SHADDA:

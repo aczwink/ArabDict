@@ -314,7 +314,7 @@ export class APCConjugator implements DialectConjugator
                         },
                         {
                             letter: Letter.Alef,
-                            tashkil: Tashkil.Fatha
+                            tashkil: Tashkil.LongVowelMarker
                         }
                     ];
 
@@ -326,7 +326,7 @@ export class APCConjugator implements DialectConjugator
                         },
                         {
                             letter: Letter.Waw,
-                            tashkil: Tashkil.Dhamma
+                            tashkil: Tashkil.LongVowelMarker
                         }
                     ];
 
@@ -334,7 +334,7 @@ export class APCConjugator implements DialectConjugator
                     return [
                         {
                             letter: Letter.Waw,
-                            tashkil: Tashkil.Dhamma
+                            tashkil: Tashkil.LongVowelMarker
                         }
                     ];
             }
@@ -366,7 +366,7 @@ export class APCConjugator implements DialectConjugator
                     },
                     {
                         letter: Letter.Ya,
-                        tashkil: Tashkil.Kasra
+                        tashkil: Tashkil.LongVowelMarker
                     }
                 ];
 
@@ -394,7 +394,7 @@ export class APCConjugator implements DialectConjugator
                     return [
                         {
                             letter: Letter.Waw,
-                            tashkil: Tashkil.Dhamma
+                            tashkil: Tashkil.LongVowelMarker
                         }
                     ];
             }
@@ -409,7 +409,7 @@ export class APCConjugator implements DialectConjugator
                     return [
                         {
                             letter: Letter.Ya,
-                            tashkil: Tashkil.Kasra
+                            tashkil: Tashkil.LongVowelMarker
                         }
                     ];
                 }

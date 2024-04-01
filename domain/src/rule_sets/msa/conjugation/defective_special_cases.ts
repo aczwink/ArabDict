@@ -16,10 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, LETTER_RA, Letter, PrimaryTashkil, Tashkil, Tense } from "../../../Definitions";
+import { ConjugationParams, Gender, LETTER_RA, Letter, Numerus, Person, PrimaryTashkil, Tashkil, Tense } from "../../../Definitions";
 import { VerbRoot } from "../../../VerbRoot";
-import { AugmentedRoot } from "../AugmentedRoot";
-import { AlterDefectiveEnding } from "./defective";
+import { ConjugationVocalized } from "../../../Vocalization";
+import { AugmentedRoot, SymbolName } from "../AugmentedRoot";
+import { AlterDefectiveEnding, AlterDefectiveSuffix } from "./defective";
+import { DoesPresentSuffixStartWithWawOrYa } from "./suffix";
 
 /*
 Currently known ones are: رأى, أرى, حيي
@@ -35,21 +37,53 @@ function AlterSpecialCaseHayiya(augmentedRoot: AugmentedRoot, params: Conjugatio
     }
 }
 
-function AlterSpecialCaseRa2a(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+function AlterSpecialCaseRa2a(augmentedRoot: AugmentedRoot, params: ConjugationParams, suffix: ConjugationVocalized[])
 {
     AlterDefectiveEnding(augmentedRoot, params);
+    AlterDefectiveSuffix(params, suffix);
+
     if(params.tense !== Tense.Perfect)
+    {
+        const hasR3 = augmentedRoot.symbols.find(x => x.symbolName === SymbolName.R3) !== undefined;
+        if(hasR3 && (params.numerus === Numerus.Plural))
+        {
+            if(params.person === Person.First)
+                augmentedRoot.ReplaceRadical(3, { letter: Letter.AlefMaksura, tashkil: Tashkil.AlefMaksuraMarker });
+            else
+                augmentedRoot.ApplyRadicalTashkil(3, Tashkil.Sukun);
+        }
+        else if((params.numerus === Numerus.Plural) && (suffix.length > 0))
+            suffix[0].tashkil = Tashkil.Sukun;
+        else if((params.gender === Gender.Female) && (params.person === Person.Second))
+            suffix[0].tashkil = Tashkil.Sukun;
+        if(hasR3 && (params.numerus === Numerus.Singular))
+            augmentedRoot.ReplaceRadical(3, { letter: Letter.AlefMaksura, tashkil: Tashkil.AlefMaksuraMarker });
+        
         augmentedRoot.DropRadial(2);
+        augmentedRoot.ApplyRadicalTashkil(1, Tashkil.Fatha);
+    }
 }
 
-export function AlterSpeciallyIrregularDefective(root: VerbRoot, augmentedRoot: AugmentedRoot, params: ConjugationParams)
+function AlterSpecialCaseA2ra(augmentedRoot: AugmentedRoot, params: ConjugationParams, suffix: ConjugationVocalized[])
+{
+    AlterDefectiveEnding(augmentedRoot, params);
+    AlterDefectiveSuffix(params, suffix);
+
+    augmentedRoot.AssimilateRadical(2);
+}
+
+export function AlterSpeciallyIrregularDefective(root: VerbRoot, augmentedRoot: AugmentedRoot, suffix: ConjugationVocalized[], params: ConjugationParams)
 {
     if(params.stem === 1)
     {
         if(root.radicalsAsSeparateLetters.Equals([Letter.Hha, Letter.Ya, Letter.Waw]))
             AlterSpecialCaseHayiya(augmentedRoot, params);
         else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, Letter.Hamza, Letter.Ya]))
-            AlterSpecialCaseRa2a(augmentedRoot, params);
+            AlterSpecialCaseRa2a(augmentedRoot, params, suffix);
+    }
+    else if(params.stem === 4)
+    {
+        AlterSpecialCaseA2ra(augmentedRoot, params, suffix);
     }
 }
 

@@ -16,7 +16,55 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import "acts-util-core";
-import { TASHKIL_SHADDA, Tashkil } from "./Definitions";
+import { Gender, GenderString, Mood, MoodString, Numerus, NumerusString, Person, PersonString, TASHKIL_SHADDA, Tashkil, Tense, TenseString, Voice, VoiceString } from "./Definitions";
+
+export function GenderToString(gender: Gender): GenderString
+{
+    if(gender === Gender.Female)
+        return "female";
+    return "male";
+}
+
+export function MoodToString(mood: Mood): MoodString
+{
+    switch(mood)
+    {
+        case Mood.Imperative:
+            return "imperative";
+        case Mood.Indicative:
+            return "indicative";
+        case Mood.Jussive:
+            return "jussive";
+        case Mood.Subjunctive:
+            return "subjunctive";
+    }
+}
+
+export function NumerusToString(numerus: Numerus): NumerusString
+{
+    switch(numerus)
+    {
+        case Numerus.Dual:
+            return "dual";
+        case Numerus.Plural:
+            return "plural";
+        case Numerus.Singular:
+            return "singular";
+    }
+}
+
+export function PersonToString(person: Person): PersonString
+{
+    switch(person)
+    {
+        case Person.First:
+            return "first";
+        case Person.Second:
+            return "second";
+        case Person.Third:
+            return "third";
+    }
+}
 
 export function RemoveTashkil(text: string)
 {
@@ -29,4 +77,18 @@ export function RemoveTashkilButKeepShadda(text: string)
         .ReplaceAll(Tashkil.Fatha, "")
         .ReplaceAll(Tashkil.Kasra, "")
         .ReplaceAll(Tashkil.Sukun, "");
+}
+
+export function TenseToString(tense: Tense): TenseString
+{
+    if(tense === Tense.Perfect)
+        return "perfect";
+    return "present";
+}
+
+export function VoiceToString(voice: Voice): VoiceString
+{
+    if(voice === Voice.Active)
+        return "active";
+    return "passive";
 }

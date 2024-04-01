@@ -31,8 +31,8 @@ export function GenerateAllPossibleVerbalNounsStem2(root: VerbRoot): Conjugation
                 { letter: Letter.Ta, tashkil: Tashkil.Fatha },
                 { letter: root.r1, tashkil: Tashkil.Sukun },
                 { letter: root.r2, tashkil: Tashkil.Kasra },
-                { letter: Letter.Ya, tashkil: Tashkil.Kasra },
-                { letter: root.r3, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ya, tashkil: Tashkil.LongVowelMarker },
+                { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
             ];
     }
 

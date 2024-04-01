@@ -37,10 +37,35 @@ export class MSAReverseConjugator implements DialectReverseConjugator
     public AnalyzeConjugation(conjugated: DisplayVocalized[]): ReverseConjugationResult[]
     {
         const patterns: PrefixSuffixPattern[] = [
+            //Perfect
+            {
+                prefix: [],
+                suffix: [
+                    {
+                        letter: Letter.Ta,
+                        emphasis: false,
+                        shadda: false
+                    },
+                ],
+                tense: Tense.Perfect
+            },
+
+            //Present
             {
                 prefix: [
                     {
                         letter: Letter.Ya,
+                        emphasis: false,
+                        shadda: false
+                    },
+                ],
+                suffix: [],
+                tense: Tense.Present
+            },
+            {
+                prefix: [
+                    {
+                        letter: Letter.Ta,
                         emphasis: false,
                         shadda: false
                     }
@@ -56,7 +81,8 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                 && this.Matches(pattern.suffix, conjugated.slice(conjugated.length - pattern.suffix.length));
             if(matches)
             {
-                const rootMatches = this.TryMatchRoot(conjugated.slice(pattern.prefix.length, conjugated.length + 1 - pattern.prefix.length - pattern.suffix.length));
+                const prefixOmitted = conjugated.slice(pattern.prefix.length);
+                const rootMatches = this.TryMatchRoot(prefixOmitted.slice(0, prefixOmitted.length - pattern.suffix.length));
                 return rootMatches.map(x => ({
                     root: new VerbRoot(x.rootRadicals.join("")),
                     tense: pattern.tense
@@ -68,6 +94,18 @@ export class MSAReverseConjugator implements DialectReverseConjugator
     }
 
     //Private methods
+    private MapToRootLetters(letters: Letter[])
+    {
+        return letters.map(x => {
+            switch(x)
+            {
+                case Letter.AlefHamza:
+                    return Letter.Hamza;
+            }
+            return x;
+        });
+    }
+
     private Matches(a: DisplayVocalized[], b: DisplayVocalized[])
     {
         return CompareVocalized(a, b) >= 1;
@@ -75,6 +113,7 @@ export class MSAReverseConjugator implements DialectReverseConjugator
 
     private TryMatchRoot(conjugated: DisplayVocalized[]): RootMatch[]
     {
+        const rootLetters = this.MapToRootLetters(conjugated.map(x => x.letter));
         switch(conjugated.length)
         {
             case 2:
@@ -102,6 +141,12 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                         }
                     ];
                 }
+
+                return [
+                    {
+                        rootRadicals: rootLetters
+                    }
+                ];
         }
         throw new Error("TODO: implement me: " + conjugated.length);
     }

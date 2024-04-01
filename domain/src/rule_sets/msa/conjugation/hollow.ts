@@ -73,6 +73,7 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
         }
         break;
         case 4:
+        case 8:
         case 10:
         {
             if(params.tense === Tense.Perfect)
