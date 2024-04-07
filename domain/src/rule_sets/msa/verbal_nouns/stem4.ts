@@ -41,6 +41,14 @@ export function GenerateAllPossibleVerbalNounsStem4(root: VerbRoot): Conjugation
                 { letter: Letter.TaMarbuta, tashkil: Tashkil.Sukun },
             ];
 
+        case RootType.SecondConsonantDoubled:
+            return [
+                { letter: Letter.Hamza, tashkil: Tashkil.Fatha },
+                { letter: root.r1, tashkil: Tashkil.Fatha },
+                { letter: root.r2, tashkil: Tashkil.Sukun },
+                { letter: root.r3, tashkil: Tashkil.Fatha },
+            ];
+
         case RootType.Sound:
             return [
                 { letter: Letter.Hamza, tashkil: Tashkil.Kasra },

@@ -32,8 +32,8 @@ export function GenerateAllPossibleVerbalNounsStem10(root: VerbRoot): Conjugatio
                 { letter: Letter.Ta, tashkil: Tashkil.Kasra },
                 { letter: root.r1, tashkil: Tashkil.Sukun },
                 { letter: root.r2, tashkil: Tashkil.Fatha },
-                { letter: Letter.Alef, tashkil: Tashkil.Fatha },
-                { letter: root.r3, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
             ];
 
         case RootType.Hollow:
