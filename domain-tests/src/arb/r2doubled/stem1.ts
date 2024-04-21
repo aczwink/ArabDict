@@ -15,15 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
 import { It } from "acts-util-test";
-import { RunConjugationTest } from "../../shared";
 import { Tashkil } from "arabdict-domain/dist/Definitions";
+import { RunConjugationTest } from "../../shared";
 
-//TODO: the conjugation table from https://en.wikipedia.org/wiki/Arabic_verbs#Doubled_roots
-
-//Source: https://en.wikipedia.org/wiki/Arabic_verbs#Doubled_verbs
-It("Wikipedia doubled roots stem table", () => {
+It("Stem 1", () => {
     RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, [
         { expected: "فَلَّ" },
         { expected: "فَلَلْتُ", person: "first" },
@@ -52,23 +48,6 @@ It("Wikipedia doubled roots stem table", () => {
         { expected: "فُلَّ", voice: "passive" },
         { expected: "يُفَلُّ", voice: "passive", tense: "present" },
     ]);
-
-    //TODO: III
-
-    RunConjugationTest("ف-ل-ل", 4, [
-        { expected: "أَفَلَّ" },
-        { expected: "يُفِلُّ", tense: "present" },
-        { voice: "passive", expected: "أُفِلَّ" },
-        { voice: "passive", expected: "يُفَلُّ", tense: "present" },
-    ]);
-
-    //TODO: VI
     
-    RunConjugationTest("ف-ل-ل", 7, [
-        { expected: "اِنْفَلَّ" },
-        { expected: "يَنْفَلُّ", tense: "present" },
-    ]);
-
-    //TODO: VIII
-    //TODO: X
+    throw new Error("TODO rest :)");
 });

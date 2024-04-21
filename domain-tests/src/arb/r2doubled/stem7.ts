@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,20 +17,12 @@
  * */
 import { It } from "acts-util-test";
 import { RunConjugationTest } from "../../shared";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
 
-It("Hollow stem1", () => {
-    RunConjugationTest("ف-و-ت", { middleRadicalTashkil: Tashkil.Dhamma, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, [
-        { expected: "فِتُّ", person: "first", voice: "passive" },
+It("Stem 7", () => {
+    RunConjugationTest("ف-ل-ل", 7, [
+        { expected: "اِنْفَلَّ" },
+        { expected: "يَنْفَلُّ", tense: "present" },
     ]);
-
-    RunConjugationTest("ل-و-م", { middleRadicalTashkil: Tashkil.Dhamma, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, [
-        { expected: "لِمْتُ", person: "first", voice: "passive" },
-    ]);
-
-    RunConjugationTest("ز-ي-ح", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, [
-        { expected: "زِحْتُ", person: "first", voice: "passive" },
-    ]);
-
+    
     throw new Error("TODO :)");
 });

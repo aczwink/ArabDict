@@ -46,6 +46,12 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
         case RootType.Defective:
             return [
                 [
+                    { letter: root.r1, tashkil: Tashkil.Dhamma },
+                    { letter: root.r2, tashkil: Tashkil.Sukun },
+                    { letter: Letter.Waw, tashkil: Tashkil.Fatha },
+                    { letter: Letter.TaMarbuta, tashkil: Tashkil.EndOfWordMarker },
+                ],
+                [
                     { letter: root.r1, tashkil: Tashkil.Fatha },
                     { letter: root.r2, tashkil: Tashkil.Fatha },
                     { letter: Letter.Alef, tashkil: Tashkil.Fatha },

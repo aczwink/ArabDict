@@ -16,12 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { RunConjugationTest, RunParticipleTest } from "../../shared";
 
-//Source: https://en.wikipedia.org/wiki/Arabic_verbs#Hamzated_verbs
-
-It("Wikipedia stem table", () => {
-    //TODO: I
-
-    //TODO: VIII
+It("Stem 4", () => {
+    throw new Error("TODO :)");
 });

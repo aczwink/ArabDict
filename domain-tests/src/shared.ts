@@ -186,6 +186,12 @@ export function RunConjugationTest(rootRadicals: string, stem: AdvancedStemNumbe
     }
 }
 
+export function RunDefectiveConjugationTest(rootRadicalsWithoutR3: string, stem: AdvancedStemNumber | Stem1Context, conjugations: ConjugationTest[])
+{
+    RunConjugationTest(rootRadicalsWithoutR3 + "-و", stem, conjugations);
+    RunConjugationTest(rootRadicalsWithoutR3 + "-ي", stem, conjugations);
+}
+
 export function RunParticipleTest(rootRadicals: string, stem: number | Stem1Context, activeExpected: string, passiveExpected: string)
 {
     const conjugator = new Conjugator();
@@ -199,4 +205,10 @@ export function RunParticipleTest(rootRadicals: string, stem: number | Stem1Cont
 
     const passiveGot = conjugator.ConjugateParticiple(DialectType.ModernStandardArabic, root, stemNumber, "passive", ctx);
     TestParticiple(passiveExpected, passiveGot, "passive");
+}
+
+export function RunDefectiveParticipleTest(rootRadicalsWithoutR3: string, stem: number | Stem1Context, activeExpected: string, passiveExpected: string)
+{
+    RunParticipleTest(rootRadicalsWithoutR3 + "-و", stem, activeExpected, passiveExpected);
+    RunParticipleTest(rootRadicalsWithoutR3 + "-ي", stem, activeExpected, passiveExpected);
 }

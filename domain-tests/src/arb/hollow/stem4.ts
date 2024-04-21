@@ -16,13 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { RunConjugationTest, RunParticipleTest } from "../../shared";
+import { RunConjugationTest } from "../../shared";
 
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Hollow_(second-weak)_verbs
 
-It("Wikipedia hollow stem table", () => {
-    //TODO: I
-
+It("Stem 4", () => {
     RunConjugationTest("ف-و-ل", 4, [
         { expected: "أَفَالَ" },
         { expected: "أَفَلْتُ", person: "first" },
@@ -32,15 +30,5 @@ It("Wikipedia hollow stem table", () => {
         { expected: "يُفَالُ", voice: "passive", tense: "present" },
     ]);
 
-    //TODO: VII
-    
-    RunConjugationTest("ف-و-ل", 8, [
-        { expected: "اِفْتَالَ" },
-        { expected: "اِفْتَلْت", person: "first" },
-        { expected: "يَفْتَالُ", tense: "present" },
-        { expected: "اِفْتَلْ", tense: "present", mood: "imperative", person: "second" },
-        { expected: "اُفْتيلَ", voice: "passive" },
-        { expected: "يُفْتَالُ", voice: "passive", tense: "present" },
-    ]);
-    RunParticipleTest("ف-و-ل", 8, "مُفْتَال", "مُفْتَال");
+    throw new Error("TODO rest is missing :)");
 });

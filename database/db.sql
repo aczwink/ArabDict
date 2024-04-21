@@ -261,7 +261,9 @@ BEGIN
       "ْ", "");
 
   SET tmp = REPLACE(
-    REPLACE(tmp, "أ", "ا"),
+    REPLACE(
+      REPLACE(tmp, "آ", "ا"),
+      "أ", "ا"),
     "إ", "ا"
   );
 

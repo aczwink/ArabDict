@@ -72,6 +72,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
         {
             switch(root.type)
             {
+                case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:
                 case RootType.Sound:
@@ -110,6 +111,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
             {
                 case RootType.Assimilated:
                 case RootType.Defective:
+                case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 case RootType.Hollow:
                 case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
@@ -182,6 +184,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
             {
                 case RootType.Assimilated:
                 case RootType.Defective:
+                case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:
                 case RootType.SecondConsonantDoubled:

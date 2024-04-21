@@ -20,21 +20,7 @@ import { RunConjugationTest, RunParticipleTest } from "../../shared";
 
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Formation_of_derived_stems_(%22forms%22)
 
-It("Wikipedia sound stem table", () => {
-    //TODO: stem I
-
-    RunConjugationTest("ف-ع-ل", 2, [
-        { expected: "فَعَّلَ" },
-        { expected: "يُفَعِّلُ", tense: "present" },
-        { expected: "فَعِّلْ", tense: "present", mood: "imperative", person: "second" },
-        { expected: "فُعِّلَ", voice: "passive" },
-        { expected: "يُفَعَّلُ", voice: "passive", tense: "present" },
-    ]);
-    RunParticipleTest("ف-ع-ل", 2, "مُفَعِّل", "مُفَعَّل");
-
-    //TODO: stem III
-    //TODO: stem IV
-
+It("Stem 5", () => {
     RunConjugationTest("ف-ع-ل", 5, [
         { expected: "تَفَعَّلَ" },
         { expected: "يَتَفَعَّلُ", tense: "present" },
@@ -44,7 +30,5 @@ It("Wikipedia sound stem table", () => {
     ]);
     RunParticipleTest("ف-ع-ل", 5, "مُتَفَعِّل", "مُتَفَعَّل");
     
-    //TODO: stem VI
-
-    //TODO: rest
+    throw new Error("TODO rest is missing :)");
 });
