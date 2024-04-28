@@ -76,8 +76,8 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
                 [
                     { letter: root.r1, tashkil: Tashkil.Kasra },
                     { letter: root.r2, tashkil: Tashkil.Fatha },
-                    { letter: Letter.Alef, tashkil: Tashkil.Fatha },
-                    { letter: Letter.Hamza, tashkil: Tashkil.Sukun },
+                    { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                    { letter: Letter.Hamza, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
                     { letter: root.r1, tashkil: Tashkil.Kasra },
@@ -107,6 +107,11 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
 
         case RootType.Hollow:
             return [
+                [
+                    { letter: root.r1, tashkil: Tashkil.Dhamma },
+                    { letter: Letter.Waw, tashkil: Tashkil.LongVowelMarker },
+                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                ],
                 root.r1 + Tashkil.Fatha + Letter.Waw + Tashkil.Sukun + root.r3,
                 root.r1 + Tashkil.Fatha + Letter.Waw + Tashkil.Sukun + root.r3 + Tashkil.Fatha + Letter.TaMarbuta,
                 root.r1 + Tashkil.Fatha + Letter.Waw + Tashkil.Fatha + Letter.Alef + root.r3,

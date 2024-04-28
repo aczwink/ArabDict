@@ -49,11 +49,6 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
     }
 
     //Private methods
-    private MayWordHaveGender()
-    {
-        return this.input.data.functions.Values().Map(x => WordMayHaveGender(x.type)).AnyTrue();
-    }
-
     private RenderDerivation()
     {
         return <div className="row">
@@ -102,7 +97,7 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
 
     private RenderGender()
     {
-        if(!this.MayWordHaveGender())
+        if(!WordMayHaveGender(this.input.data))
             return null;
 
         return <FormField title="Gender">
@@ -205,7 +200,7 @@ export class WordEditorComponent extends Component<{ data: WordBaseData; onDataC
 
     private OnFunctionDataChanged()
     {
-        const shouldHaveGender = this.MayWordHaveGender();
+        const shouldHaveGender = WordMayHaveGender(this.input.data);
         if(shouldHaveGender && (this.input.data.isMale === null))
             this.input.data.isMale = true;
         else if(!shouldHaveGender)

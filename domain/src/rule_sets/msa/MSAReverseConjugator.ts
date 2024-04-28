@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Letter, Tense } from "../../Definitions";
+import { AdvancedStemNumber, Letter, Tense } from "../../Definitions";
 import { DialectReverseConjugator, ReverseConjugationResult } from "../../DialectReverseConjugator";
 import { VerbRoot } from "../../VerbRoot";
 import { CompareVocalized, DisplayVocalized } from "../../Vocalization";
@@ -30,6 +30,7 @@ interface PrefixSuffixPattern
 interface RootMatch
 {
     rootRadicals: Letter[];
+    stem: 1 | AdvancedStemNumber;
 }
 
 export class MSAReverseConjugator implements DialectReverseConjugator
@@ -37,19 +38,6 @@ export class MSAReverseConjugator implements DialectReverseConjugator
     public AnalyzeConjugation(conjugated: DisplayVocalized[]): ReverseConjugationResult[]
     {
         const patterns: PrefixSuffixPattern[] = [
-            //Perfect
-            {
-                prefix: [],
-                suffix: [
-                    {
-                        letter: Letter.Ta,
-                        emphasis: false,
-                        shadda: false
-                    },
-                ],
-                tense: Tense.Perfect
-            },
-
             //Present
             {
                 prefix: [
@@ -72,7 +60,37 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                 ],
                 suffix: [],
                 tense: Tense.Present
-            }
+            },
+
+            //Perfect
+            {
+                prefix: [],
+                suffix: [
+                    {
+                        letter: Letter.Ta,
+                        emphasis: false,
+                        shadda: false
+                    },
+                ],
+                tense: Tense.Perfect
+            },
+            {
+                prefix: [
+                    {
+                        //hamzat al wasl
+                        letter: Letter.Alef,
+                        emphasis: false,
+                        shadda: false
+                    },
+                ],
+                suffix: [],
+                tense: Tense.Perfect
+            },
+            {
+                prefix: [],
+                suffix: [],
+                tense: Tense.Perfect
+            },
         ];
 
         for (const pattern of patterns)
@@ -85,7 +103,8 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                 const rootMatches = this.TryMatchRoot(prefixOmitted.slice(0, prefixOmitted.length - pattern.suffix.length));
                 return rootMatches.map(x => ({
                     root: new VerbRoot(x.rootRadicals.join("")),
-                    tense: pattern.tense
+                    tense: pattern.tense,
+                    stem: x.stem
                 }));
             }
         }
@@ -121,32 +140,60 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                     {
                         //assimilated
                         rootRadicals: [Letter.Waw, conjugated[0].letter, conjugated[1].letter],
+                        stem: 1
                     },
                     {
                         //hollow
                         rootRadicals: [conjugated[0].letter, Letter.Waw, conjugated[1].letter],
+                        stem: 1
                     },
                     {
                         //doubled r2
                         rootRadicals: [conjugated[0].letter, conjugated[1].letter, conjugated[1].letter],
+                        stem: 1
                     }
                 ];
             case 3:
+                if(conjugated[1].letter === Letter.Alef)
+                {
+                    //hollow
+                    return [
+                        {
+                            rootRadicals: [conjugated[0].letter, Letter.Waw, conjugated[2].letter],
+                            stem: 1
+                        }
+                    ];
+                }
+
                 if(conjugated[1].letter === Letter.Ya)
                 {
                     //hollow
                     return [
                         {
                             rootRadicals: [conjugated[0].letter, Letter.Waw, conjugated[2].letter],
+                            stem: 1
                         }
                     ];
                 }
 
                 return [
                     {
-                        rootRadicals: rootLetters
+                        rootRadicals: rootLetters,
+                        stem: 1
                     }
                 ];
+            case 4:
+                if(conjugated[1].letter === Letter.Ta)
+                {
+                    const sub = this.TryMatchRoot([
+                        conjugated[0], conjugated[2], conjugated[3]
+                    ]);
+                    return sub.map(x => ({
+                        rootRadicals: x.rootRadicals,
+                        stem: 8
+                    }));
+                }
+                break;
         }
         throw new Error("TODO: implement me: " + conjugated.length);
     }

@@ -156,7 +156,10 @@ export class WordsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        await conn.DeleteRows("words_translations", "wordId = ?", wordId);
+        const functions = await this.QueryWordFunctions(wordId);
+        for (const func of functions)
+            await conn.DeleteRows("words_functions_translations", "wordFunctionId = ?", func.id);
+        await conn.DeleteRows("words_functions", "wordId = ?", wordId);
         await conn.DeleteRows("words_verbs", "wordId = ?", wordId);
         await conn.DeleteRows("words", "id = ?", wordId);
     }

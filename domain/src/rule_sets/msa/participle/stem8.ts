@@ -16,17 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Tashkil, Letter, VoiceString } from "../../../Definitions";
+import { Tashkil, Letter, Voice } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
 import { ConjugationVocalized } from "../../../Vocalization";
+import { AugmentedRoot } from "../AugmentedRoot";
 
-export function GenerateParticipleStem8(root: VerbRoot, voice: VoiceString): ConjugationVocalized[]
+export function GenerateParticipleStem8(root: VerbRoot, baseForm: AugmentedRoot, voice: Voice): ConjugationVocalized[]
 {
-    const voicingTashkil = (voice === "active") ? Tashkil.Kasra : Tashkil.Fatha;
+    const voicingTashkil = (voice === Voice.Active) ? Tashkil.Kasra : Tashkil.Fatha;
     switch(root.type)
     {
         case RootType.Defective:
-            if(voice === "active")
+            if(voice === Voice.Active)
             {
                 return [
                     { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
@@ -43,6 +44,13 @@ export function GenerateParticipleStem8(root: VerbRoot, voice: VoiceString): Con
                 { letter: root.r2, tashkil: Tashkil.Fathatan },
                 { letter: Letter.AlefMaksura, tashkil: Tashkil.EndOfWordMarker },
             ];
+
+        case RootType.Hollow:
+            baseForm.symbols[0].letter = Letter.Mim;
+            baseForm.symbols[0].tashkil = Tashkil.Dhamma;
+            baseForm.ApplyRadicalTashkil(1, Tashkil.Sukun);
+            baseForm.ApplyRadicalTashkil(3, Tashkil.EndOfWordMarker);
+            return baseForm.symbols;
 
         case RootType.Sound:
             return [

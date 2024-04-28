@@ -132,12 +132,14 @@ export class SearchVerbsComponent extends Component
         for (const entry of analyzed)
         {
             const rootId = await this.reverseLookupService.TryFindRootId(entry.root);
-            const verbId = await this.TryFindVerb(rootId, entry.params);
-
-            if(verbId !== undefined)
-                verbFound.push({ rootId, verbId, ...entry });
-            else if(rootId !== undefined)
-                rootFound.push({ rootId, ...entry });
+            if(rootId !== undefined)
+            {
+                const verbId = await this.TryFindVerb(rootId, entry.params);
+                if(verbId !== undefined)
+                    verbFound.push({ rootId, verbId, ...entry });
+                else
+                    rootFound.push({ rootId, ...entry });
+            }
             else
                 notFound.push(entry);
         }
@@ -243,11 +245,8 @@ export class SearchVerbsComponent extends Component
         </tr>;
     }
 
-    private async TryFindVerb(rootId: number | undefined, params: ConjugationParams)
+    private async TryFindVerb(rootId: number, params: ConjugationParams)
     {
-        if(rootId === undefined)
-            return undefined;
-
         const verbs = await this.cachedAPIService.QueryVerbsOfRoot(rootId);
 
         for (const entry of verbs)

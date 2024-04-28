@@ -65,7 +65,6 @@ export class ReverseConjugator
     {
         const numeruses: Numerus[] = [Numerus.Singular, Numerus.Dual, Numerus.Plural];
         const genders: Gender[] = [Gender.Male, Gender.Female];
-        const stems: AdvancedStemNumber[] = [2, 3, 4, 5, 6, 7, 8, 10];
 
         const moods: Mood[] = (result.tense === Tense.Perfect) ? [Mood.Indicative] : [Mood.Indicative, Mood.Subjunctive, Mood.Jussive, Mood.Imperative];
         for (const mood of moods)
@@ -81,33 +80,35 @@ export class ReverseConjugator
                     {
                         for (const gender of genders)
                         {
-                            for (const choice of result.root.GetStem1ContextChoices().r2options)
+                            if(result.stem === 1)
                             {
-                                const stem1ctx: Stem1Context = {
-                                    middleRadicalTashkil: choice.past,
-                                    middleRadicalTashkilPresent: choice.present,
-                                    soundOverride: false
-                                };
-                                this.CheckConjugation(result.root, {
-                                    gender,
-                                    mood,
-                                    numerus,
-                                    person,
-                                    stem: 1,
-                                    tense: result.tense,
-                                    voice,
-                                    stem1Context: stem1ctx,
-                                });
+                                for (const choice of result.root.GetStem1ContextChoices().r2options)
+                                {
+                                    const stem1ctx: Stem1Context = {
+                                        middleRadicalTashkil: choice.past,
+                                        middleRadicalTashkilPresent: choice.present,
+                                        soundOverride: false
+                                    };
+                                    this.CheckConjugation(result.root, {
+                                        gender,
+                                        mood,
+                                        numerus,
+                                        person,
+                                        stem: 1,
+                                        tense: result.tense,
+                                        voice,
+                                        stem1Context: stem1ctx,
+                                    });
+                                }
                             }
-
-                            for (const stem of stems)
+                            else
                             {
                                 this.CheckConjugation(result.root, {
                                     gender,
                                     mood,
                                     numerus,
                                     person,
-                                    stem,
+                                    stem: result.stem,
                                     tense: result.tense,
                                     voice,
                                 });

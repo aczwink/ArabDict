@@ -104,7 +104,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         </fragment>;
     }
 
-    private RenderTashkilHelp()
+    private RenderTashkilHelp(stem1Ctx?: Stem1Context)
     {
         const root = new VerbRoot(this.input.rootRadicals);
 
@@ -113,7 +113,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
 
         if( cond )
         {
-            const conj = this.conjugatorService.ConjugateToStringArgs(this.input.rootRadicals, this.input.data.stem, "perfect", "active", Gender.Male, Person.First, Numerus.Singular, Mood.Indicative, this.input.data.stem1Context);
+            const conj = this.conjugatorService.ConjugateToStringArgs(this.input.rootRadicals, this.input.data.stem, "perfect", "active", Gender.Male, Person.First, Numerus.Singular, Mood.Indicative, stem1Ctx);
             return "Perfect 1st person male singular: " + conj;
         }
 
@@ -154,7 +154,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
             {"\t"}
             Present: {present}
             {"\t"}
-            {this.RenderTashkilHelp()}
+            {this.RenderTashkilHelp(stem1Ctx)}
         </span>;
     }
 

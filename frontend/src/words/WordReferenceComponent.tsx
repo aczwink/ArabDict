@@ -19,7 +19,7 @@
 import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "../services/APIService";
 import { FullWordData, WordVerbDerivationType } from "../../dist/api";
-import { WordGenderToAbbreviation, WordTypeToAbbreviationText } from "../shared/words";
+import { WordGenderToAbbreviation, WordMayHaveGender, WordTypeToAbbreviationText } from "../shared/words";
 
 export class WordReferenceComponent extends Component<{ word: FullWordData; }>
 {
@@ -29,12 +29,21 @@ export class WordReferenceComponent extends Component<{ word: FullWordData; }>
 
         return <fragment>
             <Anchor route={"/words/" + x.id}>{x.word}</Anchor>
-            {" " + this.TypeToString()}
-            <i>{WordGenderToAbbreviation(x.functions[0].type, x.isMale)}</i>
+            {" "}
+            {this.TypeToString()}
+            {this.RenderGender()}
         </fragment>;
     }
 
     //Private methods
+    private RenderGender()
+    {
+        if(!WordMayHaveGender(this.input.word))
+            return "";
+        
+        return <i>{WordGenderToAbbreviation(this.input.word.isMale)}</i>;
+    }
+
     private TypeToString()
     {
         const word = this.input.word;
@@ -50,7 +59,9 @@ export class WordReferenceComponent extends Component<{ word: FullWordData; }>
                     return "(verbal noun)";
             }
         }
-        return WordTypeToAbbreviationText(word.functions[0].type);
+        if(this.input.word.functions.length === 1)
+            return WordTypeToAbbreviationText(word.functions[0].type);
+        return null;
     }
 }
 

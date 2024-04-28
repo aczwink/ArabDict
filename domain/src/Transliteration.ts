@@ -58,6 +58,8 @@ export const Buckwalter = {
                 return "D";
             case Letter.Tta:
                 return "T";
+            case Letter.Ththa:
+                return "Z";
             case Letter.A3ein:
                 return "E";
             case Letter.Ghain:

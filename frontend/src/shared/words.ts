@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { WordRelationshipType, WordType, WordWordDerivationType } from "../../dist/api";
+import { WordFunctionData, WordRelationshipType, WordType, WordWordDerivationType } from "../../dist/api";
 
 export const allWordTypes = [
     WordType.Adjective,
@@ -50,11 +50,8 @@ export function WordDerivationTypeFromWordToString(type: WordWordDerivationType)
     }
 }
 
-export function WordGenderToAbbreviation(wordType: WordType, isMale: boolean | null)
+export function WordGenderToAbbreviation(isMale: boolean | null)
 {
-    if(!WordMayHaveGender(wordType))
-        return "";
-
     if(isMale === true)
         return "m";
     else if(isMale === false)
@@ -62,7 +59,7 @@ export function WordGenderToAbbreviation(wordType: WordType, isMale: boolean | n
     return "?";
 }
 
-export function WordMayHaveGender(wordType: WordType)
+function WordTypeMayHaveGender(wordType: WordType)
 {
     switch(wordType)
     {
@@ -73,6 +70,11 @@ export function WordMayHaveGender(wordType: WordType)
     }
 
     return false;
+}
+
+export function WordMayHaveGender(word: { functions: WordFunctionData[] })
+{
+    return word.functions.Values().Map(x => WordTypeMayHaveGender(x.type)).AnyTrue();
 }
 
 export function WordRelationshipTypeToString(type: WordRelationshipType)

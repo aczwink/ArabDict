@@ -20,6 +20,7 @@ import { Component, Injectable, JSX_CreateElement } from "acfrontend";
 import { RenderTranslations } from "../shared/translations";
 import { WordReferenceComponent } from "./WordReferenceComponent";
 import { FullWordData } from "../../dist/api";
+import { WordTypeToAbbreviationText } from "../shared/words";
 
 @Injectable
 export class WordOverviewComponent extends Component<{ word: FullWordData; }>
@@ -29,8 +30,18 @@ export class WordOverviewComponent extends Component<{ word: FullWordData; }>
         return <tr>
             <td><WordReferenceComponent word={this.input.word} /></td>
             <td>
-                {RenderTranslations(this.input.word.functions[0].translations)}
+                {this.RenderFunctions()}
             </td>
         </tr>;
+    }
+
+    //Private methods
+    private RenderFunctions()
+    {
+        if(this.input.word.functions.length > 1)
+            return <ul>{this.input.word.functions.map(x => <li>{WordTypeToAbbreviationText(x.type)} {RenderTranslations(x.translations)}</li>)}</ul>;
+        if(this.input.word.functions.length === 1)
+            return RenderTranslations(this.input.word.functions[0].translations);
+        return null;
     }
 }

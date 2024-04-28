@@ -50,7 +50,8 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
                 else
                 {
                     //shorten vowel
-                    augmentedRoot.ApplyRadicalTashkil(2, (params.voice === Voice.Active) ? vowelTashkil : Tashkil.Kasra);
+                    const tashkil = (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha) ? params.stem1Context.middleRadicalTashkil : vowelTashkil;
+                    augmentedRoot.ApplyRadicalTashkil(2, (params.voice === Voice.Active) ? tashkil : Tashkil.Kasra);
                     augmentedRoot.AssimilateRadical(2);
                 }
             }
@@ -65,7 +66,7 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
 
                 if(shortenVowel)
                     augmentedRoot.AssimilateRadical(2);
-                else if(params.voice === Voice.Passive)
+                else if((params.voice === Voice.Passive) || (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
                     augmentedRoot.ReplaceRadical(2, { letter: Letter.Alef, tashkil: Tashkil.Fatha });
 
                 augmentedRoot.ApplyRadicalTashkil(1, (params.voice === Voice.Active) ? vowelTashkil : Tashkil.Fatha);

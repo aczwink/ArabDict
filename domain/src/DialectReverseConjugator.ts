@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Tense } from "./Definitions";
+import { AdvancedStemNumber, Tense } from "./Definitions";
 import { VerbRoot } from "./VerbRoot";
 import { DisplayVocalized } from "./Vocalization";
 
@@ -23,6 +23,7 @@ export interface ReverseConjugationResult
 {
     root: VerbRoot;
     tense: Tense;
+    stem: 1 | AdvancedStemNumber;
 }
 
 export interface DialectReverseConjugator

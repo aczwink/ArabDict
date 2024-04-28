@@ -64,6 +64,22 @@ export class LebaneseConjugator implements DialectConjugator
 
     public ConjugateParticiple(root: VerbRoot, stem: number, voice: VoiceString, stem1Context?: Stem1Context | undefined): ConjugationVocalized[]
     {
+        switch(root.type)
+        {
+            case RootType.Hollow:
+            {
+                if((stem === 1) && (voice === "active"))
+                {
+                    return [
+                        { letter: root.r1, tashkil: Tashkil.Fatha },
+                        { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                        { letter: Letter.Ya, tashkil: Tashkil.Kasra },
+                        { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                    ];
+                }
+            }
+            break;
+        }
         return [
             {
                 letter: `T${Tashkil.Fatha}O${Tashkil.Fatha}D${Tashkil.Fatha}O` as any,

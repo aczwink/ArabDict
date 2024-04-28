@@ -77,7 +77,7 @@ export class MSAConjugator implements DialectConjugator
             case 5:
                 return GenerateParticipleStem5(root, this.ConjugateBasicForm(root, stem), voiceNew);
             case 8:
-                return GenerateParticipleStem8(root, voice);
+                return GenerateParticipleStem8(root, this.ConjugateBasicForm(root, stem), voiceNew);
             case 10:
                 return GenerateParticipleStem10(root, voice);
         }

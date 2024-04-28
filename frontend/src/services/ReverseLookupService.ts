@@ -37,7 +37,9 @@ export class ReverseLookupService
             return rootId;
         
         const response = await this.apiService.roots.get({ prefix: root.radicalsAsSeparateLetters.join("") });
-        if(response.data.length !== 1)
+        if(response.data.length === 0)
+            return undefined;
+        if(response.data.length > 1)
             throw new Error("TODO: implement me");
         
         rootId = response.data[0].id;
