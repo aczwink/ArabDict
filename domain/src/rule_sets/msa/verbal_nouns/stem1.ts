@@ -95,6 +95,13 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
                     { letter: root.r2, tashkil: Tashkil.Sukun },
                     { letter: Letter.Ya, tashkil: Tashkil.Sukun },
                 ],
+                [
+                    { letter: root.r1, tashkil: Tashkil.Kasra },
+                    { letter: root.r2, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                    { letter: root.r3, tashkil: Tashkil.Fatha },
+                    { letter: Letter.TaMarbuta, tashkil: Tashkil.EndOfWordMarker },
+                ],
             ];
             
         case RootType.HamzaOnR1:

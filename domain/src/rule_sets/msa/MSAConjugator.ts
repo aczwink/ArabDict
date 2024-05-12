@@ -109,60 +109,6 @@ export class MSAConjugator implements DialectConjugator
         return ["TODO GenerateAllPossibleVerbalNouns"];
     }
 
-    //Legacy private methods    
-    private ApplyRootConjugationPattern(rootRadicals: string[], rootType: RootType, conjugation: string)
-    {
-        const patternRadicals = this.GetPatternRadicals(rootType);
-
-        const letters = ParseVocalizedText(conjugation);
-
-        const replaced = letters.map(x => {
-            const idx = patternRadicals.indexOf(x.letter);
-            if(idx === -1)
-                return x;
-            return {
-                letter: rootRadicals[idx],
-                tashkil: x.tashkil,
-                shadda: x.shadda
-            }
-        });
-        return replaced;
-    }
-
-    //TODO: REMOVE WHOLE METHOD
-    private _LegacyConjugate(root: VerbRoot, params: ConjugationParams): ConjugationVocalized[]
-    {
-        const dialectDef = this._LegacyGetDialectDefiniton();
-        const stem1ctx = (params.stem === 1) ? params.stem1Context : undefined;
-        const rootType = stem1ctx?.soundOverride ? RootType.Sound : root.type;
-        const ruleSet = this.ExtractRuleSet(dialectDef, params.stem, params.tense, (params.voice === Voice.Active ? "active" : "passive"), rootType);
-        if(ruleSet !== undefined)
-        {
-            const rules = ruleSet.rules;
-            const rule = rules.find(r => (r.gender === params.gender) && (r.numerus === params.numerus) && (r.person === params.person) && (r.condition ? r.condition(root, stem1ctx!) : true) );
-            if(rule !== undefined)
-                return this.ApplyRootConjugationPattern(root.radicalsAsSeparateLetters, rootType, rule.conjugation) as any;
-        }
-        return [
-            {
-                letter: "T" as any,
-                tashkil: Tashkil.AlefMaksuraMarker
-            },
-            {
-                letter: "O" as any,
-                tashkil: Tashkil.AlefMaksuraMarker
-            },
-            {
-                letter: "D" as any,
-                tashkil: Tashkil.AlefMaksuraMarker
-            },
-            {
-                letter: "O" as any,
-                tashkil: Tashkil.AlefMaksuraMarker
-            }
-        ];
-    }
-
     private ConjugateBasicForm(root: VerbRoot, stem: AdvancedStemNumber)
     {
         return this.ProcessConjugationPipeline(root, {
@@ -173,53 +119,6 @@ export class MSAConjugator implements DialectConjugator
             tense: Tense.Perfect,
             voice: Voice.Active,
         })!.augmentedRoot;
-    }
-
-    private ExtractRuleSet(dialectDef: DialectDefinition, stem: number, tense: Tense, voice: VoiceString, rootType: RootType)
-    {
-        const stemData = dialectDef.stems[stem];
-        if(stemData === undefined)
-            return undefined;
-        const tenseData = (tense === Tense.Perfect) ? stemData.perfect : stemData.present;
-        if(tenseData === undefined)
-            return undefined;
-        if("active" in tenseData)
-        {
-            const voiceData = tenseData[voice];
-            if(voiceData === undefined)
-                return undefined;
-            return voiceData[rootType];
-        }
-        if(voice !== "active")
-            throw new Error("Imperative can only be active");
-        return (tenseData as StemTenseVoiceDefinition)[rootType];
-    }
-    
-    private _LegacyGetDialectDefiniton()
-    {
-        return msaDef;
-    }
-
-    private GetPatternRadicals(type: RootType)
-    {
-        switch(type)
-        {
-            case RootType.Assimilated:
-                return [Letter.Waw, Letter.A3ein, Letter.Lam];
-            case RootType.Defective:
-                return [Letter.Fa, Letter.A3ein];
-            case RootType.Hollow:
-                return [Letter.Fa, Letter.A3ein, Letter.Lam];
-            case RootType.Quadriliteral:
-                return [Letter.Fa, Letter.A3ein, Letter.Lam, QAF];
-            case RootType.Sound:
-                return [Letter.Fa, Letter.A3ein, Letter.Lam];
-            case RootType.SecondConsonantDoubled:
-                return [Letter.Fa, Letter.Lam];
-            case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-                return [Letter.Fa, Letter.A3ein];
-        }
-        throw new Error("Method not implemented.");
     }
 
     private ProcessConjugationPipeline(root: VerbRoot, params: ConjugationParams)
@@ -271,5 +170,113 @@ export class MSAConjugator implements DialectConjugator
             augmentedRoot,
             suffix
         };
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //TODO: REMOVE WHOLE METHODs
+    private _LegacyExtractRuleSet(dialectDef: DialectDefinition, stem: number, tense: Tense, voice: VoiceString, rootType: RootType)
+    {
+        const stemData = dialectDef.stems[stem];
+        if(stemData === undefined)
+            return undefined;
+        const tenseData = (tense === Tense.Perfect) ? stemData.perfect : stemData.present;
+        if(tenseData === undefined)
+            return undefined;
+        if("active" in tenseData)
+        {
+            const voiceData = tenseData[voice];
+            if(voiceData === undefined)
+                return undefined;
+            return voiceData[rootType];
+        }
+        if(voice !== "active")
+            throw new Error("Imperative can only be active");
+        return (tenseData as StemTenseVoiceDefinition)[rootType];
+    }
+    
+    private _LegacyApplyRootConjugationPattern(rootRadicals: string[], rootType: RootType, conjugation: string)
+    {
+        const patternRadicals = this._LegacyGetPatternRadicals(rootType);
+
+        const letters = ParseVocalizedText(conjugation);
+
+        const replaced = letters.map(x => {
+            const idx = patternRadicals.indexOf(x.letter);
+            if(idx === -1)
+                return x;
+            return {
+                letter: rootRadicals[idx],
+                tashkil: x.tashkil,
+                shadda: x.shadda
+            }
+        });
+        return replaced;
+    }
+
+    private _LegacyGetPatternRadicals(type: RootType)
+    {
+        switch(type)
+        {
+            case RootType.Assimilated:
+                return [Letter.Waw, Letter.A3ein, Letter.Lam];
+            case RootType.Defective:
+                return [Letter.Fa, Letter.A3ein];
+            case RootType.Hollow:
+                return [Letter.Fa, Letter.A3ein, Letter.Lam];
+            case RootType.Quadriliteral:
+                return [Letter.Fa, Letter.A3ein, Letter.Lam, QAF];
+            case RootType.Sound:
+                return [Letter.Fa, Letter.A3ein, Letter.Lam];
+            case RootType.SecondConsonantDoubled:
+                return [Letter.Fa, Letter.Lam];
+            case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+                return [Letter.Fa, Letter.A3ein];
+        }
+        throw new Error("Method not implemented.");
+    }
+
+    private _LegacyConjugate(root: VerbRoot, params: ConjugationParams): ConjugationVocalized[]
+    {
+        const dialectDef = msaDef;
+        const stem1ctx = (params.stem === 1) ? params.stem1Context : undefined;
+        const rootType = stem1ctx?.soundOverride ? RootType.Sound : root.type;
+        const ruleSet = this._LegacyExtractRuleSet(dialectDef, params.stem, params.tense, (params.voice === Voice.Active ? "active" : "passive"), rootType);
+        if(ruleSet !== undefined)
+        {
+            const rules = ruleSet.rules;
+            const rule = rules.find(r => (r.gender === params.gender) && (r.numerus === params.numerus) && (r.person === params.person) && (r.condition ? r.condition(root, stem1ctx!) : true) );
+            if(rule !== undefined)
+                return this._LegacyApplyRootConjugationPattern(root.radicalsAsSeparateLetters, rootType, rule.conjugation) as any;
+        }
+        return [
+            {
+                letter: "T" as any,
+                tashkil: Tashkil.AlefMaksuraMarker
+            },
+            {
+                letter: "O" as any,
+                tashkil: Tashkil.AlefMaksuraMarker
+            },
+            {
+                letter: "D" as any,
+                tashkil: Tashkil.AlefMaksuraMarker
+            },
+            {
+                letter: "O" as any,
+                tashkil: Tashkil.AlefMaksuraMarker
+            }
+        ];
     }
 }

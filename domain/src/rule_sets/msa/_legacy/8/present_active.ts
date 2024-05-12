@@ -25,10 +25,4 @@ export const stem8_present_active: StemTenseVoiceDefinition = {
             { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يَتَّعِلُ" }
         ]
     },
-
-    [RootType.Hollow]: {
-        rules: [
-            { condition: (root, _) => root.r1 === Letter.Zay, numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يَفْدَالُ" }
-        ]
-    },
 };

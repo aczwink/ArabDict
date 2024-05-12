@@ -23,6 +23,7 @@ export function GenerateAllPossibleVerbalNounsStem2(root: VerbRoot): Conjugation
 {
     switch(root.type)
     {
+        case RootType.Assimilated:
         case RootType.HamzaOnR1:
         case RootType.Hollow:
         case RootType.SecondConsonantDoubled:

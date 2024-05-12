@@ -25,6 +25,7 @@ export function GenerateAllPossibleVerbalNounsStem5(root: VerbRoot): Conjugation
     {
         case RootType.Assimilated:
         case RootType.Hollow:
+        case RootType.SecondConsonantDoubled:
         case RootType.Sound:
             return [
                 { letter: Letter.Ta, tashkil: Tashkil.Fatha },

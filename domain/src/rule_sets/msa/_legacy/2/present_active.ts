@@ -21,18 +21,6 @@ import { RootType } from "../../../../VerbRoot";
 import { StemTenseVoiceDefinition } from "../../../Definitions";
 
 export const stem2_present_active: StemTenseVoiceDefinition = {
-    [RootType.Assimilated]: {
-        rules: [
-            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يُوَعِّلُ" }
-        ]
-    },
-
-    [RootType.Hollow]: {
-        rules: [
-            { numerus: Numerus.Singular, person: Person.Third, gender: Gender.Male, conjugation: "يُفَعِّلُ" }
-        ]
-    },
-
     [RootType.Quadriliteral]: {
         rules: [
             { numerus: Numerus.Singular, person: Person.Second, gender: Gender.Male, conjugation: "تَتَفَعْلَقُ" },
