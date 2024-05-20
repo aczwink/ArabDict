@@ -323,6 +323,11 @@ export class WordsController
             { table: wordsRootsTable, column: "rootId" },
         ]);
 
+        builder.AddGrouping({
+            table: wordsTable,
+            columnName: "id"
+        });
+
         builder.AddCondition({
             operand: {
                 function: "AR_TRIM",

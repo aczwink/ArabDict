@@ -1,8 +1,8 @@
--- MariaDB dump 10.19  Distrib 10.11.2-MariaDB, for debian-linux-gnu (x86_64)
+-- MariaDB dump 10.19  Distrib 10.11.6-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: arabdict
 -- ------------------------------------------------------
--- Server version	10.11.2-MariaDB-1
+-- Server version	10.11.6-MariaDB-0ubuntu0.23.10.2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -253,7 +253,9 @@ BEGIN
         REPLACE(
           REPLACE(
             REPLACE(
-            	REPLACE(s, "ٰ", "")
+            	REPLACE(
+            	    REPLACE(s, "ً", "")
+                , "ٰ", "")
             , "ُ", ""),
             "َ", ""),
           "ِ", ""),
@@ -289,4 +291,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-17 23:02:43
+-- Dump completed on 2024-05-20 22:03:34

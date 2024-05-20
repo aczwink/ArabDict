@@ -75,6 +75,7 @@ export function RemoveTashkilButKeepShadda(text: string)
 {
     return text.ReplaceAll(Tashkil.Dhamma, "")
         .ReplaceAll(Tashkil.Fatha, "")
+        .ReplaceAll(Tashkil.Fathatan, "")
         .ReplaceAll(Tashkil.Kasra, "")
         .ReplaceAll(Tashkil.Sukun, "");
 }

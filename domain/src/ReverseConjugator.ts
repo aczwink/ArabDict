@@ -17,7 +17,7 @@
  * */
 
 import { DialectType, VerbReverseConjugationResult, Conjugator } from "./Conjugator";
-import { Stem1Context, ConjugationParams, Gender, Mood, Numerus, Person, Tense, Voice, AdvancedStemNumber } from "./Definitions";
+import { Stem1Context, ConjugationParams, Gender, Mood, Numerus, Person, Tense, Voice } from "./Definitions";
 import { DialectReverseConjugator, ReverseConjugationResult } from "./DialectReverseConjugator";
 import { VerbRoot } from "./VerbRoot";
 import { DisplayVocalized, CompareVocalized } from "./Vocalization";

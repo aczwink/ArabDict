@@ -46,9 +46,9 @@ export function GenerateParticipleStem3(root: VerbRoot, voice: VoiceString): Con
             return [
                 { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
                 { letter: root.r1, tashkil: Tashkil.Fatha },
-                { letter: Letter.Alef, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
                 { letter: root.r2, tashkil: (voice === "active") ? Tashkil.Kasra : Tashkil.Fatha },
-                { letter: root.r3, tashkil: Tashkil.Sukun },
+                { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
             ];
     }
     return [{letter: "TODO" as any, tashkil: Tashkil.Sukun }];

@@ -24,6 +24,22 @@ export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): Conjugation
 {
     switch(root.type)
     {
+        case RootType.Assimilated:
+        {
+            const v: ConjugationVocalized[] = [
+                { letter: Letter.Alef, tashkil: Tashkil.Kasra },
+                { letter: Letter.Ta, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ta, tashkil: Tashkil.Kasra },
+                { letter: root.r2, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+            ];
+        
+            Stem8AssimilateTa(v, 1);
+        
+            return v;
+        }
+
         case RootType.Hollow:
         {
             const v: ConjugationVocalized[] = [

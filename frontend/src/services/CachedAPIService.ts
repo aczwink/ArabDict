@@ -40,10 +40,17 @@ export class CachedAPIService
     {
         this.rootsCache = {};
         this.rootVerbsCache = {};
+        this.verbsCache = {};
     }
 
     //Public methods
-    public async QueryFullVerbData(verbData: VerbData): Promise<FullVerbData>
+    public async QueryFullVerbData(verbId: number): Promise<FullVerbData>
+    {
+        const verbData = await this.QueryVerb(verbId);
+        return await this.QueryFullVerbDataForVerbData(verbData);
+    }
+
+    public async QueryFullVerbDataForVerbData(verbData: VerbData): Promise<FullVerbData>
     {
         return {
             rootData: await this.QueryRootData(verbData.rootId),
@@ -64,6 +71,19 @@ export class CachedAPIService
         return response.data;
     }
 
+    public async QueryVerb(verbId: number)
+    {
+        const cached = this.verbsCache[verbId];
+        if(cached !== undefined)
+            return cached;
+
+        const response = await this.apiService.verbs.get({ verbId });
+        if(response.statusCode !== 200)
+            throw new Error("HERE");
+        this.verbsCache[verbId] = response.data;
+        return response.data;
+    }
+
     public async QueryVerbsOfRoot(rootId: number)
     {
         const cached = this.rootVerbsCache[rootId];
@@ -79,4 +99,5 @@ export class CachedAPIService
     //State
     private rootsCache: NumberDictionary<RootCreationData>;
     private rootVerbsCache: NumberDictionary<VerbData[]>;
+    private verbsCache: NumberDictionary<VerbData>;
 }

@@ -26,6 +26,7 @@ import { ConjugationService } from "../services/ConjugationService";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Stem1DataToStem1ContextOptional } from "./model";
 import { Gender, Mood, Numerus, Person, Tashkil } from "arabdict-domain/src/Definitions";
+import { CachedAPIService, FullVerbData } from "../services/CachedAPIService";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
@@ -88,5 +89,33 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
     {
         const response = await this.apiService.verbs.words.get({ verbId: this.input.verbData.id });
         this.derivedWords = response.data;
+    }
+}
+
+@Injectable
+export class VerbIdPreviewComponent extends Component<{ verbId: number }>
+{
+    constructor(private cachedAPIService: CachedAPIService)
+    {
+        super();
+
+        this.data = null;
+    }
+
+    protected Render(): RenderValue
+    {
+        if(this.data === null)
+            return <ProgressSpinner />;
+
+        return <VerbPreviewComponent root={this.data.rootData} verbData={this.data.verbData} />;
+    }
+
+    //State
+    private data: FullVerbData | null;
+
+    //Event handlers
+    override async OnInitiated(): Promise<void>
+    {
+        this.data = await this.cachedAPIService.QueryFullVerbData(this.input.verbId);
     }
 }

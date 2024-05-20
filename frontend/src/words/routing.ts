@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,12 +19,10 @@
 import { Routes } from "acfrontend";
 import { EditWordComponent } from "./EditWordComponent";
 import { ShowWordComponent } from "./ShowWordComponent";
-import { SearchWordsComponent } from "./SearchWordsComponent";
 import { AddWordComponent } from "./AddWordComponent";
 
 export const routes : Routes = [
     { path: "add", component: AddWordComponent },
     { path: ":wordId/edit", component: EditWordComponent },
     { path: ":wordId", component: ShowWordComponent },
-    { path: "", component: SearchWordsComponent },
 ];

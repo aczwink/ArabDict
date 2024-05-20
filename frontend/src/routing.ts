@@ -22,13 +22,15 @@ import { routes as verbsRoutes } from "./verbs/routing";
 import { routes as wordsRoutes } from "./words/routing";
 import { LearnComponent } from "./LearnComponent";
 import { StatisticsComponent } from "./StatisticsComponent";
+import { GlobalSearchComponent } from "./GlobalSearchComponent";
 
 export const routes : Routes = [
     { path: "learn", component: LearnComponent },
     { path: "roots", children: rootRoutes },
+    { path: "search", component: GlobalSearchComponent },
     { path: "statistics", component: StatisticsComponent },
     { path: "verbs", children: verbsRoutes },
     { path: "words", children: wordsRoutes },
-    { path: "", redirect: "verbs" },
+    { path: "", redirect: "search" },
     //{ path: "*", component: } 404
 ];

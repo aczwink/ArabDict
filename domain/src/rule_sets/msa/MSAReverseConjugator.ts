@@ -93,6 +93,7 @@ export class MSAReverseConjugator implements DialectReverseConjugator
             },
         ];
 
+        const results: ReverseConjugationResult[] = [];
         for (const pattern of patterns)
         {
             const matches = this.Matches(pattern.prefix, conjugated.slice(0, pattern.prefix.length))
@@ -101,15 +102,15 @@ export class MSAReverseConjugator implements DialectReverseConjugator
             {
                 const prefixOmitted = conjugated.slice(pattern.prefix.length);
                 const rootMatches = this.TryMatchRoot(prefixOmitted.slice(0, prefixOmitted.length - pattern.suffix.length));
-                return rootMatches.map(x => ({
+                rootMatches.forEach(x => results.push({
                     root: new VerbRoot(x.rootRadicals.join("")),
                     tense: pattern.tense,
                     stem: x.stem
-                }));
+                }))
             }
         }
 
-        throw new Error("TODO: not implemented");
+        return results;
     }
 
     //Private methods
@@ -161,6 +162,10 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                         {
                             rootRadicals: [conjugated[0].letter, Letter.Waw, conjugated[2].letter],
                             stem: 1
+                        },
+                        {
+                            rootRadicals: [conjugated[0].letter, Letter.Ya, conjugated[2].letter],
+                            stem: 1
                         }
                     ];
                 }
@@ -183,7 +188,23 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                     }
                 ];
             case 4:
-                if(conjugated[1].letter === Letter.Ta)
+                if(conjugated[0].letter === Letter.AlefHamza)
+                {
+                    const sub = this.TryMatchRoot(conjugated.slice(1));
+                    return sub.map(x => ({
+                        rootRadicals: x.rootRadicals,
+                        stem: 4
+                    }));
+                }
+                else if(conjugated[0].letter === Letter.Ta)
+                {
+                    const sub = this.TryMatchRoot(conjugated.slice(1));
+                    return sub.map(x => ({
+                        rootRadicals: x.rootRadicals,
+                        stem: 5
+                    }));
+                }
+                else if(conjugated[1].letter === Letter.Ta)
                 {
                     const sub = this.TryMatchRoot([
                         conjugated[0], conjugated[2], conjugated[3]

@@ -26,28 +26,20 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
     {
         case 1:
         {
-            switch(root.type)
+            if(root.type === RootType.Quadriliteral)
             {
-                case RootType.Assimilated:
-                case RootType.Defective:
-                case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-                case RootType.HamzaOnR1:
-                case RootType.Hollow:
-                case RootType.SecondConsonantDoubled:
-                case RootType.Sound:
-                    return [
-                        { symbolName: SymbolName.R1 },
-                        { symbolName: SymbolName.R2 },
-                        { symbolName: SymbolName.R3 },
-                    ];
-                case RootType.Quadriliteral:
-                    return [
-                        { symbolName: SymbolName.R1 },
-                        { symbolName: SymbolName.R2 },
-                        { symbolName: SymbolName.R3 },
-                        { symbolName: SymbolName.R4 },
-                    ];
+                return [
+                    { symbolName: SymbolName.R1 },
+                    { symbolName: SymbolName.R2 },
+                    { symbolName: SymbolName.R3 },
+                    { symbolName: SymbolName.R4 },
+                ];
             }
+            return [
+                { symbolName: SymbolName.R1 },
+                { symbolName: SymbolName.R2 },
+                { symbolName: SymbolName.R3 },
+            ];
         }
         case 2:
         {
@@ -91,6 +83,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
         {
             switch(root.type)
             {
+                case RootType.Assimilated:
                 case RootType.Defective:
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:
@@ -165,6 +158,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
         {
             switch(root.type)
             {
+                case RootType.Assimilated:
                 case RootType.Defective:
                 case RootType.Hollow:
                 case RootType.Sound:

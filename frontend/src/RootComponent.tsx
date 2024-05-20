@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, JSX_CreateElement, Navigation, NavItem, RouterComponent } from "acfrontend";
+import { BootstrapIcon, Component, JSX_CreateElement, Navigation, NavItem, RouterComponent } from "acfrontend";
 import { DialectSelectionComponent } from "./DialectSelectionComponent";
 import { SessionComponent } from "./SessionComponent";
 
@@ -27,8 +27,7 @@ export class RootComponent extends Component
         return <fragment>
             <Navigation>
                 <ul className="nav nav-pills">
-                    <NavItem route="/verbs">Verbs</NavItem>
-                    <NavItem route="/words">Words</NavItem>
+                    <NavItem route="/search"><BootstrapIcon>search</BootstrapIcon></NavItem>
                     <NavItem route="/roots">Roots</NavItem>
                     <NavItem route="/learn">Learn</NavItem>
                     <NavItem route="/statistics">Statistics</NavItem>
