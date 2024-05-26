@@ -18,7 +18,7 @@
 
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
 import { APIService } from "../services/APIService";
-import { FullWordData, VerbData, WordFunctionData, WordRelation, WordRootDerivationData, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
+import { FullWordData, VerbData, WordFunctionData, WordRelation, WordRootDerivationData, WordType, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
 import { WordDerivationTypeFromWordToString, WordRelationshipTypeToString, WordTypeToText } from "../shared/words";
 import { RemoveTashkil } from "arabdict-domain/src/Util";
@@ -26,7 +26,7 @@ import { ConjugationService } from "../services/ConjugationService";
 import { WordIdReferenceComponent } from "./WordReferenceComponent";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
-import { Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
+import { Case, Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
 
 @Injectable
 export class ShowWordComponent extends Component
@@ -110,6 +110,43 @@ export class ShowWordComponent extends Component
         }
     }
 
+    private RenderAdjectiveDeclensionTable()
+    {
+        const word = this.data!.word;
+
+        const render = (definite: boolean, gender: Gender, c: Case) => this.conjugationService.DeclineAdjective(word, {
+            definite,
+            gender,
+            case: c
+        });
+
+        return <table className="table table-sm table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>Singular</th>
+                    <th colSpan="2">Masculine</th>
+                    <th colSpan="2">Feminine</th>
+                </tr>
+                <tr>
+                    <th> </th>
+                    <th>Indefinite</th>
+                    <th>Definite</th>
+                    <th>Indefinite</th>
+                    <th>Definite</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Nominative</td>
+                    <td>{word}</td>
+                    <td>{render(true, Gender.Male, Case.Nominative)}</td>
+                    <td>{render(false, Gender.Female, Case.Nominative)}</td>
+                    <td>{render(true, Gender.Female, Case.Nominative)}</td>
+                </tr>
+            </tbody>
+        </table>;
+    }
+
     private RenderDerivationData(derivation?: WordRootDerivationData | WordVerbDerivationData | WordWordDerivationLink)
     {
         if(derivation === undefined)
@@ -148,6 +185,7 @@ export class ShowWordComponent extends Component
         return <fragment>
             <h4>{WordTypeToText(func.type)}</h4>
             {RenderTranslations(func.translations)}
+            {this.RenderWordDeclensionTables(func.type)}
         </fragment>;
     }
 
@@ -215,6 +253,10 @@ export class ShowWordComponent extends Component
                 <th>Translation:</th>
                 <td>{RenderTranslations(func.translations)}</td>
             </tr>
+            <tr>
+                <th>Declension:</th>
+                <td>{this.RenderWordDeclensionTables(func.type)}</td>
+            </tr>
         </fragment>;
     }
 
@@ -240,6 +282,16 @@ export class ShowWordComponent extends Component
             <th>Derived from verb:</th>
             <td>{DerivationText()}<Anchor route={"/verbs/" + verbData.verbId}>{conjugated}</Anchor></td>
         </tr>;
+    }
+
+    private RenderWordDeclensionTables(wordType: WordType)
+    {
+        switch(wordType)
+        {
+            case WordType.Adjective:
+                return this.RenderAdjectiveDeclensionTable();
+        }
+        return null;
     }
 
     private RenderWordDerivationData(derivation: WordWordDerivationLink)

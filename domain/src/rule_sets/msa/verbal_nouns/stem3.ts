@@ -23,6 +23,17 @@ export function GenerateAllPossibleVerbalNounsStem3(root: VerbRoot): Conjugation
 {
     switch(root.type)
     {
+        case RootType.HamzaOnR1:
+            return [
+                [
+                    { letter: root.r1, tashkil: Tashkil.Kasra },
+                    { letter: Letter.Ya, tashkil: Tashkil.LongVowelMarker },
+                    { letter: root.r2, tashkil: Tashkil.Fatha },
+                    { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                ],
+            ];
+
         case RootType.Hollow:
             return [
                 [
@@ -32,6 +43,7 @@ export function GenerateAllPossibleVerbalNounsStem3(root: VerbRoot): Conjugation
                     { letter: root.r3, tashkil: Tashkil.Sukun },
                 ],
             ];
+
         case RootType.Sound:
             return [
                 [

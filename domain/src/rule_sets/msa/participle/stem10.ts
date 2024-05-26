@@ -53,7 +53,17 @@ export function GenerateParticipleStem10(root: VerbRoot, voice: VoiceString): Co
                 { letter: (voice === "active") ? Letter.Ya : Letter.Alef, tashkil: Tashkil.Kasra },
                 { letter: root.r3, tashkil: Tashkil.Sukun },
             ];
-            
+
+        case RootType.SecondConsonantDoubled:
+            return [
+                { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
+                { letter: Letter.Siin, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                { letter: root.r1, tashkil: (voice === "active") ? Tashkil.Kasra : Tashkil.Fatha },
+                { letter: root.r2, tashkil: Tashkil.Sukun },
+                { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+            ];
+
         case RootType.Sound:
             return [
                 { letter: Letter.Mim, tashkil: Tashkil.Dhamma },

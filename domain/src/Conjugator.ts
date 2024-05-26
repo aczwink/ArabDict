@@ -20,14 +20,12 @@ import { VerbRoot } from "./VerbRoot";
 import { DialectConjugator } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
 import { ConjugationVocalized, DisplayVocalized, ParseVocalizedText } from "./Vocalization";
-import { ConjugationParams, Stem1Context, Tashkil, Tense, Voice, Mood, Person, VoiceString } from "./Definitions";
-import { APCConjugator } from "./rule_sets/apc/APCConjugator";
+import { ConjugationParams, Stem1Context, Tashkil, Tense, Voice, Mood, Person, VoiceString, DeclensionParams } from "./Definitions";
 import { LebaneseConjugator } from "./rule_sets/lebanese/LebaneseConjugator";
 
 export enum DialectType
 {
     ModernStandardArabic,
-    NorthLevantineArabic,
     Lebanese
 }
 
@@ -65,6 +63,14 @@ export class Conjugator
         return this.ExecuteWordTransformationPipeline(pattern);
     }
 
+    public DeclineAdjective(word: string, params: DeclensionParams, dialect: DialectType)
+    {
+        const dialectConjugator = this.CreateDialectConjugator(dialect);
+
+        const parsed = ParseVocalizedText(word);
+        return dialectConjugator.DeclineAdjective(parsed, params);
+    }
+
     public GenerateAllPossibleVerbalNouns(dialect: DialectType, root: VerbRoot, stem: number): DisplayVocalized[][]
     {
         const dialectConjugator = this.CreateDialectConjugator(dialect);
@@ -84,8 +90,6 @@ export class Conjugator
         {
             case DialectType.ModernStandardArabic:
                 return new MSAConjugator;
-            case DialectType.NorthLevantineArabic:
-                return new APCConjugator;
             case DialectType.Lebanese:
                 return new LebaneseConjugator;
         }
@@ -109,7 +113,7 @@ export class Conjugator
             const shadda = (v.letter === next?.letter) && (v.tashkil === Tashkil.Sukun);
             const tashkil = shadda ? next.tashkil : v.tashkil;
             result.push({
-                emphasis: (v.emphasis === true),
+                emphasis: (v.emphasis === true) || (shadda && (next.emphasis === true)),
                 letter: v.letter,
                 shadda,
                 tashkil: (typeof tashkil === "string") ? tashkil : undefined

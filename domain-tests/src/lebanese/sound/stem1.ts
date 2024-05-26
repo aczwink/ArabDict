@@ -20,9 +20,9 @@ import { ConjugationTest, RunConjugationTest } from "../../shared";
 import { DialectType } from "arabdict-domain/dist/Conjugator";
 import { Tashkil } from "arabdict-domain/dist/Definitions";
 
-//Source: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar#Regular_verb_conjugation
+//Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
 
-It("apc: Stem1 basic conjugation test", () => {
+It("Stem1", () => {
     const conjugations: ConjugationTest[] = [
         //past
         { tense: "perfect", numerus: "singular", person: "third", gender: "male", expected: "كَتَبْ" },
@@ -31,8 +31,8 @@ It("apc: Stem1 basic conjugation test", () => {
         { tense: "perfect", numerus: "singular", person: "second", gender: "female", expected: "كَتَبْتِي" },
         { tense: "perfect", numerus: "singular", person: "first", gender: "male", expected: "كَتَبِتْ" },
 
-        { tense: "perfect", numerus: "plural", person: "third", expected: "كَتَبُو" },
-        { tense: "perfect", numerus: "plural", person: "second", expected: "كَتَبْتُو" },
+        { tense: "perfect", numerus: "plural", person: "third", expected: "كَتَبُوا" },
+        { tense: "perfect", numerus: "plural", person: "second", expected: "كَتَبْتُوا" },
         { tense: "perfect", numerus: "plural", person: "first", expected: "كَتَبْنَا" },
 
         //present
@@ -42,8 +42,8 @@ It("apc: Stem1 basic conjugation test", () => {
         { tense: "present", mood: "indicative", numerus: "singular", person: "second", gender: "female", expected: "بْتِكْتْبِي" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "first", gender: "male", expected: "بِكْتُبْ" },
 
-        { tense: "present", mood: "indicative", numerus: "plural", person: "third", expected: "بْيِكْتْبُو" },
-        { tense: "present", mood: "indicative", numerus: "plural", person: "second", expected: "بْتِكْتْبُو" },
+        { tense: "present", mood: "indicative", numerus: "plural", person: "third", expected: "بْيِكْتْبُوا" },
+        { tense: "present", mood: "indicative", numerus: "plural", person: "second", expected: "بْتِكْتْبُوا" },
         { tense: "present", mood: "indicative", numerus: "plural", person: "first", expected: "مْنِكْتُبْ" },
 
         //subjunctive
@@ -53,15 +53,15 @@ It("apc: Stem1 basic conjugation test", () => {
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "second", gender: "female", expected: "تِكْتْبِي" },
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "first", gender: "male", expected: "اِكْتُبْ" },
 
-        { tense: "present", mood: "subjunctive", numerus: "plural", person: "third", expected: "يِكْتْبُو" },
-        { tense: "present", mood: "subjunctive", numerus: "plural", person: "second", expected: "تِكْتْبُو" },
+        { tense: "present", mood: "subjunctive", numerus: "plural", person: "third", expected: "يِكْتْبُوا" },
+        { tense: "present", mood: "subjunctive", numerus: "plural", person: "second", expected: "تِكْتْبُوا" },
         { tense: "present", mood: "subjunctive", numerus: "plural", person: "first", expected: "نِكْتُبْ" },
 
         //imperative
         { tense: "present", mood: "imperative", numerus: "singular", person: "second", gender: "male", expected: "كْتُوبْ" },
         { tense: "present", mood: "imperative", numerus: "singular", person: "second", gender: "female", expected: "كْتِبِي" },
-        { tense: "present", mood: "imperative", numerus: "plural", person: "second", expected: "كْتِبُو" },
+        { tense: "present", mood: "imperative", numerus: "plural", person: "second", expected: "كْتِبُوا" },
     ];
 
-    RunConjugationTest("ك-ت-ب", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, conjugations, DialectType.NorthLevantineArabic);
+    RunConjugationTest("ك-ت-ب", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, conjugations, DialectType.Lebanese);
 });

@@ -15,11 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Stem1Context, Tashkil, Tense, VoiceString } from "../../Definitions";
+import { ConjugationParams, DeclensionParams, Gender, Letter, Mood, Numerus, Person, Stem1Context, Tashkil, Tense, VoiceString } from "../../Definitions";
 import { DialectConjugator } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { ConjugationVocalized } from "../../Vocalization";
+import { ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
 import { AugmentedRoot, AugmentedRootSymbolInput, SymbolName } from "../msa/AugmentedRoot";
+import { Stem1Defective_DeriveRootTashkil } from "./stem1_defective";
+import { Stem1Sound_DeriveRootTashkil as Sound_DeriveRootTashkil } from "./sound";
+import { DerivePrefix } from "./prefix";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar
 
@@ -40,21 +43,32 @@ export class LebaneseConjugator implements DialectConjugator
         }
         const augmentedRoot = new AugmentedRoot(rootAugmentation, root);
 
-        const rootTashkil = this.DeriveRootTashkil(params);
+        const rootTashkil = this.DeriveRootTashkil(root, params);
 
         augmentedRoot.ApplyRadicalTashkil(1, rootTashkil.r1);
         augmentedRoot.ApplyRadicalTashkil(2, rootTashkil.r2);
         augmentedRoot.ApplyRadicalTashkil(3, rootTashkil.r3);
 
-        const prefix = this.DerivePrefix(params);
+        this.ApplyEmphasis(augmentedRoot, params);
+
+        const prefix = DerivePrefix(params);
         const suffix = this.DeriveSuffix(params);
 
         switch(augmentedRoot.type)
         {
             case RootType.Defective:
                 {
-                    if( (params.stem === 1) && (params.tense === Tense.Present) && (params.numerus === Numerus.Plural) && (params.person !== Person.First) )
-                        augmentedRoot.DropRadial(3);
+                    if( (params.stem === 1) && (params.tense === Tense.Present) )
+                    {
+                        if(
+                            ( (params.numerus === Numerus.Singular) && (params.person === Person.Second) && (params.gender === Gender.Female) )
+                            ||
+                            ( (params.numerus === Numerus.Plural) && (params.person !== Person.First) )
+                        )
+                        {
+                            augmentedRoot.DropRadial(3);
+                        }
+                    }
                 }
                 break;
         }
@@ -88,6 +102,11 @@ export class LebaneseConjugator implements DialectConjugator
         ];
     }
 
+    public DeclineAdjective(vocalized: DisplayVocalized[], params: DeclensionParams): DisplayVocalized[]
+    {
+        return [{ emphasis: true, letter: "TODO" as any, shadda: true, }];
+    }
+
     public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): string[]
     {
         return [
@@ -95,7 +114,25 @@ export class LebaneseConjugator implements DialectConjugator
         ];
     }
 
-    //Private methods    
+    //Private methods
+    private ApplyEmphasis(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+    {
+        if(!(augmentedRoot.type === RootType.Sound))
+            return;
+
+        if(params.tense === Tense.Perfect)
+        {
+            if(params.person === Person.Third)
+            {
+                augmentedRoot.r1.emphasis = true;
+            }
+            else
+            {
+                augmentedRoot.r2.emphasis = true;
+            }
+        }
+    }
+
     private AugmentRoot(root: VerbRoot, params: ConjugationParams): AugmentedRootSymbolInput[] | undefined
     {
         switch(params.stem)
@@ -115,153 +152,73 @@ export class LebaneseConjugator implements DialectConjugator
                                 symbolName: SymbolName.R3,
                             }
                         ];
+
+                    case RootType.Sound:
+                        if( (params.tense === Tense.Present) && (params.mood === Mood.Imperative) && (params.gender === Gender.Male) && (params.numerus === Numerus.Singular) )
+                            {
+                                return [
+                                    {
+                                        symbolName: SymbolName.R1,
+                                    },
+                                    {
+                                        symbolName: SymbolName.R2,
+                                    },
+                                    {
+                                        letter: Letter.Waw,
+                                        symbolName: SymbolName.Infix,
+                                        tashkil: Tashkil.LongVowelMarker
+                                    },
+                                    {
+                                        symbolName: SymbolName.R3,
+                                    }
+                                ];
+                            }
+                            
+                        return [
+                            {
+                                symbolName: SymbolName.R1,
+                            },
+                            {
+                                symbolName: SymbolName.R2,
+                            },
+                            {
+                                symbolName: SymbolName.R3,
+                            }
+                        ];
                 }
+
+            case 2:
+            {
+                switch(root.type)
+                {
+                    case RootType.Sound:
+                        return [
+                            { symbolName: SymbolName.R1 },
+                            { symbolName: SymbolName.Infix, letter: root.r2, tashkil: Tashkil.Sukun },
+                            { symbolName: SymbolName.R2 },
+                            { symbolName: SymbolName.R3 },
+                        ];
+                }
+            }
         }
         return undefined;
     }
 
-    private DerivePrefix(params: ConjugationParams): ConjugationVocalized[]
+    private DeriveRootTashkil(root: VerbRoot, params: ConjugationParams): { r1: Tashkil; r2: Tashkil; r3: Tashkil; }
     {
-        if(params.tense === Tense.Perfect)
-            return [];
-        if(params.mood === Mood.Imperative)
-            return [];
-
-        if(params.mood === Mood.Indicative)
+        switch(params.stem)
         {
-            if(params.person === Person.First)
-            {
-                if(params.numerus === Numerus.Singular)
+            case 1:
+            case 2:
+                switch(root.type)
                 {
-                    return [
-                        {
-                            letter: Letter.Ba,
-                            tashkil: Tashkil.Kasra
-                        }
-                    ];
+                    case RootType.Defective:
+                        return Stem1Defective_DeriveRootTashkil(params);
+                    case RootType.Sound:
+                        return Sound_DeriveRootTashkil(params);
                 }
-
-                return [
-                    {
-                        letter: Letter.Mim,
-                        tashkil: Tashkil.Sukun
-                    },
-                    ...this.DerivePrefixSubjunctive(params),
-                ];
-            }
-            
-            return [
-                {
-                    letter: Letter.Ba,
-                    tashkil: Tashkil.Sukun
-                },
-                ...this.DerivePrefixSubjunctive(params),
-            ];
         }
-
-        return this.DerivePrefixSubjunctive(params);
-    }
-
-    private DerivePrefixSubjunctive(params: ConjugationParams): ConjugationVocalized[]
-    {
-        switch(params.person)
-        {
-            case Person.First:
-                if(params.numerus === Numerus.Plural)
-                {
-                    return [
-                        {
-                            letter: Letter.Nun,
-                            tashkil: Tashkil.Kasra
-                        }
-                    ];
-                }
-
-                return [
-                    {
-                        letter: Letter.Alef,
-                        tashkil: Tashkil.Kasra
-                    }
-                ];
-
-            case Person.Second:
-                return [
-                    {
-                        letter: Letter.Ta,
-                        tashkil: Tashkil.Kasra
-                    },
-                ];
-
-            case Person.Third:
-                if(params.gender === Gender.Male)
-                {
-                    return [
-                        {
-                            letter: Letter.Ya,
-                            tashkil: Tashkil.Kasra
-                        },
-                    ];
-                }
-                return [
-                    {
-                        letter: Letter.Ta,
-                        tashkil: Tashkil.Kasra
-                    },
-                ];
-        }
-    }
-
-    private DeriveRootTashkil(params: ConjugationParams): { r1: Tashkil; r2: Tashkil; r3: Tashkil; }
-    {
-        if(params.tense === Tense.Present)
-            return this.DeriveRootTashkilPresent(params);
-
-        function R1Tashkil(): Tashkil
-        {
-            if(params.person === Person.Third)
-                return Tashkil.Kasra;
-            return Tashkil.Sukun;
-        }
-
-        function R2Tashkil(): Tashkil
-        {
-            if(params.numerus === Numerus.Plural)
-            {
-                switch(params.person)
-                {
-                    case Person.Third:
-                        return Tashkil.Sukun;
-                }
-            }
-
-            switch(params.person)
-            {
-                case Person.Third:
-                    if(params.gender === Gender.Male)
-                        return Tashkil.Kasra;
-                    return Tashkil.Sukun;
-            }
-            return Tashkil.Kasra;
-        }
-
-        function R3Tashkil(): Tashkil
-        {
-            if((params.numerus === Numerus.Singular) && (params.person === Person.Third) && (params.gender === Gender.Female))
-                return Tashkil.Kasra;
-            if((params.numerus === Numerus.Plural) && (params.person === Person.Third))
-                return Tashkil.Dhamma;
-            return Tashkil.LongVowelMarker;
-        }
-
-        return { r1: R1Tashkil(), r2: R2Tashkil(), r3: R3Tashkil() };
-    }
-
-    private DeriveRootTashkilPresent(params: ConjugationParams): { r1: Tashkil; r2: Tashkil; r3: Tashkil; }
-    {
-        if( (params.numerus === Numerus.Plural) && (params.person !== Person.First) )
-            return { r1: Tashkil.Sukun, r2: Tashkil.Dhamma, r3: Tashkil.Dhamma };
-    
-        return { r1: Tashkil.Sukun, r2: Tashkil.Kasra, r3: Tashkil.LongVowelMarker };
+        throw new Error("TODO: not implemented");
     }
 
     private DeriveSuffix(params: ConjugationParams): ConjugationVocalized[]
@@ -376,6 +333,18 @@ export class LebaneseConjugator implements DialectConjugator
                             tashkil: Tashkil.EndOfWordMarker
                         }
                     ];
+            }
+        }
+        else
+        {
+            if((params.person === Person.Second) && (params.gender === Gender.Female))
+            {
+                return [
+                    {
+                        letter: Letter.Ya,
+                        tashkil: Tashkil.LongVowelMarker
+                    }
+                ];
             }
         }
 

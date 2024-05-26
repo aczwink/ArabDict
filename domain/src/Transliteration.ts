@@ -121,9 +121,7 @@ export const Buckwalter = {
         function conv(v: DisplayVocalized)
         {
             const t = (v.tashkil === undefined) ? "" : Buckwalter.TashkilToString(v.tashkil);
-            if(v.shadda)
-                throw new Error("TODO: correct shadda char");
-            return Buckwalter.CharToString(v.letter) + t + (v.shadda ? "W" : "");
+            return Buckwalter.CharToString(v.letter) + t + (v.shadda ? "~" : "");
         }
 
         return vocalized.map(conv).join("");

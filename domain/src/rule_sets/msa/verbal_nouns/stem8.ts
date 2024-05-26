@@ -40,6 +40,22 @@ export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): Conjugation
             return v;
         }
 
+        case RootType.Defective:
+        {
+            const v: ConjugationVocalized[] = [
+                { letter: Letter.Alef, tashkil: Tashkil.Kasra },
+                { letter: root.r1, tashkil: Tashkil.Sukun },
+                { letter: Letter.Ta, tashkil: Tashkil.Kasra },
+                { letter: root.r2, tashkil: Tashkil.Fatha },
+                { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                { letter: Letter.Hamza, tashkil: Tashkil.EndOfWordMarker },
+            ];
+        
+            Stem8AssimilateTa(v, 1);
+        
+            return v;
+        }
+
         case RootType.Hollow:
         {
             const v: ConjugationVocalized[] = [
@@ -55,6 +71,7 @@ export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): Conjugation
         
             return v;
         }
+
         case RootType.Sound:
         {
             const v: ConjugationVocalized[] = [

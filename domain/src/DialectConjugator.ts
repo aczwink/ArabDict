@@ -16,12 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { VerbRoot } from "./VerbRoot";
-import { ConjugationVocalized } from "./Vocalization";
-import { ConjugationParams, Stem1Context, VoiceString } from "./Definitions";
+import { ConjugationVocalized, DisplayVocalized } from "./Vocalization";
+import { ConjugationParams, DeclensionParams, Stem1Context, VoiceString } from "./Definitions";
 
 export interface DialectConjugator
 {
     Conjugate(root: VerbRoot, params: ConjugationParams): ConjugationVocalized[];
     ConjugateParticiple(root: VerbRoot, stem: number, voice: VoiceString, stem1Context?: Stem1Context): ConjugationVocalized[];
+    DeclineAdjective(vocalized: DisplayVocalized[], params: DeclensionParams): DisplayVocalized[];
     GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | ConjugationVocalized[])[];
 }

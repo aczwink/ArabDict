@@ -131,6 +131,15 @@ export class MSAReverseConjugator implements DialectReverseConjugator
         return CompareVocalized(a, b) >= 1;
     }
 
+    private TryMatchAugmentedRoot(conjugated: DisplayVocalized[], indices: number[], stem: 1 | AdvancedStemNumber): RootMatch[]
+    {
+        const sub = this.TryMatchRoot(indices.map(i => conjugated[i]));
+        return sub.map(x => ({
+            rootRadicals: x.rootRadicals,
+            stem
+        }));
+    }
+
     private TryMatchRoot(conjugated: DisplayVocalized[]): RootMatch[]
     {
         const rootLetters = this.MapToRootLetters(conjugated.map(x => x.letter));
@@ -155,27 +164,19 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                     }
                 ];
             case 3:
-                if(conjugated[1].letter === Letter.Alef)
+            {
+                const [r1, r2, r3] = rootLetters;
+                
+                if((r2 === Letter.Alef) || (r2 === Letter.Ya))
                 {
                     //hollow
                     return [
                         {
-                            rootRadicals: [conjugated[0].letter, Letter.Waw, conjugated[2].letter],
+                            rootRadicals: [r1, Letter.Waw, r3],
                             stem: 1
                         },
                         {
-                            rootRadicals: [conjugated[0].letter, Letter.Ya, conjugated[2].letter],
-                            stem: 1
-                        }
-                    ];
-                }
-
-                if(conjugated[1].letter === Letter.Ya)
-                {
-                    //hollow
-                    return [
-                        {
-                            rootRadicals: [conjugated[0].letter, Letter.Waw, conjugated[2].letter],
+                            rootRadicals: [r1, Letter.Ya, r3],
                             stem: 1
                         }
                     ];
@@ -187,7 +188,10 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                         stem: 1
                     }
                 ];
+            }
             case 4:
+            {
+                const [r1, r2, r3, r4] = rootLetters;
                 if(conjugated[0].letter === Letter.AlefHamza)
                 {
                     const sub = this.TryMatchRoot(conjugated.slice(1));
@@ -204,6 +208,8 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                         stem: 5
                     }));
                 }
+                else if(r2 === Letter.Alef)
+                    return this.TryMatchAugmentedRoot(conjugated, [0, 2, 3], 3);
                 else if(conjugated[1].letter === Letter.Ta)
                 {
                     const sub = this.TryMatchRoot([
@@ -214,8 +220,9 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                         stem: 8
                     }));
                 }
-                break;
+            }
+            break;
         }
-        throw new Error("TODO: implement me: " + conjugated.length);
+        return [];
     }
 }

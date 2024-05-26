@@ -41,16 +41,7 @@ export function GetDialectMetadata(dialectType: DialectType): DialectMetadata
                 iso639code: "arb",
                 glottoCode: "stan1318",
             };
-
-        case DialectType.NorthLevantineArabic:
-            return {
-                hasDual: false,
-                hasFemalePlural: false,
-                hasJussive: false,
-                hasPassive: false,
-                iso639code: "apc",
-                glottoCode: "nort3139"
-            };
+            
         case DialectType.Lebanese:
             return {
                 hasDual: false,

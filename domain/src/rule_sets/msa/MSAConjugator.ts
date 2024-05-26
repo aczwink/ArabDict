@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { QAF, Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString } from "../../Definitions";
+import { QAF, Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString, DeclensionParams } from "../../Definitions";
 import { DialectConjugator } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { ParseVocalizedText, ConjugationVocalized } from "../../Vocalization";
+import { ParseVocalizedText, ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
 import { AugmentedRoot } from "./AugmentedRoot";
 import { _Legacydefinition as msaDef } from "./dialectDefinition";
@@ -47,6 +47,7 @@ import { GenerateAllPossibleVerbalNounsStem4 } from "./verbal_nouns/stem4";
 import { GenerateAllPossibleVerbalNounsStem6 } from "./verbal_nouns/stem6";
 import { GenerateAllPossibleVerbalNounsStem2 } from "./verbal_nouns/stem2";
 import { GenerateParticipleStem10 } from "./participle/stem10";
+import { DeclineAdjectiveInSuffix } from "./adjectives/decline_in";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -82,6 +83,15 @@ export class MSAConjugator implements DialectConjugator
                 return GenerateParticipleStem10(root, voice);
         }
         return [{letter: "TODO ConjugateParticiple" as any, tashkil: Tashkil.Dhamma}];
+    }
+
+    public DeclineAdjective(vocalized: DisplayVocalized[], params: DeclensionParams): DisplayVocalized[]
+    {
+        const article: DisplayVocalized[] = params.definite ? [{ emphasis: false, letter: Letter.Alef, shadda: false }, { emphasis: false, letter: Letter.Lam, shadda: false, tashkil: Tashkil.Sukun}] : [];
+
+        if(vocalized[vocalized.length - 1].tashkil === Tashkil.Kasratan)
+            return article.concat(DeclineAdjectiveInSuffix(vocalized, params));
+        return [{letter: "TODO DeclineAdjective" as any, tashkil: Tashkil.Dhamma, emphasis: true, shadda: true}];
     }
 
     public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | ConjugationVocalized[])[]

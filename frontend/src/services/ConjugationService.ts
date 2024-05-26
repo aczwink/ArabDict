@@ -23,7 +23,7 @@ import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
-import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString } from "arabdict-domain/src/Definitions";
+import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, DeclensionParams } from "arabdict-domain/src/Definitions";
 
 @Injectable
 export class ConjugationService
@@ -89,6 +89,12 @@ export class ConjugationService
     {
         const root = new VerbRoot(rootRadicals);
         return this.conjugator.ConjugateParticiple(this._globalDialect.Get(), root, stem, voice, stem1Context);
+    }
+
+    public DeclineAdjective(word: string, params: DeclensionParams)
+    {
+        const declined = this.conjugator.DeclineAdjective(word, params, this._globalDialect.Get());
+        return this.VocalizedToString(declined);
     }
 
     public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: number)

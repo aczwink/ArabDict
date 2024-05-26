@@ -18,7 +18,7 @@
 
 import { BaseTashkil, Letter, TASHKIL_SHADDA, Tashkil } from "./Definitions";
 
-type DisplayTashkil = BaseTashkil | Tashkil.Fathatan | Tashkil.Kasratan;
+export type DisplayTashkil = BaseTashkil | Tashkil.Dhammatan | Tashkil.Fathatan | Tashkil.Kasratan;
 export interface DisplayVocalized
 {
     letter: Letter;

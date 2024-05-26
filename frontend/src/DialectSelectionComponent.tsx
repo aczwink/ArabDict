@@ -56,7 +56,7 @@ export class DialectSelectionComponent extends Component
 
     private MapDialectType(dialect: DialectData)
     {
-        const types: DialectType[] = [DialectType.ModernStandardArabic, DialectType.NorthLevantineArabic, DialectType.Lebanese];
+        const types: DialectType[] = [DialectType.ModernStandardArabic, DialectType.Lebanese];
         for (const type of types)
         {
             const metaData = GetDialectMetadata(type);

@@ -60,6 +60,7 @@ export enum Letter
 export enum Tashkil
 {
     Dhamma = "\u064F",
+    Dhammatan = "\u064C",
     Fatha = "\u064E",
     Fathatan = "\u064B",
     Kasra = "\u0650",
@@ -90,6 +91,11 @@ export const TASHKIL_SHADDA = "\u0651";
 export const LETTER_RA = "\u0631";
 export const QAF = "\u0642";
 //TODO: end of REMOVE THE FOLLOWING
+
+export enum Case
+{
+    Nominative
+}
 
 export type AdvancedStemNumber = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 10;
 export enum Gender
@@ -165,3 +171,11 @@ interface BasicConjugationParams
 }
 
 export type ConjugationParams = BasicConjugationParams & StemParams & TenseParams;
+
+
+export interface DeclensionParams
+{
+    gender: Gender;
+    definite: boolean;
+    case: Case;
+}
