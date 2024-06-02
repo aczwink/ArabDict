@@ -39,7 +39,7 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
                 [
                     { letter: root.r2, tashkil: Tashkil.Kasra },
                     { letter: root.r3, tashkil: Tashkil.Fatha },
-                    { letter: Letter.TaMarbuta, tashkil: Tashkil.Sukun },
+                    { letter: Letter.TaMarbuta, tashkil: Tashkil.EndOfWordMarker },
                 ],
             ];
 
