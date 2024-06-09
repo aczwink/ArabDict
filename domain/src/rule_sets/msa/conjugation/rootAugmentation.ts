@@ -43,6 +43,16 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
         }
         case 2:
         {
+            if(root.type === RootType.Quadriliteral)
+            {
+                return [
+                    { letter: Letter.Ta, symbolName: SymbolName.Prefix1, tashkil: Tashkil.Fatha },
+                    { symbolName: SymbolName.R1 },
+                    { symbolName: SymbolName.R2 },
+                    { symbolName: SymbolName.R3 },
+                    { symbolName: SymbolName.R4 },
+                ];
+            }
             switch(root.type)
             {
                 case RootType.Assimilated:

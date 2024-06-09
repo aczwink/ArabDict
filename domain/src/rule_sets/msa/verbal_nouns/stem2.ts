@@ -23,6 +23,15 @@ export function GenerateAllPossibleVerbalNounsStem2(root: VerbRoot): Conjugation
 {
     switch(root.type)
     {
+        case RootType.Quadriliteral:
+            return [
+                { letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                { letter: root.r1, tashkil: Tashkil.Fatha },
+                { letter: root.r2, tashkil: Tashkil.Sukun },
+                { letter: root.r3, tashkil: Tashkil.Dhamma },
+                { letter: root.r4, tashkil: Tashkil.EndOfWordMarker },
+            ];
+
         case RootType.Assimilated:
         case RootType.HamzaOnR1:
         case RootType.Hollow:

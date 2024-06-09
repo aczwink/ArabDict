@@ -18,12 +18,13 @@
 
 import { CheckBox, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "./services/APIService";
-import { FullWordData, VerbData } from "../dist/api";
+import { FullWordData, VerbData, WordFunctionData } from "../dist/api";
 import { ConjugationService } from "./services/ConjugationService";
 import { RemoveTashkilButKeepShadda } from "arabdict-domain/src/Util";
 import { RenderTranslations } from "./shared/translations";
 import { Stem1DataToStem1ContextOptional } from "./verbs/model";
 import { Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
+import { WordTypeToText } from "./shared/words";
 
 @Injectable
 export class LearnComponent extends Component
@@ -52,7 +53,7 @@ export class LearnComponent extends Component
                     <h1>{title}</h1>
                     <div className="row">
                         <div className="col">
-                            { "translations" in this.data ? RenderTranslations(this.data.translations) : alert("TODO: REIMPLEMENT ME!")}
+                            { "translations" in this.data ? RenderTranslations(this.data.translations) : this.RenderFunctions(this.data.functions)}
                         </div>
                     </div>
                     <button type="button" className="btn btn-primary" onclick={this.LoadNextWord.bind(this)}>Next</button>
@@ -108,6 +109,19 @@ export class LearnComponent extends Component
                 throw new Error("TODO: implement me");
             this.data = response2.data;
         }
+    }
+
+    private RenderFunction(func: WordFunctionData)
+    {
+        return <fragment>
+            <h4>{WordTypeToText(func.type)}</h4>
+            {RenderTranslations(func.translations)}
+        </fragment>;
+    }
+
+    private RenderFunctions(functions: WordFunctionData[]): RenderValue
+    {
+        return functions.map(this.RenderFunction.bind(this))
     }
 
     //Event handlers
