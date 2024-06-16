@@ -85,6 +85,7 @@ export function GenerateParticipleStem1(root: VerbRoot, voice: VoiceString, stem
                 { letter: root.r2, tashkil: Tashkil.Sukun },
             ];
 
+        case RootType.HamzaOnR1:
         case RootType.Sound:
             if(voice === "active")
             {

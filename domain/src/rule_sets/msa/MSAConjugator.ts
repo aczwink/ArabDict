@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { QAF, Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString, DeclensionParams } from "../../Definitions";
-import { DialectConjugator } from "../../DialectConjugator";
+import { Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, NounState } from "../../Definitions";
+import { DialectConjugator, NounInput, TargetNounDerivation } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { ParseVocalizedText, ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
 import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
@@ -48,6 +48,10 @@ import { GenerateAllPossibleVerbalNounsStem6 } from "./verbal_nouns/stem6";
 import { GenerateAllPossibleVerbalNounsStem2 } from "./verbal_nouns/stem2";
 import { GenerateParticipleStem10 } from "./participle/stem10";
 import { DeclineAdjectiveInSuffix } from "./adjectives/decline_in";
+import { DeclineAdjectiveTriptoteSuffix } from "./adjectives/decline_triptote";
+import { IsSunLetter } from "../../Util";
+import { DeclineNounTriptoteSuffix } from "./nouns/triptote";
+import { WithTashkilOnLast } from "./adjectives/shared";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -85,13 +89,55 @@ export class MSAConjugator implements DialectConjugator
         return [{letter: "TODO ConjugateParticiple" as any, tashkil: Tashkil.Dhamma}];
     }
 
-    public DeclineAdjective(vocalized: DisplayVocalized[], params: DeclensionParams): DisplayVocalized[]
+    public DeclineAdjective(vocalized: DisplayVocalized[], params: AdjectiveDeclensionParams): DisplayVocalized[]
     {
-        const article: DisplayVocalized[] = params.definite ? [{ emphasis: false, letter: Letter.Alef, shadda: false }, { emphasis: false, letter: Letter.Lam, shadda: false, tashkil: Tashkil.Sukun}] : [];
+        function inner()
+        {
+            if(vocalized[vocalized.length - 1].tashkil === Tashkil.Kasratan)
+                return DeclineAdjectiveInSuffix(vocalized, params);
+            return DeclineAdjectiveTriptoteSuffix(vocalized, params);
+        }
 
-        if(vocalized[vocalized.length - 1].tashkil === Tashkil.Kasratan)
-            return article.concat(DeclineAdjectiveInSuffix(vocalized, params));
-        return [{letter: "TODO DeclineAdjective" as any, tashkil: Tashkil.Dhamma, emphasis: true, shadda: true}];
+        return this.ConditionallyAddArticle(params.definite, inner());
+    }
+
+    public DeclineNoun(inputNoun: NounInput, params: NounDeclensionParams): DisplayVocalized[]
+    {
+        function inner()
+        {
+            return DeclineNounTriptoteSuffix(inputNoun, params);
+        }
+
+        return this.ConditionallyAddArticle(params.state === NounState.Definite, inner());
+    }
+    
+    public DeriveSoundNoun(singular: DisplayVocalized[], singularGender: Gender, target: TargetNounDerivation): DisplayVocalized[]
+    {
+        switch(target)
+        {
+            case TargetNounDerivation.DeriveFeminineSingular:
+                return [
+                    ...singular,
+                    { emphasis: false, letter: Letter.TaMarbuta, shadda: false }
+                ];
+                
+            case TargetNounDerivation.DerivePluralSameGender:
+            {
+                if(singularGender === Gender.Female)
+                {
+                    return singular.slice(0, singular.length - 1).concat([
+                        { emphasis: false, letter: Letter.Alef, shadda: false },
+                        { emphasis: false, letter: Letter.Ta, shadda: false },
+                    ]);
+                }
+
+                return WithTashkilOnLast(singular, Tashkil.Kasra).concat([
+                    { emphasis: false, letter: Letter.Ya, shadda: false },
+                    { emphasis: false, letter: Letter.Nun, shadda: false },
+                ]);
+            }
+        }
+        return [{ emphasis: true, letter: "TODO" as any, shadda: true, }];
     }
 
     public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | ConjugationVocalized[])[]
@@ -117,6 +163,29 @@ export class MSAConjugator implements DialectConjugator
         }
 
         return ["TODO GenerateAllPossibleVerbalNouns"];
+    }
+
+    private ConditionallyAddArticle(isDefinite: boolean, vocalized: DisplayVocalized[]): DisplayVocalized[]
+    {
+        if(isDefinite)
+        {
+            const v = vocalized;
+            if(IsSunLetter(v[0].letter))
+            {
+                return [
+                    { emphasis: false, letter: Letter.Alef, shadda: false },
+                    { emphasis: false, letter: Letter.Lam, shadda: false },
+                    { ...v[0], shadda: true },
+                    ...v.slice(1),
+                ];
+            }
+            return [
+                { emphasis: false, letter: Letter.Alef, shadda: false },
+                { emphasis: false, letter: Letter.Lam, shadda: false, tashkil: Tashkil.Sukun},
+                ...v
+            ];
+        }
+        return vocalized;
     }
 
     private ConjugateBasicForm(root: VerbRoot, stem: AdvancedStemNumber)
@@ -246,7 +315,7 @@ export class MSAConjugator implements DialectConjugator
             case RootType.Hollow:
                 return [Letter.Fa, Letter.A3ein, Letter.Lam];
             case RootType.Quadriliteral:
-                return [Letter.Fa, Letter.A3ein, Letter.Lam, QAF];
+                return [Letter.Fa, Letter.A3ein, Letter.Lam, Letter.Qaf];
             case RootType.Sound:
                 return [Letter.Fa, Letter.A3ein, Letter.Lam];
             case RootType.SecondConsonantDoubled:

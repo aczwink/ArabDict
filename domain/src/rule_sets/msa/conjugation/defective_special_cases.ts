@@ -16,12 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, Gender, LETTER_RA, Letter, Numerus, Person, PrimaryTashkil, Tashkil, Tense } from "../../../Definitions";
+import { ConjugationParams, Gender, Letter, Numerus, Person, PrimaryTashkil, Tashkil, Tense } from "../../../Definitions";
 import { VerbRoot } from "../../../VerbRoot";
 import { ConjugationVocalized } from "../../../Vocalization";
 import { AugmentedRoot, SymbolName } from "../AugmentedRoot";
 import { AlterDefectiveEnding, AlterDefectiveSuffix } from "./defective";
-import { DoesPresentSuffixStartWithWawOrYa } from "./suffix";
 
 /*
 Currently known ones are: رأى, أرى, حيي
@@ -78,7 +77,7 @@ export function AlterSpeciallyIrregularDefective(root: VerbRoot, augmentedRoot: 
     {
         if(root.radicalsAsSeparateLetters.Equals([Letter.Hha, Letter.Ya, Letter.Waw]))
             AlterSpecialCaseHayiya(augmentedRoot, params);
-        else if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, Letter.Hamza, Letter.Ya]))
+        else if(root.radicalsAsSeparateLetters.Equals([Letter.Ra, Letter.Hamza, Letter.Ya]))
             AlterSpecialCaseRa2a(augmentedRoot, params, suffix);
     }
     else if(params.stem === 4)
@@ -89,7 +88,7 @@ export function AlterSpeciallyIrregularDefective(root: VerbRoot, augmentedRoot: 
 
 export function GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching(root: VerbRoot): { past: PrimaryTashkil; present: PrimaryTashkil } | undefined
 {
-    if(root.radicalsAsSeparateLetters.Equals([LETTER_RA, Letter.Hamza, Letter.Ya]))
+    if(root.radicalsAsSeparateLetters.Equals([Letter.Ra, Letter.Hamza, Letter.Ya]))
         return { past: Tashkil.Fatha, present: Tashkil.Kasra };
     if(root.radicalsAsSeparateLetters.Equals([Letter.Hha, Letter.Ya, Letter.Waw]))
         return { past: Tashkil.Kasra, present: Tashkil.Fatha };
@@ -100,7 +99,7 @@ export function IsSpeciallyIrregularDefective(root: VerbRoot, stem: number)
 {
     if(stem === 1)
         return GetSpeciallyIrregularDefectivePresentTashkilForStem1IfMatching(root) !== undefined;
-    if( (stem === 4) && root.radicalsAsSeparateLetters.Equals([LETTER_RA, Letter.Hamza, Letter.Ya]) )
+    if( (stem === 4) && root.radicalsAsSeparateLetters.Equals([Letter.Ra, Letter.Hamza, Letter.Ya]) )
         return true;
     return false;
 }

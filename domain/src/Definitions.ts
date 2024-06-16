@@ -29,6 +29,7 @@ export enum Letter
     Kha = "\u062E",
     Dal = "\u062F",
     Thal = "\u0630",
+    Ra = "\u0631",
     Zay = "\u0632",
     Siin = "\u0633",
     Shiin = "\u0634",
@@ -39,6 +40,7 @@ export enum Letter
     A3ein = "\u0639",
     Ghain = "\u063A",
     Fa = "\u0641",
+    Qaf = "\u0642",
     Kaf = "\u0643",
     Lam = "\u0644",
     Mim = "\u0645",
@@ -87,14 +89,11 @@ export interface Stem1Context
 
 export const TASHKIL_SHADDA = "\u0651";
 
-//TODO: REMOVE THE FOLLOWING:
-export const LETTER_RA = "\u0631";
-export const QAF = "\u0642";
-//TODO: end of REMOVE THE FOLLOWING
-
 export enum Case
 {
-    Nominative
+    Accusative,
+    Genitive,
+    Nominative,
 }
 
 export type AdvancedStemNumber = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 10;
@@ -173,9 +172,22 @@ interface BasicConjugationParams
 export type ConjugationParams = BasicConjugationParams & StemParams & TenseParams;
 
 
-export interface DeclensionParams
+export interface AdjectiveDeclensionParams
 {
     gender: Gender;
     definite: boolean;
     case: Case;
+}
+
+export enum NounState
+{
+    Indefinite,
+    Definite,
+    Construct
+}
+
+export interface NounDeclensionParams
+{
+    case: Case;
+    state: NounState;
 }

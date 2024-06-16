@@ -54,8 +54,8 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
                 [
                     { letter: root.r1, tashkil: Tashkil.Fatha },
                     { letter: root.r2, tashkil: Tashkil.Fatha },
-                    { letter: Letter.Alef, tashkil: Tashkil.Fatha },
-                    { letter: Letter.Hamza, tashkil: Tashkil.Sukun },
+                    { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                    { letter: Letter.Hamza, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
                     { letter: root.r1, tashkil: Tashkil.Fatha },
@@ -66,7 +66,7 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
                 [
                     { letter: root.r1, tashkil: Tashkil.Fatha },
                     { letter: root.r2, tashkil: Tashkil.Fathatan },
-                    { letter: Letter.AlefMaksura, tashkil: Tashkil.Sukun },
+                    { letter: Letter.AlefMaksura, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
                     { letter: root.r1, tashkil: Tashkil.Fatha },

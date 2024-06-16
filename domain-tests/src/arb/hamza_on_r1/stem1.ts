@@ -16,7 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
+import { RunParticipleTest } from "../../shared";
+import { Tashkil } from "arabdict-domain/dist/Definitions";
+
+//Source: https://en.wiktionary.org/wiki/%D8%A3%D8%AE%D8%B0#Verb
 
 It("Stem 1", () => {
-    throw new Error("TODO :)");
+    RunParticipleTest("ء-خ-ذ", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, "آخِذ", "مَأْخُوذ");
+    
+    throw new Error("TODO here! :)");
 });

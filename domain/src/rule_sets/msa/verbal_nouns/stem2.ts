@@ -32,6 +32,15 @@ export function GenerateAllPossibleVerbalNounsStem2(root: VerbRoot): Conjugation
                 { letter: root.r4, tashkil: Tashkil.EndOfWordMarker },
             ];
 
+        case RootType.Defective:
+            return [
+                { letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                { letter: root.r1, tashkil: Tashkil.Sukun },
+                { letter: root.r2, tashkil: Tashkil.Kasra },
+                { letter: Letter.Ya, tashkil: Tashkil.Fatha },
+                { letter: Letter.TaMarbuta, tashkil: Tashkil.EndOfWordMarker },
+            ];
+
         case RootType.Assimilated:
         case RootType.HamzaOnR1:
         case RootType.Hollow:

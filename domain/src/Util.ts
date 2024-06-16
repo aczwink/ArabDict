@@ -16,13 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import "acts-util-core";
-import { Gender, GenderString, Mood, MoodString, Numerus, NumerusString, Person, PersonString, TASHKIL_SHADDA, Tashkil, Tense, TenseString, Voice, VoiceString } from "./Definitions";
+import { Gender, GenderString, Letter, Mood, MoodString, Numerus, NumerusString, Person, PersonString, TASHKIL_SHADDA, Tashkil, Tense, TenseString, Voice, VoiceString } from "./Definitions";
 
 export function GenderToString(gender: Gender): GenderString
 {
     if(gender === Gender.Female)
         return "female";
     return "male";
+}
+
+export function IsSunLetter(letter: Letter)
+{
+    switch(letter)
+    {
+        case Letter.Ta:
+        case Letter.Tha:
+        case Letter.Dal:
+        case Letter.Thal:
+        case Letter.Ra:
+        case Letter.Zay:
+        case Letter.Siin:
+        case Letter.Shiin:
+        case Letter.Saad:
+        case Letter.Daad:
+        case Letter.Tta:
+        case Letter.Ththa:
+        case Letter.Lam:
+        case Letter.Nun:
+            return true;
+    }
+    return false;
 }
 
 export function MoodToString(mood: Mood): MoodString
@@ -93,4 +116,17 @@ export function VoiceToString(voice: Voice): VoiceString
     if(voice === Voice.Active)
         return "active";
     return "passive";
+}
+
+export function VowelLetterToPreTashkil(vowel: Letter.Alef | Letter.Waw | Letter.Ya)
+{
+    switch(vowel)
+    {
+        case Letter.Alef:
+            return Tashkil.Fatha;
+        case Letter.Waw:
+            return Tashkil.Dhamma;
+        case Letter.Ya:
+            return Tashkil.Kasra;
+    }
 }

@@ -23,7 +23,8 @@ import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
-import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, DeclensionParams } from "arabdict-domain/src/Definitions";
+import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams } from "arabdict-domain/src/Definitions";
+import { NounInput, TargetNounDerivation } from "arabdict-domain/src/DialectConjugator";
 
 @Injectable
 export class ConjugationService
@@ -91,10 +92,20 @@ export class ConjugationService
         return this.conjugator.ConjugateParticiple(this._globalDialect.Get(), root, stem, voice, stem1Context);
     }
 
-    public DeclineAdjective(word: string, params: DeclensionParams)
+    public DeclineAdjective(word: string, params: AdjectiveDeclensionParams)
     {
         const declined = this.conjugator.DeclineAdjective(word, params, this._globalDialect.Get());
         return this.VocalizedToString(declined);
+    }
+
+    public DeclineNoun(inputNoun: NounInput, params: NounDeclensionParams)
+    {
+        return this.conjugator.DeclineNoun(inputNoun, params, this._globalDialect.Get());
+    }
+
+    public DeriveSoundNoun(singular: DisplayVocalized[], singularGender: Gender, target: TargetNounDerivation): DisplayVocalized[]
+    {
+        return this.conjugator.DeriveSoundNoun(singular, singularGender, target, this._globalDialect.Get());
     }
 
     public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: number)

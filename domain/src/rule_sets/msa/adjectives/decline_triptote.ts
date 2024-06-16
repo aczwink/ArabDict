@@ -16,31 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { AdjectiveDeclensionParams, Gender, Letter, Tashkil } from "../../../Definitions";
+import { AdjectiveDeclensionParams, Gender } from "../../../Definitions";
 import { DisplayVocalized } from "../../../Vocalization";
 import { WithTashkilOnLast, RegularFemaleWithFathaThenTaMarbuta, AdjEndingTashkil } from "./shared";
 
-export function DeclineAdjectiveInSuffix(vocalized: DisplayVocalized[], params: AdjectiveDeclensionParams): DisplayVocalized[]
+export function DeclineAdjectiveTriptoteSuffix(vocalized: DisplayVocalized[], params: AdjectiveDeclensionParams): DisplayVocalized[]
 {
-    const last = vocalized[vocalized.length - 1];
-    const standard = vocalized.slice(0, vocalized.length - 1).concat([
-        {
-            ...last,
-            tashkil: Tashkil.Kasra
-        },
-        {
-            letter: Letter.Ya,
-            emphasis: false,
-            shadda: false
-        }
-    ]);
-
     if(params.gender === Gender.Male)
-    {
-        if(params.definite)
-            return standard;
-        return vocalized;
-    }
-
-    return WithTashkilOnLast(RegularFemaleWithFathaThenTaMarbuta(standard), AdjEndingTashkil(params));
+        return WithTashkilOnLast(vocalized, AdjEndingTashkil(params));
+    return WithTashkilOnLast(RegularFemaleWithFathaThenTaMarbuta(vocalized), AdjEndingTashkil(params));
 }

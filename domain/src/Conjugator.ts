@@ -17,10 +17,10 @@
  * */
 import { Hamzate } from "./Hamza";
 import { VerbRoot } from "./VerbRoot";
-import { DialectConjugator } from "./DialectConjugator";
+import { DialectConjugator, NounInput, TargetNounDerivation } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
 import { ConjugationVocalized, DisplayVocalized, ParseVocalizedText } from "./Vocalization";
-import { ConjugationParams, Stem1Context, Tashkil, Tense, Voice, Mood, Person, VoiceString, DeclensionParams } from "./Definitions";
+import { ConjugationParams, Stem1Context, Tashkil, Tense, Voice, Mood, Person, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, Gender } from "./Definitions";
 import { LebaneseConjugator } from "./rule_sets/lebanese/LebaneseConjugator";
 
 export enum DialectType
@@ -63,12 +63,26 @@ export class Conjugator
         return this.ExecuteWordTransformationPipeline(pattern);
     }
 
-    public DeclineAdjective(word: string, params: DeclensionParams, dialect: DialectType)
+    public DeclineAdjective(word: string, params: AdjectiveDeclensionParams, dialect: DialectType)
     {
         const dialectConjugator = this.CreateDialectConjugator(dialect);
 
         const parsed = ParseVocalizedText(word);
         return dialectConjugator.DeclineAdjective(parsed, params);
+    }
+
+    public DeclineNoun(inputNoun: NounInput, params: NounDeclensionParams, dialect: DialectType)
+    {
+        const dialectConjugator = this.CreateDialectConjugator(dialect);
+
+        return dialectConjugator.DeclineNoun(inputNoun, params);
+    }
+
+    public DeriveSoundNoun(singular: DisplayVocalized[], singularGender: Gender, target: TargetNounDerivation, dialect: DialectType): DisplayVocalized[]
+    {
+        const dialectConjugator = this.CreateDialectConjugator(dialect);
+
+        return dialectConjugator.DeriveSoundNoun(singular, singularGender, target);
     }
 
     public GenerateAllPossibleVerbalNouns(dialect: DialectType, root: VerbRoot, stem: number): DisplayVocalized[][]

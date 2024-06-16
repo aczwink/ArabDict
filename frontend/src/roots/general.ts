@@ -19,7 +19,7 @@
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { RootCreationData, RootOverviewData } from "../../dist/api";
 import { IsFlagSet, RootFlags } from "../shared/flags";
-import { LETTER_RA, Letter, QAF } from "arabdict-domain/src/Definitions";
+import { Letter } from "arabdict-domain/src/Definitions";
 
 export function AreValidRootCharacters(rootRadicals: string)
 {
@@ -52,7 +52,7 @@ export function IsValidRootRadical(char: string)
         case Letter.Kha:
         case Letter.Dal:
         case Letter.Thal:
-        case LETTER_RA:
+        case Letter.Ra:
         case Letter.Zay:
         case Letter.Siin:
         case Letter.Shiin:
@@ -63,7 +63,7 @@ export function IsValidRootRadical(char: string)
         case Letter.A3ein:
         case Letter.Ghain:
         case Letter.Fa:
-        case QAF:
+        case Letter.Qaf:
         case Letter.Kaf:
         case Letter.Lam:
         case Letter.Mim:

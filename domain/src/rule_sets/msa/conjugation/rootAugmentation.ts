@@ -41,6 +41,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
                 { symbolName: SymbolName.R3 },
             ];
         }
+
         case 2:
         {
             if(root.type === RootType.Quadriliteral)
@@ -53,24 +54,14 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
                     { symbolName: SymbolName.R4 },
                 ];
             }
-            switch(root.type)
-            {
-                case RootType.Assimilated:
-                case RootType.Defective:
-                case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-                case RootType.HamzaOnR1:
-                case RootType.Hollow:
-                case RootType.SecondConsonantDoubled:
-                case RootType.Sound:
-                    return [
-                        { symbolName: SymbolName.R1 },
-                        { symbolName: SymbolName.Infix, letter: root.r2, tashkil: Tashkil.Sukun },
-                        { symbolName: SymbolName.R2 },
-                        { symbolName: SymbolName.R3 },
-                    ];
-            }
+            return [
+                { symbolName: SymbolName.R1 },
+                { symbolName: SymbolName.Infix, letter: root.r2, tashkil: Tashkil.Sukun },
+                { symbolName: SymbolName.R2 },
+                { symbolName: SymbolName.R3 },
+            ];
         }
-        break;
+
         case 3:
         {
             switch(root.type)
@@ -79,6 +70,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
                 case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:
+                case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     return [
                         { symbolName: SymbolName.R1 },

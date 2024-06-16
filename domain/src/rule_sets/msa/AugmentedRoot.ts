@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Letter, Tashkil } from "../../Definitions";
+import { VowelLetterToPreTashkil } from "../../Util";
 import { VerbRoot } from "../../VerbRoot";
 import { ConjugationVocalized } from "../../Vocalization";
 
@@ -122,19 +123,8 @@ export class AugmentedRoot
 
     public InsertLongVowel(radical: RadicalNumber, vowel: Letter.Alef | Letter.Ya)
     {
-        function LongVowelToShortVowel(vowel: Letter.Alef | Letter.Ya)
-        {
-            switch(vowel)
-            {
-                case Letter.Alef:
-                    return Tashkil.Fatha;
-                case Letter.Ya:
-                    return Tashkil.Kasra;
-            }
-        }
-
         this.ReplaceRadical(radical, { letter: vowel, tashkil: Tashkil.LongVowelMarker });
-        this.ApplyRadicalTashkil(this.PrevRadicalNumber(radical), LongVowelToShortVowel(vowel));
+        this.ApplyRadicalTashkil(this.PrevRadicalNumber(radical), VowelLetterToPreTashkil(vowel));
     }
 
     public InsertShortVowel(radical: RadicalNumber, shortVowel: (Tashkil.Dhamma | Tashkil.Fatha | Tashkil.Kasra))

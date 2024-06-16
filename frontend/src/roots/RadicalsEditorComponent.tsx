@@ -18,7 +18,7 @@
 
 import { Component, JSX_CreateElement } from "acfrontend";
 import { IsValidRootRadical } from "./general";
-import { Letter, QAF, LETTER_RA } from "arabdict-domain/src/Definitions";
+import { Letter } from "arabdict-domain/src/Definitions";
 
 export class RadicalsEditorComponent extends Component<{ radicals: string; onDataChanged: (newValue: string) => void; joinBeginning?: boolean }>
 {
@@ -110,9 +110,9 @@ export class RadicalsEditorComponent extends Component<{ radicals: string; onDat
             case "n":
                 return Letter.Nun;
             case "q":
-                return QAF;
+                return Letter.Qaf;
             case "r":
-                return LETTER_RA;
+                return Letter.Ra;
             case "s":
                 return Letter.Siin;
             case "S":

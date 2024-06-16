@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { LETTER_RA, Letter, QAF, Tashkil } from "./Definitions";
+import { Letter, Tashkil } from "./Definitions";
 import { DisplayVocalized } from "./Vocalization";
 
 //Source: https://en.wikipedia.org/wiki/Buckwalter_transliteration
@@ -44,7 +44,7 @@ export const Buckwalter = {
                 return "d";
             case Letter.Thal:
                 return "*";
-            case LETTER_RA as any:
+            case Letter.Ra:
                 return "r";
             case Letter.Zay:
                 return "z";
@@ -66,7 +66,7 @@ export const Buckwalter = {
                 return "g";
             case Letter.Fa:
                 return "f";
-            case QAF as any:
+            case Letter.Qaf:
                 return "q";
             case Letter.Kaf:
                 return "k";
