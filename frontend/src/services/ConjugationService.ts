@@ -19,7 +19,7 @@
 import { Injectable } from "acfrontend";
 import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
 import { ReverseConjugator } from "arabdict-domain/src/ReverseConjugator";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
@@ -62,6 +62,18 @@ export class ConjugationService
     public Conjugate(rootRadicals: string, stem: number, tense: TenseString, voice: VoiceString, gender: Gender, person: Person, numerus: Numerus, mood: Mood, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
+
+        this.CheckConjugation(root, {
+            stem: stem as any,
+            tense: (tense === "perfect") ? Tense.Perfect : Tense.Present,
+            voice: (voice === "active" ? Voice.Active : Voice.Passive),
+            gender,
+            person,
+            numerus,
+            mood,
+            stem1Context: stem1Context as any,
+        });
+
         return this.conjugator.Conjugate(root, {
             stem: stem as any,
             tense: (tense === "perfect") ? Tense.Perfect : Tense.Present,
@@ -76,6 +88,8 @@ export class ConjugationService
 
     public ConjugateToString(root: VerbRoot, params: ConjugationParams)
     {
+        this.CheckConjugation(root, params);
+
         const vocalized = this.conjugator.Conjugate(root, params, this._globalDialect.Get());
         return this.VocalizedToString(vocalized);
     }
@@ -124,4 +138,76 @@ export class ConjugationService
     private conjugator: Conjugator;
     private _canEdit: Property<boolean>;
     private _globalDialect: Property<DialectType>;
+
+    //Private methods
+    private CheckConjugation(root: VerbRoot, params: ConjugationParams)
+    {
+        const needNothing = 0;
+        const needPassive = 1;
+        const need = 2;
+
+        function IsSpecial()
+        {
+            switch(params.stem)
+            {
+                case 2:
+                    switch(root.type)
+                    {
+                        case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+                            return needPassive;
+                        case RootType.Quadriliteral:
+                            return need;
+                    }
+                    break;
+                case 4:
+                    switch(root.type)
+                    {
+                        case RootType.Quadriliteral:
+                            return needPassive;
+                    }
+                    break;
+                case 6:
+                    switch(root.type)
+                    {
+                        case RootType.Defective:
+                        case RootType.Sound:
+                            return needPassive;
+                        case RootType.SecondConsonantDoubled:
+                            return need;
+                    }
+                    break;
+                case 7:
+                    switch(root.type)
+                    {
+                        case RootType.Hollow:
+                        case RootType.SecondConsonantDoubled:
+                            return need;
+                        case RootType.Sound:
+                            return needPassive;
+                    }
+                    break;
+                case 8:
+                    switch(root.type)
+                    {
+                        case RootType.HamzaOnR1:
+                            return need;
+                        case RootType.SecondConsonantDoubled:
+                            return needPassive;
+                    }
+                    break;
+            }
+            return needNothing;
+        }
+
+        const special = IsSpecial();
+        switch(special)
+        {
+            case needPassive:
+                alert("CHECK WIKTIONARY IF PASSIVE EXISTS AND WRITE TEST!");
+                break;
+            case need:
+                alert("CHECK WIKTIONARY AND WRITE TEST!");
+                break;
+        }
+    }
 }

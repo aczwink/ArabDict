@@ -36,72 +36,111 @@ function GetDefectiveType(params: ConjugationParams)
     switch(params.stem)
     {
         case 1:
-            break;
+        {
+            switch(params.stem1Context.middleRadicalTashkilPresent)
+            {
+                case Tashkil.Dhamma:
+                    return DefectiveType.Type2_Fa3aA;
+                case Tashkil.Kasra:
+                    return DefectiveType.Type1_Fa3aY;
+                case Tashkil.Fatha:
+                    return DefectiveType.Type3_Fa3iya;
+                default:
+                    throw new Error("TODO: should never happen!");
+            }
+        }
         case 2:
         case 4:
+        case 8:
         case 10:
+            return DefectiveType.Type1_Fa3aY;
+
+        case 6:
+            if(params.tense === Tense.Present)
+                return DefectiveType.Type3_Fa3iya;
             return DefectiveType.Type1_Fa3aY;
         default:
             throw new Error("TODO: DON'T KNOW WRITE TEST!");
     }
+}
 
-    switch(params.stem1Context.middleRadicalTashkilPresent)
+function AlterDefectiveEndingActivePerfectType1(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+{
+    if(params.person === Person.Third)
     {
-        case Tashkil.Dhamma:
-            return DefectiveType.Type2_Fa3aA;
-        case Tashkil.Kasra:
-            return DefectiveType.Type1_Fa3aY;
-        case Tashkil.Fatha:
-            return DefectiveType.Type3_Fa3iya;
+        if(params.numerus === Numerus.Singular)
+        {
+            if(params.gender === Gender.Male)
+                augmentedRoot.ReplaceRadical(3, { letter: Letter.AlefMaksura, tashkil: Tashkil.AlefMaksuraMarker });
+            else
+                augmentedRoot.DropRadial(3);
+        }
+        else if(params.numerus === Numerus.Dual)
+        {
+            if(params.gender === Gender.Male)
+                augmentedRoot.ApplyRadicalTashkil(3, Tashkil.Fatha);
+            else
+                augmentedRoot.DropRadial(3);
+        }
+        else if(params.numerus === Numerus.Plural)
+        {
+            if(params.gender === Gender.Male)
+                augmentedRoot.DropRadial(3);
+        }
     }
-    throw new Error("TODO: NOT IMPLEMENTED");
+}
+
+function AlterDefectiveEndingActivePerfectType2(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+{
+    if(params.person === Person.Third)
+    {
+        if(params.numerus === Numerus.Singular)
+        {
+            if(params.gender === Gender.Male)
+                augmentedRoot.ReplaceRadical(3, { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker });
+            else
+                augmentedRoot.AssimilateRadical(3);
+        }
+        else if(params.numerus === Numerus.Dual)
+        {
+            if(params.gender === Gender.Female)
+                augmentedRoot.AssimilateRadical(3);
+        }
+        else if(params.numerus === Numerus.Plural)
+        {
+            if(params.gender === Gender.Male)
+                augmentedRoot.DropRadial(3);
+        }
+    }
+}
+
+function AlterDefectiveEndingActivePerfectType3(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+{
+    //past tense is for type 3 quite regular
+    if( (params.person === Person.Third) && (params.numerus === Numerus.Plural) && (params.gender === Gender.Male) )
+    {
+        augmentedRoot.DropRadial(3);
+        augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
+    }
+    else
+    {
+        const tashkil = (params.person === Person.Third) && (params.numerus !== Numerus.Plural) ? Tashkil.Fatha : Tashkil.LongVowelMarker;
+
+        //replacing is important because roots with waw as 3rd radical are still conjugated with ya in this case
+        augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, tashkil: tashkil });
+    }
 }
 
 function AlterDefectiveEndingActivePerfect(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    if(GetDefectiveType(params) === DefectiveType.Type3_Fa3iya)
+    switch(GetDefectiveType(params))
     {
-        //past tense is for type 3 quite regular
-        if( (params.person === Person.Third) && (params.numerus === Numerus.Plural) && (params.gender === Gender.Male) )
-        {
-            augmentedRoot.DropRadial(3);
-            augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
-        }
-        else
-        {
-            const tashkil = (params.person === Person.Third) && (params.numerus !== Numerus.Plural) ? Tashkil.Fatha : Tashkil.LongVowelMarker;
-
-            //replacing is important because roots with waw as 3rd radical are still conjugated with ya in this case
-            augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, tashkil: tashkil });
-        }
-    }
-    else
-    {
-        //type 1 and 2
-        let ending: ConjugationVocalized = { letter: Letter.AlefMaksura, tashkil: Tashkil.AlefMaksuraMarker };
-        if(GetDefectiveType(params) === DefectiveType.Type2_Fa3aA)
-            ending = { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker };
-
-        if(params.person === Person.Third)
-        {
-            if(params.numerus === Numerus.Singular)
-            {
-                if(params.gender === Gender.Male)
-                    augmentedRoot.ReplaceRadical(3, ending);
-                else
-                    augmentedRoot.AssimilateRadical(3);
-            }
-            else if(params.numerus === Numerus.Dual)
-            {
-                if(params.gender === Gender.Female)
-                    augmentedRoot.AssimilateRadical(3);
-            }
-            else if(params.numerus === Numerus.Plural)
-            {
-                if(params.gender === Gender.Male)
-                    augmentedRoot.DropRadial(3);
-            }
-        }
+        case DefectiveType.Type1_Fa3aY:
+            return AlterDefectiveEndingActivePerfectType1(augmentedRoot, params);
+        case DefectiveType.Type2_Fa3aA:
+            return AlterDefectiveEndingActivePerfectType2(augmentedRoot, params);
+        case DefectiveType.Type3_Fa3iya:
+            return AlterDefectiveEndingActivePerfectType3(augmentedRoot, params);
     }
 }
 
@@ -120,15 +159,15 @@ function IsDefectiveType3SpecialCase(params: ConjugationParams)
 
 function AlterDefectiveEndingActivePresentIndicative(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    const type = GetDefectiveType(params);
+    const defectiveType = GetDefectiveType(params);
 
     if(DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender))
     {
         //all
         augmentedRoot.DropRadial(3);
-        if( (type !== DefectiveType.Type3_Fa3iya) && (params.numerus === Numerus.Singular))
+        if( (defectiveType !== DefectiveType.Type3_Fa3iya) && (params.numerus === Numerus.Singular))
             augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Kasra); //1 and 2
-        else if(type === DefectiveType.Type1_Fa3aY)
+        else if(defectiveType === DefectiveType.Type1_Fa3aY)
             augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma); //1
     }
     else if(IsDefectiveType3SpecialCase(params))
@@ -138,25 +177,23 @@ function AlterDefectiveEndingActivePresentIndicative(augmentedRoot: AugmentedRoo
     }
     else if( (params.numerus === Numerus.Plural) && (params.gender === Gender.Female) )
     {
-        if(type === DefectiveType.Type2_Fa3aA)
+        if(defectiveType === DefectiveType.Type2_Fa3aA)
             augmentedRoot.ApplyRadicalTashkil(3, Tashkil.LongVowelMarker); //2
-        else if(type === DefectiveType.Type1_Fa3aY)
-            augmentedRoot.ApplyRadicalTashkil(3, Tashkil.AlefMaksuraMarker); //1
-        else if(type === DefectiveType.Type3_Fa3iya)
+        else if(defectiveType === DefectiveType.Type1_Fa3aY)
+            augmentedRoot.r3.tashkil = Tashkil.LongVowelMarker;
+        else if(defectiveType === DefectiveType.Type3_Fa3iya)
         {
             //replacing is important because roots with waw as 3rd radical are still conjugated with ya in this case
             augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, tashkil: Tashkil.Sukun });
         }
     }
-    else if( (type === DefectiveType.Type1_Fa3aY) && IsShorteningCase(params.numerus, params.person))
-    {
-        augmentedRoot.ApplyRadicalTashkil(3, Tashkil.AlefMaksuraMarker); //1
-    }
-    else if( (type === DefectiveType.Type2_Fa3aA) && (params.numerus !== Numerus.Dual) )
+    else if( (defectiveType === DefectiveType.Type1_Fa3aY) && IsShorteningCase(params.numerus, params.person))
+        augmentedRoot.r3.tashkil = Tashkil.LongVowelMarker;
+    else if( (defectiveType === DefectiveType.Type2_Fa3aA) && (params.numerus !== Numerus.Dual) )
     {
         augmentedRoot.ApplyRadicalTashkil(3, Tashkil.LongVowelMarker); //2
     }
-    else if( (type === DefectiveType.Type3_Fa3iya) && (params.numerus === Numerus.Dual))
+    else if( (defectiveType === DefectiveType.Type3_Fa3iya) && (params.numerus === Numerus.Dual))
     {
         //3
         //replacing is important because roots with waw as 3rd radical are still conjugated with ya in this case
@@ -166,32 +203,30 @@ function AlterDefectiveEndingActivePresentIndicative(augmentedRoot: AugmentedRoo
 
 function AlterDefectiveEndingActivePresentSubjunctive(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    const stem1ctx = (params.stem === 1) ? params.stem1Context : undefined;
-    const type = GetDefectiveType(params);
+    const defectiveType = GetDefectiveType(params);
 
     if(DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender))
     {
         augmentedRoot.DropRadial(3);
-        if( (stem1ctx?.middleRadicalTashkilPresent !== Tashkil.Fatha) && (params.numerus === Numerus.Singular))
+        if( (defectiveType !== DefectiveType.Type3_Fa3iya) && (params.numerus === Numerus.Singular))
             augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Kasra);
-        else if(type === DefectiveType.Type1_Fa3aY)
+        else if(defectiveType === DefectiveType.Type1_Fa3aY)
             augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
     }
-    else if(stem1ctx?.middleRadicalTashkilPresent === Tashkil.Fatha)
+    else if(defectiveType === DefectiveType.Type3_Fa3iya)
         AlterDefectiveEndingActivePresentIndicative(augmentedRoot, params);
     else if( (params.numerus === Numerus.Plural) && (params.gender === Gender.Female) )
     {
-        if(type === DefectiveType.Type2_Fa3aA)
+        if(defectiveType === DefectiveType.Type2_Fa3aA)
             augmentedRoot.ApplyRadicalTashkil(3, Tashkil.LongVowelMarker);
-        else if(type === DefectiveType.Type1_Fa3aY)
-            augmentedRoot.ApplyRadicalTashkil(3, Tashkil.AlefMaksuraMarker);
+        else if(defectiveType === DefectiveType.Type1_Fa3aY)
+            augmentedRoot.r3.tashkil = Tashkil.LongVowelMarker;
     }
 }
 
 function AlterDefectiveEndingActivePresentJussiveOrImperative(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
-    const stem1ctx = (params.stem === 1) ? params.stem1Context : undefined;
-    const type = GetDefectiveType(params);
+    const defectiveType = GetDefectiveType(params);
 
     if(
         DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender)
@@ -200,32 +235,32 @@ function AlterDefectiveEndingActivePresentJussiveOrImperative(augmentedRoot: Aug
     )
     {
         augmentedRoot.DropRadial(3);
-        if( (stem1ctx?.middleRadicalTashkilPresent !== Tashkil.Fatha) && (params.numerus === Numerus.Singular))
+        if( (defectiveType !== DefectiveType.Type3_Fa3iya) && (params.numerus === Numerus.Singular))
             augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Kasra);
-        else if(type === DefectiveType.Type1_Fa3aY)
+        else if(defectiveType === DefectiveType.Type1_Fa3aY)
             augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
     }
-    else if( (stem1ctx?.middleRadicalTashkilPresent !== Tashkil.Fatha) && IsShorteningCase(params.numerus, params.person))
+    else if( (defectiveType !== DefectiveType.Type3_Fa3iya) && IsShorteningCase(params.numerus, params.person))
     {
         augmentedRoot.DropRadial(3);
-        if(stem1ctx?.middleRadicalTashkilPresent === Tashkil.Dhamma)
+        if(defectiveType === DefectiveType.Type2_Fa3aA)
             augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Dhamma);
         else
             augmentedRoot.ApplyRadicalTashkil(2, Tashkil.Kasra);
     }
     else if( (params.numerus === Numerus.Plural) && (params.gender === Gender.Female) )
     {
-        if(type === DefectiveType.Type2_Fa3aA)
+        if(defectiveType === DefectiveType.Type2_Fa3aA)
             augmentedRoot.ApplyRadicalTashkil(3, Tashkil.LongVowelMarker);
-        else if(type === DefectiveType.Type1_Fa3aY)
-            augmentedRoot.ApplyRadicalTashkil(3, Tashkil.AlefMaksuraMarker);
-        else if(type === DefectiveType.Type3_Fa3iya)
+        else if(defectiveType === DefectiveType.Type1_Fa3aY)
+            augmentedRoot.r3.tashkil = Tashkil.LongVowelMarker;
+        else if(defectiveType === DefectiveType.Type3_Fa3iya)
         {
             //replacing is important because roots with waw as 3rd radical are still conjugated with ya in this case
             augmentedRoot.ReplaceRadical(3, { letter: Letter.Ya, tashkil: Tashkil.Sukun });
         }
     }
-    else if( (type === DefectiveType.Type3_Fa3iya) && (params.numerus === Numerus.Dual))
+    else if( (defectiveType === DefectiveType.Type3_Fa3iya) && (params.numerus === Numerus.Dual))
     {
         //3
         //replacing is important because roots with waw as 3rd radical are still conjugated with ya in this case
@@ -286,8 +321,16 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
         case 1:
         case 2:
         case 4:
+        case 6:
+        case 8:
         case 10:
         {
+            if((params.voice === Voice.Active) && (GetDefectiveType(params) === DefectiveType.Type1_Fa3aY))
+            {
+                //replacing is important because roots with waw as 3rd radical are still conjugated with ya in this case
+                augmentedRoot.r3.letter = Letter.Ya;
+            }
+
             if(params.voice === Voice.Passive)
                 AlterDefectiveEndingPassive(augmentedRoot, params);
             else if(params.tense === Tense.Perfect)
@@ -307,12 +350,12 @@ export function AlterDefectiveSuffix(params: ConjugationParams, suffix: Conjugat
 {
     if(params.voice === Voice.Active)
     {
-        const stem1ctx = (params.stem === 1) ? params.stem1Context : undefined;
-        if( (params.tense === Tense.Perfect) && (stem1ctx?.middleRadicalTashkilPresent !== Tashkil.Fatha) && (params.numerus === Numerus.Plural) && (params.person === Person.Third) && (params.gender === Gender.Male))
+        const defectiveType = GetDefectiveType(params);
+        if( (params.tense === Tense.Perfect) && (defectiveType !== DefectiveType.Type3_Fa3iya) && (params.numerus === Numerus.Plural) && (params.person === Person.Third) && (params.gender === Gender.Male))
             suffix[0].tashkil = Tashkil.Sukun;
         else if(params.tense === Tense.Present)
         {
-            if( DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender) && (stem1ctx?.middleRadicalTashkilPresent === Tashkil.Fatha))
+            if( DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender) && (defectiveType === DefectiveType.Type3_Fa3iya))
                 suffix[0].tashkil = Tashkil.Sukun;
         }
     }

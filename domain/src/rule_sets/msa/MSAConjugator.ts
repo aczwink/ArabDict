@@ -52,6 +52,7 @@ import { DeclineAdjectiveTriptoteSuffix } from "./adjectives/decline_triptote";
 import { IsSunLetter } from "../../Util";
 import { DeclineNounTriptoteSuffix } from "./nouns/triptote";
 import { WithTashkilOnLast } from "./adjectives/shared";
+import { GenerateParticipleStem6 } from "./participle/stem6";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -81,6 +82,8 @@ export class MSAConjugator implements DialectConjugator
                 return GenerateParticipleStem4(root, voice);
             case 5:
                 return GenerateParticipleStem5(root, this.ConjugateBasicForm(root, stem), voiceNew);
+            case 6:
+                return GenerateParticipleStem6(root, this.ConjugateBasicForm(root, stem), voiceNew);
             case 8:
                 return GenerateParticipleStem8(root, this.ConjugateBasicForm(root, stem), voiceNew);
             case 10:
@@ -120,6 +123,21 @@ export class MSAConjugator implements DialectConjugator
                     ...singular,
                     { emphasis: false, letter: Letter.TaMarbuta, shadda: false }
                 ];
+
+            case TargetNounDerivation.DeriveDualSameGender:
+            {
+                const fixedEnding = WithTashkilOnLast(singular, Tashkil.Fatha).concat([
+                    { emphasis: false, letter: Letter.Ya, shadda: false, tashkil: Tashkil.Sukun },
+                    { emphasis: false, letter: Letter.Nun, shadda: false },
+                ]);
+
+                if(singularGender === Gender.Female)
+                {
+                    fixedEnding[fixedEnding.length - 4].tashkil = Tashkil.Fatha;
+                    fixedEnding[fixedEnding.length - 3].letter = Letter.Ta;
+                }
+                return fixedEnding;
+            }
                 
             case TargetNounDerivation.DerivePluralSameGender:
             {
@@ -137,7 +155,6 @@ export class MSAConjugator implements DialectConjugator
                 ]);
             }
         }
-        return [{ emphasis: true, letter: "TODO" as any, shadda: true, }];
     }
 
     public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | ConjugationVocalized[])[]
@@ -164,6 +181,8 @@ export class MSAConjugator implements DialectConjugator
 
         return ["TODO GenerateAllPossibleVerbalNouns"];
     }
+
+    //Private methods
 
     private ConditionallyAddArticle(isDefinite: boolean, vocalized: DisplayVocalized[]): DisplayVocalized[]
     {

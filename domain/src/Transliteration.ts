@@ -95,7 +95,7 @@ export const Buckwalter = {
                 return "Y";
         }
 
-        throw new Error("TODO1: " + letter + " " + letter.codePointAt(0));
+        throw new Error("TODO Buckwalter.CharToString: " + letter + " " + letter.codePointAt(0));
     },
 
     TashkilToString: function(tashkil: Tashkil)
@@ -106,6 +106,8 @@ export const Buckwalter = {
                 return "u";
             case Tashkil.Fatha:
                 return "a";
+            case Tashkil.Fathatan:
+                return "F";
             case Tashkil.Kasra:
                 return "i";
             case Tashkil.Kasratan:
@@ -113,7 +115,7 @@ export const Buckwalter = {
             case Tashkil.Sukun:
                 return "o";
         }
-        throw new Error("TODO2: " + tashkil + (tashkil as any).codePointAt(0));
+        throw new Error("TODO Buckwalter.TashkilToString: " + tashkil + (tashkil as any).codePointAt(0));
     },
 
     ToString: function(vocalized: DisplayVocalized[])

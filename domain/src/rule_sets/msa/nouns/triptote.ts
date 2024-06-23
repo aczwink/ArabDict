@@ -35,27 +35,28 @@ function NounEndingTashkil(inputNoun: NounInput, params: NounDeclensionParams): 
     return AdjEndingTashkil({ case: params.case, definite: params.state === NounState.Definite, gender: inputNoun.gender });
 }
 
+function DeclineDefault(inputNoun: NounInput, params: NounDeclensionParams)
+{
+    if((params.case === Case.Accusative) && (params.state === NounState.Indefinite) && (inputNoun.gender === Gender.Male))
+        return WithTashkilOnLast(inputNoun.vocalized, Tashkil.Fathatan).concat([ { emphasis: false, letter: Letter.Alef, shadda: false }]);
+    return WithTashkilOnLast(inputNoun.vocalized, NounEndingTashkil(inputNoun, params));
+}
+
 export function DeclineNounTriptoteSuffix(inputNoun: NounInput, params: NounDeclensionParams): DisplayVocalized[]
 {
     switch(inputNoun.numerus)
     {
         case Numerus.Singular:
-        {
-            if((params.case === Case.Accusative) && (params.state === NounState.Indefinite) && (inputNoun.gender === Gender.Male))
-                return WithTashkilOnLast(inputNoun.vocalized, Tashkil.Fathatan).concat([ { emphasis: false, letter: Letter.Alef, shadda: false }]);
-            return WithTashkilOnLast(inputNoun.vocalized, NounEndingTashkil(inputNoun, params))
-        }
+            return DeclineDefault(inputNoun, params);
 
-        case Numerus.Plural:
+        case Numerus.Dual:
         {
-            if(inputNoun.gender === Gender.Female)
-                return WithTashkilOnLast(inputNoun.vocalized, NounEndingTashkil(inputNoun, params));
-            
-            const fixedEnding = WithTashkilOnLast(inputNoun.vocalized, Tashkil.Fatha);
+            const fixedEnding = WithTashkilOnLast(inputNoun.vocalized, Tashkil.Kasra);
+
             if(params.case === Case.Nominative)
             {
-                fixedEnding[fixedEnding.length - 2].letter = Letter.Waw;
-                fixedEnding[fixedEnding.length - 3].tashkil = Tashkil.Dhamma;
+                fixedEnding[fixedEnding.length - 2].letter = Letter.Alef;
+                fixedEnding[fixedEnding.length - 2].tashkil = undefined;
             }
 
             if(params.state === NounState.Construct)
@@ -63,9 +64,29 @@ export function DeclineNounTriptoteSuffix(inputNoun: NounInput, params: NounDecl
 
             return fixedEnding;
         }
-    }
 
-    return [
-        { emphasis: true, letter: "TODO DeclineNounTriptoteSuffix" as any, shadda: true }
-    ];
+        case Numerus.Plural:
+        {
+            const last = inputNoun.vocalized[inputNoun.vocalized.length - 1];
+            const prev = inputNoun.vocalized[inputNoun.vocalized.length - 2];
+            const isSoundMale = (last.letter === Letter.Nun) && (prev.letter === Letter.Ya);
+
+            if(isSoundMale)
+            {
+                const fixedEnding = WithTashkilOnLast(inputNoun.vocalized, Tashkil.Fatha);
+                if(params.case === Case.Nominative)
+                {
+                    fixedEnding[fixedEnding.length - 2].letter = Letter.Waw;
+                    fixedEnding[fixedEnding.length - 3].tashkil = Tashkil.Dhamma;
+                }
+
+                if(params.state === NounState.Construct)
+                    fixedEnding.pop();
+
+                return fixedEnding;
+            }
+
+            return DeclineDefault(inputNoun, params);
+        }
+    }
 }

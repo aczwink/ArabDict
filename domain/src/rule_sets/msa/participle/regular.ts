@@ -20,6 +20,22 @@ import { Tashkil, Letter, Voice } from "../../../Definitions";
 import { ConjugationVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
 
+export function GenerateParticipleDefective(baseForm: AugmentedRoot, voice: Voice): ConjugationVocalized[]
+{
+    if(voice === Voice.Active)
+    {
+        baseForm.symbols.pop();
+        baseForm.r2.tashkil = Tashkil.Kasratan;
+    }
+    else
+        baseForm.r2.tashkil = Tashkil.Fathatan;
+    
+    return [
+        { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
+        ...baseForm.symbols
+    ];
+}
+
 export function GenerateParticipleRegular(baseForm: AugmentedRoot, voice: Voice): ConjugationVocalized[]
 {
     if(voice === Voice.Active)

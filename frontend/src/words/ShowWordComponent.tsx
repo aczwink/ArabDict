@@ -26,10 +26,8 @@ import { ConjugationService } from "../services/ConjugationService";
 import { WordIdReferenceComponent } from "./WordReferenceComponent";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
-import { Case, Gender, Mood, NounState, Numerus, Person } from "arabdict-domain/src/Definitions";
-import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
-import { DisplayVocalized, ParseVocalizedText } from "arabdict-domain/src/Vocalization";
-import { TargetNounDerivation } from "arabdict-domain/src/DialectConjugator";
+import { Case, Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
+import { NounDeclensionTable } from "./NounDeclensionTable";
 
 @Injectable
 export class ShowWordComponent extends Component
@@ -91,45 +89,6 @@ export class ShowWordComponent extends Component
     private editSubscription: Subscription;
 
     //Private methods
-    private BuildBaseNoun(referenceWord: DisplayVocalized[], targetGender: Gender, targetNumerus: Numerus)
-    {
-        const ctx = this;
-        function Singular()
-        {
-            if(ctx.data!.isMale)
-            {
-                if(targetGender === Gender.Male)
-                    return referenceWord;
-                return ctx.conjugationService.DeriveSoundNoun(referenceWord, Gender.Male, TargetNounDerivation.DeriveFeminineSingular);
-            }
-            return referenceWord;
-        }
-
-        const singular = Singular();
-        switch(targetNumerus)
-        {
-            case Numerus.Dual:
-                return this.conjugationService.DeriveSoundNoun(singular, targetGender, TargetNounDerivation.DeriveDualSameGender);
-            case Numerus.Plural:
-                {
-                    const plural = this.TryExtractPlural();
-                    if(plural !== undefined)
-                        return ParseVocalizedText(plural);
-                    return this.conjugationService.DeriveSoundNoun(singular, targetGender, TargetNounDerivation.DerivePluralSameGender);
-                }
-            case Numerus.Singular:
-                return singular;
-        }
-    }
-
-    private TryExtractPlural()
-    {
-        const wordId = this.data?.derived.find(x => x.relationType === WordWordDerivationType.Plural)?.refWordId;
-        if(wordId === undefined)
-            return undefined;
-        return "TODO: EXTRACT PLURAL";
-    }
-
     private IsPlural()
     {
         if((this.data!.derivation !== undefined) && ("relationType" in this.data!.derivation))
@@ -270,92 +229,7 @@ export class ShowWordComponent extends Component
         if(this.IsPlural())
             return null;
 
-        return <table className="table table-sm table-bordered text-center">
-            <tbody>
-                {this.RenderNounDeclensionTableNumerus(Numerus.Singular)}
-                {this.RenderNounDeclensionTableNumerus(Numerus.Dual)}
-                {this.RenderNounDeclensionTableNumerus(Numerus.Plural)}
-            </tbody>
-        </table>;
-    }
-
-    private RenderNounDeclensionTableNumerus(numerus: Numerus)
-    {
-        function headline()
-        {
-            switch(numerus)
-            {
-                case Numerus.Dual:
-                    return "Dual";
-                case Numerus.Plural:
-                    return "Plural";
-                case Numerus.Singular:
-                    return "Singular";
-            }
-        }
-
-        const hasMale = this.data!.isMale;
-        const cols = [
-            <th>Indefinite</th>,
-            <th>Definite</th>,
-            <th>Construct</th>
-        ];
-        return <fragment>
-            <tr>
-                <th>{headline()}</th>
-                {hasMale ? <th colSpan="3">Masculine</th> : null}
-                <th colSpan="3">Feminine</th>
-            </tr>
-            <tr>
-                <th> </th>
-                {hasMale ? cols : null}
-                {...cols}
-            </tr>
-            
-            <tr>
-                <td>Nominative</td>
-                {this.RenderNounDeclensionTableNumerusCase(numerus, Case.Nominative)}
-            </tr>
-            <tr>
-                <td>Accusative</td>
-                {this.RenderNounDeclensionTableNumerusCase(numerus, Case.Accusative)}
-            </tr>
-            <tr>
-                <td>Genitive</td>
-                {this.RenderNounDeclensionTableNumerusCase(numerus, Case.Genitive)}
-            </tr>
-        </fragment>;
-    }
-
-    private RenderNounDeclensionTableNumerusCase(numerus: Numerus, c: Case)
-    {
-        const hasMale = this.data!.isMale;
-        return <fragment>
-            {hasMale ? this.RenderNounDeclensionTableNumerusCaseGender(numerus, c, Gender.Male) : null}
-            {this.RenderNounDeclensionTableNumerusCaseGender(numerus, c, Gender.Female)}
-        </fragment>;
-    }
-
-    private RenderNounDeclensionTableNumerusCaseGender(numerus: Numerus, c: Case, gender: Gender)
-    {
-        const inputWord = this.data!.word;
-        const parsed = ParseVocalizedText(inputWord);
-        const base = this.BuildBaseNoun(parsed, gender, numerus);
-
-        const render = (state: NounState) => RenderWithDiffHighlights(this.conjugationService.DeclineNoun({
-            gender,
-            numerus,
-            vocalized: base
-        }, {
-            state,
-            case: c,
-        }), parsed);
-
-        return <fragment>
-            <td>{render(NounState.Indefinite)}</td>
-            <td>{render(NounState.Definite)}</td>
-            <td>{render(NounState.Construct)}</td>
-        </fragment>;
+        return <NounDeclensionTable word={this.data!} />;
     }
 
     private RenderRelation(related: WordRelation)

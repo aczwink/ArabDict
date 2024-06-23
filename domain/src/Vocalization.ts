@@ -104,6 +104,12 @@ export function ParseVocalizedText(text: string)
                     tashkil = Tashkil.Fatha;
                     i++;
                     break;
+                case Tashkil.Fathatan:
+                    if(tashkil !== undefined)
+                        throw new Error("Doubled tashkil");
+                    tashkil = Tashkil.Fathatan;
+                    i++;
+                    break;
                 case Tashkil.Kasra:
                     if(tashkil !== undefined)
                         throw new Error("Doubled tashkil");

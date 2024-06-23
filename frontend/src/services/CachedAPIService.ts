@@ -18,7 +18,7 @@
 
 import { Injectable } from "acfrontend";
 import { APIService } from "./APIService";
-import { RootCreationData, VerbData } from "../../dist/api";
+import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
 import { NumberDictionary } from "../../../../ACTS-Util/core/dist/Dictionary";
 
 export interface FullVerbData
@@ -41,6 +41,7 @@ export class CachedAPIService
         this.rootsCache = {};
         this.rootVerbsCache = {};
         this.verbsCache = {};
+        this.wordsCache = {};
     }
 
     //Public methods
@@ -96,8 +97,23 @@ export class CachedAPIService
         return response.data;
     }
 
+    public async QueryWord(wordId: number)
+    {
+        const cached = this.wordsCache[wordId];
+        if(cached !== undefined)
+            return cached;
+
+        const response = await this.apiService.words._any_.get(wordId);
+        if(response.statusCode !== 200)
+            throw new Error("HERE");
+        this.wordsCache[wordId] = response.data;
+
+        return response.data;
+    }
+
     //State
     private rootsCache: NumberDictionary<RootCreationData>;
     private rootVerbsCache: NumberDictionary<VerbData[]>;
     private verbsCache: NumberDictionary<VerbData>;
+    private wordsCache: NumberDictionary<FullWordData>;
 }

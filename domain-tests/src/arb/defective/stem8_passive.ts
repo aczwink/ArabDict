@@ -16,18 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { RunDefectiveConjugationTest, RunDefectiveParticipleTest } from "../../shared";
 
-It("Stem 2", () => {
-    RunDefectiveParticipleTest("ف-ع", 2, "مُفَعٍّ", "مُفَعًّى");
-    
-    RunDefectiveConjugationTest("ف-ع", 2, [
-        { expected: "فَعَّى" },
-        { expected: "يُفَعِّي", tense: "present" },
-        { expected: "فَعِّ", tense: "present", mood: "imperative", person: "second" },
-        { voice: "passive", expected: "فُعِّيَ" },
-        { voice: "passive", expected: "يُفَعّى", tense: "present" },
-    ]);
-    
+It("Stem 8 passive", () => {
     throw new Error("TODO :)");
 });

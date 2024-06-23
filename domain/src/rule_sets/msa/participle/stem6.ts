@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,22 +17,17 @@
  * */
 
 import { Tashkil, Voice } from "../../../Definitions";
-import { RootType } from "../../../VerbRoot";
+import { RootType, VerbRoot } from "../../../VerbRoot";
 import { ConjugationVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
-import { GenerateParticipleDefective, GenerateParticipleRegular } from "./regular";
+import { GenerateParticipleDefective } from "./regular";
 
-export function GenerateParticipleStem2(baseForm: AugmentedRoot, voice: Voice): ConjugationVocalized[]
+export function GenerateParticipleStem6(root: VerbRoot, baseForm: AugmentedRoot, voice: Voice): ConjugationVocalized[]
 {
-    switch(baseForm.type)
+    switch(root.type)
     {
         case RootType.Defective:
             return GenerateParticipleDefective(baseForm, voice);
-
-        case RootType.Hollow:
-        case RootType.SecondConsonantDoubled:
-        case RootType.Sound:
-            return GenerateParticipleRegular(baseForm, voice);
     }
-    return [{ letter: "TODO" as any, tashkil: Tashkil.EndOfWordMarker }];
+    return [{letter: "TODO GenerateParticipleStem6" as any, tashkil: Tashkil.Sukun }];
 }

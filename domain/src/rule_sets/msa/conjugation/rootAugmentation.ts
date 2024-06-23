@@ -83,6 +83,17 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
         break;
         case 4:
         {
+            if(root.type === RootType.Quadriliteral)
+            {
+                return [
+                    { symbolName: SymbolName.R1 },
+                    { symbolName: SymbolName.R2 },
+                    { symbolName: SymbolName.R3 },
+                    { symbolName: SymbolName.Infix, letter: root.r4, tashkil: Tashkil.Sukun },
+                    { symbolName: SymbolName.R4 },
+                ];
+            }
+
             switch(root.type)
             {
                 case RootType.Assimilated:
@@ -126,6 +137,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
         {
             switch(root.type)
             {
+                case RootType.Defective:
                 case RootType.Hollow:
                 case RootType.Sound:
                     return [
@@ -162,6 +174,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
             {
                 case RootType.Assimilated:
                 case RootType.Defective:
+                case RootType.HamzaOnR1:
                 case RootType.Hollow:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
