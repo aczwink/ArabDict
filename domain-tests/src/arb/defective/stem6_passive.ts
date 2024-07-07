@@ -16,7 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
+import { ConjugationTest, RunDefectiveConjugationTest } from "../../shared";
+
+//Source: https://en.wiktionary.org/wiki/%D8%AA%D8%B9%D8%A7%D9%84%D9%89
 
 It("Stem 6 passive", () => {
-    throw new Error("TODO :)");
+    const conjugations: ConjugationTest[] = [
+        //past passive
+        { voice: "passive", expected: "تُعُولِيَ", gender: "male", person: "third", },
+
+        //present indicative
+        { voice: "passive", expected: "يُتَعَالَى", gender: "male", person: "third", tense: "present" },
+
+        //subjunctive
+        { voice: "passive", expected: "يُتَعَالَى", gender: "male", person: "third", tense: "present", mood: "subjunctive" },
+
+        //jussive
+        { voice: "passive", expected: "يُتَعَالَ", gender: "male", person: "third", tense: "present", mood: "jussive" },
+    ];
+
+    RunDefectiveConjugationTest("ع-ل", 6, conjugations);
+    
+    throw new Error("TODO: find source");
 });

@@ -35,7 +35,7 @@ export class AddWordComponent extends Component
             functions: [{
                 id: -1,
                 translations: [],
-                type: WordType.Adjective,
+                type: WordType.Noun,
             }]
         };
         if(router.state.Get().queryParams.relatedWordId !== undefined)
@@ -53,7 +53,6 @@ export class AddWordComponent extends Component
         }
         else if(router.state.Get().queryParams.verbId !== undefined)
         {
-            this.data.functions[0].type = WordType.Noun;
             this.data.derivation = {
                 verbId: parseInt(router.state.Get().queryParams.verbId!),
                 type: WordVerbDerivationType.VerbalNoun

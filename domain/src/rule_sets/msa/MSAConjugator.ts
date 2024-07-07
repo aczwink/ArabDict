@@ -18,17 +18,15 @@
 import { Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, NounState } from "../../Definitions";
 import { DialectConjugator, NounInput, TargetNounDerivation } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
-import { ParseVocalizedText, ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
-import { DialectDefinition, StemTenseVoiceDefinition } from "../Definitions";
+import { ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
 import { AugmentedRoot } from "./AugmentedRoot";
-import { _Legacydefinition as msaDef } from "./dialectDefinition";
 import { DeriveSuffix } from "./conjugation/suffix";
 import { DerivePrefix } from "./conjugation/prefix";
 import { AugmentRoot } from "./conjugation/rootAugmentation";
 import { ShortenOrAlefizeR2 } from "./conjugation/hollow";
 import { GeminateDoubledConsonant } from "./conjugation/doubled";
 import { AlterDefectiveEnding, AlterDefectiveSuffix } from "./conjugation/defective";
-import { DropOutR1 } from "./conjugation/assimilated";
+import { AlterAssimilatedPrefix } from "./conjugation/assimilated";
 import { ApplyRootTashkil } from "./conjugation/rootTashkil";
 import { GenerateAllPossibleVerbalNounsStem1 } from "./verbal_nouns/stem1";
 import { Stem8AssimilateTaVerb } from "./conjugation/stem8";
@@ -62,8 +60,6 @@ export class MSAConjugator implements DialectConjugator
     public Conjugate(root: VerbRoot, params: ConjugationParams): ConjugationVocalized[]
     {
         const result = this.ProcessConjugationPipeline(root, params);
-        if(result === undefined)
-            return this._LegacyConjugate(root, params);
         return DerivePrefix(result.augmentedRoot.symbols[0].tashkil as any, root.type, params).concat(result.augmentedRoot.symbols, result.suffix.suffix);
     }
 
@@ -183,7 +179,6 @@ export class MSAConjugator implements DialectConjugator
     }
 
     //Private methods
-
     private ConditionallyAddArticle(isDefinite: boolean, vocalized: DisplayVocalized[]): DisplayVocalized[]
     {
         if(isDefinite)
@@ -223,7 +218,7 @@ export class MSAConjugator implements DialectConjugator
     {
         const maybeAugmentedRoot = AugmentRoot(params.stem, root, params);
         if(maybeAugmentedRoot === undefined)
-            return undefined;
+            throw new Error("TODO: can't form augmented root");
         
         const augmentedRoot = new AugmentedRoot(maybeAugmentedRoot, root);
 
@@ -237,7 +232,7 @@ export class MSAConjugator implements DialectConjugator
         switch(rootType)
         {
             case RootType.Assimilated:
-                DropOutR1(augmentedRoot, params);
+                AlterAssimilatedPrefix(augmentedRoot, params);
             break;
             case RootType.Defective:
                 if(IsSpeciallyIrregularDefective(root, params.stem))
@@ -250,7 +245,7 @@ export class MSAConjugator implements DialectConjugator
             break;
             case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                 if(params.stem === 1)
-                    DropOutR1(augmentedRoot, params);
+                    AlterAssimilatedPrefix(augmentedRoot, params);
                 AlterDefectiveSuffix(params, suffix.suffix);
                 AlterDefectiveEnding(augmentedRoot, params);
             break;
@@ -268,113 +263,5 @@ export class MSAConjugator implements DialectConjugator
             augmentedRoot,
             suffix
         };
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //TODO: REMOVE WHOLE METHODs
-    private _LegacyExtractRuleSet(dialectDef: DialectDefinition, stem: number, tense: Tense, voice: VoiceString, rootType: RootType)
-    {
-        const stemData = dialectDef.stems[stem];
-        if(stemData === undefined)
-            return undefined;
-        const tenseData = (tense === Tense.Perfect) ? stemData.perfect : stemData.present;
-        if(tenseData === undefined)
-            return undefined;
-        if("active" in tenseData)
-        {
-            const voiceData = tenseData[voice];
-            if(voiceData === undefined)
-                return undefined;
-            return voiceData[rootType];
-        }
-        if(voice !== "active")
-            throw new Error("Imperative can only be active");
-        return (tenseData as StemTenseVoiceDefinition)[rootType];
-    }
-    
-    private _LegacyApplyRootConjugationPattern(rootRadicals: string[], rootType: RootType, conjugation: string)
-    {
-        const patternRadicals = this._LegacyGetPatternRadicals(rootType);
-
-        const letters = ParseVocalizedText(conjugation);
-
-        const replaced = letters.map(x => {
-            const idx = patternRadicals.indexOf(x.letter);
-            if(idx === -1)
-                return x;
-            return {
-                letter: rootRadicals[idx],
-                tashkil: x.tashkil,
-                shadda: x.shadda
-            }
-        });
-        return replaced;
-    }
-
-    private _LegacyGetPatternRadicals(type: RootType)
-    {
-        switch(type)
-        {
-            case RootType.Assimilated:
-                return [Letter.Waw, Letter.A3ein, Letter.Lam];
-            case RootType.Defective:
-                return [Letter.Fa, Letter.A3ein];
-            case RootType.Hollow:
-                return [Letter.Fa, Letter.A3ein, Letter.Lam];
-            case RootType.Quadriliteral:
-                return [Letter.Fa, Letter.A3ein, Letter.Lam, Letter.Qaf];
-            case RootType.Sound:
-                return [Letter.Fa, Letter.A3ein, Letter.Lam];
-            case RootType.SecondConsonantDoubled:
-                return [Letter.Fa, Letter.Lam];
-            case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-                return [Letter.Fa, Letter.A3ein];
-        }
-        throw new Error("Method not implemented.");
-    }
-
-    private _LegacyConjugate(root: VerbRoot, params: ConjugationParams): ConjugationVocalized[]
-    {
-        const dialectDef = msaDef;
-        const stem1ctx = (params.stem === 1) ? params.stem1Context : undefined;
-        const rootType = stem1ctx?.soundOverride ? RootType.Sound : root.type;
-        const ruleSet = this._LegacyExtractRuleSet(dialectDef, params.stem, params.tense, (params.voice === Voice.Active ? "active" : "passive"), rootType);
-        if(ruleSet !== undefined)
-        {
-            const rules = ruleSet.rules;
-            const rule = rules.find(r => (r.gender === params.gender) && (r.numerus === params.numerus) && (r.person === params.person) && (r.condition ? r.condition(root, stem1ctx!) : true) );
-            if(rule !== undefined)
-                return this._LegacyApplyRootConjugationPattern(root.radicalsAsSeparateLetters, rootType, rule.conjugation) as any;
-        }
-        return [
-            {
-                letter: "T" as any,
-                tashkil: Tashkil.AlefMaksuraMarker
-            },
-            {
-                letter: "O" as any,
-                tashkil: Tashkil.AlefMaksuraMarker
-            },
-            {
-                letter: "D" as any,
-                tashkil: Tashkil.AlefMaksuraMarker
-            },
-            {
-                letter: "O" as any,
-                tashkil: Tashkil.AlefMaksuraMarker
-            }
-        ];
     }
 }

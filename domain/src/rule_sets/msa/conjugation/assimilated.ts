@@ -19,7 +19,7 @@
 import { ConjugationParams, Letter, Tashkil, Tense, Voice } from "../../../Definitions";
 import { AugmentedRoot } from "../AugmentedRoot";
 
-export function DropOutR1(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+export function AlterAssimilatedPrefix(augmentedRoot: AugmentedRoot, params: ConjugationParams)
 {
     switch(params.stem)
     {
@@ -32,6 +32,11 @@ export function DropOutR1(augmentedRoot: AugmentedRoot, params: ConjugationParam
                 else
                     augmentedRoot.ApplyRadicalTashkil(1, Tashkil.LongVowelMarker);
             }
+        }
+        break;
+        case 8:
+        {
+            augmentedRoot.r1.letter = Letter.Ta;
         }
         break;
     }

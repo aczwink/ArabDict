@@ -224,14 +224,6 @@ export class ShowWordComponent extends Component
         return result;
     }
 
-    private RenderNounDeclensionTable()
-    {
-        if(this.IsPlural())
-            return null;
-
-        return <NounDeclensionTable word={this.data!} />;
-    }
-
     private RenderRelation(related: WordRelation)
     {
         return <li>
@@ -307,7 +299,7 @@ export class ShowWordComponent extends Component
             case WordType.Adjective:
                 return this.RenderAdjectiveDeclensionTable();
             case WordType.Noun:
-                return this.RenderNounDeclensionTable();
+                return <NounDeclensionTable word={this.data!} />;
         }
         return null;
     }

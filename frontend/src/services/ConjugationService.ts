@@ -34,6 +34,7 @@ export class ConjugationService
         this.conjugator = new Conjugator;
         this._canEdit = new Property(false);
         this._globalDialect = new Property(DialectType.ModernStandardArabic);
+        this._TODO_informedSet = new Set();
     }
 
     //Properties
@@ -63,7 +64,7 @@ export class ConjugationService
     {
         const root = new VerbRoot(rootRadicals);
 
-        this.CheckConjugation(root, {
+        this._TODO_CheckConjugation(root, {
             stem: stem as any,
             tense: (tense === "perfect") ? Tense.Perfect : Tense.Present,
             voice: (voice === "active" ? Voice.Active : Voice.Passive),
@@ -88,7 +89,7 @@ export class ConjugationService
 
     public ConjugateToString(root: VerbRoot, params: ConjugationParams)
     {
-        this.CheckConjugation(root, params);
+        this._TODO_CheckConjugation(root, params);
 
         const vocalized = this.conjugator.Conjugate(root, params, this._globalDialect.Get());
         return this.VocalizedToString(vocalized);
@@ -139,8 +140,9 @@ export class ConjugationService
     private _canEdit: Property<boolean>;
     private _globalDialect: Property<DialectType>;
 
-    //Private methods
-    private CheckConjugation(root: VerbRoot, params: ConjugationParams)
+    //TODO: remove this
+    private _TODO_informedSet: Set<string>;
+    private _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams)
     {
         const needNothing = 0;
         const needPassive = 1;
@@ -200,6 +202,15 @@ export class ConjugationService
         }
 
         const special = IsSpecial();
+        if(special === needNothing)
+            return;
+
+        const typeKey = (params.stem === 1) ? (params.stem1Context.middleRadicalTashkil + params.stem1Context.middleRadicalTashkilPresent) : "";
+        const key = root.ToString() + params.stem + typeKey;
+        if(this._TODO_informedSet.has(key))
+            return;
+        this._TODO_informedSet.add(key);
+
         switch(special)
         {
             case needPassive:

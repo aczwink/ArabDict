@@ -23,14 +23,14 @@ import { AdjEndingTashkil, WithTashkilOnLast } from "../adjectives/shared";
 
 function NounEndingTashkil(inputNoun: NounInput, params: NounDeclensionParams): DisplayTashkil
 {
-    if(params.state === NounState.Construct)
-        return AdjEndingTashkil({ case: params.case, definite: true, gender: inputNoun.gender });
-
     if(inputNoun.gender === Gender.Female)
     {
         if((inputNoun.numerus === Numerus.Plural) && (params.case === Case.Accusative))
             return NounEndingTashkil(inputNoun, { ...params, case: Case.Genitive });
     }
+
+    if(params.state === NounState.Construct)
+        return AdjEndingTashkil({ case: params.case, definite: true, gender: inputNoun.gender });
 
     return AdjEndingTashkil({ case: params.case, definite: params.state === NounState.Definite, gender: inputNoun.gender });
 }
@@ -69,15 +69,15 @@ export function DeclineNounTriptoteSuffix(inputNoun: NounInput, params: NounDecl
         {
             const last = inputNoun.vocalized[inputNoun.vocalized.length - 1];
             const prev = inputNoun.vocalized[inputNoun.vocalized.length - 2];
-            const isSoundMale = (last.letter === Letter.Nun) && (prev.letter === Letter.Ya);
+            const isSoundMale = (last.letter === Letter.Nun) && (prev.letter === Letter.Waw);
 
             if(isSoundMale)
             {
                 const fixedEnding = WithTashkilOnLast(inputNoun.vocalized, Tashkil.Fatha);
-                if(params.case === Case.Nominative)
+                if(params.case !== Case.Nominative)
                 {
-                    fixedEnding[fixedEnding.length - 2].letter = Letter.Waw;
-                    fixedEnding[fixedEnding.length - 3].tashkil = Tashkil.Dhamma;
+                    fixedEnding[fixedEnding.length - 2].letter = Letter.Ya;
+                    fixedEnding[fixedEnding.length - 3].tashkil = Tashkil.Kasra;
                 }
 
                 if(params.state === NounState.Construct)

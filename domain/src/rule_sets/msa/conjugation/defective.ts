@@ -35,6 +35,7 @@ function GetDefectiveType(params: ConjugationParams)
 {
     switch(params.stem)
     {
+        //TODO: 7 missing
         case 1:
         {
             switch(params.stem1Context.middleRadicalTashkilPresent)
@@ -50,11 +51,13 @@ function GetDefectiveType(params: ConjugationParams)
             }
         }
         case 2:
+        case 3:
         case 4:
         case 8:
         case 10:
             return DefectiveType.Type1_Fa3aY;
 
+        case 5:
         case 6:
             if(params.tense === Tense.Present)
                 return DefectiveType.Type3_Fa3iya;
@@ -320,8 +323,11 @@ export function AlterDefectiveEnding(augmentedRoot: AugmentedRoot, params: Conju
     {
         case 1:
         case 2:
+        case 3:
         case 4:
+        case 5:
         case 6:
+        //TODO: 7 missing
         case 8:
         case 10:
         {

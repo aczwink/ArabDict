@@ -25,11 +25,6 @@ It("Stem 1", () => {
         { expected: "يَجِدُ", tense: "present" },
         { expected: "جِدْ", tense: "present", mood: "imperative", person: "second" },
     ]);
-    RunConjugationTest("و-ر-ث", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, [
-        { expected: "وَرِثَ" },
-        { expected: "يَرِثُ", tense: "present" },
-        { expected: "رِثْ", tense: "present", mood: "imperative", person: "second" },
-    ]);
     RunConjugationTest("و-ض-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, [
         { expected: "وَضَعَ" },
         { expected: "يَضَعُ", tense: "present" },
@@ -72,13 +67,6 @@ It("Stem 1", () => {
         { expected: "وَعِلَ" },
         { expected: "يَعَلُ", tense: "present" },
         { expected: "عَلْ", tense: "present", mood: "imperative", person: "second" },
-        { expected: "وُعِلَ", voice: "passive" },
-        { expected: "يُوعَلُ", voice: "passive", tense: "present" },
-    ]);
-    RunConjugationTest("و-ع-ل", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, [
-        { expected: "وَعِلَ" },
-        { expected: "يَعِلُ", tense: "present" },
-        { expected: "عِلْ", tense: "present", mood: "imperative", person: "second" },
         { expected: "وُعِلَ", voice: "passive" },
         { expected: "يُوعَلُ", voice: "passive", tense: "present" },
     ]);

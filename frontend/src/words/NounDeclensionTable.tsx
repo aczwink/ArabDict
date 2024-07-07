@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, Injectable, JSX_CreateElement } from "acfrontend";
+import { Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { CachedAPIService } from "../services/CachedAPIService";
 import { Case, Gender, NounState, Numerus } from "arabdict-domain/src/Definitions";
 import { FullWordData, WordWordDerivationType } from "../../dist/api";
@@ -32,53 +32,54 @@ export class NounDeclensionTable extends Component<{ word: FullWordData }>
     {
         super();
 
-        this.plurals = [];
+        this.plurals = null;
     }
 
     protected Render(): RenderValue
     {
+        if(this.plurals === null)
+            return <ProgressSpinner />;
+
+        const isSingular = this.IsSingular();
+        const hasPlural = this.HasPlural();
+
         return <table className="table table-sm table-bordered text-center">
             <tbody>
-                {this.RenderNumerus(Numerus.Singular)}
-                {this.RenderNumerus(Numerus.Dual)}
-                {this.RenderNumerus(Numerus.Plural)}
+                {this.RenderNumerus(isSingular ? Numerus.Singular : Numerus.Plural)}
+                {hasPlural ? this.RenderNumerus(Numerus.Dual) : null}
             </tbody>
         </table>;
     }
 
     //State
-    private plurals: FullWordData[];
+    private plurals: FullWordData[] | null;
 
     //Private methods
     private BuildBaseNoun(referenceWord: DisplayVocalized[], targetGender: Gender, targetNumerus: Numerus)
     {
-        const ctx = this;
-        function Singular()
-        {
-            if(ctx.input.word.isMale)
-            {
-                if(targetGender === Gender.Male)
-                    return referenceWord;
-                return ctx.conjugationService.DeriveSoundNoun(referenceWord, Gender.Male, TargetNounDerivation.DeriveFeminineSingular);
-            }
-            return referenceWord;
-        }
-
-        const singular = Singular();
         switch(targetNumerus)
         {
             case Numerus.Dual:
-                return this.conjugationService.DeriveSoundNoun(singular, targetGender, TargetNounDerivation.DeriveDualSameGender);
+                return this.conjugationService.DeriveSoundNoun(referenceWord, targetGender, TargetNounDerivation.DeriveDualSameGender);
             case Numerus.Plural:
-                {
-                    const plural = this.TryExtractPlural(targetGender);
-                    if(plural !== undefined)
-                        return ParseVocalizedText(plural);
-                    return this.conjugationService.DeriveSoundNoun(singular, targetGender, TargetNounDerivation.DerivePluralSameGender);
-                }
             case Numerus.Singular:
-                return singular;
+                return referenceWord;
         }
+    }
+
+    private HasPlural()
+    {
+        return this.plurals!.length > 0;
+    }
+
+    private IsSingular()
+    {
+        if(this.input.word.derivation !== undefined)
+        {
+            if("relationType" in this.input.word.derivation)
+                return this.input.word.derivation.relationType !== WordWordDerivationType.Plural;
+        }
+        return true;
     }
 
     private async LoadPlurals()
@@ -102,22 +103,12 @@ export class NounDeclensionTable extends Component<{ word: FullWordData }>
             }
         }
 
-        const hasMale = this.input.word.isMale;
-        const cols = [
-            <th>Indefinite</th>,
-            <th>Definite</th>,
-            <th>Construct</th>
-        ];
         return <fragment>
             <tr>
                 <th>{headline()}</th>
-                {hasMale ? <th colSpan="3">Masculine</th> : null}
-                <th colSpan="3">Feminine</th>
-            </tr>
-            <tr>
-                <th> </th>
-                {hasMale ? cols : null}
-                {...cols}
+                <th>Indefinite</th>
+                <th>Definite</th>
+                <th>Construct</th>
             </tr>
             
             <tr>
@@ -138,9 +129,9 @@ export class NounDeclensionTable extends Component<{ word: FullWordData }>
     private RenderNumerusCase(numerus: Numerus, c: Case)
     {
         const hasMale = this.input.word.isMale;
+        const gender = hasMale ? Gender.Male : Gender.Female;
         return <fragment>
-            {hasMale ? this.RenderNumerusCaseGender(numerus, c, Gender.Male) : null}
-            {this.RenderNumerusCaseGender(numerus, c, Gender.Female)}
+            {this.RenderNumerusCaseGender(numerus, c, gender)}
         </fragment>;
     }
 
@@ -148,30 +139,29 @@ export class NounDeclensionTable extends Component<{ word: FullWordData }>
     {
         const inputWord = this.input.word.word;
         const parsed = ParseVocalizedText(inputWord);
-        const base = this.BuildBaseNoun(parsed, gender, numerus);
-
-        const render = (state: NounState) => RenderWithDiffHighlights(this.conjugationService.DeclineNoun({
-            gender,
-            numerus,
-            vocalized: base
-        }, {
-            state,
-            case: c,
-        }), parsed);
 
         return <fragment>
-            <td>{render(NounState.Indefinite)}</td>
-            <td>{render(NounState.Definite)}</td>
-            <td>{render(NounState.Construct)}</td>
+            <td>{this.RenderCell(numerus, c, gender, parsed, NounState.Indefinite)}</td>
+            <td>{this.RenderCell(numerus, c, gender, parsed, NounState.Definite)}</td>
+            <td>{this.RenderCell(numerus, c, gender, parsed, NounState.Construct)}</td>
         </fragment>;
     }
 
-    private TryExtractPlural(gender: Gender)
+    private RenderCell(numerus: Numerus, c: Case, gender: Gender, parsed: DisplayVocalized[], state: NounState)
     {
-        const plural = this.plurals.find(x => (gender === Gender.Male) ? x.isMale : !x.isMale);
-        return plural?.word;
-    }
+        const base = this.BuildBaseNoun(parsed, gender, numerus);
 
+        const declined = this.conjugationService.DeclineNoun({
+            gender,
+            numerus,
+            vocalized: base.DeepClone() //TODO: why is the clone necessary?
+        }, {
+            state,
+            case: c,
+        });
+        return RenderWithDiffHighlights(declined, parsed);
+    }
+    
     //Event handlers
     override OnInitiated(): void
     {
