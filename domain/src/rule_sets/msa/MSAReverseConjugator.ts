@@ -61,6 +61,28 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                 suffix: [],
                 tense: Tense.Present
             },
+            {
+                prefix: [
+                    {
+                        letter: Letter.AlefHamza,
+                        emphasis: false,
+                        shadda: false
+                    }
+                ],
+                suffix: [],
+                tense: Tense.Present
+            },
+            {
+                prefix: [
+                    {
+                        letter: Letter.Alef,
+                        emphasis: false,
+                        shadda: false
+                    }
+                ],
+                suffix: [],
+                tense: Tense.Present
+            },
 
             //Perfect
             {
@@ -121,6 +143,8 @@ export class MSAReverseConjugator implements DialectReverseConjugator
             {
                 case Letter.AlefHamza:
                     return Letter.Hamza;
+                case Letter.AlefMaksura:
+                    return Letter.Ya;
             }
             return x;
         });
@@ -181,11 +205,36 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                         }
                     ];
                 }
+                if(r3 === Letter.Ya)
+                {
+                    return [
+                        {
+                            rootRadicals: [r1, r2, Letter.Waw],
+                            stem: 1
+                        },
+                        {
+                            rootRadicals: [r1, r2, Letter.Ya],
+                            stem: 1
+                        },
+                        {
+                            rootRadicals: [r1, r2, Letter.Waw],
+                            stem: 2
+                        },
+                        {
+                            rootRadicals: [r1, r2, Letter.Ya],
+                            stem: 2
+                        },
+                    ];
+                }
 
                 return [
                     {
                         rootRadicals: rootLetters,
                         stem: 1
+                    },
+                    {
+                        rootRadicals: rootLetters,
+                        stem: 2
                     }
                 ];
             }

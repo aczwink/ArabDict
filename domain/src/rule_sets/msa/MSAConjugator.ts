@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, NounState } from "../../Definitions";
+import { Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, NounState, StemNumber } from "../../Definitions";
 import { DialectConjugator, NounInput, TargetNounDerivation } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
@@ -51,6 +51,7 @@ import { IsSunLetter } from "../../Util";
 import { DeclineNounTriptoteSuffix } from "./nouns/triptote";
 import { WithTashkilOnLast } from "./adjectives/shared";
 import { GenerateParticipleStem6 } from "./participle/stem6";
+import { GenerateAllPossibleVerbalNounsStem7 } from "./verbal_nouns/stem7";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -153,7 +154,7 @@ export class MSAConjugator implements DialectConjugator
         }
     }
 
-    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | ConjugationVocalized[])[]
+    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: StemNumber): (string | ConjugationVocalized[])[]
     {
         switch(stem)
         {
@@ -169,13 +170,13 @@ export class MSAConjugator implements DialectConjugator
                 return [GenerateAllPossibleVerbalNounsStem5(root)];
             case 6:
                 return [GenerateAllPossibleVerbalNounsStem6(root)];
+            case 7:
+                return [GenerateAllPossibleVerbalNounsStem7(root)];
             case 8:
                 return [GenerateAllPossibleVerbalNounsStem8(root)];
             case 10:
                 return [GenerateAllPossibleVerbalNounsStem10(root)];
         }
-
-        return ["TODO GenerateAllPossibleVerbalNouns"];
     }
 
     //Private methods

@@ -317,6 +317,8 @@ export class GlobalSearchService
         });
         if((response.data.words.length === 0) && filter.endsWith(Letter.TaMarbuta))
             return this.FindWords(filter.substring(0, filter.length - 1), offset, limit);
+        if((response.data.words.length === 0) && filter.startsWith(Letter.Alef + Letter.Lam))
+            return this.FindWords(filter.substring(2), offset, limit);
         return response.data.words;
     }
 

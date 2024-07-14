@@ -43,18 +43,20 @@ function CompareVocalized(a: DisplayVocalized[], b: DisplayVocalized[])
     return true;
 }
 
-function Test(expected: string, got: DisplayVocalized[], params: ConjugationParams)
+function Test(expected: string[], got: DisplayVocalized[], params: ConjugationParams)
 {
-    const a = ParseVocalizedText(expected);
     const gotStr = got.Values().Map(VocalizedToString).Join("");
-    if(!CompareVocalized(a, got))
+    const anyExpected = expected.Values().Map(ex => CompareVocalized(ParseVocalizedText(ex), got)).AnyTrue();
+    if(!anyExpected)
     {
         const stemData = (params.stem === 1) ? (params.stem + " (past:" + Buckwalter.TashkilToString(params.stem1Context.middleRadicalTashkil) + " present:" + Buckwalter.TashkilToString(params.stem1Context.middleRadicalTashkilPresent) + ")") : params.stem;
         const context = ["stem " + stemData, TenseToString(params.tense), VoiceToString(params.voice)];
         if(params.tense === Tense.Present)
             context.push(MoodToString(params.mood));
         context.push(NumerusToString(params.numerus), PersonToString(params.person), GenderToString(params.gender));
-        Fail("expected: " + expected + " / " + Buckwalter.ToString(a) + " got: " + gotStr + " / " + Buckwalter.ToString(got) + " " + context.join(" "));
+        const firstExpected = ParseVocalizedText(expected[0]);
+        const buckwalterExpected = expected.Values().Map(ex => Buckwalter.ToString(ParseVocalizedText(ex)));
+        Fail("expected: " + expected.join(", ") + " / " + buckwalterExpected.Join(", ") + " got: " + gotStr + " / " + Buckwalter.ToString(got) + " " + context.join(" "));
     }
 }
 
@@ -66,49 +68,21 @@ function TestParticiple(expected: string, got: DisplayVocalized[], voice: VoiceS
         Fail("expected: " + expected + " / " + Buckwalter.ToString(a) + " got: " + gotStr + " / " + Buckwalter.ToString(got) + " voice: " + voice);
 }
 
-interface BasicConjugationTest
+function ValidateStem1Context(ctx: Stem1Context, root: VerbRoot)
 {
-    root: string;
-    past: string;
-    present: string;
-}
-
-export function RunBasicConjugationTest(conjugations: BasicConjugationTest[], stem: AdvancedStemNumber)
-{
-    const conjugator = new Conjugator();
-    
-    for (const test of conjugations)
+    const choices = root.GetStem1ContextChoices();
+    for (const opt of choices.r2options)
     {
-        const root = new VerbRoot(test.root.split("-").join(""));
-
-        const params1: ConjugationParams = {
-            gender: Gender.Male,
-            numerus: Numerus.Singular,
-            person: Person.Third,
-            stem,
-            tense: Tense.Perfect,
-            voice: Voice.Active,
-        };
-        const pastResult = conjugator.Conjugate(root, params1, DialectType.ModernStandardArabic);
-        Test(test.past, pastResult, params1);
-
-        const params2: ConjugationParams = {
-            gender: Gender.Male,
-            numerus: Numerus.Singular,
-            person: Person.Third,
-            stem,
-            tense: Tense.Present,
-            voice: Voice.Active,
-            mood: Mood.Indicative,
-        };
-        const presentResult = conjugator.Conjugate(root, params2, DialectType.ModernStandardArabic);
-        Test(test.present, presentResult, params2);
+        const match = (ctx.middleRadicalTashkil === opt.past) && (ctx.middleRadicalTashkilPresent === opt.present);
+        if(match)
+            return;
     }
+    throw new Error("Illegal stem 1 context");
 }
 
 export interface ConjugationTest
 {
-    expected: string;
+    expected: string | string[];
     gender?: GenderString;
     mood?: MoodString;
     numerus?: NumerusString;
@@ -159,7 +133,10 @@ export function RunConjugationTest(rootRadicals: string, stem: AdvancedStemNumbe
 
     const conjugator = new Conjugator();
 
-    const root = new VerbRoot(rootRadicals.split("-").join(""));    
+    const root = new VerbRoot(rootRadicals.split("-").join(""));
+    if(typeof stem !== "number")
+        ValidateStem1Context(stem, root);
+
     for (const test of conjugations)
     {
         const stringParams = {
@@ -182,7 +159,7 @@ export function RunConjugationTest(rootRadicals: string, stem: AdvancedStemNumbe
             voice: stringParams.voice === "active" ? Voice.Active : Voice.Passive,
         };
         const pastResult = conjugator.Conjugate(root, params, dialect);
-        Test(test.expected, pastResult, params);
+        Test(Array.isArray(test.expected) ? test.expected : [test.expected], pastResult, params);
     }
 }
 
@@ -200,6 +177,9 @@ export function RunParticipleTest(rootRadicals: string, stem: number | Stem1Cont
     const ctx = (typeof stem === "number") ? undefined : stem;
 
     const root = new VerbRoot(rootRadicals.split("-").join(""));
+    if(typeof stem !== "number")
+        ValidateStem1Context(stem, root);
+    
     const activeGot = conjugator.ConjugateParticiple(DialectType.ModernStandardArabic, root, stemNumber, "active", ctx);
     TestParticiple(activeExpected, activeGot, "active");
 

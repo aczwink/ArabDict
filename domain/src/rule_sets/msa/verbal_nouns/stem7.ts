@@ -1,6 +1,6 @@
 /**
  * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,32 +19,18 @@ import { Letter, Tashkil } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
 import { ConjugationVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem10(root: VerbRoot): ConjugationVocalized[]
+export function GenerateAllPossibleVerbalNounsStem7(root: VerbRoot): ConjugationVocalized[]
 {
     switch(root.type)
     {
-        case RootType.HamzaOnR1:
-        case RootType.SecondConsonantDoubled:
         case RootType.Sound:
             return [
                 { letter: Letter.Alef, tashkil: Tashkil.Kasra },
-                { letter: Letter.Siin, tashkil: Tashkil.Sukun },
-                { letter: Letter.Ta, tashkil: Tashkil.Kasra },
-                { letter: root.r1, tashkil: Tashkil.Sukun },
+                { letter: Letter.Nun, tashkil: Tashkil.Sukun },
+                { letter: root.r1, tashkil: Tashkil.Kasra },
                 { letter: root.r2, tashkil: Tashkil.Fatha },
                 { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
                 { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
-            ];
-
-        case RootType.Hollow:
-            return [
-                { letter: Letter.Alef, tashkil: Tashkil.Kasra },
-                { letter: Letter.Siin, tashkil: Tashkil.Sukun },
-                { letter: Letter.Ta, tashkil: Tashkil.Kasra },
-                { letter: root.r1, tashkil: Tashkil.Fatha },
-                { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
-                { letter: root.r3, tashkil: Tashkil.Fatha },
-                { letter: Letter.TaMarbuta, tashkil: Tashkil.EndOfWordMarker },
             ];
     }
 

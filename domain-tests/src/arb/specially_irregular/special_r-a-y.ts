@@ -21,6 +21,8 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D8%B1%D8%A3%D9%89
 It("Specially irregular defective رَأَى", () => {
+    throw new Error("TODO: ADD PARTICIPLE!");
+
     const conjugations: ConjugationTest[] = [
         //past
         { expected: "رَأَى", gender: "male", person: "third", },
@@ -174,6 +176,8 @@ It("Specially irregular defective رَأَى", () => {
 //Source: https://en.wiktionary.org/wiki/%D8%A3%D8%B1%D9%89#Arabic
 
 It("Specially irregular defective أَرَى", () => {
+    throw new Error("TODO: ADD PARTICIPLE!");
+    
     const conjugations: ConjugationTest[] = [
         //past
         { expected: "أَرَى", gender: "male", person: "third", },

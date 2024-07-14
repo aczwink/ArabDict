@@ -23,7 +23,7 @@ import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
-import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams } from "arabdict-domain/src/Definitions";
+import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, StemNumber, Tashkil } from "arabdict-domain/src/Definitions";
 import { NounInput, TargetNounDerivation } from "arabdict-domain/src/DialectConjugator";
 
 @Injectable
@@ -123,7 +123,7 @@ export class ConjugationService
         return this.conjugator.DeriveSoundNoun(singular, singularGender, target, this._globalDialect.Get());
     }
 
-    public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: number)
+    public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: StemNumber)
     {
         const root = new VerbRoot(rootRadicals);
         const nouns = this.conjugator.GenerateAllPossibleVerbalNouns(this._globalDialect.Get(), root, stem);
@@ -152,6 +152,17 @@ export class ConjugationService
         {
             switch(params.stem)
             {
+                case 1:
+                    switch(root.type)
+                    {
+                        case RootType.SecondConsonantDoubled:
+                        {
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
+                                return needPassive;
+                        }
+                        break;
+                    }
+                    break;
                 case 2:
                     switch(root.type)
                     {
@@ -191,8 +202,6 @@ export class ConjugationService
                 case 8:
                     switch(root.type)
                     {
-                        case RootType.HamzaOnR1:
-                            return need;
                         case RootType.SecondConsonantDoubled:
                             return needPassive;
                     }

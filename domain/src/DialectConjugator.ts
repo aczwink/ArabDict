@@ -17,7 +17,7 @@
  * */
 import { VerbRoot } from "./VerbRoot";
 import { ConjugationVocalized, DisplayVocalized } from "./Vocalization";
-import { ConjugationParams, AdjectiveDeclensionParams, Stem1Context, VoiceString, NounDeclensionParams, Gender, Numerus } from "./Definitions";
+import { ConjugationParams, AdjectiveDeclensionParams, Stem1Context, VoiceString, NounDeclensionParams, Gender, Numerus, StemNumber } from "./Definitions";
 
 export enum TargetNounDerivation
 {
@@ -40,5 +40,5 @@ export interface DialectConjugator
     DeclineAdjective(vocalized: DisplayVocalized[], params: AdjectiveDeclensionParams): DisplayVocalized[];
     DeclineNoun(inputNoun: NounInput, params: NounDeclensionParams): DisplayVocalized[];
     DeriveSoundNoun(singular: DisplayVocalized[], singularGender: Gender, target: TargetNounDerivation): DisplayVocalized[];
-    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): (string | ConjugationVocalized[])[];
+    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: StemNumber): (string | ConjugationVocalized[])[];
 }

@@ -21,7 +21,7 @@ import { WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
 import { ConjugationService } from "../services/ConjugationService";
 import { APIService } from "../services/APIService";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
-import { Stem1Context } from "arabdict-domain/src/Definitions";
+import { Stem1Context, StemNumber } from "arabdict-domain/src/Definitions";
 
 interface WordVerbDerivationEditorInput
 {
@@ -34,7 +34,7 @@ interface WordVerbDerivationEditorInput
 interface CurrentVerbData
 {
     rootRadicals: string;
-    stem: number;
+    stem: StemNumber;
     stem1Context?: Stem1Context;
 }
 
@@ -101,7 +101,7 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
 
         this.SetCurrentVerb({
             rootRadicals: response2.data.radicals,
-            stem: response.data.stem,
+            stem: response.data.stem as any,
             stem1Context: Stem1DataToStem1ContextOptional(response.data.stem1Data)
         });
     }

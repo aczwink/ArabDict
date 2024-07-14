@@ -16,17 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
-import { RunConjugationTest } from "../../shared";
 
-It("Stem 1", () => {
-    RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, [
-        { expected: "فَلَّ" },
-        { expected: "فَلَلْتُ", person: "first" },
-        { expected: "يَفَلُّ", tense: "present" },
-        { expected: "فُلَّ", voice: "passive" },
-        { expected: "يُفَلُّ", voice: "passive", tense: "present" },
-    ]);
-    
-    throw new Error("TODO rest :)");
+//Source: https://en.wikipedia.org/wiki/Arabic_verbs#Doubly_weak_verbs
+
+It("R1:Waw, R3:Waw or Ya, Stem 8", () => {    
+    throw new Error("TODO here! :)");
 });

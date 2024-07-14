@@ -36,18 +36,36 @@ export interface ConjugationVocalized
 
 function cmp(a: DisplayVocalized, b: DisplayVocalized)
 {
+    function MapCmpLetter(l: Letter)
+    {
+        switch(l)
+        {
+            case Letter.AlefHamza:
+                return Letter.Alef;
+        }
+        return l;
+    }
+
+    if(MapCmpLetter(a.letter) !== MapCmpLetter(b.letter))
+        return 0;
+
+    let match = 1;    
+    if(a.letter !== b.letter)
+        match -= 0.1;
+    
     if(a.letter === b.letter)
     {
         const tashkilMatches = (a.tashkil === b.tashkil) || ( (a.tashkil === undefined) && (b.tashkil !== undefined) ) || ( (b.tashkil === undefined) && (a.tashkil !== undefined) );
         if(tashkilMatches)
         {
-            if(a.shadda === b.shadda)
-                return 1;
-            return 0.75;
+            if(a.shadda !== b.shadda)
+                match -= 0.25;
         }
+        else
+            match = 0;
     }
 
-    return 0;
+    return match;
 }
 
 export function CompareVocalized(a: DisplayVocalized[], b: DisplayVocalized[])

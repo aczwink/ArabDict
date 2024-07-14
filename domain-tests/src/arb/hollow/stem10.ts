@@ -16,11 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest } from "../../shared";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
 
 //Source: https://en.wiktionary.org/wiki/%D8%A7%D8%B3%D8%AA%D8%AD%D8%A7%D9%84#Arabic
 
 It("Hollow stem 10 test", () => {
+    RunParticipleTest("ح-و-ل", 10, "مُسْتَحِيل", "مُسْتَحَال");
+
     const conjugations: ConjugationTest[] = [
         //past
         { expected: "اِسْتَحَالَ", gender: "male", person: "third", },

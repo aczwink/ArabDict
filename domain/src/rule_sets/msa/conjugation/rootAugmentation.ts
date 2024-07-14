@@ -177,6 +177,7 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
                 case RootType.Defective:
                 case RootType.HamzaOnR1:
                 case RootType.Hollow:
+                case RootType.SecondConsonantDoubled:
                 case RootType.Sound:
                     const x: AugmentedRootSymbolInput[] = [
                         { symbolName: SymbolName.R1 },

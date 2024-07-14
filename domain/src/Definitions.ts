@@ -97,6 +97,7 @@ export enum Case
 }
 
 export type AdvancedStemNumber = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 10;
+export type StemNumber = 1 | AdvancedStemNumber;
 export enum Gender
 {
     Male,
