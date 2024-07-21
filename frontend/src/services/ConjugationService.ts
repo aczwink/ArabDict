@@ -23,7 +23,7 @@ import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
-import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, StemNumber, Tashkil } from "arabdict-domain/src/Definitions";
+import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, StemNumber, Tashkil, Letter } from "arabdict-domain/src/Definitions";
 import { NounInput, TargetNounDerivation } from "arabdict-domain/src/DialectConjugator";
 
 @Injectable
@@ -150,15 +150,65 @@ export class ConjugationService
 
         function IsSpecial()
         {
+            //doubly weak ones
+            if( (root.r1 === Letter.Hamza) && (root.r2 === root.r3) )
+                return need;
+            if( (root.r1 === Letter.Hamza) && (root.r3 === Letter.Ya) && (params.stem === 4) )
+                return need;
+            if( (root.r1 === Letter.Waw) && ((root.r3 === Letter.Waw) || (root.r3 === Letter.Ya)) && (params.stem === 4) )
+                return need;
+            if( (root.r1 === Letter.Waw) && ((root.r3 === Letter.Waw) || (root.r3 === Letter.Ya)) && (params.stem === 8) )
+                return need;
+
             switch(params.stem)
             {
                 case 1:
                     switch(root.type)
                     {
+                        case RootType.Assimilated:
+                        {
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
+                                return needPassive;
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
+                                return need;
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma))
+                                return need;
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma))
+                                return need;
+                        }
+                        break;
+                        case RootType.HamzaOnR1:
+                            return need;
+                        case RootType.Hollow:
+                        {
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma))
+                                return needPassive;
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Kasra))
+                                return need;
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
+                                return need;
+                        }
+                        break;
                         case RootType.SecondConsonantDoubled:
                         {
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
+                                return need;
                             if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
                                 return needPassive;
+                        }
+                        break;
+                        case RootType.Sound:
+                        {
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Kasra))
+                                return need;
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
+                                return need;
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
+                                return need;
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Kasra))
+                                return need;
+                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma))
+                                return need;
                         }
                         break;
                     }
@@ -192,6 +242,7 @@ export class ConjugationService
                 case 7:
                     switch(root.type)
                     {
+                        case RootType.Defective:
                         case RootType.Hollow:
                         case RootType.SecondConsonantDoubled:
                             return need;
@@ -202,6 +253,7 @@ export class ConjugationService
                 case 8:
                     switch(root.type)
                     {
+                        case RootType.Defective:
                         case RootType.SecondConsonantDoubled:
                             return needPassive;
                     }

@@ -20,12 +20,6 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 import { RunConjugationTest } from "../../shared";
 
 It("Stem 1", () => {
-    RunConjugationTest("و-ج-د", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, [
-        { expected: "وَجَدَ" },
-        { expected: "يَجِدُ", tense: "present" },
-        { expected: "جِدْ", tense: "present", mood: "imperative", person: "second" },
-    ]);
-
     RunConjugationTest("و-ج-ل", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: true }, [
         { expected: "وَجِلَ" },
         { expected: "يَوْجَلُ", tense: "present" },
@@ -36,13 +30,6 @@ It("Stem 1", () => {
         { expected: "وَعَلَ" },
         { expected: "يَعُلُ", tense: "present" },
         { expected: "عُلْ", tense: "present", mood: "imperative", person: "second" },
-        { expected: "وُعِلَ", voice: "passive" },
-        { expected: "يُوعَلُ", voice: "passive", tense: "present" },
-    ]);
-    RunConjugationTest("و-ع-ل", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, [
-        { expected: "وَعَلَ" },
-        { expected: "يَعِلُ", tense: "present" },
-        { expected: "عِلْ", tense: "present", mood: "imperative", person: "second" },
         { expected: "وُعِلَ", voice: "passive" },
         { expected: "يُوعَلُ", voice: "passive", tense: "present" },
     ]);

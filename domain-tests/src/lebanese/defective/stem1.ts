@@ -23,6 +23,8 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
 
 It("Lebanese: Stem1 basic defective", () => {
+    throw new Error("TODO: MISSING ACTIVE PARTICIPLE TEST!");
+    
     const conjugations: ConjugationTest[] = [
         //past
         { tense: "perfect", numerus: "singular", person: "third", gender: "male", expected: "حِكِي" },
