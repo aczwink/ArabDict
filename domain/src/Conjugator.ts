@@ -20,7 +20,7 @@ import { VerbRoot } from "./VerbRoot";
 import { DialectConjugator, NounInput, TargetNounDerivation } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
 import { ConjugationVocalized, DisplayVocalized, ParseVocalizedText } from "./Vocalization";
-import { ConjugationParams, Stem1Context, Tashkil, Tense, Voice, Mood, Person, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, Gender, StemNumber } from "./Definitions";
+import { ConjugationParams, Stem1Context, Tashkil, Tense, Voice, Mood, Person, AdjectiveDeclensionParams, NounDeclensionParams, Gender, StemNumber } from "./Definitions";
 import { LebaneseConjugator } from "./rule_sets/lebanese/LebaneseConjugator";
 
 export enum DialectType
@@ -55,7 +55,7 @@ export class Conjugator
         return this.ExecuteWordTransformationPipeline(pattern);
     }
 
-    public ConjugateParticiple(dialect: DialectType, root: VerbRoot, stem: number, voice: VoiceString, stem1Context?: Stem1Context): DisplayVocalized[]
+    public ConjugateParticiple(dialect: DialectType, root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): DisplayVocalized[]
     {
         const dialectConjugator = this.CreateDialectConjugator(dialect);
         const pattern = dialectConjugator.ConjugateParticiple(root, stem, voice, stem1Context);

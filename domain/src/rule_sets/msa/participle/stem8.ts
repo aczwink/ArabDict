@@ -20,10 +20,10 @@ import { Tashkil, Letter, Voice } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
 import { ConjugationVocalized } from "../../../Vocalization";
 import { AugmentedRoot } from "../AugmentedRoot";
+import { GenerateParticipleRegular } from "./regular";
 
 export function GenerateParticipleStem8(root: VerbRoot, baseForm: AugmentedRoot, voice: Voice): ConjugationVocalized[]
 {
-    const voicingTashkil = (voice === Voice.Active) ? Tashkil.Kasra : Tashkil.Fatha;
     switch(root.type)
     {
         case RootType.Defective:
@@ -53,13 +53,7 @@ export function GenerateParticipleStem8(root: VerbRoot, baseForm: AugmentedRoot,
             return baseForm.symbols;
 
         case RootType.Sound:
-            return [
-                { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
-                { letter: root.r1, tashkil: Tashkil.Sukun },
-                { letter: Letter.Ta, tashkil: Tashkil.Fatha },
-                { letter: root.r2, tashkil: voicingTashkil },
-                { letter: root.r3, tashkil: Tashkil.Sukun },
-            ];
+            return GenerateParticipleRegular(baseForm, voice, true);
     }
     return [{letter: "TODO" as any, tashkil: Tashkil.Sukun}];
 }

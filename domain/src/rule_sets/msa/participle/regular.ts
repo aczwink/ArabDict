@@ -36,11 +36,14 @@ export function GenerateParticipleDefective(baseForm: AugmentedRoot, voice: Voic
     ];
 }
 
-export function GenerateParticipleRegular(baseForm: AugmentedRoot, voice: Voice): ConjugationVocalized[]
+export function GenerateParticipleRegular(baseForm: AugmentedRoot, voice: Voice, hasHamzatAlWasl?: boolean): ConjugationVocalized[]
 {
     if(voice === Voice.Active)
         baseForm.r2.tashkil = Tashkil.Kasra;
     baseForm.r3.tashkil = Tashkil.EndOfWordMarker;
+
+    if(hasHamzatAlWasl === true)
+        baseForm.symbols.Remove(0);
     
     return [
         { letter: Letter.Mim, tashkil: Tashkil.Dhamma },

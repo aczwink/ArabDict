@@ -52,6 +52,8 @@ enum WordWordDerivationType
     Extension = 4,
     //Relation from noun x to adjective y means: x is elative degree of y
     ElativeDegree = 5,
+    //Relation from x to y means: x is singulative of collective y
+    Singulative = 6,
 }
 
 export enum WordRelationshipType

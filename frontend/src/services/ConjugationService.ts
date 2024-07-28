@@ -101,7 +101,7 @@ export class ConjugationService
         return this.VocalizedToString(vocalized);
     }
 
-    public ConjugateParticiple(rootRadicals: string, stem: number, voice: VoiceString, stem1Context?: Stem1Context)
+    public ConjugateParticiple(rootRadicals: string, stem: number, voice: Voice, stem1Context?: Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
         return this.conjugator.ConjugateParticiple(this._globalDialect.Get(), root, stem, voice, stem1Context);

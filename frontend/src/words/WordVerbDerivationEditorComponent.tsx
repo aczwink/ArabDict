@@ -21,7 +21,7 @@ import { WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
 import { ConjugationService } from "../services/ConjugationService";
 import { APIService } from "../services/APIService";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
-import { Stem1Context, StemNumber } from "arabdict-domain/src/Definitions";
+import { Stem1Context, StemNumber, Voice } from "arabdict-domain/src/Definitions";
 
 interface WordVerbDerivationEditorInput
 {
@@ -115,13 +115,13 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
         {
             case WordVerbDerivationType.ActiveParticiple:
             {
-                const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, "active", this.currentVerb.stem1Context);
+                const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, Voice.Active, this.currentVerb.stem1Context);
                 this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
             }
             break;
             case WordVerbDerivationType.PassiveParticiple:
             {
-                const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, "passive", this.currentVerb.stem1Context);
+                const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, Voice.Passive, this.currentVerb.stem1Context);
                 this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
             }
             break;
@@ -146,7 +146,7 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
                     this.input.onDataChanged();
                 else
                 {
-                    const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, "active", this.currentVerb.stem1Context);
+                    const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, Voice.Active, this.currentVerb.stem1Context);
                     this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
                 }
                 break;
@@ -156,7 +156,7 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
                     this.input.onDataChanged();
                 else
                 {
-                    const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, "passive", this.currentVerb.stem1Context);
+                    const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, Voice.Passive, this.currentVerb.stem1Context);
                     this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
                 }
                 break;

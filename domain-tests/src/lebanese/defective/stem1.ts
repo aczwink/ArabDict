@@ -21,6 +21,7 @@ import { DialectType } from "arabdict-domain/dist/Conjugator";
 import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
+//Table: 26
 
 It("Lebanese: Stem1 basic defective", () => {
     throw new Error("TODO: MISSING ACTIVE PARTICIPLE TEST!");

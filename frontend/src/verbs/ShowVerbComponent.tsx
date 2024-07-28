@@ -31,7 +31,7 @@ import { WordRelationshipTypeToString } from "../shared/words";
 import { VerbIdReferenceComponent } from "./VerbReferenceComponent";
 import { RootToString } from "../roots/general";
 import { Stem1DataToStem1ContextOptional } from "./model";
-import { Stem1Context, Person, TenseString, VoiceString, Numerus, Gender, Mood } from "arabdict-domain/src/Definitions";
+import { Stem1Context, Person, TenseString, VoiceString, Numerus, Gender, Mood, Voice } from "arabdict-domain/src/Definitions";
 import { DisplayVocalized } from "arabdict-domain/src/Vocalization";
 
 @Injectable
@@ -300,11 +300,11 @@ export class ShowVerbComponent extends Component
                 </tr>
                 <tr>
                     <th>Active participle اِسْم الْفَاعِل:</th>
-                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.rootRadicals, data.stem, "active", stem1ctx), past)}</td>
+                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.rootRadicals, data.stem, Voice.Active, stem1ctx), past)}</td>
                 </tr>
                 <tr>
                     <th>Passive participle اِسْم الْمَفْعُول:</th>
-                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.rootRadicals, data.stem, "passive", stem1ctx), past)}</td>
+                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.rootRadicals, data.stem, Voice.Passive, stem1ctx), past)}</td>
                 </tr>
                 <tr>
                     <th>Related:</th>

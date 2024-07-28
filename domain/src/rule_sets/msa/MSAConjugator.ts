@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, NounState, StemNumber } from "../../Definitions";
+import { Letter, Stem1Context, ConjugationParams, Gender, Numerus, Person, AdvancedStemNumber, Tense, Voice, Tashkil, AdjectiveDeclensionParams, NounDeclensionParams, NounState, StemNumber } from "../../Definitions";
 import { DialectConjugator, NounInput, TargetNounDerivation } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
@@ -64,27 +64,27 @@ export class MSAConjugator implements DialectConjugator
         return DerivePrefix(result.augmentedRoot.symbols[0].tashkil as any, root.type, params).concat(result.augmentedRoot.symbols, result.suffix.suffix);
     }
 
-    public ConjugateParticiple(root: VerbRoot, stem: number, voice: VoiceString, stem1Context?: Stem1Context): ConjugationVocalized[]
+    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context): ConjugationVocalized[]
     {
-        const voiceNew = voice === "active" ? Voice.Active : Voice.Passive;
+        const voiceOld = voice === Voice.Active ? "active" : "passive";
         switch(stem)
         {
             case 1:
-                return GenerateParticipleStem1(root, voice, stem1Context!);
+                return GenerateParticipleStem1(root, voiceOld, stem1Context!);
             case 2:
-                return GenerateParticipleStem2(this.ConjugateBasicForm(root, stem), voiceNew);
+                return GenerateParticipleStem2(this.ConjugateBasicForm(root, stem), voice);
             case 3:
-                return GenerateParticipleStem3(root, voice);
+                return GenerateParticipleStem3(root, voiceOld);
             case 4:
-                return GenerateParticipleStem4(root, voice);
+                return GenerateParticipleStem4(root, voiceOld);
             case 5:
-                return GenerateParticipleStem5(root, this.ConjugateBasicForm(root, stem), voiceNew);
+                return GenerateParticipleStem5(root, this.ConjugateBasicForm(root, stem), voice);
             case 6:
-                return GenerateParticipleStem6(root, this.ConjugateBasicForm(root, stem), voiceNew);
+                return GenerateParticipleStem6(root, this.ConjugateBasicForm(root, stem), voice);
             case 8:
-                return GenerateParticipleStem8(root, this.ConjugateBasicForm(root, stem), voiceNew);
+                return GenerateParticipleStem8(root, this.ConjugateBasicForm(root, stem), voice);
             case 10:
-                return GenerateParticipleStem10(root, voice);
+                return GenerateParticipleStem10(root, voiceOld);
         }
         return [{letter: "TODO ConjugateParticiple" as any, tashkil: Tashkil.Dhamma}];
     }

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ConjugationParams, AdjectiveDeclensionParams, Gender, Letter, Mood, Numerus, Person, Stem1Context, Tashkil, Tense, VoiceString, NounDeclensionParams } from "../../Definitions";
+import { ConjugationParams, AdjectiveDeclensionParams, Gender, Letter, Mood, Numerus, Person, Stem1Context, Tashkil, Tense, NounDeclensionParams, Voice, StemNumber, AdvancedStemNumber } from "../../Definitions";
 import { DialectConjugator, NounInput, TargetNounDerivation } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
@@ -23,6 +23,8 @@ import { AugmentedRoot, AugmentedRootSymbolInput, SymbolName } from "../msa/Augm
 import { Stem1Defective_DeriveRootTashkil } from "./stem1_defective";
 import { Stem1Sound_DeriveRootTashkil as Sound_DeriveRootTashkil } from "./sound";
 import { DerivePrefix } from "./prefix";
+import { Hollow_DeriveRootTashkil } from "./hollow";
+import { DoIrregularModifications } from "./irregular";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar
 
@@ -54,41 +56,73 @@ export class LebaneseConjugator implements DialectConjugator
         const prefix = DerivePrefix(params);
         const suffix = this.DeriveSuffix(params);
 
+        const isSpecial = DoIrregularModifications(root, augmentedRoot, params);
+        if(isSpecial)
+            return prefix.concat(augmentedRoot.symbols, suffix);
+
         switch(augmentedRoot.type)
         {
             case RootType.Defective:
+            {
+                if( (params.stem === 1) && (params.tense === Tense.Present) )
                 {
-                    if( (params.stem === 1) && (params.tense === Tense.Present) )
+                    if(
+                        ( (params.numerus === Numerus.Singular) && (params.person === Person.Second) && (params.gender === Gender.Female) )
+                        ||
+                        ( (params.numerus === Numerus.Plural) && (params.person !== Person.First) )
+                    )
                     {
-                        if(
-                            ( (params.numerus === Numerus.Singular) && (params.person === Person.Second) && (params.gender === Gender.Female) )
-                            ||
-                            ( (params.numerus === Numerus.Plural) && (params.person !== Person.First) )
-                        )
-                        {
-                            augmentedRoot.DropRadial(3);
-                        }
+                        augmentedRoot.DropRadial(3);
                     }
                 }
-                break;
+            }
+            break;
+            case RootType.Hollow:
+            {
+                if(
+                    ((params.tense === Tense.Perfect) && (params.person === Person.Third))
+                    ||
+                    (params.tense === Tense.Present)
+                )
+                    augmentedRoot.ReplaceRadical(2, { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker });
+                else
+                    augmentedRoot.DropRadial(2);
+            }
+            break;
         }
 
         return prefix.concat(augmentedRoot.symbols, suffix);
     }
 
-    public ConjugateParticiple(root: VerbRoot, stem: number, voice: VoiceString, stem1Context?: Stem1Context | undefined): ConjugationVocalized[]
+    public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context | undefined): ConjugationVocalized[]
     {
         switch(root.type)
         {
             case RootType.Hollow:
             {
-                if((stem === 1) && (voice === "active"))
+                if((stem === 1) && (voice === Voice.Active))
                 {
+                    if(root.radicalsAsSeparateLetters.Equals([Letter.Jiim, Letter.Ya, Letter.Hamza]))
+                    {
+                        return [
+                            { letter: root.r1, tashkil: Tashkil.Fatha },
+                            { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                            { letter: Letter.Ya, tashkil: Tashkil.EndOfWordMarker }
+                        ];
+                    }
+
                     return [
                         { letter: root.r1, tashkil: Tashkil.Fatha },
                         { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
                         { letter: Letter.Ya, tashkil: Tashkil.Kasra },
                         { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                    ];
+                }
+                else if((stem === 8) && (voice === Voice.Active))
+                {
+                    return [
+                        { letter: Letter.Mim, tashkil: Tashkil.Kasra },
+                        ...this.ConjugateBaseForm(root, stem)
                     ];
                 }
             }
@@ -151,6 +185,12 @@ export class LebaneseConjugator implements DialectConjugator
                 switch(root.type)
                 {
                     case RootType.Defective:
+                    case RootType.Hollow:
+                        if(!root.radicalsAsSeparateLetters.Equals([Letter.Jiim, Letter.Ya, Letter.Hamza]))
+                        {
+                            throw new Error("TODO: NOT IMPLEMENTED!");
+                        }
+
                         return [
                             {
                                 symbolName: SymbolName.R1,
@@ -196,6 +236,7 @@ export class LebaneseConjugator implements DialectConjugator
                             }
                         ];
                 }
+            break;
 
             case 2:
             {
@@ -210,8 +251,49 @@ export class LebaneseConjugator implements DialectConjugator
                         ];
                 }
             }
+            break;
+
+            case 8:
+            {
+                switch(root.type)
+                {
+                    case RootType.Hollow:
+                        return [
+                            { symbolName: SymbolName.R1 },
+                            { symbolName: SymbolName.Infix, letter: Letter.Ta, tashkil: Tashkil.Fatha },
+                            { symbolName: SymbolName.R2 },
+                            { symbolName: SymbolName.R3 },
+                        ];
+                }
+            }
+            break;
         }
         return undefined;
+    }
+
+    private ConjugateBaseForm(root: VerbRoot, stem: AdvancedStemNumber | Stem1Context)
+    {
+        if(typeof stem === "number")
+        {
+            return this.Conjugate(root, {
+                gender: Gender.Male,
+                tense: Tense.Perfect,
+                numerus: Numerus.Singular,
+                person: Person.Third,
+                stem,
+                voice: Voice.Active,
+            });
+        }
+
+        return this.Conjugate(root, {
+            gender: Gender.Male,
+            tense: Tense.Perfect,
+            numerus: Numerus.Singular,
+            person: Person.Third,
+            stem: 1,
+            stem1Context: stem,
+            voice: Voice.Active,
+        });
     }
 
     private DeriveRootTashkil(root: VerbRoot, params: ConjugationParams): { r1: Tashkil; r2: Tashkil; r3: Tashkil; }
@@ -220,10 +302,13 @@ export class LebaneseConjugator implements DialectConjugator
         {
             case 1:
             case 2:
+            case 8:
                 switch(root.type)
                 {
                     case RootType.Defective:
                         return Stem1Defective_DeriveRootTashkil(params);
+                    case RootType.Hollow:
+                        return Hollow_DeriveRootTashkil(params);
                     case RootType.Sound:
                         return Sound_DeriveRootTashkil(params);
                 }

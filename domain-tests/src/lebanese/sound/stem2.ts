@@ -20,6 +20,7 @@ import { ConjugationTest, RunConjugationTest } from "../../shared";
 import { DialectType } from "arabdict-domain/dist/Conjugator";
 
 //Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
+//Table: 29
 
 It("Stem2", () => {
     throw new Error("TODO: MISSING ACTIVE PARTICIPLE TEST!");

@@ -169,6 +169,21 @@ export function RunDefectiveConjugationTest(rootRadicalsWithoutR3: string, stem:
     RunConjugationTest(rootRadicalsWithoutR3 + "-ي", stem, conjugations);
 }
 
+export function RunActiveParticipleTest(rootRadicals: string, stem: number | Stem1Context, expected: string, dialect: DialectType)
+{
+    const conjugator = new Conjugator();
+
+    const stemNumber = (typeof stem === "number") ? stem : 1;
+    const ctx = (typeof stem === "number") ? undefined : stem;
+
+    const root = new VerbRoot(rootRadicals.split("-").join(""));
+    if(typeof stem !== "number")
+        ValidateStem1Context(stem, root);
+    
+    const activeGot = conjugator.ConjugateParticiple(dialect, root, stemNumber, Voice.Active, ctx);
+    TestParticiple(expected, activeGot, "active");
+}
+
 export function RunParticipleTest(rootRadicals: string, stem: number | Stem1Context, activeExpected: string, passiveExpected: string)
 {
     const conjugator = new Conjugator();
@@ -180,10 +195,10 @@ export function RunParticipleTest(rootRadicals: string, stem: number | Stem1Cont
     if(typeof stem !== "number")
         ValidateStem1Context(stem, root);
     
-    const activeGot = conjugator.ConjugateParticiple(DialectType.ModernStandardArabic, root, stemNumber, "active", ctx);
+    const activeGot = conjugator.ConjugateParticiple(DialectType.ModernStandardArabic, root, stemNumber, Voice.Active, ctx);
     TestParticiple(activeExpected, activeGot, "active");
 
-    const passiveGot = conjugator.ConjugateParticiple(DialectType.ModernStandardArabic, root, stemNumber, "passive", ctx);
+    const passiveGot = conjugator.ConjugateParticiple(DialectType.ModernStandardArabic, root, stemNumber, Voice.Passive, ctx);
     TestParticiple(passiveExpected, passiveGot, "passive");
 }
 

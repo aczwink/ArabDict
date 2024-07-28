@@ -47,6 +47,8 @@ export function WordDerivationTypeFromWordToString(type: WordWordDerivationType)
             return "extension";
         case WordWordDerivationType.ElativeDegree:
             return "elative degree";
+        case WordWordDerivationType.Singulative:
+            return "singulative";
     }
 }
 

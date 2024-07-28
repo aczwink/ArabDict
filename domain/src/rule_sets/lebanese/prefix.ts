@@ -24,6 +24,7 @@ function SubjunctiveChar1Tashkil(params: ConjugationParams)
     switch(params.stem)
     {
         case 1:
+        case 8:
             return Tashkil.Kasra;
         case 2:
             return Tashkil.Sukun;
@@ -46,14 +47,14 @@ function DerivePrefixSubjunctive(params: ConjugationParams): ConjugationVocalize
                 ];
             }
 
-            if(params.stem > 1)
+            if(params.stem === 2)
             {
                 return [];
             }
 
             return [
                 {
-                    letter: Letter.Alef,
+                    letter: Letter.Hamza,
                     tashkil: Tashkil.Kasra
                 }
             ];
@@ -90,6 +91,7 @@ function BiPrefixTashkil(params: ConjugationParams)
     switch(params.stem)
     {
         case 1:
+        case 8:
             return Tashkil.Sukun;
         case 2:
             return Tashkil.Kasra;

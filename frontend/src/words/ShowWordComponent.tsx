@@ -115,6 +115,8 @@ export class ShowWordComponent extends Component
                 return "base";
             case WordWordDerivationType.ElativeDegree:
                 return "positive degree";
+            case WordWordDerivationType.Singulative:
+                return "collective";
         }
     }
 

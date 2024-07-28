@@ -26,11 +26,12 @@ export class WordWordDerivationEditorComponent extends Component<{ derivationLin
     {
         const relationships = [
             WordWordDerivationType.Colloquial,
+            WordWordDerivationType.ElativeDegree,
             WordWordDerivationType.Extension,
             WordWordDerivationType.Feminine,
-            WordWordDerivationType.Nisba,
             WordWordDerivationType.Plural,
-            WordWordDerivationType.ElativeDegree,
+            WordWordDerivationType.Nisba,
+            WordWordDerivationType.Singulative
         ];
 
         const wordRelation = this.input.derivationLink;
