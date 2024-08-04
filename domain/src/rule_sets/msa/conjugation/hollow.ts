@@ -17,7 +17,7 @@
  * */
 
 import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Tashkil, Tense, Voice } from "../../../Definitions";
-import { AugmentedRoot } from "../AugmentedRoot";
+import { AugmentedRoot, SymbolName } from "../AugmentedRoot";
 
 function DoesPresentSuffixStartWithVowel(params: ConjugationParams)
 {
@@ -94,9 +94,16 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
                 }
 
                 if(shortenVowel)
+                {
                     augmentedRoot.AssimilateRadical(2);
+                    if(params.stem === 8)
+                        augmentedRoot.ApplyTashkil(SymbolName.Infix, Tashkil.Fatha);
+                }
                 else
-                    augmentedRoot.InsertLongVowel(2, (params.voice === Voice.Passive) ? Letter.Alef : Letter.Ya);
+                {
+                    const alefCondition = (params.stem === 8) || (params.voice === Voice.Passive);
+                    augmentedRoot.InsertLongVowel(2, alefCondition ? Letter.Alef : Letter.Ya);
+                }
             }
         }
         break;

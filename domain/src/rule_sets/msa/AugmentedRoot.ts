@@ -107,30 +107,35 @@ export class AugmentedRoot
         v!.tashkil = tashkil;
     }
 
-    public AssimilateRadical(radical: number)
+    public AssimilateRadical(radical: RadicalNumber)
     {
-        const idx = this.GetRadicalIndedx(radical as any);
+        const idx = this.GetSymbolIndex(this.RadicalNumberToSymbolName(radical));
 
         this._symbols[idx - 1].tashkil = this._symbols[idx].tashkil;
         this._symbols.Remove(idx);
     }
 
-    public DropRadial(radical: number)
+    public DropRadial(radical: RadicalNumber)
     {
-        const idx = this.GetRadicalIndedx(radical as any);
+        const idx = this.GetSymbolIndex(this.RadicalNumberToSymbolName(radical));
         this._symbols.Remove(idx);
     }
 
     public InsertLongVowel(radical: RadicalNumber, vowel: Letter.Alef | Letter.Ya)
     {
         this.ReplaceRadical(radical, { letter: vowel, tashkil: Tashkil.LongVowelMarker });
-        this.ApplyRadicalTashkil(this.PrevRadicalNumber(radical), VowelLetterToPreTashkil(vowel));
+        const radicalSymbol = this.RadicalNumberToSymbolName(radical);
+        const predecessor = this.PredecessorOf(radicalSymbol);
+        this.ApplyTashkil(predecessor, VowelLetterToPreTashkil(vowel));
     }
 
     public InsertShortVowel(radical: RadicalNumber, shortVowel: (Tashkil.Dhamma | Tashkil.Fatha | Tashkil.Kasra))
     {
+        const radicalSymbol = this.RadicalNumberToSymbolName(radical);
+        const predecessor = this.PredecessorOf(radicalSymbol);
+
         this.DropRadial(radical);
-        this.ApplyRadicalTashkil(this.PrevRadicalNumber(radical), shortVowel);
+        this.ApplyTashkil(predecessor, shortVowel);
     }
 
     public ReplaceRadical(radical: number, replacement: ConjugationVocalized)
@@ -149,29 +154,20 @@ export class AugmentedRoot
         return this.GetSymbol(this.RadicalNumberToSymbolName(radicalNumber));
     }
 
-    private GetRadicalIndedx(radicalNumber: RadicalNumber)
-    {
-        return this._symbols.findIndex( x => x.symbolName === this.RadicalNumberToSymbolName(radicalNumber));
-    }
-
     private GetSymbol(symbolName: SymbolName)
     {
         return this._symbols.find( x => x.symbolName === symbolName);
     }
 
-    private PrevRadicalNumber(radicalNumber: RadicalNumber): RadicalNumber
+    private GetSymbolIndex(symbolName: SymbolName)
     {
-        switch(radicalNumber)
-        {
-            case 1:
-                throw new Error("TODO: WHAT NOW?!");
-            case 2:
-                return 1;
-            case 3:
-                return 2;
-            case 4:
-                return 3;
-        }
+        return this._symbols.findIndex( x => x.symbolName === symbolName);
+    }
+
+    private PredecessorOf(symbolName: SymbolName)
+    {
+        const index = this.GetSymbolIndex(symbolName);
+        return this._symbols[index - 1].symbolName;
     }
 
     private RadicalNumberToSymbolName(radicalNumber: RadicalNumber): SymbolName
