@@ -253,7 +253,6 @@ export class ConjugationService
                 case 8:
                     switch(root.type)
                     {
-                        case RootType.Defective:
                         case RootType.SecondConsonantDoubled:
                             return needPassive;
                     }

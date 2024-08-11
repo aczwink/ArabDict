@@ -42,6 +42,7 @@ export function GenerateParticipleStem3(root: VerbRoot, voice: VoiceString): Con
                 { letter: Letter.AlefMaksura, tashkil: Tashkil.Sukun },
             ];
 
+        case RootType.Assimilated:
         case RootType.Sound:
             return [
                 { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
