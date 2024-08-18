@@ -274,7 +274,7 @@ export class ShowVerbComponent extends Component
                 </tbody>
             </table>
 
-            <RouterButton className="btn btn-primary" route={"/words/add?verbId=" + this.verbId}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
+            <RouterButton color="primary" route={"/words/add?verbId=" + this.verbId}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </div>;
     }
 

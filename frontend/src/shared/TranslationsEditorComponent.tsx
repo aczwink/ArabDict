@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, SingleSelect, Textarea } from "acfrontend";
+import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, SingleSelect, TextArea } from "acfrontend";
 import { DialectData, TranslationEntry } from "../../dist/api";
 import { DialectsService } from "../services/DialectsService";
 
@@ -76,7 +76,7 @@ export class TranslationsEditorComponent extends Component<{ translations: Trans
                 </SingleSelect>
             </div>
             <div className="col">
-                <Textarea rows={4} value={translationEntry.text} onChanged={newValue => translationEntry.text = newValue} />
+                <TextArea rows={4} value={translationEntry.text} onChanged={newValue => translationEntry.text = newValue} />
             </div>
             <div className="col-auto">
                 <button type="button" className="btn btn-danger" onclick={this.RemoveEntry.bind(this, translationEntry)}><BootstrapIcon>trash</BootstrapIcon></button>

@@ -65,8 +65,8 @@ export class ListRootsComponent extends Component
                 </div>
             </div>
             {this.RenderTable()}
-            <RouterButton className="btn btn-primary" route="/roots/add"><BootstrapIcon>plus</BootstrapIcon></RouterButton>
-            <RouterButton route="words/add" className="btn btn-secondary"><BootstrapIcon>plus</BootstrapIcon> word</RouterButton>
+            <RouterButton color="primary" route="/roots/add"><BootstrapIcon>plus</BootstrapIcon></RouterButton>
+            <RouterButton color="secondary" route="words/add"><BootstrapIcon>plus</BootstrapIcon> word</RouterButton>
         </fragment>;
     }
 

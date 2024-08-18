@@ -77,7 +77,7 @@ export class ShowWordComponent extends Component
             <br />
             {this.RenderMultipleFunctions()}
             <br />
-            {canEdit ? <RouterButton className="btn btn-primary" route={"/words/add?relatedWordId=" + this.wordId}><BootstrapIcon>plus</BootstrapIcon> Add related word</RouterButton> : null}
+            {canEdit ? <RouterButton color="primary" route={"/words/add?relatedWordId=" + this.wordId}><BootstrapIcon>plus</BootstrapIcon> Add related word</RouterButton> : null}
         </fragment>;
     }
 

@@ -199,8 +199,6 @@ export class ConjugationService
                         break;
                         case RootType.Sound:
                         {
-                            if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Kasra))
-                                return need;
                             if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
                                 return need;
                             if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))

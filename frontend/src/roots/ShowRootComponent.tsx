@@ -65,10 +65,10 @@ export class ShowRootComponent extends Component
 
             <h4>Verbs</h4>
             {this.data.verbs.map(x => <VerbPreviewComponent root={this.data!.root} verbData={x} />)}
-            {canEdit ? <RouterButton className="btn btn-primary" route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton> : null}
+            {canEdit ? <RouterButton color="primary" route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton> : null}
             <h4>Words</h4>
             {this.RenderDerivedWords()}
-            {canEdit ? <RouterButton className="btn btn-primary" route={"/words/add?rootId=" + this.rootId}><BootstrapIcon>plus</BootstrapIcon></RouterButton> : null}
+            {canEdit ? <RouterButton color="primary" route={"/words/add?rootId=" + this.rootId}><BootstrapIcon>plus</BootstrapIcon></RouterButton> : null}
         </fragment>;
     }
 

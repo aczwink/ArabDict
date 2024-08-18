@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, Textarea } from "acfrontend";
+import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, TextArea } from "acfrontend";
 import { APIService } from "../services/APIService";
 import { RootCreationData } from "../../dist/api";
 import { RootEditorComponent } from "./RootEditorComponent";
@@ -42,7 +42,7 @@ export class EditRootComponent extends Component
             <RootEditorComponent data={this.data} onDataChanged={this.Update.bind(this)} />
 
             <FormField title="Description" description="Descriptive text about the root">
-                <Textarea value={this.data.description} onChanged={newValue => {this.data!.description = newValue; this.Update();}} />
+                <TextArea value={this.data.description} onChanged={newValue => {this.data!.description = newValue; this.Update();}} />
             </FormField>
 
             <button disabled={!DoRootCharactersFormValidRoot(this.data.radicals)} className="btn btn-primary" type="button" onclick={this.OnSaveRoot.bind(this)}>Save</button>
