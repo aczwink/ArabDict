@@ -18,11 +18,11 @@ def extract_text(element):
 
 def getClassName(element):
     if("class" in element.attrib):
-        return element.attrib["class"];
-    return None;
+        return element.attrib["class"].split(" ");
+    return [];
     
 def _getElementsByClassName(element, className, resultList):
-    if(getClassName(element) == className):
+    if(className in getClassName(element)):
         resultList.append(element);
     for child in element:
         _getElementsByClassName(child, className, resultList);
