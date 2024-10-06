@@ -25,8 +25,9 @@ import { RenderTranslations } from "../shared/translations";
 import { ConjugationService } from "../services/ConjugationService";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Stem1DataToStem1ContextOptional } from "./model";
-import { Gender, Mood, Numerus, Person, Tashkil } from "arabdict-domain/src/Definitions";
+import { Gender, Mood, Numerus, Person, Tashkil, Tense, Voice } from "arabdict-domain/src/Definitions";
 import { CachedAPIService, FullVerbData } from "../services/CachedAPIService";
+import { _TODO_CheckConjugation } from "./_ConjugationCheck";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
@@ -45,6 +46,16 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
         const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(verbData.stem1Data));
         const conjugationReference = this.conjugationService.Conjugate(this.input.root.radicals, 1, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false });
         const verbPresentation = (verbData.stem === 1) ? this.conjugationService.VocalizedToString(conjugated) : RenderWithDiffHighlights(conjugated, conjugationReference);
+
+        _TODO_CheckConjugation(root, {
+            gender: Gender.Male,
+            voice: Voice.Active,
+            tense: Tense.Perfect,
+            numerus: Numerus.Singular,
+            person: Person.Third,
+            stem: verbData.stem as any,
+            stem1Context: Stem1DataToStem1ContextOptional(verbData.stem1Data)
+        });
 
         return <div className="border border-3 rounded-2 p-2 my-2 shadow-sm">
             <h4>

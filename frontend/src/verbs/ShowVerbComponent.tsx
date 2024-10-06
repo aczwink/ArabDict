@@ -33,6 +33,8 @@ import { RootToString } from "../roots/general";
 import { Stem1DataToStem1ContextOptional } from "./model";
 import { Stem1Context, Person, TenseString, VoiceString, Numerus, Gender, Mood, Voice } from "arabdict-domain/src/Definitions";
 import { DisplayVocalized } from "arabdict-domain/src/Vocalization";
+import { _TODO_CheckConjugation } from "./_ConjugationCheck";
+import { Tense } from "arabdict-domain/dist/Definitions";
 
 @Injectable
 export class ShowVerbComponent extends Component
@@ -57,6 +59,16 @@ export class ShowVerbComponent extends Component
         const verbData = this.data;
         const stem1ctx = Stem1DataToStem1ContextOptional(verbData.stem1Data);
         const conjugated = this.conjugationService.ConjugateToStringArgs(this.rootRadicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
+
+        _TODO_CheckConjugation(new VerbRoot(this.rootRadicals), {
+            gender: Gender.Male,
+            voice: Voice.Active,
+            tense: Tense.Perfect,
+            numerus: Numerus.Singular,
+            person: Person.Third,
+            stem: verbData.stem as any,
+            stem1Context: stem1ctx
+        });
 
         return <fragment>
             <div className="row">

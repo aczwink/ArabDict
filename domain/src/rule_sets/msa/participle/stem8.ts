@@ -52,6 +52,7 @@ export function GenerateParticipleStem8(root: VerbRoot, baseForm: AugmentedRoot,
             baseForm.ApplyRadicalTashkil(3, Tashkil.EndOfWordMarker);
             return baseForm.symbols;
 
+        case RootType.Assimilated:
         case RootType.Sound:
             return GenerateParticipleRegular(baseForm, voice, true);
     }

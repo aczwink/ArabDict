@@ -81,8 +81,8 @@ export function GenerateParticipleStem1(root: VerbRoot, voice: VoiceString, stem
                 { letter: Letter.Mim, tashkil: Tashkil.Fatha },
                 { letter: root.r1, tashkil: Tashkil.Sukun },
                 { letter: root.r2, tashkil: Tashkil.Dhamma },
-                { letter: Letter.Waw, tashkil: Tashkil.Dhamma },
-                { letter: root.r2, tashkil: Tashkil.Sukun },
+                { letter: Letter.Waw, tashkil: Tashkil.LongVowelMarker },
+                { letter: root.r2, tashkil: Tashkil.EndOfWordMarker },
             ];
 
         case RootType.HamzaOnR1:
