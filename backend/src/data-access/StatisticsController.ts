@@ -61,10 +61,8 @@ export class StatisticsController
     {
         function ExtractCount(row: any)
         {
-            const c = row.cnt;
-            if(typeof c === "number")
-                return c;
-            return 0;
+            const c = row.cnt as string;
+            return parseInt(c);
         }
 
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();

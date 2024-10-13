@@ -22,7 +22,7 @@ import { DisplayVocalized } from "./Vocalization";
 //Source: https://en.wikipedia.org/wiki/Buckwalter_transliteration
 
 export const Buckwalter = {
-    CharToString: function ToBuckwalterTransliterationChar(letter: Letter)
+    CharToString: function(letter: Letter)
     {
         switch(letter)
         {
@@ -93,6 +93,8 @@ export const Buckwalter = {
                 return "<";
             case Letter.AlefMaksura:
                 return "Y";
+            case Letter.WawHamza:
+                return "&";
         }
 
         throw new Error("TODO Buckwalter.CharToString: " + letter + " " + letter.codePointAt(0));

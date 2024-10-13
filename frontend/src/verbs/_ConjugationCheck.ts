@@ -54,11 +54,20 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
                     }
                     break;
                     case RootType.HamzaOnR1:
-                        return need;
+                    {
+                        if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Kasra))
+                            return need;
+                        if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
+                            return need;
+                        if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
+                            return need;
+                        if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Kasra))
+                            return need;
+                        if((params.stem1Context.middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma))
+                            return need;
+                    }
                     case RootType.Hollow:
                     {
-                        if((params.stem1Context.middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma))
-                            return needPassive;
                         if((params.stem1Context.middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
                             return need;
                     }

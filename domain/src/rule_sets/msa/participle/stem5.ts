@@ -43,6 +43,7 @@ export function GenerateParticipleStem5(root: VerbRoot, baseForm: AugmentedRoot,
                 ...baseForm.symbols
             ];
 
+        case RootType.Assimilated:
         case RootType.SecondConsonantDoubled:
         case RootType.Sound:
             return GenerateParticipleRegular(baseForm, voice);
