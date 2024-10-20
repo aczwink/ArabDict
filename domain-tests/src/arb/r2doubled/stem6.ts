@@ -18,5 +18,6 @@
 import { It } from "acts-util-test";
 
 It("Stem 6", () => {
+    throw new Error("TODO verbal noun test :)");
     throw new Error("TODO :)");
 });

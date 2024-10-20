@@ -23,6 +23,7 @@ import { DialectType } from "arabdict-domain/dist/Conjugator";
 //Table: 29
 
 It("Stem2", () => {
+    throw new Error("TODO verbal noun test :)");
     throw new Error("TODO: MISSING ACTIVE PARTICIPLE TEST!");
     
     const conjugations: ConjugationTest[] = [

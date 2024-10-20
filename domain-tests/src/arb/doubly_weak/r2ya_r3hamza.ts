@@ -22,7 +22,8 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Doubly_weak_verbs
 //https://en.wiktionary.org/wiki/%D8%AC%D8%A7%D8%A1
 
-It("R2:Ya, R3:Hamza", () => {    
+It("R2:Ya, R3:Hamza", () => {
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ج-ي-ء", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "جَاءٍ", "مَجِيء");
 
     const conjugations: ConjugationTest[] = [

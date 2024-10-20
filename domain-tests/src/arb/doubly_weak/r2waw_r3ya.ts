@@ -23,6 +23,7 @@ import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../sh
 //https://en.wiktionary.org/wiki/%D8%B1%D9%88%D9%89
 
 It("R2:Waw, R3:Ya, Stem 1", () => {    
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ر-و-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "رَاوٍ", "مَرْوِيّ");
 
     const conjugations: ConjugationTest[] = [

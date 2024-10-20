@@ -20,6 +20,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 import { RunConjugationTest } from "../../shared";
 
 It("Stem 1", () => {
+    throw new Error("TODO verbal noun test :)");
     RunConjugationTest("ف-ل-ل", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, [
         { expected: "فَلَّ" },
         { expected: "فَلَلْتُ", person: "first" },

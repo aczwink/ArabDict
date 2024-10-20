@@ -21,6 +21,7 @@ import { ConjugationTest, RunDefectiveConjugationTest } from "../../shared";
 //Source: https://en.wiktionary.org/wiki/%D8%A7%D9%84%D8%AA%D9%82%D9%89
 
 It("Stem 8 passive", () => {
+    throw new Error("TODO verbal noun test :)");
     const conjugations: ConjugationTest[] = [
         //passive past
         { voice: "passive", expected: "اُلْتُقِيَ", gender: "male", person: "third", numerus: "singular", tense: "perfect", mood: "indicative" },

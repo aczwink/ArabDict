@@ -19,6 +19,7 @@ import { It } from "acts-util-test";
 import { ConjugationTest, RunDefectiveConjugationTest, RunDefectiveParticipleTest } from "../../shared";
 
 It("Stem 5", () => {
+    throw new Error("TODO verbal noun test :)");
     RunDefectiveParticipleTest("ج-ن", 5, "مُتَجَنٍّ", "مُتَجَنًّى");
     
     const conjugations: ConjugationTest[] = [

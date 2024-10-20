@@ -22,6 +22,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Source: https://en.wiktionary.org/wiki/%D8%B2%D8%A7%D8%AF#Verb
 
 It("Stem 1 past:i, present:i", () => {
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ز-ي-د", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "زَائِد", "مَزِيد");
 
     const conjugations: ConjugationTest[] = [

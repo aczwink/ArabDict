@@ -23,6 +23,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //https://en.wiktionary.org/wiki/%D8%A3%D8%AA%D9%89
 
 It("R1:Hamza, R3:Ya, Stem 1", () => {    
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ء-ت-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "آتٍ", "مَأْتِيّ");
 
     const conjugations: ConjugationTest[] = [

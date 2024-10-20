@@ -23,6 +23,7 @@ import { ConjugationTest, RunConjugationTest, RunDefectiveParticipleTest } from 
 //and for participles: https://en.wikipedia.org/wiki/Arabic_verbs#Defective_(third-weak)_verbs
 
 It("Wikipedia defective stem1 type 1", () => {
+    throw new Error("TODO verbal noun test :)");
     RunDefectiveParticipleTest("ف-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "فَاعٍ", "مَفْعِيّ");
     
     const conjugations: ConjugationTest[] = [

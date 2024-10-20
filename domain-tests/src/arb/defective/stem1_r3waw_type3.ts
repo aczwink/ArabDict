@@ -22,6 +22,8 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Source: https://en.wiktionary.org/wiki/%D9%86%D8%AF%D9%8A
 
 It("Stem 1 type 3 with waw as third radical", () => {
+    throw new Error("TODO verbal noun test :)");
+    
     const conjugations: ConjugationTest[] = [
         //past
         { expected: "نَدِيَ", gender: "male", person: "third", },

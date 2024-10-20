@@ -24,6 +24,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Table: 77
 
 It("Stem1", () => {
+    throw new Error("TODO verbal noun test :)");
     throw new Error("TODO: MISSING ACTIVE PARTICIPLE TEST!");
     
     const conjugations: ConjugationTest[] = [

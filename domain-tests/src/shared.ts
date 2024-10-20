@@ -202,6 +202,25 @@ export function RunParticipleTest(rootRadicals: string, stem: number | Stem1Cont
     TestParticiple(passiveExpected, passiveGot, "passive");
 }
 
+export function RunVerbalNounTest(rootRadicals: string, stem: AdvancedStemNumber | Stem1Context, expected: string)
+{
+    const conjugator = new Conjugator();
+
+    const stemNumber = (typeof stem === "number") ? stem : 1;
+
+    const root = new VerbRoot(rootRadicals.split("-").join(""));    
+    const choices = conjugator.GenerateAllPossibleVerbalNouns(DialectType.ModernStandardArabic, root, stemNumber);
+
+    if(choices.length !== 1)
+        throw new Error("Expected only a single verbal noun but got multiple");
+    const got = choices[0];
+
+    const a = ParseVocalizedText(expected);
+    const gotStr = got.Values().Map(VocalizedToString).Join(""); 
+    if(!CompareVocalized(a, got))
+        Fail("expected: " + expected + " / " + Buckwalter.ToString(a) + " got: " + gotStr + " / " + Buckwalter.ToString(got));
+}
+
 export function RunDefectiveParticipleTest(rootRadicalsWithoutR3: string, stem: number | Stem1Context, activeExpected: string, passiveExpected: string)
 {
     RunParticipleTest(rootRadicalsWithoutR3 + "-و", stem, activeExpected, passiveExpected);

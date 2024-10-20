@@ -23,6 +23,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //https://en.wiktionary.org/wiki/%D8%AD%D9%8A#Arabic
 
 It("Special: ح-ي-و, Stem1", () => {    
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ح-ي-و", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, "-", "-");
 
     const conjugations: ConjugationTest[] = [

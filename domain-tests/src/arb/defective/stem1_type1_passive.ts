@@ -22,6 +22,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Source: https://en.wiktionary.org/wiki/%D8%B1%D9%85%D9%89#Verb
 
 It("Stem 1 type 1 passive", () => {
+    throw new Error("TODO verbal noun test :)");
     const conjugations: ConjugationTest[] = [
         //past passive
         { voice: "passive", expected: "رُمِيَ", gender: "male", person: "third", },

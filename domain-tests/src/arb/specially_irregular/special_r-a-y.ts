@@ -21,6 +21,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D8%B1%D8%A3%D9%89
 It("Specially irregular defective رَأَى", () => {
+    throw new Error("TODO verbal noun test :)");
     throw new Error("TODO: ADD PARTICIPLE!");
 
     const conjugations: ConjugationTest[] = [

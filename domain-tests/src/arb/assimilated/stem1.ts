@@ -20,6 +20,8 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 import { RunConjugationTest } from "../../shared";
 
 It("Stem 1", () => {
+    throw new Error("TODO verbal noun test :)");
+    
     RunConjugationTest("و-ج-ل", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: true }, [
         { expected: "وَجِلَ" },
         { expected: "يَوْجَلُ", tense: "present" },

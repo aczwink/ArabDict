@@ -22,6 +22,7 @@ import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../sh
 //and https://en.wikipedia.org/wiki/Arabic_verbs#Form_VIII_assimilations
 
 It("Stem 8 with R1 = Saad assimilation", () => {
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ص-ل-ح", 8, "مُصْطَلِح", "مُصْطَلَح");
 
     const conjugations: ConjugationTest[] = [

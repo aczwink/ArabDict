@@ -23,6 +23,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Source for participles: https://en.wiktionary.org/wiki/%D9%82%D8%A7%D9%84#Verb
 
 It("Stem 1 past:u, present:u", () => {
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ق-و-ل", { middleRadicalTashkil: Tashkil.Dhamma, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, "قَائِل", "مَقُول");
 
     const conjugations: ConjugationTest[] = [

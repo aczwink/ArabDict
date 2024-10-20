@@ -24,6 +24,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Table: 1
 
 It("Irregular إجا", () => {
+    throw new Error("TODO verbal noun test :)");
     RunActiveParticipleTest("ج-ي-ء", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "جَاي", DialectType.Lebanese);
     
     const conjugations: ConjugationTest[] = [

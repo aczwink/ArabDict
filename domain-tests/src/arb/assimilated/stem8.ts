@@ -21,6 +21,8 @@ import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../sh
 //Source: https://en.wiktionary.org/wiki/%D8%A7%D8%AA%D8%AC%D9%87
 
 It("Stem 8", () => {
+    throw new Error("TODO verbal noun test :)");
+    
     //Source for passive participle: https://en.wikipedia.org/wiki/Arabic_verbs#Assimilated_(first-weak)_verbs
     RunParticipleTest("و-ج-ه", 8, "مُتَّجِه", "مُتَّجَه");
 

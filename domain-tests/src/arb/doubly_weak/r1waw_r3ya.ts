@@ -22,6 +22,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Source: https://en.wiktionary.org/wiki/%D9%88%D8%B9%D9%89
 
 It("doubly weak verb وَعَى test", () => {
+    throw new Error("TODO verbal noun test :)");
     const conjugations: ConjugationTest[] = [
         //past
         { expected: "وَعَى", gender: "male", person: "third", },

@@ -22,6 +22,7 @@ import { Tashkil } from "arabdict-domain/dist/Definitions";
 //Source: https://en.wiktionary.org/wiki/%D9%82%D9%86%D8%B7%D8%B1#Verb
 
 It("Stem 1", () => {
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ق-ن-ط-ر", { middleRadicalTashkil: Tashkil.Sukun, middleRadicalTashkilPresent: Tashkil.Sukun, soundOverride: false }, "مُقَنْطِر", "مُقَنْطَر");
 
     const conjugations: ConjugationTest[] = [

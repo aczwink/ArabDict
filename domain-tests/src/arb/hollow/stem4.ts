@@ -21,6 +21,7 @@ import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../sh
 //Source: https://en.wiktionary.org/wiki/%D8%A3%D8%B1%D8%A7%D8%AD#Verb
 
 It("Stem 4", () => {
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ر-و-ح", 4, "مُرِيح", "مُرَاح");
 
     const conjugations: ConjugationTest[] = [

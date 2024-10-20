@@ -21,6 +21,7 @@ import { ConjugationTest, RunDefectiveConjugationTest, RunDefectiveParticipleTes
 //Source: https://en.wiktionary.org/wiki/%D9%86%D8%A7%D8%AF%D9%89#Verb
 
 It("Stem 3", () => {
+    throw new Error("TODO verbal noun test :)");
     RunDefectiveParticipleTest("ن-د", 3, "مُنَادٍ", "مُنَادًى");
     
     const conjugations: ConjugationTest[] = [

@@ -20,6 +20,7 @@ import { ConjugationTest, RunDefectiveConjugationTest } from "../../shared";
 import { Tashkil } from "arabdict-domain/dist/Definitions";
 
 It("Stem 1 type 2 passive", () => {    
+    throw new Error("TODO verbal noun test :)");
     const conjugations: ConjugationTest[] = [
         //past passive
         { voice: "passive", expected: "دُعِيَ", gender: "male", person: "third", },

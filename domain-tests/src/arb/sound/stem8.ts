@@ -21,6 +21,7 @@ import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../sh
 //Source: https://en.wiktionary.org/wiki/%D8%A7%D9%83%D8%AA%D8%AA%D8%A8#Arabic
 
 It("Stem 8: اِكْتَتَبَ - يَكْتَتِبُ", () => {
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ك-ت-ب", 8, "مُكْتَتِب", "مُكْتَتَب");
 
     const conjugations: ConjugationTest[] = [

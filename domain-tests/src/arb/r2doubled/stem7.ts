@@ -19,6 +19,7 @@ import { It } from "acts-util-test";
 import { RunConjugationTest } from "../../shared";
 
 It("Stem 7", () => {
+    throw new Error("TODO verbal noun test :)");
     RunConjugationTest("ف-ل-ل", 7, [
         { expected: "اِنْفَلَّ" },
         { expected: "يَنْفَلُّ", tense: "present" },

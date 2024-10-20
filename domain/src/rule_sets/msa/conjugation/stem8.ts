@@ -23,6 +23,10 @@ export function Stem8AssimilateTa(vocalized: ConjugationVocalized[], r1idx: numb
 {
     switch(vocalized[r1idx].letter)
     {
+        case Letter.Thal:
+            vocalized[r1idx].letter = Letter.Dal;
+            vocalized[r1idx + 1].letter = Letter.Dal;
+            break;
         case Letter.Zay:
             vocalized[r1idx + 1].letter = Letter.Dal;
             break;

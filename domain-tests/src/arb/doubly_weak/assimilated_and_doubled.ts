@@ -22,6 +22,7 @@ import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../sh
 //Source: https://en.wiktionary.org/wiki/%D9%88%D8%AF
 
 It("Should be normal R2 doubled", () => {
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("و-د-د", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, "وَادّ", "مَوْدُود");
 
     const conjugations: ConjugationTest[] = [

@@ -22,6 +22,7 @@ import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../sh
 //Source: https://en.wiktionary.org/wiki/%D8%B8%D9%84#Verb
 
 It("Stem 1 Past:i Present:a", () => {
+    throw new Error("TODO verbal noun test :)");
     RunParticipleTest("ظ-ل-ل", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, "ظَالّ", "مَظْلُول");
 
     const conjugations: ConjugationTest[] = [
