@@ -21,11 +21,17 @@ import { APIService } from "./services/APIService";
 import { DialectStatistics, DictionaryStatistics, RootType } from "../dist/api";
 import { DialectsService } from "./services/DialectsService";
 import { Dictionary } from "../../../ACTS-Util/core/dist/Dictionary";
+import { ObjectExtensions } from "../../../ACTS-Util/core/dist/ObjectExtensions";
+import { ConjugationService } from "./services/ConjugationService";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
+import { Stem1DataToStem1Context } from "./verbs/model";
+import { RomanNumberComponent, StemNumberComponent } from "./shared/RomanNumberComponent";
 
 @Injectable
 export class StatisticsComponent extends Component
 {
-    constructor(private apiService: APIService, private dialectsService: DialectsService)
+    constructor(private apiService: APIService, private dialectsService: DialectsService, private conjugationService: ConjugationService)
     {
         super();
 
@@ -37,26 +43,65 @@ export class StatisticsComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        return <fragment>
+        return <div className="container">
+            <h3>Ingested data</h3>
             {this.RenderColumnTable("General", this.RenderGeneralStatsTable())}
-
-            {this.RenderKeyValueTable("Roots per type", {
-                rootType: "Root type",
-                pattern: "Pattern",
-                count: "Count"
-            }, this.data.rootCounts.Values().Map(x => ({ ...x, rootType: this.RootTypeToString(x.rootType), pattern: this.RootTypeToPattern(x.rootType) })).OrderByDescending(x => x.count).ToArray())}
-
-            {this.RenderKeyValueTable("Verbs per Stem", {
-                stem: "Stem",
-                count: "Count"
-            }, this.data.stemCounts)}
 
             {this.RenderKeyValueTable("per dialect", {
                 dialect: "Dialect",
                 verbsCount: "Verbs",
                 wordsCount: "Words (excluding verbs)",
+                totalCount: "Total",
             }, this.data.dialectCounts.map(this.BuildDialectRows.bind(this)))}
-        </fragment>;
+
+            <h3>Data analysis</h3>
+
+            {this.RenderKeyValueTable("Roots per type", {
+                rootType: "Root type",
+                pattern: "Pattern",
+                count: "Count"
+            }, this.data.rootCounts.map(x => ({
+                ...x,
+                rootType: this.RootTypeToString(x.rootType),
+                pattern: this.RootTypeToPattern(x.rootType)
+            })))}
+
+            {this.RenderKeyValueTable("Verbs per Stem", {
+                stem: "Stem",
+                count: "Count"
+            }, this.data.stemCounts.map(x => ({
+                stem: <RomanNumberComponent num={x.stem} />,
+                count: x.count
+            })))}
+            
+            {this.RenderKeyValueTable("Stem 1 frequencies", {
+                rootType: "Root type",
+                pattern: "Pattern",
+                form: "Form",
+                count: "Count"
+            }, this.data.stem1Freq.map(x => ({
+                rootType: this.RootTypeToString(x.rootType),
+                pattern: this.RootTypeToPattern(x.rootType),
+                form: this.BuildForm(x.rootType, x.index),
+                count: x.count,
+            })))}
+            
+            {this.RenderKeyValueTable("Verbal noun frequencies", {
+                rootType: "Root type",
+                pattern: "Pattern",
+                stem: "Stem",
+                form: "Form",
+                verbalNoun: "Verbal noun",
+                count: "Count"
+            }, this.data.verbalNounFreq.map(x => ({
+                rootType: this.RootTypeToString(x.rootType),
+                pattern: this.RootTypeToPattern(x.rootType),
+                stem: <StemNumberComponent rootType={x.rootType} stem={x.stem} />,
+                form: (x.stemChoiceIndex === undefined) ? "" : this.BuildForm(x.rootType, x.stemChoiceIndex),
+                verbalNoun: this.GenerateVerbalNoun(x.rootType, x.stem, x.verbalNounIndex),
+                count: x.count,
+            })))}
+        </div>;
     }
 
     //Private state
@@ -69,8 +114,78 @@ export class StatisticsComponent extends Component
 
         return {
             dialect: d.emojiCodes + " " + d.name,
-            ...dialectCounts
+            totalCount: dialectCounts.verbsCount + dialectCounts.wordsCount,
+            verbsCount: dialectCounts.verbsCount,
+            wordsCount: dialectCounts.wordsCount,
         };
+    }
+
+    private BuildForm(rootType: RootType, index: number)
+    {
+        if(index === -1)
+            return <i>invalid</i>;
+
+        const radicals = this.GetExampleRootRadicals(rootType);
+        const root = new VerbRoot(radicals.join(""));
+        const choice = root.GetStem1ContextChoices().r2options[index];
+        const past = this.conjugationService.ConjugateToString(root, {
+            gender: Gender.Male,
+            tense: Tense.Perfect,
+            numerus: Numerus.Singular,
+            person: Person.Third,
+            stem: 1,
+            stem1Context: Stem1DataToStem1Context({
+                flags: 0,
+                middleRadicalTashkil: choice.past,
+                middleRadicalTashkilPresent: choice.present
+            }),
+            voice: Voice.Active
+        });
+        const present = this.conjugationService.ConjugateToString(root, {
+            gender: Gender.Male,
+            tense: Tense.Present,
+            mood: Mood.Indicative,
+            numerus: Numerus.Singular,
+            person: Person.Third,
+            stem: 1,
+            stem1Context: Stem1DataToStem1Context({
+                flags: 0,
+                middleRadicalTashkil: choice.past,
+                middleRadicalTashkilPresent: choice.present
+            }),
+            voice: Voice.Active
+        });
+
+        return past + " - " + present;
+    }
+
+    private GenerateVerbalNoun(rootType: RootType, stem: number, verbalNounIndex: number)
+    {
+        const radicals = this.GetExampleRootRadicals(rootType).join("");
+        const generated = this.conjugationService.GenerateAllPossibleVerbalNouns(radicals, stem as any)[verbalNounIndex];
+        if(generated === undefined)
+            return <i>invalid</i>;
+        return generated;
+    }
+
+    private GetExampleRootRadicals(rootType: RootType)
+    {
+        switch(rootType)
+        {
+            case RootType.Quadriliteral:
+                return ["ف", "ع", "ل", "ق"];
+            case RootType.Assimilated:
+                return ["و", "ع", "ل"];
+            case RootType.Defective:
+                return ["ف", "ع", "و"];
+            case RootType.HamzaOnR1:
+                return ["ء", "ع", "ل"];
+            case RootType.Hollow:
+                return ["ف", "و", "ل"];
+            case RootType.SecondConsonantDoubled:
+                return ["ف", "ل", "ل"];
+        }
+        return ["ف", "ع", "ل"];
     }
 
     private RenderColumnTable(heading: string, rows: any[])
@@ -82,12 +197,12 @@ export class StatisticsComponent extends Component
     {
         const header = <fragment>
             <tr>
-                {headings.Values().Map(x => <th>{x}</th>).ToArray()}
+                {ObjectExtensions.Values(headings).Map(x => <th>{x}</th>).ToArray()}
             </tr>
         </fragment>;
         const rows = <fragment>
             {values.map(row => <tr>
-                {headings.OwnKeys().Map(x => <td>{row[x]}</td>).ToArray()}
+                {ObjectExtensions.OwnKeys(headings).Map(x => <td>{row[x]}</td>).ToArray()}
             </tr>)}
         </fragment>;
         return this.RenderTableWithHeading(heading, header, rows, false);
@@ -107,6 +222,10 @@ export class StatisticsComponent extends Component
             <tr>
                 <th>Number of words (excluding verbs):</th>
                 <td>{this.data!.wordsCount}</td>
+            </tr>
+            <tr>
+                <th>Total number of words:</th>
+                <td>{this.data!.verbsCount + this.data!.wordsCount}</td>
             </tr>
         </fragment>;
     }
@@ -175,5 +294,16 @@ export class StatisticsComponent extends Component
         const response = await this.apiService.statistics.get();
         this.data = response.data;
         this.data.dialectCounts.SortByDescending(x => x.verbsCount + x.wordsCount);
+        this.data.rootCounts.SortByDescending(x => x.count);
+        this.data.stemCounts.SortByDescending(x => x.count);
+
+        this.data.stem1Freq.SortByDescending(x => x.count);
+        this.data.stem1Freq = this.data.stem1Freq.Values().GroupBy(x => x.rootType)
+            .Filter(x => x.value.length > 1)
+            .Map(x => x.value.Values().OrderByDescending(x => x.count)).Flatten().ToArray();
+
+        this.data.verbalNounFreq = this.data.verbalNounFreq.Values().GroupBy(x => x.rootType)
+            .Filter(x => x.value.length > 1)
+            .Map(x => x.value.Values().OrderBy(x => [x.stem, x.count])).Flatten().ToArray();
     }
 }

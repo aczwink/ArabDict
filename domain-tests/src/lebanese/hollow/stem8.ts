@@ -23,7 +23,6 @@ import { DialectType } from "arabdict-domain/dist/Conjugator";
 //Table: 36
 
 It("Stem8", () => {
-    throw new Error("TODO verbal noun test :)");
     RunActiveParticipleTest("ر-و-ح", 8, "مِرْتَاحْ", DialectType.Lebanese);
     
     const conjugations: ConjugationTest[] = [

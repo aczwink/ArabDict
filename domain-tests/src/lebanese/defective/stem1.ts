@@ -16,16 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest } from "../../shared";
+import { ConjugationTest, RunActiveParticipleTest, RunConjugationTest } from "../../shared";
 import { DialectType } from "arabdict-domain/dist/Conjugator";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
 //Table: 26
 
 It("Lebanese: Stem1 basic defective", () => {
-    throw new Error("TODO verbal noun test :)");
-    throw new Error("TODO: MISSING ACTIVE PARTICIPLE TEST!");
+    const root = "ح-ك-ي";
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false };
+
+    RunActiveParticipleTest(root, stem, "حَاكِي", DialectType.Lebanese);
     
     const conjugations: ConjugationTest[] = [
         //past
@@ -67,5 +69,5 @@ It("Lebanese: Stem1 basic defective", () => {
         { tense: "present", mood: "imperative", numerus: "plural", person: "second", expected: "حْكُوا" },
     ];
 
-    RunConjugationTest("ح-ك-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations, DialectType.Lebanese);
+    RunConjugationTest(root, stem, conjugations, DialectType.Lebanese);
 });

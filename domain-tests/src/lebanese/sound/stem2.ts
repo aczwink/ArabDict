@@ -16,15 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest } from "../../shared";
+import { ConjugationTest, RunActiveParticipleTest, RunConjugationTest } from "../../shared";
 import { DialectType } from "arabdict-domain/dist/Conjugator";
 
 //Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
 //Table: 29
 
 It("Stem2", () => {
-    throw new Error("TODO verbal noun test :)");
-    throw new Error("TODO: MISSING ACTIVE PARTICIPLE TEST!");
+    const root = "خ-ل-ص";
+    const stem = 2;
+
+    RunActiveParticipleTest(root, stem, "مْخَلِّص", DialectType.Lebanese);
     
     const conjugations: ConjugationTest[] = [
         //past
@@ -66,5 +68,5 @@ It("Stem2", () => {
         { tense: "present", mood: "imperative", numerus: "plural", person: "second", expected: "خَلّْصُوا" },
     ];
 
-    RunConjugationTest("خ-ل-ص", 2, conjugations, DialectType.Lebanese);
+    RunConjugationTest(root, 2, conjugations, DialectType.Lebanese);
 });

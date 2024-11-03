@@ -19,6 +19,12 @@
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Dictionary, ObjectExtensions, Of } from "acts-util-core";
+import { VerbsController } from "./VerbsController";
+import { RootsController } from "./RootsController";
+import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
+import { WordsController } from "./WordsController";
+import { DisplayVocalized, VocalizedToString } from "arabdict-domain/src/Vocalization";
 
 interface DialectStatistics
 {
@@ -33,9 +39,25 @@ interface RootStatistics
     count: number;
 }
 
+interface VerbalNounFrequencies
+{
+    count: number;
+    rootType: RootType;
+    stem: number;
+    stemChoiceIndex?: number;
+    verbalNounIndex: number;
+}
+
 interface VerbStemStatistics
 {
     stem: number;
+    count: number;
+}
+
+interface VerbStem1Frequencies
+{
+    rootType: RootType;
+    index: number;
     count: number;
 }
 
@@ -48,12 +70,15 @@ interface DictionaryStatistics
     dialectCounts: DialectStatistics[];
     rootCounts: RootStatistics[];
     stemCounts: VerbStemStatistics[];
+    stem1Freq: VerbStem1Frequencies[];
+    verbalNounFreq: VerbalNounFrequencies[];
 }
 
 @Injectable
 export class StatisticsController
 {
-    constructor(private dbController: DatabaseController)
+    constructor(private dbController: DatabaseController, private verbsController: VerbsController, private rootsController: RootsController,
+        private wordsController: WordsController)
     {
     }
 
@@ -77,7 +102,9 @@ export class StatisticsController
             wordsCount: ExtractCount(r3),
             dialectCounts: await this.QueryDialectCounts(),
             rootCounts: await this.QueryRootCounts(),
-            stemCounts: await this.QueryStemCounts()
+            stemCounts: await this.QueryStemCounts(),
+            stem1Freq: await this.QueryStem1Frequencies(),
+            verbalNounFreq: await this.QueryVerbalNounFrequencies()
         };
     }
 
@@ -91,15 +118,16 @@ export class StatisticsController
 
         const dialectCounts: DialectStatistics[] = [];
         for (const row of verbs)
-            dialectCounts.push({ dialectId: row.dialectId, verbsCount: row.cnt, wordsCount: 0});
+            dialectCounts.push({ dialectId: row.dialectId, verbsCount: parseInt(row.cnt), wordsCount: 0});
 
         for (const row of words)
         {
+            const count = parseInt(row.cnt);
             const entry = dialectCounts.find(x => x.dialectId === row.dialectId);
             if(entry === undefined)
-                dialectCounts.push({ dialectId: row.dialectId, verbsCount: 0, wordsCount: row.cnt });
+                dialectCounts.push({ dialectId: row.dialectId, verbsCount: 0, wordsCount: count });
             else
-                entry.wordsCount = row.cnt;
+                entry.wordsCount = count;
         }
 
         return dialectCounts;
@@ -120,7 +148,97 @@ export class StatisticsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const verbs = await conn.Select<VerbStemStatistics>("SELECT stem, COUNT(*) AS count FROM verbs GROUP BY stem");
-        return verbs;
+        const rows = await conn.Select("SELECT stem, COUNT(*) AS cnt FROM verbs GROUP BY stem");
+        return rows.map(row => Of<VerbStemStatistics>({
+            count: parseInt(row.cnt),
+            stem: row.stem
+        }));
+    }
+
+    private async QueryStem1Frequencies()
+    {
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const rows = await conn.Select("SELECT id FROM verbs WHERE stem = 1");
+
+        const dict: Dictionary<VerbStem1Frequencies> = {};
+        for (const row of rows)
+        {
+            const verb = await this.verbsController.QueryVerb(row.id);
+            const rootData = await this.rootsController.QueryRoot(verb!.rootId);
+
+            const root = new VerbRoot(rootData!.radicals);
+            const choices = root.GetStem1ContextChoices();
+
+            const index = choices.r2options.findIndex(x => (x.past === verb?.stem1Data?.middleRadicalTashkil) && (x.present === verb?.stem1Data?.middleRadicalTashkilPresent));
+
+            const key = [root.type, index].join("_");
+            const obj = dict[key];
+            if(obj === undefined)
+            {
+                dict[key] = {
+                    count: 1,
+                    index,
+                    rootType: root.type
+                };
+            }
+            else
+                obj.count++;
+        }
+
+        return ObjectExtensions.Values(dict).NotUndefined().ToArray();
+    }
+
+    private async QueryVerbalNounFrequencies()
+    {
+        function VocalizedArrayToString(vocalized: DisplayVocalized[]): string
+        {
+            return vocalized.Values().Map(VocalizedToString).Join("");
+        }
+
+        const conjugator = new Conjugator();
+
+        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const rows = await conn.Select("SELECT wordId, verbId FROM words_verbs WHERE type = 1");
+
+        const dict: Dictionary<VerbalNounFrequencies> = {};
+        for (const row of rows)
+        {
+            const verbData = await this.verbsController.QueryVerb(row.verbId);
+            const rootData = await this.rootsController.QueryRoot(verbData!.rootId);
+
+            const root = new VerbRoot(rootData!.radicals);
+            const generated = conjugator.GenerateAllPossibleVerbalNouns(DialectType.ModernStandardArabic, root, verbData!.stem as any);
+            if(generated.length === 1)
+                continue;
+            const verbalNounPossibilities = generated.map(VocalizedArrayToString);
+
+            const wordData = await this.wordsController.QueryWord(row.wordId);
+            const verbalNounIndex = verbalNounPossibilities.indexOf(wordData!.word);
+
+            let stemKey = verbData!.stem.toString();
+            let stemChoiceIndex;
+            if(verbData?.stem === 1)
+            {
+                stemChoiceIndex = root.GetStem1ContextChoices().r2options.findIndex(x => (x.past === verbData.stem1Data?.middleRadicalTashkil) && (x.present === verbData.stem1Data?.middleRadicalTashkilPresent));
+                stemKey += "_" + stemChoiceIndex;
+            }
+
+            const key = [root.type, stemKey, verbalNounIndex].join("_");
+            const obj = dict[key];
+            if(obj === undefined)
+            {
+                dict[key] = {
+                    count: 1,
+                    rootType: root.type,
+                    stem: verbData!.stem,
+                    stemChoiceIndex,
+                    verbalNounIndex,
+                };
+            }
+            else
+                obj.count++;
+        }
+
+        return ObjectExtensions.Values(dict).NotUndefined().ToArray();
     }
 }

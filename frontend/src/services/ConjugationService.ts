@@ -19,7 +19,7 @@
 import { Injectable } from "acfrontend";
 import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
 import { ReverseConjugator } from "arabdict-domain/src/ReverseConjugator";
-import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
