@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
 import { FullWordData, RootCreationData, VerbData, VerbRelation } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
@@ -74,7 +74,7 @@ export class ShowVerbComponent extends Component
             <div className="row">
                 <div className="col"><h2>{conjugated}</h2></div>
                 <div className="col-auto">
-                    <Anchor route={"verbs/edit/" + verbData.id}><MatIcon>edit</MatIcon></Anchor>
+                    <Anchor route={"verbs/edit/" + verbData.id}><BootstrapIcon>pencil</BootstrapIcon></Anchor>
                     <a href="#" className="link-danger" onclick={this.OnDeleteVerb.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
                 </div>
             </div>

@@ -85,9 +85,9 @@ export class Conjugator
         return dialectConjugator.DeriveSoundNoun(singular, singularGender, target);
     }
 
-    public GenerateAllPossibleVerbalNouns(dialect: DialectType, root: VerbRoot, stem: StemNumber): DisplayVocalized[][]
+    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: StemNumber): DisplayVocalized[][]
     {
-        const dialectConjugator = this.CreateDialectConjugator(dialect);
+        const dialectConjugator = new MSAConjugator;
         const patterns = dialectConjugator.GenerateAllPossibleVerbalNouns(root, stem);
 
         return patterns.map(x => {

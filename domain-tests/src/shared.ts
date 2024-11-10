@@ -43,9 +43,15 @@ function CompareVocalized(a: DisplayVocalized[], b: DisplayVocalized[])
     return true;
 }
 
+function VocalizedTostring(vocalized: DisplayVocalized[])
+{
+    const str = vocalized.Values().Map(VocalizedToString).Join("");
+    return str;
+}
+
 function Test(expected: string[], got: DisplayVocalized[], params: ConjugationParams)
 {
-    const gotStr = got.Values().Map(VocalizedToString).Join("");
+    const gotStr = VocalizedTostring(got);
     const anyExpected = expected.Values().Map(ex => CompareVocalized(ParseVocalizedText(ex), got)).AnyTrue();
     if(!anyExpected)
     {
@@ -63,7 +69,7 @@ function Test(expected: string[], got: DisplayVocalized[], params: ConjugationPa
 function TestParticiple(expected: string, got: DisplayVocalized[], voice: VoiceString)
 {
     const a = ParseVocalizedText(expected);
-    const gotStr = got.Values().Map(VocalizedToString).Join(""); 
+    const gotStr = VocalizedTostring(got);
     if(!CompareVocalized(a, got))
         Fail("expected: " + expected + " / " + Buckwalter.ToString(a) + " got: " + gotStr + " / " + Buckwalter.ToString(got) + " voice: " + voice);
 }
@@ -202,6 +208,39 @@ export function RunParticipleTest(rootRadicals: string, stem: number | Stem1Cont
     TestParticiple(passiveExpected, passiveGot, "passive");
 }
 
+interface VerbalNounTestPattern
+{
+    expected: string;
+    rootRadicals: string;
+}
+export function RunVerbalNounPatternTest(stem: AdvancedStemNumber | Stem1Context, patterns: VerbalNounTestPattern[])
+{
+    const conjugator = new Conjugator();
+
+    const stemNumber = (typeof stem === "number") ? stem : 1;
+    let length;
+
+    const foundIndices = new Set();
+    for (const pattern of patterns)
+    {
+        const root = new VerbRoot(pattern.rootRadicals.split("-").join(""));
+        const choices = conjugator.GenerateAllPossibleVerbalNouns(root, stemNumber);
+        const choicesAsStrings = choices.Values().Map(VocalizedTostring).ToArray();
+
+        const index = choicesAsStrings.indexOf(pattern.expected);
+        if(index === -1)
+            throw new Error("Expected verbal noun '" + pattern.expected + "' could not be generated.");
+        length = choices.length;
+
+        if(foundIndices.has(index))
+            throw new Error("You wrote two tests for the same verbal noun pattern: " + index);
+        foundIndices.add(index);
+    }
+
+    if(foundIndices.size !== length)
+        throw new Error("Not all verbal noun patterns are tested. Tested: " + foundIndices.size + ", found: " + length);
+}
+
 export function RunVerbalNounTest(rootRadicals: string, stem: AdvancedStemNumber | Stem1Context, expected: string)
 {
     const conjugator = new Conjugator();
@@ -209,14 +248,14 @@ export function RunVerbalNounTest(rootRadicals: string, stem: AdvancedStemNumber
     const stemNumber = (typeof stem === "number") ? stem : 1;
 
     const root = new VerbRoot(rootRadicals.split("-").join(""));    
-    const choices = conjugator.GenerateAllPossibleVerbalNouns(DialectType.ModernStandardArabic, root, stemNumber);
+    const choices = conjugator.GenerateAllPossibleVerbalNouns(root, stemNumber);
 
     if(choices.length !== 1)
-        throw new Error("Expected only a single verbal noun but got multiple");
+        throw new Error("Expected only a single verbal noun but got " + choices.length);
     const got = choices[0];
 
     const a = ParseVocalizedText(expected);
-    const gotStr = got.Values().Map(VocalizedToString).Join(""); 
+    const gotStr = VocalizedTostring(got);
     if(!CompareVocalized(a, got))
         Fail("expected: " + expected + " / " + Buckwalter.ToString(a) + " got: " + gotStr + " / " + Buckwalter.ToString(got));
 }

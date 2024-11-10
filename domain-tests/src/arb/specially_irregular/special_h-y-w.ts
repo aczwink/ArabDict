@@ -16,15 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunActiveParticipleTest, RunConjugationTest, RunVerbalNounPatternTest } from "../../shared";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
+import { DialectType } from "arabdict-domain/dist/Conjugator";
 
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Doubly_weak_verbs
 //https://en.wiktionary.org/wiki/%D8%AD%D9%8A#Arabic
 
-It("Special: ح-ي-و, Stem1", () => {    
-    throw new Error("TODO verbal noun test :)");
-    RunParticipleTest("ح-ي-و", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, "-", "-");
+It("Special: ح-ي-و, Stem1", () => {
+    const root = "ح-ي-و";
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false };
+
+    RunVerbalNounPatternTest(stem, [
+        { expected: "حَيَاة", rootRadicals: root },
+        //Source: https://en.wiktionary.org/wiki/%D8%AD%D9%8A%D9%8A#Arabic
+        { expected: "حَيَاء", rootRadicals: root }
+    ])
+
+    RunActiveParticipleTest(root, stem, "حَيّ", DialectType.ModernStandardArabic);
 
     const conjugations: ConjugationTest[] = [
         //active past
@@ -173,5 +182,5 @@ It("Special: ح-ي-و, Stem1", () => {
         { voice: "passive", expected: "نُحْيَ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("ح-ي-و", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, conjugations);
+    RunConjugationTest(root, stem, conjugations);
 });

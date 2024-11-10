@@ -190,7 +190,17 @@ export class MSAReverseConjugator implements DialectReverseConjugator
             case 3:
             {
                 const [r1, r2, r3] = rootLetters;
-                
+
+                if(r1 === Letter.Ta)
+                {
+                    //assimilated
+                    return [
+                        {
+                            rootRadicals: [Letter.Waw, r2, r3],
+                            stem: 8
+                        },
+                    ];
+                }                
                 if((r2 === Letter.Alef) || (r2 === Letter.Ya))
                 {
                     //hollow
@@ -259,7 +269,7 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                 }
                 else if(r2 === Letter.Alef)
                     return this.TryMatchAugmentedRoot(conjugated, [0, 2, 3], 3);
-                else if(conjugated[1].letter === Letter.Ta)
+                else if((conjugated[1].letter === Letter.Ta) || (r2 === Letter.Dal))
                 {
                     const sub = this.TryMatchRoot([
                         conjugated[0], conjugated[2], conjugated[3]
@@ -269,6 +279,13 @@ export class MSAReverseConjugator implements DialectReverseConjugator
                         stem: 8
                     }));
                 }
+            }
+            break;
+            case 5:
+            {
+                const [r1, r2, r3, r4, r5] = rootLetters;
+                if((r1 === Letter.Siin) && (r2 === Letter.Ta))
+                    return this.TryMatchAugmentedRoot(conjugated, [2, 3, 4], 10);
             }
             break;
         }

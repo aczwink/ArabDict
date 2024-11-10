@@ -57,7 +57,7 @@ It("Stem1", () => {
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "third", gender: "female", expected: "تِكْتُبْ" },
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "second", gender: "male", expected: "تِكْتُبْ" },
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "second", gender: "female", expected: "تِكْتْبِي" },
-        { tense: "present", mood: "subjunctive", numerus: "singular", person: "first", gender: "male", expected: "اِكْتُبْ" },
+        { tense: "present", mood: "subjunctive", numerus: "singular", person: "first", gender: "male", expected: "إِكْتُبْ" },
 
         { tense: "present", mood: "subjunctive", numerus: "plural", person: "third", expected: "يِكْتْبُوا" },
         { tense: "present", mood: "subjunctive", numerus: "plural", person: "second", expected: "تِكْتْبُوا" },

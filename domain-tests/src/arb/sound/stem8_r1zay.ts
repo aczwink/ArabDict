@@ -22,7 +22,7 @@ import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounTe
 //and https://en.wikipedia.org/wiki/Arabic_verbs#Form_VIII_assimilations
 
 It("Stem 8 with R1 = Zay assimilation", () => {
-    const root = "ذ-خ-ر";
+    const root = "ز-ه-ر";
     const stem = 8;
     
     RunVerbalNounTest(root, stem, "اِزْدِهَار");

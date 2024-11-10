@@ -16,14 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounPatternTest } from "../../shared";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D8%B9%D8%B5%D9%81#Conjugation
 
 It("Stem 1 past:a, present:i", () => {
-    throw new Error("TODO verbal noun test :)");
-    RunParticipleTest("ع-ص-ف", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "عَاصِف", "مَعْصُوف");
+    const root = "ع-ص-ف";
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false };
+
+    RunVerbalNounPatternTest(stem, [
+        //Source: https://en.wiktionary.org/wiki/%D8%B9%D8%B5%D9%81#Conjugation
+        { expected: "عَصْف", rootRadicals: root },
+        //Source: https://en.wiktionary.org/wiki/%D9%85%D9%84%D9%83#Verb
+        { expected: "مُلْك", rootRadicals: "م-ل-ك" },
+    ]);
+
+    RunParticipleTest(root, stem, "عَاصِف", "مَعْصُوف");
 
     const conjugations: ConjugationTest[] = [
         //active past
@@ -172,5 +181,5 @@ It("Stem 1 past:a, present:i", () => {
         { voice: "passive", expected: "نُعْصَفْ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("ع-ص-ف", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
+    RunConjugationTest(root, stem, conjugations);
 });

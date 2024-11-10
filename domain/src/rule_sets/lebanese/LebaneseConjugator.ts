@@ -25,6 +25,7 @@ import { Stem1Sound_DeriveRootTashkil as Sound_DeriveRootTashkil } from "./sound
 import { DerivePrefix } from "./prefix";
 import { Hollow_DeriveRootTashkil } from "./hollow";
 import { DoIrregularModifications } from "./irregular";
+import { MSAConjugator } from "../msa/MSAConjugator";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar
 
@@ -128,12 +129,34 @@ export class LebaneseConjugator implements DialectConjugator
             }
             break;
         }
-        return [
-            {
-                letter: `T${Tashkil.Fatha}O${Tashkil.Fatha}D${Tashkil.Fatha}O` as any,
-                tashkil: Tashkil.Fatha
-            }
-        ];
+
+        const conjugator = new MSAConjugator;
+        const msaVersion = conjugator.ConjugateParticiple(root, stem, voice, stem1Context);
+
+        switch(root.type)
+        {
+            case RootType.Defective:
+                switch(stem)
+                {
+                    case 1:
+                        msaVersion[2].tashkil = Tashkil.Kasra;
+                        msaVersion.push({
+                            letter: Letter.Ya,
+                            tashkil: Tashkil.LongVowelMarker
+                        });
+                        return msaVersion;
+                }
+
+            case RootType.Sound:
+                switch(stem)
+                {
+                    case 2:
+                        msaVersion[0].tashkil = Tashkil.Sukun;
+                        return msaVersion;
+                }
+        }
+
+        return msaVersion;
     }
 
     public DeclineAdjective(vocalized: DisplayVocalized[], params: AdjectiveDeclensionParams): DisplayVocalized[]
@@ -149,13 +172,6 @@ export class LebaneseConjugator implements DialectConjugator
     public DeriveSoundNoun(singular: DisplayVocalized[], singularGender: Gender, target: TargetNounDerivation): DisplayVocalized[]
     {
         return [{ emphasis: true, letter: "TODO" as any, shadda: true, }];
-    }
-
-    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: number): string[]
-    {
-        return [
-            "TODO"
-        ];
     }
 
     //Private methods
@@ -184,12 +200,13 @@ export class LebaneseConjugator implements DialectConjugator
             case 1:
                 switch(root.type)
                 {
-                    case RootType.Defective:
                     case RootType.Hollow:
                         if(!root.radicalsAsSeparateLetters.Equals([Letter.Jiim, Letter.Ya, Letter.Hamza]))
                         {
                             throw new Error("TODO: NOT IMPLEMENTED!");
                         }
+
+                    case RootType.Defective:
 
                         return [
                             {

@@ -16,7 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
+import { RunVerbalNounTest } from "../../shared";
 
 It("Stem 2", () => {
+    const root = "س-ل-س-ل";
+    const stem = 2;
+    //Source: https://en.wiktionary.org/wiki/%D8%B3_%D9%84_%D8%B3_%D9%84
+    RunVerbalNounTest(root, stem, "تَسَلْسُل");
     throw new Error("TODO :)");
 });

@@ -16,14 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounPatternTest } from "../../shared";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D8%B2%D8%A7%D8%AF#Verb
 
 It("Stem 1 past:i, present:i", () => {
-    throw new Error("TODO verbal noun test :)");
-    RunParticipleTest("ز-ي-د", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "زَائِد", "مَزِيد");
+    const root = "ز-ي-د";
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false };
+    
+    RunVerbalNounPatternTest(stem, [
+        { expected: "زِيَادَة", rootRadicals: root },
+    ]);
+    
+    RunParticipleTest(root, stem, "زَائِد", "مَزِيد");
 
     const conjugations: ConjugationTest[] = [
         //active past
@@ -172,5 +178,5 @@ It("Stem 1 past:i, present:i", () => {
         { voice: "passive", expected: "نُزَدْ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("ز-ي-د", { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
+    RunConjugationTest(root, stem, conjugations);
 });

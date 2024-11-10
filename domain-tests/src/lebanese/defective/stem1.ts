@@ -57,7 +57,7 @@ It("Lebanese: Stem1 basic defective", () => {
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "third", gender: "female", expected: "تِحْكِي" },
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "second", gender: "male", expected: "تِحْكِي" },
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "second", gender: "female", expected: "تِحْكِي" },
-        { tense: "present", mood: "subjunctive", numerus: "singular", person: "first", gender: "male", expected: "اِحْكِي" },
+        { tense: "present", mood: "subjunctive", numerus: "singular", person: "first", gender: "male", expected: "إِحْكِي" },
 
         { tense: "present", mood: "subjunctive", numerus: "plural", person: "third", expected: "يِحْكُوا" },
         { tense: "present", mood: "subjunctive", numerus: "plural", person: "second", expected: "تِحْكُوا" },

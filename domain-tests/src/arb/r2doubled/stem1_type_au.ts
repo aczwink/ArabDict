@@ -16,14 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
-import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounPatternTest } from "../../shared";
 
 //Source: https://en.wiktionary.org/wiki/%D8%AF%D9%84#Verb
 
 It("Stem 1 Past:a Present:u", () => {
-    throw new Error("TODO verbal noun test :)");
-    RunParticipleTest("د-ل-ل", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, "دَالّ", "مَدْلُول");
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false };
+
+    RunVerbalNounPatternTest(stem, [
+        //Source: https://en.wiktionary.org/wiki/%D9%85%D8%B1#Verb
+        { expected: "مُرُور", rootRadicals: "م-ر-ر" }
+    ]);
+    
+    RunParticipleTest("د-ل-ل", stem, "دَالّ", "مَدْلُول");
 
     const conjugations: ConjugationTest[] = [
         //active past

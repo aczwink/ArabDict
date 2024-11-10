@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
 import { APIService } from "../services/APIService";
 import { FullWordData, VerbData, WordFunctionData, WordRelation, WordRootDerivationData, WordType, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
@@ -185,7 +185,7 @@ export class ShowWordComponent extends Component
     private RenderEditControls()
     {
         return <fragment>
-            <Anchor route={"words/" + this.data!.id + "/edit"}><MatIcon>edit</MatIcon></Anchor>
+            <Anchor route={"words/" + this.data!.id + "/edit"}><BootstrapIcon>pencil</BootstrapIcon></Anchor>
             <a href="#" className="link-danger" onclick={this.OnDeleteWord.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
         </fragment>;
     }

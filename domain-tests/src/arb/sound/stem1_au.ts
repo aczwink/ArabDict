@@ -16,14 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounPatternTest } from "../../shared";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D9%83%D8%AA%D8%A8#Conjugation
 
-It("Stem 1: كَتَبَ - يَكْتُبُ", () => {
-    throw new Error("TODO verbal noun test :)");
-    RunParticipleTest("ك-ت-ب", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false }, "كَاتِب", "مَكْتُوب");
+It("Stem 1 past:a, present:u", () => {
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false };
+    
+    RunVerbalNounPatternTest(stem, [
+        //Source: https://en.wiktionary.org/wiki/%D9%86%D9%82%D8%AF#Verb
+        { expected: "نَقْد", rootRadicals: "ن-ق-د" },
+        //Source: https://en.wiktionary.org/wiki/%D8%AE%D8%AF%D9%85#Arabic
+        { expected: "خِدْمَة", rootRadicals: "خ-د-م" },
+    ]);
+
+    RunParticipleTest("ك-ت-ب", stem, "كَاتِب", "مَكْتُوب");
 
     const conjugations: ConjugationTest[] = [
         //past

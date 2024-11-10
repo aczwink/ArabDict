@@ -19,7 +19,7 @@
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { RootCreationData, RootOverviewData } from "../../dist/api";
 import { IsFlagSet, RootFlags } from "../shared/flags";
-import { Letter } from "arabdict-domain/src/Definitions";
+import { Letter, Tashkil, TASHKIL_SHADDA } from "arabdict-domain/src/Definitions";
 
 export function AreValidRootCharacters(rootRadicals: string)
 {
@@ -37,6 +37,43 @@ export function DoRootCharactersFormValidRoot(rootRadicals: string)
     if(chars.length > 4)
         return false;
     return AreValidRootCharacters(rootRadicals);
+}
+
+function IsArabicChar(char: string)
+{
+    switch(char)
+    {
+        case Letter.Alef:
+        case Letter.AlefHamza:
+        case Letter.AlefHamzaBelow:
+        case Letter.AlefMadda:
+        case Letter.AlefMaksura:
+        case Letter.TaMarbuta:
+        case Letter.WawHamza:
+        case Letter.YaHamza:
+            return true;
+
+        case Tashkil.Dhamma:
+        case Tashkil.Dhammatan:
+        case Tashkil.Fatha:
+        case Tashkil.Fathatan:
+        case Tashkil.Kasra:
+        case Tashkil.Kasratan:
+        case Tashkil.Sukun:
+        case TASHKIL_SHADDA:
+            return true;
+    }
+    return IsValidRootRadical(char);
+}
+
+export function IsArabicText(text: string)
+{
+    for (const char of text)
+    {
+        if(!IsArabicChar(char))
+            return false;
+    }
+    return true;
 }
 
 export function IsValidRootRadical(char: string)

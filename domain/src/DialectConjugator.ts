@@ -40,5 +40,4 @@ export interface DialectConjugator
     DeclineAdjective(vocalized: DisplayVocalized[], params: AdjectiveDeclensionParams): DisplayVocalized[];
     DeclineNoun(inputNoun: NounInput, params: NounDeclensionParams): DisplayVocalized[];
     DeriveSoundNoun(singular: DisplayVocalized[], singularGender: Gender, target: TargetNounDerivation): DisplayVocalized[];
-    GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: StemNumber): (string | ConjugationVocalized[])[];
 }

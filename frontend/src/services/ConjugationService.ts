@@ -112,7 +112,7 @@ export class ConjugationService
     public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: StemNumber)
     {
         const root = new VerbRoot(rootRadicals);
-        const nouns = this.conjugator.GenerateAllPossibleVerbalNouns(this._globalDialect.Get(), root, stem);
+        const nouns = this.conjugator.GenerateAllPossibleVerbalNouns(root, stem);
         return nouns.map(this.VocalizedToString.bind(this));
     }
 

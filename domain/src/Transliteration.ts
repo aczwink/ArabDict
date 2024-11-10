@@ -93,6 +93,8 @@ export const Buckwalter = {
                 return "<";
             case Letter.AlefMaksura:
                 return "Y";
+            case Letter.TaMarbuta:
+                return "p";
             case Letter.WawHamza:
                 return "&";
         }

@@ -16,13 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounTest } from "../../shared";
 
 //Source: https://en.wiktionary.org/wiki/%D8%A7%D9%83%D8%AA%D8%AA%D8%A8#Arabic
 
 It("Stem 8: اِكْتَتَبَ - يَكْتَتِبُ", () => {
-    throw new Error("TODO verbal noun test :)");
-    RunParticipleTest("ك-ت-ب", 8, "مُكْتَتِب", "مُكْتَتَب");
+    const root = "ك-ت-ب"
+    const stem = 8;
+
+    RunVerbalNounTest(root, stem, "اِكْتِتَاب");
+    RunParticipleTest(root, stem, "مُكْتَتِب", "مُكْتَتَب");
 
     const conjugations: ConjugationTest[] = [
         //past

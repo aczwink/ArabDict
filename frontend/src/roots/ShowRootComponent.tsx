@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, MatIcon, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
 import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
@@ -100,7 +100,7 @@ export class ShowRootComponent extends Component
     private RenderEditControls()
     {
         return <fragment>
-            <Anchor route={"roots/" + this.rootId + "/edit"}><MatIcon>edit</MatIcon></Anchor>
+            <Anchor route={"roots/" + this.rootId + "/edit"}><BootstrapIcon>pencil</BootstrapIcon></Anchor>
             <a href="#" className="link-danger" onclick={this.OnDeleteRoot.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
         </fragment>;
     }

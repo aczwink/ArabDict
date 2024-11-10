@@ -16,13 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest } from "../../shared";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounTest } from "../../shared";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D8%B1%D8%A3%D9%89
 It("Specially irregular defective رَأَى", () => {
-    throw new Error("TODO verbal noun test :)");
-    throw new Error("TODO: ADD PARTICIPLE!");
+    const root = "ر-ء-ي"
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false };
+
+    RunVerbalNounTest(root, stem, "رَأْي");
+    RunParticipleTest(root, stem, "رَاءٍ", "مَرْئِيّ");
 
     const conjugations: ConjugationTest[] = [
         //past
@@ -171,13 +174,17 @@ It("Specially irregular defective رَأَى", () => {
         { voice: "passive", expected: "نُرَ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("ر-ء-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
+    RunConjugationTest(root, stem, conjugations);
 });
 
 //Source: https://en.wiktionary.org/wiki/%D8%A3%D8%B1%D9%89#Arabic
 
 It("Specially irregular defective أَرَى", () => {
-    throw new Error("TODO: ADD PARTICIPLE!");
+    const root = "ر-ء-ي"
+    const stem = 4;
+
+    RunVerbalNounTest(root, stem, "إِرَاءَة");
+    RunParticipleTest(root, stem, "مُرٍ", "مُرًى");
     
     const conjugations: ConjugationTest[] = [
         //past
@@ -326,5 +333,5 @@ It("Specially irregular defective أَرَى", () => {
         { voice: "passive", expected: "نُرَ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("ر-ء-ي", 4, conjugations);
+    RunConjugationTest(root, stem, conjugations);
 });

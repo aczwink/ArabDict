@@ -27,6 +27,7 @@ import { ReverseLookupService } from "./ReverseLookupService";
 import { EqualsAny } from "../../../../ACTS-Util/core/dist/EqualsAny";
 import { VerbReverseConjugationResult } from "arabdict-domain/src/Conjugator";
 import { DisplayVocalized, ParseVocalizedText } from "arabdict-domain/src/Vocalization";
+import { IsArabicText } from "../roots/general";
 
 interface RootMatchData extends VerbReverseConjugationResult
 {
@@ -192,19 +193,30 @@ export class GlobalSearchService
 
     public PerformSearch(filter: string, offset: number, limit: number, resultCallback: (newData: SearchResultEntry[]) => void)
     {
-        const p1 = this.FindWords(filter, offset, limit)
+        const isArabic = IsArabicText(filter);
+
         const p2 = this.FindWordsByTranslation(filter, offset, limit);
         const p3 = this.FindVerbsByTranslation(filter, offset, limit);
-        const p4 = this.FindVerbByReverseConjugation(filter);
 
         const sq = new SearchQuery(filter, resultCallback);
 
-        p1.then(this.AddWordsToState.bind(this, sq, false));
         p2.then(this.AddWordsToState.bind(this, sq, true));
         p3.then(this.AddVerbsByTranslationToState.bind(this, sq, true));
-        p4.then(this.AddVerbsByConjugationToState.bind(this, sq));
 
-        return Promise.all([p1, p2, p3, p4]);
+        const promises: Promise<any>[] = [p2, p3];
+
+        if(isArabic)
+        {
+            const p1 = this.FindWords(filter, offset, limit);
+            p1.then(this.AddWordsToState.bind(this, sq, false));
+
+            const p4 = this.FindVerbByReverseConjugation(filter);
+            p4.then(this.AddVerbsByConjugationToState.bind(this, sq));
+
+            promises.push(p4);
+        }
+
+        return Promise.all(promises);
     }
 
     //Private methods
