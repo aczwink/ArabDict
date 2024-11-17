@@ -217,14 +217,17 @@ export function RunVerbalNounPatternTest(stem: AdvancedStemNumber | Stem1Context
 {
     const conjugator = new Conjugator();
 
-    const stemNumber = (typeof stem === "number") ? stem : 1;
     let length;
 
     const foundIndices = new Set();
     for (const pattern of patterns)
     {
         const root = new VerbRoot(pattern.rootRadicals.split("-").join(""));
-        const choices = conjugator.GenerateAllPossibleVerbalNouns(root, stemNumber);
+
+        if(!conjugator.HasPotentiallyMultipleVerbalNounForms(root, stem))
+            throw new Error("Expected multiple verbal nouns but apparently only one exists");
+
+        const choices = conjugator.GenerateAllPossibleVerbalNouns(root, stem);
         const choicesAsStrings = choices.Values().Map(VocalizedTostring).ToArray();
 
         const index = choicesAsStrings.indexOf(pattern.expected);
@@ -245,10 +248,10 @@ export function RunVerbalNounTest(rootRadicals: string, stem: AdvancedStemNumber
 {
     const conjugator = new Conjugator();
 
-    const stemNumber = (typeof stem === "number") ? stem : 1;
-
-    const root = new VerbRoot(rootRadicals.split("-").join(""));    
-    const choices = conjugator.GenerateAllPossibleVerbalNouns(root, stemNumber);
+    const root = new VerbRoot(rootRadicals.split("-").join(""));
+    if(conjugator.HasPotentiallyMultipleVerbalNounForms(root, stem))
+        throw new Error("Expected a single verbal noun but apparently multiple ones exist");
+    const choices = conjugator.GenerateAllPossibleVerbalNouns(root, stem);
 
     if(choices.length !== 1)
         throw new Error("Expected only a single verbal noun but got " + choices.length);
@@ -257,11 +260,17 @@ export function RunVerbalNounTest(rootRadicals: string, stem: AdvancedStemNumber
     const a = ParseVocalizedText(expected);
     const gotStr = VocalizedTostring(got);
     if(!CompareVocalized(a, got))
-        Fail("expected: " + expected + " / " + Buckwalter.ToString(a) + " got: " + gotStr + " / " + Buckwalter.ToString(got));
+        Fail("Verbal noun test failed. Expected: " + expected + " / " + Buckwalter.ToString(a) + " got: " + gotStr + " / " + Buckwalter.ToString(got));
 }
 
 export function RunDefectiveParticipleTest(rootRadicalsWithoutR3: string, stem: number | Stem1Context, activeExpected: string, passiveExpected: string)
 {
     RunParticipleTest(rootRadicalsWithoutR3 + "-و", stem, activeExpected, passiveExpected);
     RunParticipleTest(rootRadicalsWithoutR3 + "-ي", stem, activeExpected, passiveExpected);
+}
+
+export function RunDefectiveVerbalNounTest(rootRadicalsWithoutR3: string, stem: AdvancedStemNumber | Stem1Context, expected: string)
+{
+    RunVerbalNounTest(rootRadicalsWithoutR3 + "-و", stem, expected);
+    RunVerbalNounTest(rootRadicalsWithoutR3 + "-ي", stem, expected);
 }

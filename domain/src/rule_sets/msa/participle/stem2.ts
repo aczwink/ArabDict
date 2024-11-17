@@ -29,6 +29,7 @@ export function GenerateParticipleStem2(baseForm: AugmentedRoot, voice: Voice): 
         case RootType.Defective:
             return GenerateParticipleDefective(baseForm, voice);
 
+        case RootType.HamzaOnR1:
         case RootType.Hollow:
         case RootType.SecondConsonantDoubled:
         case RootType.Sound:

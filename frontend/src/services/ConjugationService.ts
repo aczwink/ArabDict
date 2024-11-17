@@ -23,7 +23,7 @@ import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
 import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
 import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
-import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, StemNumber, Tashkil, Letter } from "arabdict-domain/src/Definitions";
+import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, AdvancedStemNumber } from "arabdict-domain/src/Definitions";
 import { NounInput, TargetNounDerivation } from "arabdict-domain/src/DialectConjugator";
 
 @Injectable
@@ -109,11 +109,17 @@ export class ConjugationService
         return this.conjugator.DeriveSoundNoun(singular, singularGender, target, this._globalDialect.Get());
     }
 
-    public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: StemNumber)
+    public GenerateAllPossibleVerbalNouns(rootRadicals: string, stem: AdvancedStemNumber | Stem1Context)
     {
         const root = new VerbRoot(rootRadicals);
         const nouns = this.conjugator.GenerateAllPossibleVerbalNouns(root, stem);
         return nouns.map(this.VocalizedToString.bind(this));
+    }
+
+    public HasPotentiallyMultipleVerbalNounForms(rootRadicals: string, stem: AdvancedStemNumber | Stem1Context)
+    {
+        const root = new VerbRoot(rootRadicals);
+        return this.conjugator.HasPotentiallyMultipleVerbalNounForms(root, stem);
     }
 
     public VocalizedToString(vocalized: DisplayVocalized[]): string

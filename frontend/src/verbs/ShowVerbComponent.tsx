@@ -31,7 +31,7 @@ import { WordRelationshipTypeToString } from "../shared/words";
 import { VerbIdReferenceComponent } from "./VerbReferenceComponent";
 import { RootToString } from "../roots/general";
 import { Stem1DataToStem1ContextOptional } from "./model";
-import { Stem1Context, Person, TenseString, VoiceString, Numerus, Gender, Mood, Voice } from "arabdict-domain/src/Definitions";
+import { Stem1Context, Person, TenseString, VoiceString, Numerus, Gender, Mood, Voice, AdvancedStemNumber } from "arabdict-domain/src/Definitions";
 import { DisplayVocalized } from "arabdict-domain/src/Vocalization";
 import { _TODO_CheckConjugation } from "./_ConjugationCheck";
 import { Tense } from "arabdict-domain/dist/Definitions";
@@ -296,6 +296,12 @@ export class ShowVerbComponent extends Component
         const root = new VerbRoot(this.rootRadicals);
         const past = this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
         const present = this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "present", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
+
+        const stemData = (stem1ctx === undefined) ? (this.data!.stem! as AdvancedStemNumber) : stem1ctx;
+        const verbalNounRow = this.conjugationService.HasPotentiallyMultipleVerbalNounForms(this.rootRadicals, stemData) ? null : <tr>
+            <th>Verbal noun الْمَصْدَر</th>
+            <td>{this.conjugationService.GenerateAllPossibleVerbalNouns(this.rootRadicals, stemData)[0]}</td>
+        </tr>;
         return <table>
             <tbody>
                 <tr>
@@ -318,6 +324,7 @@ export class ShowVerbComponent extends Component
                     <th>Passive participle اِسْم الْمَفْعُول:</th>
                     <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.rootRadicals, data.stem, Voice.Passive, stem1ctx), past)}</td>
                 </tr>
+                {verbalNounRow}
                 <tr>
                     <th>Related:</th>
                     <td>{this.RenderRelations(data.related)}</td>

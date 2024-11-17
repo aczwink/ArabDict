@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, JSX_Fragment, ProgressSpinner, PushButton, Router, RouterButton, RouterState } from "acfrontend";
 import { APIService } from "../services/APIService";
 import { RootOverviewData } from "../../dist/api";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { AreValidRootCharacters, RootToString } from "./general";
+import { AreValidRootCharacters, DoRootCharactersFormValidRoot, RootToString } from "./general";
 import { RadicalsEditorComponent } from "./RadicalsEditorComponent";
 
 interface AlphabetRange
@@ -40,7 +40,7 @@ const alphabetChars: AlphabetRange[] = [
 @Injectable
 export class ListRootsComponent extends Component
 {
-    constructor(routerState: RouterState, private apiService: APIService)
+    constructor(routerState: RouterState, private apiService: APIService, private router: Router)
     {
         super();
 
@@ -64,9 +64,12 @@ export class ListRootsComponent extends Component
                     </div>
                 </div>
             </div>
-            {this.RenderTable()}
-            <RouterButton color="primary" route="/roots/add"><BootstrapIcon>plus</BootstrapIcon></RouterButton>
-            <RouterButton color="secondary" route="words/add"><BootstrapIcon>plus</BootstrapIcon> word</RouterButton>
+            <div className="container">
+                {this.RenderTable()}
+                <br />
+                <RouterButton color="primary" route="/roots/add"><BootstrapIcon>plus</BootstrapIcon></RouterButton>
+                <RouterButton color="secondary" route="words/add"><BootstrapIcon>plus</BootstrapIcon> word</RouterButton>
+            </div>
         </fragment>;
     }
 
@@ -103,6 +106,23 @@ export class ListRootsComponent extends Component
     {
         if(this.data === null)
             return <ProgressSpinner />;
+        if(this.data.length === 0)
+        {
+            const len = this.searchText?.length ?? 0;
+            if(len > 2)
+            {
+                const rootRadicals = this.searchText!;
+                if(DoRootCharactersFormValidRoot(rootRadicals))
+                {
+                    const root = new VerbRoot(rootRadicals);
+                    return <>
+                        Root "{root.ToString()}" does not exist.
+                        <PushButton color="success" enabled onActivated={this.OnCreateRoot.bind(this, rootRadicals)}>Create</PushButton>
+                    </>;
+                }
+            }
+            return "No roots found...";
+        }
 
         return <table className="table table-striped table-hover table-sm text-center" style="margin-left: auto; margin-right: auto; width: auto;">
             <thead>
@@ -120,6 +140,16 @@ export class ListRootsComponent extends Component
     }
 
     //Event handlers
+    private async OnCreateRoot(rootRadicals: string)
+    {
+        const response = await this.apiService.roots.post({
+            description: "",
+            flags: 0,
+            radicals: rootRadicals
+        });
+        this.router.RouteTo("/roots/" + response.data);
+    }
+
     override async OnInitiated(): Promise<void>
     {
         if(this.searchText !== null)

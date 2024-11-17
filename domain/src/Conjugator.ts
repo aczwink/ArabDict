@@ -20,7 +20,7 @@ import { VerbRoot } from "./VerbRoot";
 import { DialectConjugator, NounInput, TargetNounDerivation } from "./DialectConjugator";
 import { MSAConjugator } from "./rule_sets/msa/MSAConjugator";
 import { ConjugationVocalized, DisplayVocalized, ParseVocalizedText } from "./Vocalization";
-import { ConjugationParams, Stem1Context, Tashkil, Tense, Voice, Mood, Person, AdjectiveDeclensionParams, NounDeclensionParams, Gender, StemNumber } from "./Definitions";
+import { ConjugationParams, Stem1Context, Tashkil, Tense, Voice, Mood, Person, AdjectiveDeclensionParams, NounDeclensionParams, Gender, StemNumber, AdvancedStemNumber } from "./Definitions";
 import { LebaneseConjugator } from "./rule_sets/lebanese/LebaneseConjugator";
 
 export enum DialectType
@@ -85,16 +85,18 @@ export class Conjugator
         return dialectConjugator.DeriveSoundNoun(singular, singularGender, target);
     }
 
-    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: StemNumber): DisplayVocalized[][]
+    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: AdvancedStemNumber | Stem1Context): DisplayVocalized[][]
     {
         const dialectConjugator = new MSAConjugator;
         const patterns = dialectConjugator.GenerateAllPossibleVerbalNouns(root, stem);
 
-        return patterns.map(x => {
-            if(typeof x === "string")
-                return ParseVocalizedText(x);
-            return this.ExecuteWordTransformationPipeline(x);
-        });
+        return patterns.map(x => this.ExecuteWordTransformationPipeline(x));
+    }
+
+    public HasPotentiallyMultipleVerbalNounForms(root: VerbRoot, stem: AdvancedStemNumber | Stem1Context)
+    {
+        const dialectConjugator = new MSAConjugator;
+        return dialectConjugator.HasPotentiallyMultipleVerbalNounForms(root, stem);
     }
 
     //Private methods

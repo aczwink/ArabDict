@@ -28,7 +28,7 @@ import { GeminateDoubledConsonant } from "./conjugation/doubled";
 import { AlterDefectiveEnding, AlterDefectiveSuffix } from "./conjugation/defective";
 import { AlterAssimilatedPrefix } from "./conjugation/assimilated";
 import { ApplyRootTashkil } from "./conjugation/rootTashkil";
-import { GenerateAllPossibleVerbalNounsStem1 } from "./verbal_nouns/stem1";
+import { GenerateAllPossibleVerbalNounsStem1, HasPotentiallyMultipleVerbalNounFormsStem1 } from "./verbal_nouns/stem1";
 import { Stem8AssimilateTaVerb } from "./conjugation/stem8";
 import { GenerateAllPossibleVerbalNounsStem8 } from "./verbal_nouns/stem8";
 import { GenerateAllPossibleVerbalNounsStem5 } from "./verbal_nouns/stem5";
@@ -154,12 +154,10 @@ export class MSAConjugator implements DialectConjugator
         }
     }
 
-    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: StemNumber): (string | ConjugationVocalized[])[]
+    public GenerateAllPossibleVerbalNouns(root: VerbRoot, stem: AdvancedStemNumber | Stem1Context): ConjugationVocalized[][]
     {
         switch(stem)
         {
-            case 1:
-                return GenerateAllPossibleVerbalNounsStem1(root);
             case 2:
                 return [GenerateAllPossibleVerbalNounsStem2(root)];
             case 3:
@@ -176,7 +174,20 @@ export class MSAConjugator implements DialectConjugator
                 return [GenerateAllPossibleVerbalNounsStem8(root)];
             case 10:
                 return [GenerateAllPossibleVerbalNounsStem10(root)];
+            default:
+                return GenerateAllPossibleVerbalNounsStem1(root, stem);
         }
+    }
+
+    public HasPotentiallyMultipleVerbalNounForms(root: VerbRoot, stem: AdvancedStemNumber | Stem1Context)
+    {
+        if(typeof stem === "number")
+        {
+            if((stem === 3) && (root.type === RootType.Sound))
+                return true;
+            return false;
+        }
+        return HasPotentiallyMultipleVerbalNounFormsStem1(root, stem);
     }
 
     //Private methods

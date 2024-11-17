@@ -16,20 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounPatternTest } from "../../shared";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounTest } from "../../shared";
 import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D8%B1%D8%AD%D9%84#Verb
 
 It("Stem 1 past:a, present:a", () => {
+    const root = "ر-ح-ل";
     const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false };
-    
-    RunVerbalNounPatternTest(stem, [
-        //Source: https://en.wiktionary.org/wiki/%D8%AF%D9%81%D8%B9#Verb
-        { expected: "دَفْع", rootRadicals: "د-ف-ع" },
-    ]);
 
-    RunParticipleTest("ر-ح-ل", stem, "رَاحِل", "مَرْحُول");
+    //Source: https://en.wiktionary.org/wiki/%D8%AF%D9%81%D8%B9#Verb    
+    RunVerbalNounTest("د-ف-ع", stem, "دَفْع");
+
+    RunParticipleTest(root, stem, "رَاحِل", "مَرْحُول");
 
     const conjugations: ConjugationTest[] = [
         //active past
@@ -178,5 +177,5 @@ It("Stem 1 past:a, present:a", () => {
         { voice: "passive", expected: "نُرْحَلْ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("ر-ح-ل", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, conjugations);
+    RunConjugationTest(root, { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Fatha, soundOverride: false }, conjugations);
 });

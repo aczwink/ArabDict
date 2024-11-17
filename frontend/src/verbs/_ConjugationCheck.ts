@@ -27,7 +27,7 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
     function IsSpecial()
     {
         //doubly weak ones
-        if( (root.r1 === Letter.Hamza) && (root.r2 === root.r3) )
+        if( (root.r1 === Letter.Hamza) && (root.r2 === root.r3) && (params.stem === 1) )
             return need;
         if( (root.r1 === Letter.Hamza) && (root.r3 === Letter.Ya) && (params.stem === 4) )
             return need;
@@ -43,8 +43,6 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
                 {
                     case RootType.Assimilated:
                     {
-                        if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
-                            return needPassive;
                         if((params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
                             return need;
                         if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma))

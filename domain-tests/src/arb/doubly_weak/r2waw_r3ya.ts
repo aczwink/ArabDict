@@ -16,15 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
-import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounTest } from "../../shared";
 
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Doubly_weak_verbs
 //https://en.wiktionary.org/wiki/%D8%B1%D9%88%D9%89
 
-It("R2:Waw, R3:Ya, Stem 1", () => {    
-    throw new Error("TODO verbal noun test :)");
-    RunParticipleTest("ر-و-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "رَاوٍ", "مَرْوِيّ");
+It("R2:Waw, R3:Ya, Stem 1", () => {
+    const root = "ر-و-ي";
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false };
+
+    RunVerbalNounTest(root, stem, "رِوَايَة");
+    RunParticipleTest(root, stem, "رَاوٍ", "مَرْوِيّ");
 
     const conjugations: ConjugationTest[] = [
         //active past

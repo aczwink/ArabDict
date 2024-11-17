@@ -21,7 +21,7 @@ import { WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
 import { ConjugationService } from "../services/ConjugationService";
 import { APIService } from "../services/APIService";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
-import { Stem1Context, StemNumber, Voice } from "arabdict-domain/src/Definitions";
+import { AdvancedStemNumber, Stem1Context, StemNumber, Voice } from "arabdict-domain/src/Definitions";
 
 interface WordVerbDerivationEditorInput
 {
@@ -72,6 +72,13 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
     private currentVerb: CurrentVerbData | null;
 
     //Private methods
+    private GetStemData(verbData: CurrentVerbData)
+    {
+        if(verbData.stem1Context === undefined)
+            return verbData.stem as AdvancedStemNumber;
+        return verbData.stem1Context;
+    }
+
     private RenderVerbalNounSelector()
     {
         if(this.input.derivation.type !== WordVerbDerivationType.VerbalNoun)
@@ -109,7 +116,7 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
     private SetCurrentVerb(newValue: CurrentVerbData)
     {
         this.currentVerb = newValue;
-        this.verbalNounChoices = this.conjugationService.GenerateAllPossibleVerbalNouns(newValue.rootRadicals, newValue.stem);
+        this.verbalNounChoices = this.conjugationService.GenerateAllPossibleVerbalNouns(newValue.rootRadicals, this.GetStemData(newValue));
 
         switch(this.input.derivation.type)
         {

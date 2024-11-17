@@ -20,11 +20,12 @@ import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { Dictionary, ObjectExtensions, Of } from "acts-util-core";
-import { VerbsController } from "./VerbsController";
+import { VerbsController, VerbUpdateData } from "./VerbsController";
 import { RootsController } from "./RootsController";
-import { Conjugator, DialectType } from "arabdict-domain/src/Conjugator";
+import { Conjugator } from "arabdict-domain/src/Conjugator";
 import { WordsController } from "./WordsController";
 import { DisplayVocalized, VocalizedToString } from "arabdict-domain/src/Vocalization";
+import { AdvancedStemNumber, Stem1Context } from "arabdict-domain/src/Definitions";
 
 interface DialectStatistics
 {
@@ -109,6 +110,18 @@ export class StatisticsController
     }
 
     //Private methods
+    private GenerateStemData(verbData: VerbUpdateData): AdvancedStemNumber | Stem1Context
+    {
+        if(verbData.stem1Data === undefined)
+            return verbData.stem as AdvancedStemNumber;
+        
+        return {
+            middleRadicalTashkil: verbData.stem1Data.middleRadicalTashkil as any,
+            middleRadicalTashkilPresent: verbData.stem1Data.middleRadicalTashkilPresent as any,
+            soundOverride: (verbData.stem1Data.flags & 1) != 0,
+        };
+    }
+
     private async QueryDialectCounts()
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
@@ -207,7 +220,7 @@ export class StatisticsController
             const rootData = await this.rootsController.QueryRoot(verbData!.rootId);
 
             const root = new VerbRoot(rootData!.radicals);
-            const generated = conjugator.GenerateAllPossibleVerbalNouns(DialectType.ModernStandardArabic, root, verbData!.stem as any);
+            const generated = conjugator.GenerateAllPossibleVerbalNouns(root, this.GenerateStemData(verbData!));
             if(generated.length === 1)
                 continue;
             const verbalNounPossibilities = generated.map(VocalizedArrayToString);

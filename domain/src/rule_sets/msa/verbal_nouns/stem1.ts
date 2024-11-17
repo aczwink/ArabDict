@@ -16,13 +16,74 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { TASHKIL_SHADDA, Letter, Tashkil } from "../../../Definitions";
+import { Tashkil, Stem1Context, Letter } from "../../../Definitions";
 import { RootType, VerbRoot } from "../../../VerbRoot";
 import { ConjugationVocalized } from "../../../Vocalization";
 
-export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | ConjugationVocalized[])[]
+export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot, stem1Context: Stem1Context): ConjugationVocalized[][]
 {
     switch(root.type)
+    {
+        case RootType.Defective:
+        {
+            switch(stem1Context.middleRadicalTashkilPresent)
+            {
+                case Tashkil.Kasra: //type 1
+                    return [
+                        [
+                            { letter: root.r1, tashkil: Tashkil.Fatha },
+                            { letter: root.r2, tashkil: Tashkil.Fatha },
+                            { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                            { letter: Letter.Hamza, tashkil: Tashkil.EndOfWordMarker },
+                        ],
+                    ];
+            }
+        }
+        break;
+
+        case RootType.Sound:
+        {
+            switch(stem1Context.middleRadicalTashkil)
+            {
+                case Tashkil.Fatha:
+                {
+                    switch(stem1Context.middleRadicalTashkilPresent)
+                    {
+                        case Tashkil.Fatha:
+                        {
+                            return [
+                                [
+                                    { letter: root.r1, tashkil: Tashkil.Fatha },
+                                    { letter: root.r2, tashkil: Tashkil.Sukun },
+                                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                                ],
+                            ];
+                        }
+                        
+                        case Tashkil.Kasra:
+                        {
+                            return [
+                                [
+                                    { letter: root.r1, tashkil: Tashkil.Fatha },
+                                    { letter: root.r2, tashkil: Tashkil.Sukun },
+                                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                                ],
+                            ];
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        break;
+    }
+
+    return [
+        [{letter: "TODO" as any, tashkil: Tashkil.Sukun}]
+    ];
+
+    //TODO: this will be done again from scratch but this time test driven and dependent on stem1Content
+    /*switch(root.type)
     {
         case RootType.Assimilated:
             return [
@@ -50,12 +111,6 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
                     { letter: root.r2, tashkil: Tashkil.Sukun },
                     { letter: Letter.Waw, tashkil: Tashkil.Fatha },
                     { letter: Letter.TaMarbuta, tashkil: Tashkil.EndOfWordMarker },
-                ],
-                [
-                    { letter: root.r1, tashkil: Tashkil.Fatha },
-                    { letter: root.r2, tashkil: Tashkil.Fatha },
-                    { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
-                    { letter: Letter.Hamza, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
                     { letter: root.r1, tashkil: Tashkil.Fatha },
@@ -293,11 +348,6 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
                     { letter: root.r3, tashkil: Tashkil.Fatha },
                     { letter: Letter.TaMarbuta, tashkil: Tashkil.EndOfWordMarker },
                 ],
-                [
-                    { letter: root.r1, tashkil: Tashkil.Fatha },
-                    { letter: root.r2, tashkil: Tashkil.Sukun },
-                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
-                ],
                 root.r1 + Tashkil.Kasra + root.r2 + Tashkil.Fatha + Letter.Alef + root.r3 + Tashkil.Fatha + Letter.TaMarbuta,
                 [
                     { letter: root.r1, tashkil: Tashkil.Kasra },
@@ -314,5 +364,10 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot): (string | C
 
         default:
             return ["TODO"];
-    }
+    }*/
+}
+
+export function HasPotentiallyMultipleVerbalNounFormsStem1(root: VerbRoot, stem: Stem1Context)
+{
+    return false;
 }

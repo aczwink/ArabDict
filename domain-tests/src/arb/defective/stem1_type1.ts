@@ -16,15 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
-import { ConjugationTest, RunConjugationTest, RunDefectiveParticipleTest } from "../../shared";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunDefectiveConjugationTest, RunDefectiveParticipleTest, RunDefectiveVerbalNounTest } from "../../shared";
 
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Defective_(third-weak)_roots
+//and for verbal noun: https://en.wiktionary.org/wiki/%D9%82%D8%B6%D9%89#Arabic
 //and for participles: https://en.wikipedia.org/wiki/Arabic_verbs#Defective_(third-weak)_verbs
 
 It("Wikipedia defective stem1 type 1", () => {
-    throw new Error("TODO verbal noun test :)");
-    RunDefectiveParticipleTest("ف-ع", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "فَاعٍ", "مَفْعِيّ");
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false };
+
+    RunDefectiveVerbalNounTest("ق-ض", stem, "قَضَاء");
+    RunDefectiveParticipleTest("ف-ع", stem, "فَاعٍ", "مَفْعِيّ");
     
     const conjugations: ConjugationTest[] = [
         //past
@@ -105,5 +108,5 @@ It("Wikipedia defective stem1 type 1", () => {
         { expected: "اِرْمِينَ", gender: "female", person: "second", numerus: "plural", tense: "present", mood: "imperative" },
     ];
 
-    RunConjugationTest("ر-م-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
+    RunDefectiveConjugationTest("ر-م", stem, conjugations);
 });

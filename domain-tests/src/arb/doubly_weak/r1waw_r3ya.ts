@@ -16,13 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { It } from "acts-util-test";
-import { ConjugationTest, RunConjugationTest } from "../../shared";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
+import { ConjugationTest, RunConjugationTest, RunParticipleTest, RunVerbalNounTest } from "../../shared";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wiktionary.org/wiki/%D9%88%D8%B9%D9%89
 
 It("doubly weak verb وَعَى test", () => {
-    throw new Error("TODO verbal noun test :)");
+    const root = "و-ع-ي";
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false };
+
+    RunVerbalNounTest(root, stem, "وَعْي");
+    RunParticipleTest(root, stem, "وَاعٍ", "مَوْعِيّ");
+
     const conjugations: ConjugationTest[] = [
         //past
         { expected: "وَعَى", gender: "male", person: "third", },
@@ -170,5 +175,5 @@ It("doubly weak verb وَعَى test", () => {
         { voice: "passive", expected: "نُوعَ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("و-ع-ي", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
+    RunConjugationTest(root, stem, conjugations);
 });
