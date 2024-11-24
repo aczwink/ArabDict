@@ -52,6 +52,7 @@ import { DeclineNounTriptoteSuffix } from "./nouns/triptote";
 import { WithTashkilOnLast } from "./adjectives/shared";
 import { GenerateParticipleStem6 } from "./participle/stem6";
 import { GenerateAllPossibleVerbalNounsStem7 } from "./verbal_nouns/stem7";
+import { AlterHamzaOnR1 } from "./conjugation/hamza_on_r1";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -261,6 +262,9 @@ export class MSAConjugator implements DialectConjugator
                 AlterDefectiveSuffix(params, suffix.suffix);
                 AlterDefectiveEnding(augmentedRoot, params);
             break;
+            case RootType.HamzaOnR1:
+                AlterHamzaOnR1(augmentedRoot, params);
+                break;
             case RootType.Hollow:
                 ShortenOrAlefizeR2(augmentedRoot, params);
             break;

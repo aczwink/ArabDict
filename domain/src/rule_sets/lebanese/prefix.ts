@@ -24,6 +24,7 @@ function SubjunctiveChar1Tashkil(params: ConjugationParams)
     switch(params.stem)
     {
         case 1:
+        case 4:
         case 8:
             return Tashkil.Kasra;
         case 2:
@@ -91,6 +92,7 @@ function BiPrefixTashkil(params: ConjugationParams)
     switch(params.stem)
     {
         case 1:
+        case 4:
         case 8:
             return Tashkil.Sukun;
         case 2:

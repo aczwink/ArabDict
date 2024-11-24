@@ -64,10 +64,12 @@ export function ShortenOrAlefizeR2(augmentedRoot: AugmentedRoot, params: Conjuga
                     shortenVowel = !DoesPresentSuffixStartWithVowel(params);
                 }
 
+                augmentedRoot.ApplyRadicalTashkil(2, Tashkil.LongVowelMarker);
+
                 if(shortenVowel)
                     augmentedRoot.AssimilateRadical(2);
                 else if((params.voice === Voice.Passive) || (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))
-                    augmentedRoot.ReplaceRadical(2, { letter: Letter.Alef, tashkil: Tashkil.Fatha });
+                    augmentedRoot.ReplaceRadical(2, { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker });
 
                 augmentedRoot.ApplyRadicalTashkil(1, (params.voice === Voice.Active) ? vowelTashkil : Tashkil.Fatha);
             }

@@ -83,8 +83,6 @@ export const Buckwalter = {
             case Letter.Ya:
                 return "y";
 
-            case Letter.Hamza:
-                return "'";
             case Letter.AlefMadda:
                 return "|";
             case Letter.AlefHamza:
@@ -93,13 +91,15 @@ export const Buckwalter = {
                 return "<";
             case Letter.AlefMaksura:
                 return "Y";
+            case Letter.Hamza:
+                return "'";
             case Letter.TaMarbuta:
                 return "p";
             case Letter.WawHamza:
                 return "&";
+            case Letter.YaHamza:
+                return "}";
         }
-
-        throw new Error("TODO Buckwalter.CharToString: " + letter + " " + letter.codePointAt(0));
     },
 
     TashkilToString: function(tashkil: Tashkil)

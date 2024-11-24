@@ -53,6 +53,8 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
                     break;
                     case RootType.HamzaOnR1:
                     {
+                        if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Dhamma))
+                            return need;
                         if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Kasra))
                             return need;
                         if((params.stem1Context.middleRadicalTashkil === Tashkil.Fatha) && (params.stem1Context.middleRadicalTashkilPresent === Tashkil.Fatha))

@@ -155,6 +155,8 @@ export function Hamzate(vocalized: ConjugationVocalized[])
     {
         const prev = result[result.length - 1];
         const next = (vocalized[i].letter === Letter.Hamza) ? DetermineHamzaSeat(i === 0, i === (vocalized.length - 1), vocalized[i].tashkil, prev, result[result.length - 2]) : vocalized[i];
+        if(vocalized[i].emphasis)
+            next.emphasis = vocalized[i].emphasis;
 
         if(MaddahCheck(next, prev))
             result[result.length - 1] = { letter: Letter.AlefMadda, tashkil: Tashkil.LongVowelMarker };

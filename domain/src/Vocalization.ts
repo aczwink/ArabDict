@@ -191,7 +191,7 @@ export function ToDiffStream(vocalized: DisplayVocalized[], reference: DisplayVo
     function ConvertCheckTashkil(v: DisplayVocalized, r: DisplayVocalized)
     {
         const result: VocalizedDiff[] = [
-            { char: v.letter, diff: false, emphasis: (v.emphasis === true) },
+            { char: v.letter, diff: false, emphasis: v.emphasis },
         ];
         if(v.shadda)
         {

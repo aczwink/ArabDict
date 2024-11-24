@@ -221,8 +221,6 @@ export class StatisticsController
 
             const root = new VerbRoot(rootData!.radicals);
             const generated = conjugator.GenerateAllPossibleVerbalNouns(root, this.GenerateStemData(verbData!));
-            if(generated.length === 1)
-                continue;
             const verbalNounPossibilities = generated.map(VocalizedArrayToString);
 
             const wordData = await this.wordsController.QueryWord(row.wordId);

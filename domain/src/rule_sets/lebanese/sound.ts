@@ -28,6 +28,16 @@ function DeriveRootTashkilPresent(params: ConjugationParams, mood: Mood): { r1: 
                 return Tashkil.Sukun;
             case 2:
                 return Tashkil.Fatha;
+            case 4:
+                if(mood === Mood.Imperative)
+                    return Tashkil.Sukun;
+                if(
+                    ( (params.gender === Gender.Female) && (params.person === Person.Second) )
+                    ||
+                    ( (params.numerus === Numerus.Plural) && (params.person !== Person.First))
+                )
+                    return Tashkil.Kasra;
+                return Tashkil.Sukun;
         }
         throw new Error("TODO: implement me");
     }
@@ -40,6 +50,8 @@ function DeriveRootTashkilPresent(params: ConjugationParams, mood: Mood): { r1: 
                 return params.stem1Context.middleRadicalTashkilPresent;
             case 2:
                 return Tashkil.Kasra;
+            case 4:
+                return Tashkil.Dhamma;
         }
         throw new Error("TODO: implement me");
     }
@@ -48,6 +60,7 @@ function DeriveRootTashkilPresent(params: ConjugationParams, mood: Mood): { r1: 
         switch(params.stem)
         {
             case 1:
+            case 4:
                 return Tashkil.Kasra;
             case 2:
                 return Tashkil.Sukun;
@@ -86,6 +99,19 @@ export function Stem1Sound_DeriveRootTashkil(params: ConjugationParams): { r1: T
 {
     if(params.tense === Tense.Present)
         return DeriveRootTashkilPresent(params, params.mood);
+
+    function R1Tashkil()
+    {
+        switch(params.stem)
+        {
+            case 1:
+            case 2:
+                return Tashkil.Fatha;
+            case 4:
+                return Tashkil.Sukun;
+        }
+        throw new Error("TODO: " + params.stem);
+    }
     
     function R3Tashkil()
     {
@@ -118,5 +144,5 @@ export function Stem1Sound_DeriveRootTashkil(params: ConjugationParams): { r1: T
         }
     }
 
-    return { r1: Tashkil.Fatha, r2: Tashkil.Fatha, r3: R3Tashkil() };
+    return { r1: R1Tashkil(), r2: Tashkil.Fatha, r3: R3Tashkil() };
 }

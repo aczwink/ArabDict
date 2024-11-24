@@ -36,7 +36,7 @@ export function RenderWithDiffHighlights(word: DisplayVocalized[], reference: Di
     }
 
     const rendered = diff.Values().GroupAdjacent(x => x.diff.toString()).Map(x => {
-        const text = x.map(y => y.emphasis ? <span style="text-emphasis: triangle var(--bs-primary);">{y.char}</span> : y.char);
+        const text = x.map(y => y.emphasis ? <span className="text-decoration-underline" style="text-emphasis: triangle var(--bs-primary);">{y.char}</span> : y.char);
         if(x[0].diff)
             return <span className="text-danger">{text}</span>;
         return text;

@@ -78,6 +78,20 @@ export class LebaneseConjugator implements DialectConjugator
                 }
             }
             break;
+            case RootType.HamzaOnR1:
+            {
+                if(params.tense === Tense.Present)
+                {
+                    if(params.mood === Mood.Imperative)
+                        augmentedRoot.DropRadial(1);
+                    else
+                    {
+                        augmentedRoot.ReplaceRadical(1, { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker });
+                        prefix[prefix.length - 1].tashkil = Tashkil.Fatha;
+                    }
+                }
+            }
+            break;
             case RootType.Hollow:
             {
                 if(
@@ -177,8 +191,14 @@ export class LebaneseConjugator implements DialectConjugator
     //Private methods
     private ApplyEmphasis(augmentedRoot: AugmentedRoot, params: ConjugationParams)
     {
-        if(!(augmentedRoot.type === RootType.Sound))
-            return;
+        switch(augmentedRoot.type)
+        {
+            case RootType.HamzaOnR1:
+            case RootType.Sound:
+                break;
+            default:
+                return;
+        }
 
         if(params.tense === Tense.Perfect)
         {
@@ -207,7 +227,7 @@ export class LebaneseConjugator implements DialectConjugator
                         }
 
                     case RootType.Defective:
-
+                    case RootType.HamzaOnR1:
                         return [
                             {
                                 symbolName: SymbolName.R1,
@@ -222,24 +242,24 @@ export class LebaneseConjugator implements DialectConjugator
 
                     case RootType.Sound:
                         if( (params.tense === Tense.Present) && (params.mood === Mood.Imperative) && (params.gender === Gender.Male) && (params.numerus === Numerus.Singular) )
-                            {
-                                return [
-                                    {
-                                        symbolName: SymbolName.R1,
-                                    },
-                                    {
-                                        symbolName: SymbolName.R2,
-                                    },
-                                    {
-                                        letter: Letter.Waw,
-                                        symbolName: SymbolName.Infix,
-                                        tashkil: Tashkil.LongVowelMarker
-                                    },
-                                    {
-                                        symbolName: SymbolName.R3,
-                                    }
-                                ];
-                            }
+                        {
+                            return [
+                                {
+                                    symbolName: SymbolName.R1,
+                                },
+                                {
+                                    symbolName: SymbolName.R2,
+                                },
+                                {
+                                    letter: Letter.Waw,
+                                    symbolName: SymbolName.Infix,
+                                    tashkil: Tashkil.LongVowelMarker
+                                },
+                                {
+                                    symbolName: SymbolName.R3,
+                                }
+                            ];
+                        }
                             
                         return [
                             {
@@ -263,6 +283,49 @@ export class LebaneseConjugator implements DialectConjugator
                         return [
                             { symbolName: SymbolName.R1 },
                             { symbolName: SymbolName.Infix, letter: root.r2, tashkil: Tashkil.Sukun },
+                            { symbolName: SymbolName.R2 },
+                            { symbolName: SymbolName.R3 },
+                        ];
+                }
+            }
+            break;
+
+            case 4:
+            {
+                switch(root.type)
+                {
+                    case RootType.Sound:
+                        if(params.tense === Tense.Present)
+                        {
+                            if( (params.mood === Mood.Imperative) && (params.gender === Gender.Male) && (params.numerus === Numerus.Singular) )
+                            {
+                                return [
+                                    {
+                                        symbolName: SymbolName.R1,
+                                    },
+                                    {
+                                        symbolName: SymbolName.R2,
+                                    },
+                                    {
+                                        letter: Letter.Waw,
+                                        symbolName: SymbolName.Infix,
+                                        tashkil: Tashkil.LongVowelMarker
+                                    },
+                                    {
+                                        symbolName: SymbolName.R3,
+                                    }
+                                ];
+                            }
+                            return [
+                                { symbolName: SymbolName.R1 },
+                                { symbolName: SymbolName.R2 },
+                                { symbolName: SymbolName.R3 },
+                            ];
+                        }
+
+                        return [
+                            { letter: Letter.Hamza, symbolName: SymbolName.Prefix1, tashkil: Tashkil.Fatha },
+                            { symbolName: SymbolName.R1 },
                             { symbolName: SymbolName.R2 },
                             { symbolName: SymbolName.R3 },
                         ];
@@ -319,6 +382,7 @@ export class LebaneseConjugator implements DialectConjugator
         {
             case 1:
             case 2:
+            case 4:
             case 8:
                 switch(root.type)
                 {
@@ -326,6 +390,7 @@ export class LebaneseConjugator implements DialectConjugator
                         return Stem1Defective_DeriveRootTashkil(params);
                     case RootType.Hollow:
                         return Hollow_DeriveRootTashkil(params);
+                    case RootType.HamzaOnR1:
                     case RootType.Sound:
                         return Sound_DeriveRootTashkil(params);
                 }

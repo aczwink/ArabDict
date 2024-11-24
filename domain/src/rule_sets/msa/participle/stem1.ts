@@ -44,6 +44,15 @@ export function GenerateParticipleStem1(root: VerbRoot, voice: VoiceString, stem
         case RootType.Hollow:
             if(voice === "active")
             {
+                if(root.r3 === Letter.Hamza)
+                {
+                    return [
+                        { letter: root.r1, tashkil: Tashkil.Fatha },
+                        { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                        { letter: root.r3, tashkil: Tashkil.Kasratan },
+                    ];
+                }
+
                 return [
                     { letter: root.r1, tashkil: Tashkil.Fatha },
                     { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },

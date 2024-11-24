@@ -17,14 +17,16 @@
  * */
 import { It } from "acts-util-test";
 import { ConjugationTest, RunConjugationTest, RunParticipleTest } from "../../shared";
-import { Tashkil } from "arabdict-domain/dist/Definitions";
+import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: https://en.wikipedia.org/wiki/Arabic_verbs#Doubly_weak_verbs
 //https://en.wiktionary.org/wiki/%D8%AC%D8%A7%D8%A1
 
 It("R2:Ya, R3:Hamza", () => {
+    const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false };
+
     throw new Error("TODO verbal noun test :)");
-    RunParticipleTest("ج-ي-ء", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, "جَاءٍ", "مَجِيء");
+    RunParticipleTest("ج-ي-ء", stem, "جَاءٍ", "مَجِيء");
 
     const conjugations: ConjugationTest[] = [
         //active past
@@ -173,5 +175,5 @@ It("R2:Ya, R3:Hamza", () => {
         { voice: "passive", expected: "نُجَأْ", gender: "male", person: "first", numerus: "plural", tense: "present", mood: "jussive" },
     ];
 
-    RunConjugationTest("ج-ي-ء", { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false }, conjugations);
+    RunConjugationTest("ج-ي-ء", stem, conjugations);
 });

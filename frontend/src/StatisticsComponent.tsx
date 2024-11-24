@@ -18,15 +18,16 @@
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "./services/APIService";
-import { DialectStatistics, DictionaryStatistics, RootType } from "../dist/api";
+import { DialectStatistics, DictionaryStatistics, RootType, VerbalNounFrequencies } from "../dist/api";
 import { DialectsService } from "./services/DialectsService";
 import { Dictionary } from "../../../ACTS-Util/core/dist/Dictionary";
 import { ObjectExtensions } from "../../../ACTS-Util/core/dist/ObjectExtensions";
 import { ConjugationService } from "./services/ConjugationService";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
+import { AdvancedStemNumber, Gender, Mood, Numerus, Person, Stem1Context, Tense, Voice } from "arabdict-domain/src/Definitions";
 import { Stem1DataToStem1Context } from "./verbs/model";
 import { RomanNumberComponent, StemNumberComponent } from "./shared/RomanNumberComponent";
+import { KeyValuePair } from "../../../ACTS-Util/core/dist/KeyValuePair";
 
 @Injectable
 export class StatisticsComponent extends Component
@@ -98,7 +99,7 @@ export class StatisticsComponent extends Component
                 pattern: this.RootTypeToPattern(x.rootType),
                 stem: <StemNumberComponent rootType={x.rootType} stem={x.stem} />,
                 form: (x.stemChoiceIndex === undefined) ? "" : this.BuildForm(x.rootType, x.stemChoiceIndex),
-                verbalNoun: this.GenerateVerbalNoun(x.rootType, x.stem, x.verbalNounIndex),
+                verbalNoun: this.GenerateVerbalNoun(x.rootType, x.stem, x.stemChoiceIndex, x.verbalNounIndex),
                 count: x.count,
             })))}
         </div>;
@@ -155,16 +156,41 @@ export class StatisticsComponent extends Component
             }),
             voice: Voice.Active
         });
+        const past_first = this.conjugationService.ConjugateToString(root, {
+            gender: Gender.Male,
+            tense: Tense.Perfect,
+            numerus: Numerus.Singular,
+            person: Person.First,
+            stem: 1,
+            stem1Context: Stem1DataToStem1Context({
+                flags: 0,
+                middleRadicalTashkil: choice.past,
+                middleRadicalTashkilPresent: choice.present
+            }),
+            voice: Voice.Active
+        });
+
+        switch(root.type)
+        {
+            case RootType.Hollow:
+            case RootType.SecondConsonantDoubled:
+                return past + " - " + present + " (" + past_first + ")";
+        }
 
         return past + " - " + present;
     }
 
-    private GenerateVerbalNoun(rootType: RootType, stem: number, verbalNounIndex: number)
+    private GenerateVerbalNoun(rootType: RootType, stem: number, stemChoiceIndex: number | undefined, verbalNounIndex: number)
     {
-        const radicals = this.GetExampleRootRadicals(rootType).join("");
-        const generated = this.conjugationService.GenerateAllPossibleVerbalNouns(radicals, stem as any)[verbalNounIndex];
-        if(generated === undefined)
+        if(verbalNounIndex === -1)
             return <i>invalid</i>;
+
+        const radicals = this.GetExampleRootRadicals(rootType).join("");
+        const root = new VerbRoot(radicals);
+        const choice = root.GetStem1ContextChoices().r2options[stemChoiceIndex ?? 0];
+        const stemData: AdvancedStemNumber | Stem1Context = (stemChoiceIndex === undefined) ? (stem as AdvancedStemNumber) : { middleRadicalTashkil: choice.past, middleRadicalTashkilPresent: choice.present, soundOverride: false };
+
+        const generated = this.conjugationService.GenerateAllPossibleVerbalNouns(radicals, stemData)[verbalNounIndex];
         return generated;
     }
 
@@ -291,6 +317,14 @@ export class StatisticsComponent extends Component
     //Event handlers
     override async OnInitiated(): Promise<void>
     {
+        function FilterComplex(kv: KeyValuePair<RootType, VerbalNounFrequencies[]>)
+        {
+            const byStem = kv.value.Values().GroupBy(x => x.stem);
+            const filtered = byStem.Filter(x => (x.value.length > 1) || (x.value[0].verbalNounIndex === -1));
+
+            return filtered.Map(x => x.value.Values()).Flatten();
+        }
+
         const response = await this.apiService.statistics.get();
         this.data = response.data;
         this.data.dialectCounts.SortByDescending(x => x.verbsCount + x.wordsCount);
@@ -303,7 +337,7 @@ export class StatisticsComponent extends Component
             .Map(x => x.value.Values().OrderByDescending(x => x.count)).Flatten().ToArray();
 
         this.data.verbalNounFreq = this.data.verbalNounFreq.Values().GroupBy(x => x.rootType)
-            .Filter(x => x.value.length > 1)
-            .Map(x => x.value.Values().OrderBy(x => [x.stem, x.count])).Flatten().ToArray();
+            .Map(FilterComplex)
+            .Map(x => x.OrderBy(x => [x.stem, x.count])).Flatten().ToArray();
     }
 }
