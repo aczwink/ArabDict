@@ -16,97 +16,69 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, Person, Numerus, Letter, Tashkil, Gender, Tense, Mood } from "../../Definitions";
-import { ConjugationVocalized } from "../../Vocalization";
+import { ConjugationItem, Vowel, _TODO_VowelToTashkil } from "../../Conjugation";
+import { ConjugationParams, Person, Numerus, Letter, Gender, Tense, Mood } from "../../Definitions";
 
-function SubjunctiveChar1Tashkil(params: ConjugationParams)
+function DerivePrefixSubjunctive(prefixEndingVowel: Vowel, followingVowel: Vowel, params: ConjugationParams): ConjugationItem[]
 {
-    switch(params.stem)
+    if(params.person === Person.First)
     {
-        case 1:
-        case 4:
-        case 8:
-            return Tashkil.Kasra;
-        case 2:
-            return Tashkil.Sukun;
-    }
-    throw new Error("TODO: implement me");
-}
-
-function DerivePrefixSubjunctive(params: ConjugationParams): ConjugationVocalized[]
-{
-    switch(params.person)
-    {
-        case Person.First:
-            if(params.numerus === Numerus.Plural)
-            {
-                return [
-                    {
-                        letter: Letter.Nun,
-                        tashkil: SubjunctiveChar1Tashkil(params)
-                    }
-                ];
-            }
-
-            if(params.stem === 2)
-            {
-                return [];
-            }
-
+        if(params.numerus === Numerus.Plural)
+        {
             return [
                 {
-                    letter: Letter.Hamza,
-                    tashkil: Tashkil.Kasra
+                    consonant: Letter.Nun,
+                    followingVowel: prefixEndingVowel
+                },
+            ];
+        }
+
+        if(followingVowel === Vowel.Sukun)
+        {
+            return [
+                {
+                    consonant: Letter.Hamza,
+                    followingVowel: prefixEndingVowel
                 }
             ];
-
-        case Person.Second:
-            return [
-                {
-                    letter: Letter.Ta,
-                    tashkil: SubjunctiveChar1Tashkil(params)
-                },
-            ];
-
-        case Person.Third:
-            if(params.gender === Gender.Male)
-            {
-                return [
-                    {
-                        letter: Letter.Ya,
-                        tashkil: SubjunctiveChar1Tashkil(params)
-                    },
-                ];
-            }
-            return [
-                {
-                    letter: Letter.Ta,
-                    tashkil: SubjunctiveChar1Tashkil(params)
-                },
-            ];
+        }
+        return [];
     }
-}
 
-function BiPrefixTashkil(params: ConjugationParams)
-{
-    switch(params.stem)
+    if((params.person === Person.Third) && (params.gender === Gender.Male))
     {
-        case 1:
-        case 4:
-        case 8:
-            return Tashkil.Sukun;
-        case 2:
-            return Tashkil.Kasra;
+        return [
+            {
+                consonant: Letter.Ya,
+                followingVowel: prefixEndingVowel
+            },
+        ];
     }
-    throw new Error("TODO: implement me");
+
+    return [
+        {
+            consonant: Letter.Ta,
+            followingVowel: prefixEndingVowel
+        },
+    ];
 }
 
-export function DerivePrefix(params: ConjugationParams): ConjugationVocalized[]
+function BiPrefixTashkil(prefixEndingVowel: Vowel)
+{
+    if(prefixEndingVowel === Vowel.Sukun)
+        return Vowel.ShortI;
+    return Vowel.Sukun;
+}
+
+export function DerivePrefix(vowels: Vowel[], params: ConjugationParams): ConjugationItem[]
 {
     if(params.tense === Tense.Perfect)
         return [];
     if(params.mood === Mood.Imperative)
         return [];
+
+    const prefixEndingVowel = vowels[0];
+    const followingVowel = vowels[1];
 
     if(params.mood === Mood.Indicative)
     {
@@ -116,32 +88,39 @@ export function DerivePrefix(params: ConjugationParams): ConjugationVocalized[]
             {
                 return [
                     {
-                        letter: Letter.Ba,
-                        tashkil: Tashkil.Kasra
+                        consonant: Letter.Ba,
+                        followingVowel: prefixEndingVowel
                     }
                 ];
             }
 
             return [
                 {
-                    letter: Letter.Mim,
-                    tashkil: BiPrefixTashkil(params),
+                    consonant: Letter.Mim,
+                    followingVowel: BiPrefixTashkil(prefixEndingVowel),
                 },
-                ...DerivePrefixSubjunctive(params),
+                ...DerivePrefixSubjunctive(prefixEndingVowel, followingVowel, params),
             ];
         }
 
-        const sub = DerivePrefixSubjunctive(params);        
-        if((BiPrefixTashkil(params) === Tashkil.Kasra) && (sub[0].letter === Letter.Ya))
-            sub[0].tashkil = Tashkil.LongVowelMarker;
+        if((params.person === Person.Third) && (params.gender === Gender.Male) && (BiPrefixTashkil(prefixEndingVowel) === Vowel.ShortI))
+        {
+            return [
+                {
+                    consonant: Letter.Ba,
+                    followingVowel: Vowel.LongI
+                },
+            ];
+        }
+        
         return [
             {
-                letter: Letter.Ba,
-                tashkil: BiPrefixTashkil(params)
+                consonant: Letter.Ba,
+                followingVowel: BiPrefixTashkil(prefixEndingVowel)
             },
-            ...sub,
+            ...DerivePrefixSubjunctive(prefixEndingVowel, followingVowel, params)
         ];
     }
 
-    return DerivePrefixSubjunctive(params);
+    return DerivePrefixSubjunctive(prefixEndingVowel, followingVowel, params);
 }

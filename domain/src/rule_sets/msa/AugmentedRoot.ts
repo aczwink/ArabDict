@@ -117,7 +117,12 @@ export class AugmentedRoot
 
     public DropRadial(radical: RadicalNumber)
     {
-        const idx = this.GetSymbolIndex(this.RadicalNumberToSymbolName(radical));
+        this.Drop(this.RadicalNumberToSymbolName(radical));
+    }
+
+    public Drop(symbol: SymbolName)
+    {
+        const idx = this.GetSymbolIndex(symbol);
         this._symbols.Remove(idx);
     }
 

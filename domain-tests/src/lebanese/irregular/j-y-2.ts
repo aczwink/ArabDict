@@ -34,7 +34,7 @@ It("Irregular إجا", () => {
         { tense: "perfect", numerus: "singular", person: "second", gender: "female", expected: "جِيتِي" },
         { tense: "perfect", numerus: "singular", person: "first", gender: "male", expected: "جِيتْ" },
 
-        { tense: "perfect", numerus: "plural", person: "third", expected: "إِجِوا" },
+        { tense: "perfect", numerus: "plural", person: "third", expected: "إِجُوا" },
         { tense: "perfect", numerus: "plural", person: "second", expected: "جِيتُوا" },
         { tense: "perfect", numerus: "plural", person: "first", expected: "جِينَا" },
 
@@ -45,8 +45,8 @@ It("Irregular إجا", () => {
         { tense: "present", mood: "indicative", numerus: "singular", person: "second", gender: "female", expected: "بْتِجِي" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "first", gender: "male", expected: "بِجِي" },
 
-        { tense: "present", mood: "indicative", numerus: "plural", person: "third", expected: "بْيِجِوا" },
-        { tense: "present", mood: "indicative", numerus: "plural", person: "second", expected: "بْتِجِوا" },
+        { tense: "present", mood: "indicative", numerus: "plural", person: "third", expected: "بْيِجُوا" },
+        { tense: "present", mood: "indicative", numerus: "plural", person: "second", expected: "بْتِجُوا" },
         { tense: "present", mood: "indicative", numerus: "plural", person: "first", expected: "مْنِجِي" },
 
         //subjunctive
@@ -56,8 +56,8 @@ It("Irregular إجا", () => {
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "second", gender: "female", expected: "تِجِي" },
         { tense: "present", mood: "subjunctive", numerus: "singular", person: "first", gender: "male", expected: "إِجِي" },
 
-        { tense: "present", mood: "subjunctive", numerus: "plural", person: "third", expected: "يِجِوا" },
-        { tense: "present", mood: "subjunctive", numerus: "plural", person: "second", expected: "تِجِوا" },
+        { tense: "present", mood: "subjunctive", numerus: "plural", person: "third", expected: "يِجُوا" },
+        { tense: "present", mood: "subjunctive", numerus: "plural", person: "second", expected: "تِجُوا" },
         { tense: "present", mood: "subjunctive", numerus: "plural", person: "first", expected: "نِجِي" },
 
         //imperative

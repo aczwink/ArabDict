@@ -15,17 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ConjugationParams, AdjectiveDeclensionParams, Gender, Letter, Mood, Numerus, Person, Stem1Context, Tashkil, Tense, NounDeclensionParams, Voice, StemNumber, AdvancedStemNumber } from "../../Definitions";
+import { ConjugationParams, AdjectiveDeclensionParams, Gender, Letter, Numerus, Person, Stem1Context, Tashkil, Tense, NounDeclensionParams, Voice, AdvancedStemNumber, Mood } from "../../Definitions";
 import { DialectConjugator, NounInput, TargetNounDerivation } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
-import { AugmentedRoot, AugmentedRootSymbolInput, SymbolName } from "../msa/AugmentedRoot";
-import { Stem1Defective_DeriveRootTashkil } from "./stem1_defective";
-import { Stem1Sound_DeriveRootTashkil as Sound_DeriveRootTashkil } from "./sound";
 import { DerivePrefix } from "./prefix";
-import { Hollow_DeriveRootTashkil } from "./hollow";
-import { DoIrregularModifications } from "./irregular";
 import { MSAConjugator } from "../msa/MSAConjugator";
+import { AugmentRoot } from "./rootAugmentation";
+import { _TODO_ToConjugationVocalized, _TODO_VowelToTashkil, ConjugatedWord, ConjugationItem, ConjugationRule } from "../../Conjugation";
+import { DeriveSuffix, SuffixResult } from "./suffix";
+import { DoesPresentSuffixStartWithWawOrYa } from "../msa/conjugation/suffix";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar
 
@@ -34,7 +33,7 @@ export class LebaneseConjugator implements DialectConjugator
     //Public methods    
     public Conjugate(root: VerbRoot, params: ConjugationParams): ConjugationVocalized[]
     {
-        const rootAugmentation = this.AugmentRoot(root, params);
+        const rootAugmentation = AugmentRoot(root, params);
         if(rootAugmentation === undefined)
         {
             return [
@@ -44,69 +43,14 @@ export class LebaneseConjugator implements DialectConjugator
                 }
             ];
         }
-        const augmentedRoot = new AugmentedRoot(rootAugmentation, root);
 
-        const rootTashkil = this.DeriveRootTashkil(root, params);
+        const rule = this.MatchRule(root, rootAugmentation, params);
+        const prefix = DerivePrefix(rule.vowels, params);
+        const suffix = DeriveSuffix(params);
 
-        augmentedRoot.ApplyRadicalTashkil(1, rootTashkil.r1);
-        augmentedRoot.ApplyRadicalTashkil(2, rootTashkil.r2);
-        augmentedRoot.ApplyRadicalTashkil(3, rootTashkil.r3);
+        const constructed = this.Construct(rule, prefix, suffix, ((params.tense === Tense.Present) && (params.mood !== Mood.Imperative)));
 
-        this.ApplyEmphasis(augmentedRoot, params);
-
-        const prefix = DerivePrefix(params);
-        const suffix = this.DeriveSuffix(params);
-
-        const isSpecial = DoIrregularModifications(root, augmentedRoot, params);
-        if(isSpecial)
-            return prefix.concat(augmentedRoot.symbols, suffix);
-
-        switch(augmentedRoot.type)
-        {
-            case RootType.Defective:
-            {
-                if( (params.stem === 1) && (params.tense === Tense.Present) )
-                {
-                    if(
-                        ( (params.numerus === Numerus.Singular) && (params.person === Person.Second) && (params.gender === Gender.Female) )
-                        ||
-                        ( (params.numerus === Numerus.Plural) && (params.person !== Person.First) )
-                    )
-                    {
-                        augmentedRoot.DropRadial(3);
-                    }
-                }
-            }
-            break;
-            case RootType.HamzaOnR1:
-            {
-                if(params.tense === Tense.Present)
-                {
-                    if(params.mood === Mood.Imperative)
-                        augmentedRoot.DropRadial(1);
-                    else
-                    {
-                        augmentedRoot.ReplaceRadical(1, { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker });
-                        prefix[prefix.length - 1].tashkil = Tashkil.Fatha;
-                    }
-                }
-            }
-            break;
-            case RootType.Hollow:
-            {
-                if(
-                    ((params.tense === Tense.Perfect) && (params.person === Person.Third))
-                    ||
-                    (params.tense === Tense.Present)
-                )
-                    augmentedRoot.ReplaceRadical(2, { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker });
-                else
-                    augmentedRoot.DropRadial(2);
-            }
-            break;
-        }
-
-        return prefix.concat(augmentedRoot.symbols, suffix);
+        return _TODO_ToConjugationVocalized(constructed);
     }
 
     public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context | undefined): ConjugationVocalized[]
@@ -189,168 +133,6 @@ export class LebaneseConjugator implements DialectConjugator
     }
 
     //Private methods
-    private ApplyEmphasis(augmentedRoot: AugmentedRoot, params: ConjugationParams)
-    {
-        switch(augmentedRoot.type)
-        {
-            case RootType.HamzaOnR1:
-            case RootType.Sound:
-                break;
-            default:
-                return;
-        }
-
-        if(params.tense === Tense.Perfect)
-        {
-            if(params.person === Person.Third)
-            {
-                augmentedRoot.r1.emphasis = true;
-            }
-            else
-            {
-                augmentedRoot.r2.emphasis = true;
-            }
-        }
-    }
-
-    private AugmentRoot(root: VerbRoot, params: ConjugationParams): AugmentedRootSymbolInput[] | undefined
-    {
-        switch(params.stem)
-        {
-            case 1:
-                switch(root.type)
-                {
-                    case RootType.Hollow:
-                        if(!root.radicalsAsSeparateLetters.Equals([Letter.Jiim, Letter.Ya, Letter.Hamza]))
-                        {
-                            throw new Error("TODO: NOT IMPLEMENTED!");
-                        }
-
-                    case RootType.Defective:
-                    case RootType.HamzaOnR1:
-                        return [
-                            {
-                                symbolName: SymbolName.R1,
-                            },
-                            {
-                                symbolName: SymbolName.R2,
-                            },
-                            {
-                                symbolName: SymbolName.R3,
-                            }
-                        ];
-
-                    case RootType.Sound:
-                        if( (params.tense === Tense.Present) && (params.mood === Mood.Imperative) && (params.gender === Gender.Male) && (params.numerus === Numerus.Singular) )
-                        {
-                            return [
-                                {
-                                    symbolName: SymbolName.R1,
-                                },
-                                {
-                                    symbolName: SymbolName.R2,
-                                },
-                                {
-                                    letter: Letter.Waw,
-                                    symbolName: SymbolName.Infix,
-                                    tashkil: Tashkil.LongVowelMarker
-                                },
-                                {
-                                    symbolName: SymbolName.R3,
-                                }
-                            ];
-                        }
-                            
-                        return [
-                            {
-                                symbolName: SymbolName.R1,
-                            },
-                            {
-                                symbolName: SymbolName.R2,
-                            },
-                            {
-                                symbolName: SymbolName.R3,
-                            }
-                        ];
-                }
-            break;
-
-            case 2:
-            {
-                switch(root.type)
-                {
-                    case RootType.Sound:
-                        return [
-                            { symbolName: SymbolName.R1 },
-                            { symbolName: SymbolName.Infix, letter: root.r2, tashkil: Tashkil.Sukun },
-                            { symbolName: SymbolName.R2 },
-                            { symbolName: SymbolName.R3 },
-                        ];
-                }
-            }
-            break;
-
-            case 4:
-            {
-                switch(root.type)
-                {
-                    case RootType.Sound:
-                        if(params.tense === Tense.Present)
-                        {
-                            if( (params.mood === Mood.Imperative) && (params.gender === Gender.Male) && (params.numerus === Numerus.Singular) )
-                            {
-                                return [
-                                    {
-                                        symbolName: SymbolName.R1,
-                                    },
-                                    {
-                                        symbolName: SymbolName.R2,
-                                    },
-                                    {
-                                        letter: Letter.Waw,
-                                        symbolName: SymbolName.Infix,
-                                        tashkil: Tashkil.LongVowelMarker
-                                    },
-                                    {
-                                        symbolName: SymbolName.R3,
-                                    }
-                                ];
-                            }
-                            return [
-                                { symbolName: SymbolName.R1 },
-                                { symbolName: SymbolName.R2 },
-                                { symbolName: SymbolName.R3 },
-                            ];
-                        }
-
-                        return [
-                            { letter: Letter.Hamza, symbolName: SymbolName.Prefix1, tashkil: Tashkil.Fatha },
-                            { symbolName: SymbolName.R1 },
-                            { symbolName: SymbolName.R2 },
-                            { symbolName: SymbolName.R3 },
-                        ];
-                }
-            }
-            break;
-
-            case 8:
-            {
-                switch(root.type)
-                {
-                    case RootType.Hollow:
-                        return [
-                            { symbolName: SymbolName.R1 },
-                            { symbolName: SymbolName.Infix, letter: Letter.Ta, tashkil: Tashkil.Fatha },
-                            { symbolName: SymbolName.R2 },
-                            { symbolName: SymbolName.R3 },
-                        ];
-                }
-            }
-            break;
-        }
-        return undefined;
-    }
-
     private ConjugateBaseForm(root: VerbRoot, stem: AdvancedStemNumber | Stem1Context)
     {
         if(typeof stem === "number")
@@ -376,155 +158,64 @@ export class LebaneseConjugator implements DialectConjugator
         });
     }
 
-    private DeriveRootTashkil(root: VerbRoot, params: ConjugationParams): { r1: Tashkil; r2: Tashkil; r3: Tashkil; }
+    private Construct(rule: ConjugationRule, prefix: ConjugationItem[], suffix: SuffixResult, hasPrefix: boolean): ConjugatedWord
     {
-        switch(params.stem)
+        const vowels = [...rule.vowels, suffix.previousVowel];
+        let vowelIndex = hasPrefix ? 1 : 0;
+
+        const items = prefix.concat(rule.symbols.map((x,i)=> ({
+            consonant: x,
+            followingVowel: vowels[vowelIndex++],
+            emphasis: (i === rule.emphasize) ? true : undefined
+        })));
+        if(suffix.prefinal !== undefined)
+            items.push(suffix.prefinal);
+
+        if(suffix.final !== undefined)
         {
-            case 1:
-            case 2:
-            case 4:
-            case 8:
-                switch(root.type)
-                {
-                    case RootType.Defective:
-                        return Stem1Defective_DeriveRootTashkil(params);
-                    case RootType.Hollow:
-                        return Hollow_DeriveRootTashkil(params);
-                    case RootType.HamzaOnR1:
-                    case RootType.Sound:
-                        return Sound_DeriveRootTashkil(params);
-                }
+            if(typeof suffix.final === "string")
+            {
+                return {
+                    items,
+                    final: suffix.final
+                };
+            }
+            else
+                items.push(suffix.final);
         }
-        throw new Error("TODO: not implemented");
+        return {
+            items
+        };
     }
 
-    private DeriveSuffix(params: ConjugationParams): ConjugationVocalized[]
+    private MatchRule(root: VerbRoot, rules: ConjugationRule[], params: ConjugationParams)
     {
-        if(params.tense === Tense.Present)
-            return this.DeriveSuffixPresent(params);
-
-        if(params.numerus === Numerus.Plural)
+        function match(rule: ConjugationRule)
         {
-            switch(params.person)
-            {
-                case Person.First:
-                    return [
-                        {
-                            letter: Letter.Nun,
-                            tashkil: Tashkil.Fatha
-                        },
-                        {
-                            letter: Letter.Alef,
-                            tashkil: Tashkil.LongVowelMarker
-                        }
-                    ];
+            const c = rule.conditions;
 
-                case Person.Second:
-                    return [
-                        {
-                            letter: Letter.Ta,
-                            tashkil: Tashkil.Dhamma
-                        },
-                        {
-                            letter: Letter.Waw,
-                            tashkil: Tashkil.LongVowelMarker
-                        },
-                        {
-                            letter: Letter.Alef,
-                            tashkil: Tashkil.EndOfWordMarker
-                        }
-                    ];
+            if((c.tense !== undefined) && (c.tense !== params.tense))
+                return false;
+            if((c.mood !== undefined) && (params.tense === Tense.Present) && (c.mood !== params.mood))
+                return false;
+            if((c.numerus !== undefined) && (c.numerus !== params.numerus))
+                return false;
+            if((c.person !== undefined) && (c.person !== params.person))
+                return false;
+            if((c.gender !== undefined) && (c.gender !== params.gender))
+                return false;
+            if((c.hasPresentSuffix === true) && (params.tense === Tense.Present) && !DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender))
+                return false;
 
-                case Person.Third:
-                    return [
-                        {
-                            letter: Letter.Waw,
-                            tashkil: Tashkil.LongVowelMarker
-                        },
-                        {
-                            letter: Letter.Alef,
-                            tashkil: Tashkil.EndOfWordMarker
-                        }
-                    ];
-            }
+            return true;
         }
 
-        switch(params.person)
+        for (const rule of rules)
         {
-            case Person.First:
-                return [
-                    {
-                        letter: Letter.Ta,
-                        tashkil: Tashkil.Sukun
-                    }
-                ];
-                    
-            case Person.Second:
-                if(params.gender === Gender.Male)
-                    return [
-                        {
-                            letter: Letter.Ta,
-                            tashkil: Tashkil.Sukun
-                        }
-                    ];
-
-                return [
-                    {
-                        letter: Letter.Ta,
-                        tashkil: Tashkil.Kasra
-                    },
-                    {
-                        letter: Letter.Ya,
-                        tashkil: Tashkil.LongVowelMarker
-                    }
-                ];
-                
-            case Person.Third:
-                if(params.gender === Gender.Male)
-                    return [];
-
-                return [
-                    {
-                        letter: Letter.Ta,
-                        tashkil: Tashkil.Sukun
-                    }
-                ];
+            if(match(rule))
+                return rule;
         }
-    }
-
-    private DeriveSuffixPresent(params: ConjugationParams): ConjugationVocalized[]
-    {
-        if(params.numerus === Numerus.Plural)
-        {
-            switch(params.person)
-            {
-                case Person.Second:
-                case Person.Third:
-                    return [
-                        {
-                            letter: Letter.Waw,
-                            tashkil: Tashkil.LongVowelMarker
-                        },
-                        {
-                            letter: Letter.Alef,
-                            tashkil: Tashkil.EndOfWordMarker
-                        }
-                    ];
-            }
-        }
-        else
-        {
-            if((params.person === Person.Second) && (params.gender === Gender.Female))
-            {
-                return [
-                    {
-                        letter: Letter.Ya,
-                        tashkil: Tashkil.LongVowelMarker
-                    }
-                ];
-            }
-        }
-
-        return [];
+        console.log(root, rules, params);
+        throw new Error("No rule match found");
     }
 }

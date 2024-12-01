@@ -16,68 +16,72 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Tashkil, Tense } from "../../Definitions";
+import { ConjugationRule, Vowel } from "../../Conjugation";
+import { Gender, Letter, Mood, Numerus, Person, Tense } from "../../Definitions";
 import { VerbRoot } from "../../VerbRoot";
-import { AugmentedRoot, SymbolName } from "../msa/AugmentedRoot";
 
-function IrregularIja(augmentedRoot: AugmentedRoot, params: ConjugationParams)
+export function IrregularIja(root: VerbRoot): ConjugationRule[]
 {
-    if((params.tense === Tense.Perfect) && (params.person === Person.Third))
-    {
-        augmentedRoot.symbols.unshift({ letter: Letter.Hamza, tashkil: Tashkil.Kasra, emphasis: false, symbolName: SymbolName.Prefix1 });
-
-        if((params.numerus === Numerus.Singular) && (params.gender === Gender.Male))
-            augmentedRoot.r2.letter = Letter.Alef;
-        else
-            augmentedRoot.DropRadial(2);
-    }
-    else if(params.tense === Tense.Present)
-    {
-        if(params.mood === Mood.Imperative)
+    return [
         {
-            augmentedRoot.ReplaceRadical(1, { letter: Letter.Ta, tashkil: Tashkil.Fatha });
-            augmentedRoot.r2.letter = Letter.A3ein;
-            if(params.numerus === Numerus.Singular)
-            {
-                if(params.gender === Gender.Male)
-                {
-                    augmentedRoot.r2.tashkil = Tashkil.Fatha;
-                    augmentedRoot.ReplaceRadical(3, { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker });
-                }
-                else
-                {
-                    augmentedRoot.r2.tashkil = Tashkil.Kasra;
-                    augmentedRoot.DropRadial(3);
-                }
-            }
-            else
-            {
-                augmentedRoot.r2.tashkil = Tashkil.Dhamma;
-                augmentedRoot.DropRadial(3);
-            }
-            return;
-        }
-
-        if(
-            ( (params.numerus === Numerus.Singular) && (params.person === Person.Second) && (params.gender === Gender.Female) )
-            ||
-            ( (params.numerus === Numerus.Plural) && (params.person !== Person.First) )
-        )
+            conditions: { tense: Tense.Perfect, person: Person.Third, numerus: Numerus.Plural },
+            symbols: [Letter.Hamza, root.r1],
+            vowels: [Vowel.ShortI]
+        },
         {
-            augmentedRoot.DropRadial(2);
+            conditions: { tense: Tense.Perfect, person: Person.Third, gender: Gender.Male },
+            symbols: [Letter.Hamza, root.r1],
+            vowels: [Vowel.ShortI, Vowel.LongA]
+        },
+        {
+            conditions: { tense: Tense.Perfect, person: Person.Third },
+            symbols: [Letter.Hamza, root.r1],
+            vowels: [Vowel.ShortI]
+        },
+        {
+            conditions: { tense: Tense.Perfect },
+            symbols: [root.r1],
+            vowels: [Vowel.LongI]
+        },
+        {
+            conditions: { mood: Mood.Imperative, gender: Gender.Male, numerus: Numerus.Singular },
+            symbols: [Letter.Ta, Letter.A3ein],
+            vowels: [Vowel.ShortA, Vowel.LongA]
+        },
+        {
+            conditions: { mood: Mood.Imperative },
+            symbols: [Letter.Ta, Letter.A3ein],
+            vowels: [Vowel.ShortA]
+        },
+        {
+            conditions: { mood: Mood.Subjunctive, numerus: Numerus.Singular, person: Person.First, },
+            symbols: [Letter.Hamza, root.r1],
+            vowels: [Vowel.ShortI, Vowel.ShortI, Vowel.LongI]
+        },
+        {
+            conditions: { tense: Tense.Present, numerus: Numerus.Plural, person: Person.First },
+            symbols: [root.r1],
+            vowels: [Vowel.ShortI, Vowel.LongI]
+        },
+        {
+            conditions: { tense: Tense.Present, numerus: Numerus.Plural },
+            symbols: [root.r1],
+            vowels: [Vowel.ShortI]
+        },
+        {
+            conditions: { tense: Tense.Present },
+            symbols: [root.r1],
+            vowels: [Vowel.ShortI, Vowel.LongI]
         }
-    }
-
-    augmentedRoot.DropRadial(3);
+    ];
 }
 
-export function DoIrregularModifications(root: VerbRoot, augmentedRoot: AugmentedRoot, params: ConjugationParams)
+export function IsHamzaOnR1SpecialCase(root: VerbRoot)
 {
-    if(root.radicalsAsSeparateLetters.Equals([Letter.Jiim, Letter.Ya, Letter.Hamza]))
-    {
-        IrregularIja(augmentedRoot, params);
-        return true;
-    }
-    
-    return false;
+    const r2 = root.r2;
+    const r3 = root.r3;
+
+    const condition = ((r2 === Letter.Kha) && (r3 === Letter.Thal))
+        || ((r2 === Letter.Kaf) && (r3 === Letter.Lam));
+    return condition;
 }

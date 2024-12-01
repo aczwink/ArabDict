@@ -45,7 +45,7 @@ It("Stem2", () => {
         { tense: "present", mood: "indicative", numerus: "singular", person: "third", gender: "female", expected: "بِتْخَلِّصْ" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "second", gender: "male", expected: "بِتْخَلِّصْ" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "second", gender: "female", expected: "بِتْخَلّْصِي" },
-        { tense: "present", mood: "indicative", numerus: "singular", person: "first", gender: "male", expected: "بِخَلِّصْ" },
+        { tense: "present", mood: "indicative", numerus: "singular", person: "first", gender: "male", expected: "بْخَلِّصْ" },
 
         { tense: "present", mood: "indicative", numerus: "plural", person: "third", expected: "بِيخَلّْصُوا" },
         { tense: "present", mood: "indicative", numerus: "plural", person: "second", expected: "بِتْخَلّْصُوا" },
