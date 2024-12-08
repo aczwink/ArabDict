@@ -17,8 +17,9 @@
  * */
 
 import { ConjugationRule, Vowel } from "../../Conjugation";
-import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Tense } from "../../Definitions";
+import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Tashkil, Tense } from "../../Definitions";
 import { RootType, VerbRoot } from "../../VerbRoot";
+import { DoesPresentSuffixStartWithWawOrYa } from "../msa/conjugation/suffix";
 import { IrregularIja, IsHamzaOnR1SpecialCase } from "./irregular";
 
 export function AugmentRoot(root: VerbRoot, params: ConjugationParams): ConjugationRule[] | undefined
@@ -29,6 +30,17 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
             switch(root.type)
             {
                 case RootType.Defective:
+                    if((params.tense === Tense.Present) && (params.mood !== Mood.Imperative) && (params.stem1Context.middleRadicalTashkil === Tashkil.Kasra) && !DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender))
+                    {
+                        return [
+                            {
+                                conditions: { tense: Tense.Present },
+                                symbols: [root.r1, root.r2],
+                                vowels: [Vowel.ShortI, Vowel.Sukun, Vowel.BrokenA]
+                            }
+                        ];
+                    }
+
                     return [
                         {
                             conditions: { tense: Tense.Perfect, person: Person.Third, numerus: Numerus.Singular, gender: Gender.Male },

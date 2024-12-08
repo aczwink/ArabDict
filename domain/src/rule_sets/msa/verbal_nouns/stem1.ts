@@ -24,6 +24,30 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot, stem1Context
 {
     switch(root.type)
     {
+        case RootType.Assimilated:
+        {
+            switch(stem1Context.middleRadicalTashkil)
+            {
+                case Tashkil.Fatha:
+                {
+                    switch(stem1Context.middleRadicalTashkilPresent)
+                    {                        
+                        case Tashkil.Kasra:
+                            return [
+                                [
+                                    { letter: root.r1, tashkil: Tashkil.Dhamma },
+                                    { letter: root.r2, tashkil: Tashkil.Dhamma },
+                                    { letter: Letter.Waw, tashkil: Tashkil.LongVowelMarker },
+                                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                                ],
+                            ];
+                    }
+                }
+                break;
+            }
+        }
+        break;
+
         case RootType.Defective:
         {
             switch(stem1Context.middleRadicalTashkilPresent)
@@ -100,6 +124,16 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot, stem1Context
                                 ],
                             ];
                         }
+
+                        case Tashkil.Dhamma:
+                            return [
+                                [
+                                    { letter: Letter.Mim, tashkil: Tashkil.Fatha },
+                                    { letter: root.r1, tashkil: Tashkil.Sukun },
+                                    { letter: root.r2, tashkil: Tashkil.Fatha },
+                                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                                ],
+                            ];
                     }
                 }
                 break;

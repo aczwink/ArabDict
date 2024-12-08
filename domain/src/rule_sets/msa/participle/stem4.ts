@@ -33,6 +33,14 @@ export function GenerateParticipleStem4(root: VerbRoot, voice: VoiceString): Con
                 { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
             ];
 
+        case RootType.SecondConsonantDoubled:
+            return [
+                { letter: Letter.Mim, tashkil: Tashkil.Dhamma },
+                { letter: root.r1, tashkil: voicingTashkil },
+                { letter: root.r2, tashkil: Tashkil.Sukun },
+                { letter: root.r2, tashkil: Tashkil.EndOfWordMarker },
+            ];
+
         case RootType.HamzaOnR1:
         case RootType.Sound:
             return [

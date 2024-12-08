@@ -21,6 +21,7 @@ import { ConjugationVocalized } from "./Vocalization";
 
 export enum Vowel
 {
+    BrokenA,
     LongA,
     LongI,
     LongU,
@@ -66,6 +67,17 @@ export function _TODO_ToConjugationVocalized(word: ConjugatedWord)
     {
         switch(item.followingVowel)
         {
+            case Vowel.BrokenA:
+                result.push({
+                    letter: item.consonant,
+                    tashkil: Tashkil.Fatha
+                });
+                result.push({
+                    letter: Letter.AlefMaksura,
+                    tashkil: Tashkil.AlefMaksuraMarker,
+                });
+                break;
+
             case Vowel.LongA:
                 result.push({
                     letter: item.consonant,
