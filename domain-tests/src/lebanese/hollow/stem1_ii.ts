@@ -22,7 +22,6 @@ import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 
 //Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
 //Table: 6
-//Modifications: First person singular present gets a shadda according to the rules. This is not shown in the book however
 
 It("باع", () => {
     const root = "ب-ي-ع";
@@ -47,7 +46,7 @@ It("باع", () => {
         { tense: "present", mood: "indicative", numerus: "singular", person: "third", gender: "female", expected: "بِتْبِيعْ" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "second", gender: "male", expected: "بِتْبِيعْ" },
         { tense: "present", mood: "indicative", numerus: "singular", person: "second", gender: "female", expected: "بِتْبِيعِي" },
-        { tense: "present", mood: "indicative", numerus: "singular", person: "first", gender: "male", expected: "بِّيعْ" },
+        { tense: "present", mood: "indicative", numerus: "singular", person: "first", gender: "male", expected: "بْبِيعْ" },
 
         { tense: "present", mood: "indicative", numerus: "plural", person: "third", expected: "بِيبِيعُوا" },
         { tense: "present", mood: "indicative", numerus: "plural", person: "second", expected: "بِتْبِيعُوا" },

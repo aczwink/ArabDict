@@ -70,3 +70,18 @@ It("Stem2", () => {
 
     RunConjugationTest(root, 2, conjugations, DialectType.Lebanese);
 });
+
+//Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
+//Table: 9
+
+It("Stem 2 - No shadda on r1", () => {
+    const root = "ب-ل-ش";
+    const stem = 2;
+    
+    const conjugations: ConjugationTest[] = [
+        //present
+        { tense: "present", mood: "indicative", numerus: "singular", person: "first", gender: "male", expected: "بْبَلِّشْ" },
+    ];
+
+    RunConjugationTest(root, stem, conjugations, DialectType.Lebanese);
+});
