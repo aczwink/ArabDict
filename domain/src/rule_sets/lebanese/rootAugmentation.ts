@@ -35,8 +35,9 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
                         return [
                             {
                                 conditions: { tense: Tense.Present },
+                                prefixVowel: Vowel.ShortI,
                                 symbols: [root.r1, root.r2],
-                                vowels: [Vowel.ShortI, Vowel.Sukun, Vowel.BrokenA]
+                                vowels: [Vowel.Sukun, Vowel.BrokenA]
                             }
                         ];
                     }
@@ -74,13 +75,15 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
                         },
                         {
                             conditions: { tense: Tense.Present, hasPresentSuffix: true },
+                            prefixVowel: Vowel.ShortI,
                             symbols: [root.r1, root.r2],
-                            vowels: [Vowel.ShortI, Vowel.Sukun]
+                            vowels: [Vowel.Sukun]
                         },
                         {
                             conditions: { tense: Tense.Present },
+                            prefixVowel: Vowel.ShortI,
                             symbols: [root.r1, root.r2],
-                            vowels: [Vowel.ShortI, Vowel.Sukun, Vowel.LongI]
+                            vowels: [Vowel.Sukun, Vowel.LongI]
                         }
                     ];
 
@@ -90,20 +93,20 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
 
                     return [
                         {
-                            conditions: { tense: Tense.Perfect },
+                            conditions: {},
                             symbols: [root.r1, root.r3],
-                            vowels: [(params.person === Person.Third) ? Vowel.LongA : Vowel.ShortI]
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    vowels: [(params.person === Person.Third) ? Vowel.LongA : Vowel.ShortI]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.Sukun,
+                                    vowels: [Vowel.LongI]
+                                }
+                            ]
                         },
-                        {
-                            conditions: { mood: Mood.Imperative },
-                            symbols: [root.r1, root.r3],
-                            vowels: [Vowel.LongI]
-                        },
-                        {
-                            conditions: { tense: Tense.Present },
-                            symbols: [root.r1, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.LongI]
-                        }
                     ];
 
                 case RootType.HamzaOnR1:
@@ -122,79 +125,114 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
                             },
                             {
                                 conditions: { hasPresentSuffix: true },
+                                prefixVowel: Vowel.LongA,
                                 symbols: [root.r2, root.r3],
-                                vowels: [Vowel.LongA, Vowel.Sukun]
+                                vowels: [Vowel.Sukun]
                             },
                             {
                                 conditions: { mood: Mood.Subjunctive, numerus: Numerus.Singular, person: Person.First, },
+                                prefixVowel: Vowel.ShortA,
                                 symbols: [root.r1, root.r2, root.r3],
-                                vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.ShortU]
+                                vowels: [Vowel.Sukun, Vowel.ShortU]
                             },
                             {
                                 conditions: {},
+                                prefixVowel: Vowel.LongA,
                                 symbols: [root.r2, root.r3],
-                                vowels: [Vowel.LongA, Vowel.ShortU]
+                                vowels: [Vowel.ShortU]
                             }
                         ];
                     }
 
                     return [
                         {
-                            conditions: { tense: Tense.Perfect },
-                            emphasize: (params.person === Person.Third) ? 0 : 1,
+                            conditions: {},
                             symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.ShortA, Vowel.ShortA]
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    emphasize: (params.person === Person.Third) ? 0 : 1,
+                                    vowels: [Vowel.ShortA, Vowel.ShortA]
+                                },
+                                {
+                                    conditions: { mood: Mood.Imperative, hasPresentSuffix: true },
+                                    vowels: [Vowel.Sukun, Vowel.ShortU]
+                                },
+                                {
+                                    conditions: { mood: Mood.Imperative },
+                                    vowels: [Vowel.Sukun, Vowel.LongU]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present, hasPresentSuffix: true },
+                                    prefixVowel: Vowel.ShortU,
+                                    vowels: [Vowel.Sukun, Vowel.Sukun]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.ShortU,
+                                    vowels: [Vowel.Sukun, Vowel.ShortU]
+                                }
+                            ],
                         },
+                    ];
+
+                case RootType.Quadriliteral:
+                    return [
                         {
-                            conditions: { mood: Mood.Imperative, hasPresentSuffix: true },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.ShortU]
+                            conditions: {},
+                            symbols: [root.r1, root.r2, root.r3, root.r4],
+                            vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.ShortA],
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    emphasize: (params.person === Person.Third) ? 0 : 2,
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.Sukun,
+                                    vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.ShortI],
+                                    children: [
+                                        {
+                                            conditions: { hasPresentSuffix: true },
+                                            vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.Sukun],
+                                        }
+                                    ]
+                                },
+                            ]
                         },
-                        {
-                            conditions: { mood: Mood.Imperative },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.LongU]
-                        },
-                        {
-                            conditions: { tense: Tense.Present, hasPresentSuffix: true },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.ShortU, Vowel.Sukun, Vowel.Sukun]
-                        },
-                        {
-                            conditions: { tense: Tense.Present },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.ShortU, Vowel.Sukun, Vowel.ShortU]
-                        }
                     ];
 
                 case RootType.Sound:
                     return [
                         {
-                            conditions: { tense: Tense.Perfect },
-                            emphasize: (params.person === Person.Third) ? 0 : 1,
+                            conditions: {},
                             symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.ShortA, Vowel.ShortA]
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    emphasize: (params.person === Person.Third) ? 0 : 1,
+                                    vowels: [Vowel.ShortA, Vowel.ShortA]
+                                },
+                                {
+                                    conditions: { mood: Mood.Imperative, hasPresentSuffix: true },
+                                    vowels: [Vowel.Sukun, Vowel.ShortI]
+                                },
+                                {
+                                    conditions: { mood: Mood.Imperative },
+                                    vowels: [Vowel.Sukun, Vowel.LongU]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present, hasPresentSuffix: true },
+                                    prefixVowel: Vowel.ShortI,
+                                    vowels: [Vowel.Sukun, Vowel.Sukun]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.ShortI,
+                                    vowels: [Vowel.Sukun, Vowel.ShortU]
+                                }
+                            ]
                         },
-                        {
-                            conditions: { mood: Mood.Imperative, hasPresentSuffix: true },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.ShortI]
-                        },
-                        {
-                            conditions: { mood: Mood.Imperative },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.LongU]
-                        },
-                        {
-                            conditions: { tense: Tense.Present, hasPresentSuffix: true },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.ShortI, Vowel.Sukun, Vowel.Sukun]
-                        },
-                        {
-                            conditions: { tense: Tense.Present },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.ShortI, Vowel.Sukun, Vowel.ShortU]
-                        }
                     ];
             }
         break;
@@ -203,33 +241,60 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
         {
             switch(root.type)
             {
+                case RootType.Quadriliteral:
+                    return [
+                        {
+                            conditions: {},
+                            symbols: [Letter.Ta, root.r1, root.r2, root.r3, root.r4],
+                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.ShortA],
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    emphasize: (params.person === Person.Third) ? 1 : 3,
+                                },
+                                {
+                                    conditions: { mood: Mood.Imperative },
+                                    symbols: [root.r1, root.r2, root.r3, root.r4],
+                                    vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.Sukun],
+                                    children: [
+                                        {
+                                            conditions: { numerus: Numerus.Singular, gender: Gender.Male },
+                                            vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.ShortI],
+                                        }
+                                    ]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.ShortI,
+                                },
+                            ]
+                        },
+                    ];
+
                 case RootType.Sound:
                     return [
                         {
-                            conditions: { tense: Tense.Perfect },
+                            conditions: {},
                             symbols: [root.r1, root.r2, root.r2, root.r3],
-                            vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.ShortA]
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    emphasize: (params.person === Person.Third) ? 0 : 1,
+                                    vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.ShortA]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.Sukun,
+                                    vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.ShortI],
+                                    children: [
+                                        {
+                                            conditions: { hasPresentSuffix: true },
+                                            vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.Sukun]
+                                        },
+                                    ]
+                                },
+                            ]
                         },
-                        {
-                            conditions: { mood: Mood.Imperative, hasPresentSuffix: true },
-                            symbols: [root.r1, root.r2, root.r2, root.r3],
-                            vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.Sukun]
-                        },
-                        {
-                            conditions: { mood: Mood.Imperative },
-                            symbols: [root.r1, root.r2, root.r2, root.r3],
-                            vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.ShortI]
-                        },
-                        {
-                            conditions: { tense: Tense.Present, hasPresentSuffix: true },
-                            symbols: [root.r1, root.r2, root.r2, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.Sukun]
-                        },
-                        {
-                            conditions: { tense: Tense.Present },
-                            symbols: [root.r1, root.r2, root.r2, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.ShortI]
-                        }
                     ];
             }
         }
@@ -247,25 +312,170 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
                             vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.ShortA],
                         },
                         {
-                            conditions: { mood: Mood.Imperative, hasPresentSuffix: true },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.ShortI]
-                        },
-                        {
-                            conditions: { mood: Mood.Imperative },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.LongU]
-                        },
-                        {
-                            conditions: { tense: Tense.Present, hasPresentSuffix: true },
-                            symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.ShortI, Vowel.ShortI, Vowel.Sukun]
-                        },
-                        {
                             conditions: { tense: Tense.Present },
+                            prefixVowel: Vowel.ShortI,
                             symbols: [root.r1, root.r2, root.r3],
-                            vowels: [Vowel.ShortI, Vowel.Sukun, Vowel.ShortU]
-                        }
+                            children: [
+                                {
+                                    conditions: { mood: Mood.Imperative, hasPresentSuffix: true },
+                                    vowels: [Vowel.Sukun, Vowel.ShortI]
+                                },
+                                {
+                                    conditions: { mood: Mood.Imperative },
+                                    vowels: [Vowel.Sukun, Vowel.LongU]
+                                },
+                                {
+                                    conditions: { hasPresentSuffix: true },
+                                    vowels: [Vowel.ShortI, Vowel.Sukun]
+                                },
+                                {
+                                    conditions: {},
+                                    vowels: [Vowel.Sukun, Vowel.ShortU]
+                                }
+                            ]
+                        },
+                    ];
+            }
+        }
+        break;
+
+        case 5:
+        {
+            switch(root.type)
+            {
+                case RootType.Defective:
+                    return [
+                        {
+                            conditions: {},
+                            symbols: [Letter.Ta, root.r1, root.r2, root.r2],
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    children: [
+                                        {
+                                            conditions: { person: Person.Third, numerus: Numerus.Singular, gender: Gender.Male },
+                                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.BrokenA],
+                                        },
+                                        {
+                                            conditions: { person: Person.Third, numerus: Numerus.Singular },
+                                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.ShortI],
+                                        },
+                                        {
+                                            conditions: { person: Person.Third },
+                                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.LongU],
+                                        },
+                                        {
+                                            conditions: {},
+                                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.DiphtongAj],
+                                        },
+                                    ]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.ShortI,
+                                    vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.BrokenA],
+                                    children: [
+                                        {
+                                            conditions: { hasPresentSuffix: true, numerus: Numerus.Singular },
+                                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.LongI],
+                                        },
+                                        {
+                                            conditions: { hasPresentSuffix: true },
+                                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.LongU],
+                                        },
+                                    ]
+                                }
+                            ]
+                        },
+                    ];
+                case RootType.Sound:
+                    return [
+                        {
+                            conditions: {},
+                            symbols: [Letter.Ta, root.r1, root.r2, root.r2, root.r3],
+                            vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.Sukun, Vowel.ShortA],
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    emphasize: (params.person === Person.Third) ? 1 : 2,
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.ShortI,
+                                }
+                            ]
+                        },
+                    ];
+            }
+        }
+        break;
+
+        case 6:
+        {
+            switch(root.type)
+            {
+                case RootType.Defective:
+                    return [
+                        {
+                            conditions: {},
+                            symbols: [Letter.Ta, root.r1, root.r2],
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    children: [
+                                        {
+                                            conditions: { person: Person.Third, numerus: Numerus.Singular, gender: Gender.Male },
+                                            vowels: [Vowel.Sukun, Vowel.LongA, Vowel.BrokenA],
+                                        },
+                                        {
+                                            conditions: { person: Person.Third, numerus: Numerus.Singular },
+                                            vowels: [Vowel.Sukun, Vowel.LongA, Vowel.ShortI],
+                                        },
+                                        {
+                                            conditions: { person: Person.Third },
+                                            vowels: [Vowel.Sukun, Vowel.LongA, Vowel.LongU],
+                                        },
+                                        {
+                                            conditions: {},
+                                            vowels: [Vowel.Sukun, Vowel.LongA, Vowel.DiphtongAj],
+                                        },
+                                    ]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.ShortI,
+                                    vowels: [Vowel.Sukun, Vowel.LongA, Vowel.BrokenA],
+                                    children: [
+                                        {
+                                            conditions: { hasPresentSuffix: true, numerus: Numerus.Singular },
+                                            vowels: [Vowel.Sukun, Vowel.LongA, Vowel.LongI],
+                                        },
+                                        {
+                                            conditions: { hasPresentSuffix: true },
+                                            vowels: [Vowel.Sukun, Vowel.LongA, Vowel.LongU],
+                                        },
+                                    ]
+                                }
+                            ]
+                        },
+                    ];
+                case RootType.Sound:
+                    return [
+                        {
+                            conditions: {},
+                            symbols: [Letter.Ta, root.r1, root.r2, root.r3],
+                            vowels: [Vowel.Sukun, Vowel.LongA, Vowel.ShortA],
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    emphasize: (params.person === Person.Third) ? undefined : 2,
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.ShortI,
+                                },
+                            ]
+                        },
                     ];
             }
         }
@@ -276,22 +486,21 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
             switch(root.type)
             {
                 case RootType.Hollow:
-                    const pastVowel = (params.person === Person.Third) ? Vowel.LongA : Vowel.ShortA;
                     return [
                         {
-                            conditions: { tense: Tense.Perfect },
+                            conditions: {},
                             symbols: [root.r1, Letter.Ta, root.r3],
-                            vowels: [Vowel.Sukun, pastVowel]
-                        },
-                        {
-                            conditions: { mood: Mood.Imperative },
-                            symbols: [root.r1, Letter.Ta, root.r3],
-                            vowels: [Vowel.Sukun, Vowel.LongA]
-                        },
-                        {
-                            conditions: { tense: Tense.Present },
-                            symbols: [root.r1, Letter.Ta, root.r3],
-                            vowels: [Vowel.ShortI, Vowel.Sukun, Vowel.LongA]
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    vowels: [Vowel.Sukun, (params.person === Person.Third) ? Vowel.LongA : Vowel.ShortA]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.ShortI,
+                                    vowels: [Vowel.Sukun, Vowel.LongA]
+                                },
+                            ]
                         },
                     ];
             }

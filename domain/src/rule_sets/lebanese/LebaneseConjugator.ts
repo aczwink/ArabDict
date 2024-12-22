@@ -15,16 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ConjugationParams, AdjectiveDeclensionParams, Gender, Letter, Numerus, Person, Stem1Context, Tashkil, Tense, NounDeclensionParams, Voice, AdvancedStemNumber, Mood } from "../../Definitions";
+import { ConjugationParams, AdjectiveDeclensionParams, Gender, Letter, Numerus, Person, Stem1Context, Tashkil, Tense, NounDeclensionParams, Voice, AdvancedStemNumber } from "../../Definitions";
 import { DialectConjugator, NounInput, TargetNounDerivation } from "../../DialectConjugator";
 import { RootType, VerbRoot } from "../../VerbRoot";
 import { ConjugationVocalized, DisplayVocalized } from "../../Vocalization";
 import { DerivePrefix } from "./prefix";
 import { MSAConjugator } from "../msa/MSAConjugator";
 import { AugmentRoot } from "./rootAugmentation";
-import { _TODO_ToConjugationVocalized, _TODO_VowelToTashkil, ConjugatedWord, ConjugationItem, ConjugationRule } from "../../Conjugation";
+import { _TODO_ToConjugationVocalized, _TODO_VowelToTashkil, ConjugatedWord, ConjugationItem, ConjugationRuleMatchResult } from "../../Conjugation";
 import { DeriveSuffix, SuffixResult } from "./suffix";
-import { DoesPresentSuffixStartWithWawOrYa } from "../msa/conjugation/suffix";
+import { ConjugationRuleMatcher } from "../../ConjugationRuleMatcher";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Levantine_Arabic_grammar
 
@@ -44,22 +44,42 @@ export class LebaneseConjugator implements DialectConjugator
             ];
         }
 
-        const rule = this.MatchRule(root, rootAugmentation, params);
-        const prefix = DerivePrefix(rule.vowels, params);
+        const matched = new ConjugationRuleMatcher().Match(rootAugmentation, params);
+
+        const prefix = DerivePrefix(matched.prefixVowel, matched.vowels[0], params);
         const suffix = DeriveSuffix(params);
 
-        const constructed = this.Construct(rule, prefix, suffix, ((params.tense === Tense.Present) && (params.mood !== Mood.Imperative)));
+        const constructed = this.Construct(matched, prefix, suffix);
 
         return _TODO_ToConjugationVocalized(constructed);
     }
 
     public ConjugateParticiple(root: VerbRoot, stem: number, voice: Voice, stem1Context?: Stem1Context | undefined): ConjugationVocalized[]
     {
+        if(voice !== Voice.Active)
+            return [{ emphasis: true, letter: "TODO" as any, tashkil: Tashkil.AlefMaksuraMarker }];
+        
         switch(root.type)
         {
+            case RootType.Defective:
+            {
+                switch(stem)
+                {
+                    case 5:
+                    case 6:
+                        const base = this.ConjugateBaseForm(root, stem);
+                        base[base.length - 2].tashkil = Tashkil.Kasra;
+                        base[base.length - 1].letter = Letter.Ya;
+                        return [
+                            { letter: Letter.Mim, tashkil: Tashkil.Kasra },
+                            ...base
+                        ];
+                }
+            }
+            break;
             case RootType.Hollow:
             {
-                if((stem === 1) && (voice === Voice.Active))
+                if(stem === 1)
                 {
                     if(root.radicalsAsSeparateLetters.Equals([Letter.Jiim, Letter.Ya, Letter.Hamza]))
                     {
@@ -77,12 +97,37 @@ export class LebaneseConjugator implements DialectConjugator
                         { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
                     ];
                 }
-                else if((stem === 8) && (voice === Voice.Active))
+                else if(stem === 8)
                 {
                     return [
                         { letter: Letter.Mim, tashkil: Tashkil.Kasra },
                         ...this.ConjugateBaseForm(root, stem)
                     ];
+                }
+            }
+            break;
+            case RootType.Quadriliteral:
+            {
+                switch(stem)
+                {
+                    case 2:
+                        return [
+                            { letter: Letter.Mim, tashkil: Tashkil.Kasra },
+                            ...this.ConjugateBaseForm(root, stem)
+                        ];
+                }
+            }
+            break;
+            case RootType.Sound:
+            {
+                switch(stem)
+                {
+                    case 5:
+                    case 6:
+                        return [
+                            { letter: Letter.Mim, tashkil: Tashkil.Kasra },
+                            ...this.ConjugateBaseForm(root, stem)
+                        ];
                 }
             }
             break;
@@ -102,6 +147,14 @@ export class LebaneseConjugator implements DialectConjugator
                             letter: Letter.Ya,
                             tashkil: Tashkil.LongVowelMarker
                         });
+                        return msaVersion;
+                }
+
+            case RootType.Quadriliteral:
+                switch(stem)
+                {
+                    case 1:
+                        msaVersion[0].tashkil = Tashkil.Sukun;
                         return msaVersion;
                 }
 
@@ -158,10 +211,10 @@ export class LebaneseConjugator implements DialectConjugator
         });
     }
 
-    private Construct(rule: ConjugationRule, prefix: ConjugationItem[], suffix: SuffixResult, hasPrefix: boolean): ConjugatedWord
+    private Construct(rule: ConjugationRuleMatchResult, prefix: ConjugationItem[], suffix: SuffixResult): ConjugatedWord
     {
         const vowels = [...rule.vowels, suffix.previousVowel];
-        let vowelIndex = hasPrefix ? 1 : 0;
+        let vowelIndex = 0;
 
         const items = prefix.concat(rule.symbols.map((x,i)=> ({
             consonant: x,
@@ -186,36 +239,5 @@ export class LebaneseConjugator implements DialectConjugator
         return {
             items
         };
-    }
-
-    private MatchRule(root: VerbRoot, rules: ConjugationRule[], params: ConjugationParams)
-    {
-        function match(rule: ConjugationRule)
-        {
-            const c = rule.conditions;
-
-            if((c.tense !== undefined) && (c.tense !== params.tense))
-                return false;
-            if((c.mood !== undefined) && (params.tense === Tense.Present) && (c.mood !== params.mood))
-                return false;
-            if((c.numerus !== undefined) && (c.numerus !== params.numerus))
-                return false;
-            if((c.person !== undefined) && (c.person !== params.person))
-                return false;
-            if((c.gender !== undefined) && (c.gender !== params.gender))
-                return false;
-            if((c.hasPresentSuffix === true) && (params.tense === Tense.Present) && !DoesPresentSuffixStartWithWawOrYa(params.person, params.numerus, params.gender))
-                return false;
-
-            return true;
-        }
-
-        for (const rule of rules)
-        {
-            if(match(rule))
-                return rule;
-        }
-        console.log(root, rules, params);
-        throw new Error("No rule match found");
     }
 }

@@ -26,7 +26,7 @@ It("Stem 5", () => {
     const root = "غ-ذ-و";
     const stem = 5;
 
-    RunActiveParticipleTest(root, stem, "مِتْغَذَّي", DialectType.Lebanese);
+    RunActiveParticipleTest(root, stem, "مِتْغَذِّي", DialectType.Lebanese);
     
     const conjugations: ConjugationTest[] = [
         //past

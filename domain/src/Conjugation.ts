@@ -22,6 +22,7 @@ import { ConjugationVocalized } from "./Vocalization";
 export enum Vowel
 {
     BrokenA,
+    DiphtongAj,
     LongA,
     LongI,
     LongU,
@@ -40,6 +41,7 @@ export interface ConjugationItem
 
 export interface ConjugationRule
 {
+    children?: ConjugationRule[];
     conditions: {
         gender?: Gender;
         hasPresentSuffix?: boolean;
@@ -49,6 +51,15 @@ export interface ConjugationRule
         tense?: Tense;
     };
     emphasize?: number;
+    prefixVowel?: Vowel;
+    symbols?: Letter[];
+    vowels?: Vowel[];
+}
+
+export interface ConjugationRuleMatchResult
+{
+    emphasize?: number;
+    prefixVowel?: Vowel;
     symbols: Letter[];
     vowels: Vowel[];
 }
@@ -75,6 +86,17 @@ export function _TODO_ToConjugationVocalized(word: ConjugatedWord)
                 result.push({
                     letter: Letter.AlefMaksura,
                     tashkil: Tashkil.AlefMaksuraMarker,
+                });
+                break;
+
+            case Vowel.DiphtongAj:
+                result.push({
+                    letter: item.consonant,
+                    tashkil: Tashkil.Fatha
+                });
+                result.push({
+                    letter: Letter.Ya,
+                    tashkil: Tashkil.Sukun,
                 });
                 break;
 

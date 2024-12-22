@@ -55,23 +55,27 @@ export function IrregularIja(root: VerbRoot): ConjugationRule[]
         },
         {
             conditions: { mood: Mood.Subjunctive, numerus: Numerus.Singular, person: Person.First, },
+            prefixVowel: Vowel.ShortI,
             symbols: [Letter.Hamza, root.r1],
-            vowels: [Vowel.ShortI, Vowel.ShortI, Vowel.LongI]
+            vowels: [Vowel.ShortI, Vowel.LongI]
         },
         {
             conditions: { tense: Tense.Present, numerus: Numerus.Plural, person: Person.First },
+            prefixVowel: Vowel.ShortI,
             symbols: [root.r1],
-            vowels: [Vowel.ShortI, Vowel.LongI]
+            vowels: [Vowel.LongI]
         },
         {
             conditions: { tense: Tense.Present, numerus: Numerus.Plural },
+            prefixVowel: Vowel.ShortI,
             symbols: [root.r1],
-            vowels: [Vowel.ShortI]
+            vowels: []
         },
         {
             conditions: { tense: Tense.Present },
+            prefixVowel: Vowel.ShortI,
             symbols: [root.r1],
-            vowels: [Vowel.ShortI, Vowel.LongI]
+            vowels: [Vowel.LongI]
         }
     ];
 }

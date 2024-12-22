@@ -70,15 +70,14 @@ function BiPrefixTashkil(prefixEndingVowel: Vowel)
     return Vowel.Sukun;
 }
 
-export function DerivePrefix(vowels: Vowel[], params: ConjugationParams): ConjugationItem[]
+export function DerivePrefix(prefixEndingVowel: Vowel | undefined, followingVowel: Vowel, params: ConjugationParams): ConjugationItem[]
 {
     if(params.tense === Tense.Perfect)
         return [];
     if(params.mood === Mood.Imperative)
         return [];
-
-    const prefixEndingVowel = vowels[0];
-    const followingVowel = vowels[1];
+    if(prefixEndingVowel === undefined)
+        throw new Error("Missing ending vowel of prefix");
 
     if(params.mood === Mood.Indicative)
     {

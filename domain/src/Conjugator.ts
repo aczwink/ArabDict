@@ -126,7 +126,7 @@ export class Conjugator
             const v = vocalized[i];
             const next: (ConjugationVocalized | undefined) = vocalized[i + 1];
 
-            const shadda = (v.letter === next?.letter) && (v.tashkil === Tashkil.Sukun);
+            const shadda = (v.letter === next?.letter) && (v.tashkil === Tashkil.Sukun) && (i > 0);
             const tashkil = shadda ? next.tashkil : v.tashkil;
             result.push({
                 emphasis: (v.emphasis === true) || (shadda && (next.emphasis === true)),
