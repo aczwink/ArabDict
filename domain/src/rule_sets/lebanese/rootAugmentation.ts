@@ -202,6 +202,29 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
                         },
                     ];
 
+                case RootType.SecondConsonantDoubled:
+                    return [
+                        {
+                            conditions: {},
+                            symbols: [root.r1, root.r2, root.r3],
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect, person: Person.Third },
+                                    vowels: [Vowel.ShortA, Vowel.Sukun]
+                                },
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.DiphtongAj]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.Sukun,
+                                    vowels: [Vowel.ShortI, Vowel.Sukun]
+                                }
+                            ]
+                        },
+                    ];
+
                 case RootType.Sound:
                     return [
                         {
@@ -290,6 +313,39 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
                                         {
                                             conditions: { hasPresentSuffix: true },
                                             vowels: [Vowel.ShortA, Vowel.Sukun, Vowel.Sukun]
+                                        },
+                                    ]
+                                },
+                            ]
+                        },
+                    ];
+            }
+        }
+        break;
+
+        case 3:
+        {
+            switch(root.type)
+            {
+                case RootType.Hollow:
+                    return [
+                        {
+                            conditions: {},
+                            symbols: [root.r1, root.r2, root.r3],
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    emphasize: (params.person === Person.Third) ? undefined : 1,
+                                    vowels: [Vowel.LongA, Vowel.ShortA]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.Sukun,
+                                    vowels: [Vowel.LongA, Vowel.ShortI],
+                                    children: [
+                                        {
+                                            conditions: { hasPresentSuffix: true },
+                                            vowels: [Vowel.LongA, Vowel.Sukun]
                                         },
                                     ]
                                 },
@@ -499,6 +555,31 @@ export function AugmentRoot(root: VerbRoot, params: ConjugationParams): Conjugat
                                     conditions: { tense: Tense.Present },
                                     prefixVowel: Vowel.ShortI,
                                     vowels: [Vowel.Sukun, Vowel.LongA]
+                                },
+                            ]
+                        },
+                    ];
+
+                case RootType.Sound:
+                    return [
+                        {
+                            conditions: {},
+                            symbols: [root.r1, Letter.Ta, root.r2, root.r3],
+                            children: [
+                                {
+                                    conditions: { tense: Tense.Perfect },
+                                    emphasize: (params.person === Person.Third) ? 1 : 2,
+                                    vowels: [Vowel.Sukun, Vowel.ShortA, Vowel.ShortA]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present, hasPresentSuffix: true },
+                                    prefixVowel: Vowel.ShortI,
+                                    vowels: [Vowel.Sukun, Vowel.ShortI, Vowel.Sukun]
+                                },
+                                {
+                                    conditions: { tense: Tense.Present },
+                                    prefixVowel: Vowel.ShortI,
+                                    vowels: [Vowel.Sukun, Vowel.ShortI, Vowel.ShortI]
                                 },
                             ]
                         },

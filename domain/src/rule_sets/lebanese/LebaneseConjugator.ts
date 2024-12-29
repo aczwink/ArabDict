@@ -77,35 +77,37 @@ export class LebaneseConjugator implements DialectConjugator
                 }
             }
             break;
+
             case RootType.Hollow:
             {
-                if(stem === 1)
+                switch(stem)
                 {
-                    if(root.radicalsAsSeparateLetters.Equals([Letter.Jiim, Letter.Ya, Letter.Hamza]))
-                    {
-                        return [
-                            { letter: root.r1, tashkil: Tashkil.Fatha },
-                            { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
-                            { letter: Letter.Ya, tashkil: Tashkil.EndOfWordMarker }
-                        ];
-                    }
+                    case 1:
+                        if(root.radicalsAsSeparateLetters.Equals([Letter.Jiim, Letter.Ya, Letter.Hamza]))
+                            {
+                                return [
+                                    { letter: root.r1, tashkil: Tashkil.Fatha },
+                                    { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                                    { letter: Letter.Ya, tashkil: Tashkil.EndOfWordMarker }
+                                ];
+                            }
+        
+                            return [
+                                { letter: root.r1, tashkil: Tashkil.Fatha },
+                                { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                                { letter: Letter.Ya, tashkil: Tashkil.Kasra },
+                                { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                            ];
 
-                    return [
-                        { letter: root.r1, tashkil: Tashkil.Fatha },
-                        { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
-                        { letter: Letter.Ya, tashkil: Tashkil.Kasra },
-                        { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
-                    ];
-                }
-                else if(stem === 8)
-                {
-                    return [
-                        { letter: Letter.Mim, tashkil: Tashkil.Kasra },
-                        ...this.ConjugateBaseForm(root, stem)
-                    ];
+                    case 8:
+                        return [
+                            { letter: Letter.Mim, tashkil: Tashkil.Kasra },
+                            ...this.ConjugateBaseForm(root, stem)
+                        ];
                 }
             }
             break;
+
             case RootType.Quadriliteral:
             {
                 switch(stem)
@@ -118,6 +120,22 @@ export class LebaneseConjugator implements DialectConjugator
                 }
             }
             break;
+
+            case RootType.SecondConsonantDoubled:
+            {
+                switch(stem)
+                {
+                    case 1:
+                        return [
+                            { letter: root.r1, tashkil: Tashkil.Fatha },
+                            { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
+                            { letter: root.r2, tashkil: Tashkil.Kasra },
+                            { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                        ];
+                }
+            }
+            break;
+
             case RootType.Sound:
             {
                 switch(stem)
@@ -127,6 +145,15 @@ export class LebaneseConjugator implements DialectConjugator
                         return [
                             { letter: Letter.Mim, tashkil: Tashkil.Kasra },
                             ...this.ConjugateBaseForm(root, stem)
+                        ];
+                    case 8:
+                        const base = this.ConjugateBaseForm(root, stem);
+                        base[base.length - 2].tashkil = Tashkil.Kasra;
+                        base[base.length - 3].tashkil = Tashkil.Kasra;
+                        base[base.length - 3].emphasis = undefined;
+                        return [
+                            { letter: Letter.Mim, tashkil: Tashkil.Kasra },
+                            ...base
                         ];
                 }
             }
@@ -149,6 +176,24 @@ export class LebaneseConjugator implements DialectConjugator
                         });
                         return msaVersion;
                 }
+                break;
+
+            case RootType.HamzaOnR1:
+                switch(stem)
+                {
+                    case 1:
+                        return msaVersion;
+                }
+            break;
+
+            case RootType.Hollow:
+                switch(stem)
+                {
+                    case 3:
+                        msaVersion[0].tashkil = Tashkil.Sukun;
+                        return msaVersion;
+                }
+                break;
 
             case RootType.Quadriliteral:
                 switch(stem)
@@ -157,17 +202,22 @@ export class LebaneseConjugator implements DialectConjugator
                         msaVersion[0].tashkil = Tashkil.Sukun;
                         return msaVersion;
                 }
+                break;
 
             case RootType.Sound:
                 switch(stem)
                 {
+                    case 1:
+                    case 4:
+                        return msaVersion;
                     case 2:
                         msaVersion[0].tashkil = Tashkil.Sukun;
                         return msaVersion;
                 }
+                break;
         }
 
-        return msaVersion;
+        return [{ emphasis: true, letter: "TODO" as any, tashkil: Tashkil.AlefMaksuraMarker }];
     }
 
     public DeclineAdjective(vocalized: DisplayVocalized[], params: AdjectiveDeclensionParams): DisplayVocalized[]
