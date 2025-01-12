@@ -53,6 +53,7 @@ import { WithTashkilOnLast } from "./adjectives/shared";
 import { GenerateParticipleStem6 } from "./participle/stem6";
 import { GenerateAllPossibleVerbalNounsStem7 } from "./verbal_nouns/stem7";
 import { AlterHamzaOnR1 } from "./conjugation/hamza_on_r1";
+import { GenerateParticipleStem9 } from "./participle/stem9";
 
 //Source is mostly: https://en.wikipedia.org/wiki/Arabic_verbs
 
@@ -84,6 +85,8 @@ export class MSAConjugator implements DialectConjugator
                 return GenerateParticipleStem6(root, this.ConjugateBasicForm(root, stem), voice);
             case 8:
                 return GenerateParticipleStem8(root, this.ConjugateBasicForm(root, stem), voice);
+            case 9:
+                return GenerateParticipleStem9(root, this.ConjugateBasicForm(root, stem), voice);
             case 10:
                 return GenerateParticipleStem10(root, voiceOld);
         }
@@ -173,6 +176,8 @@ export class MSAConjugator implements DialectConjugator
                 return [GenerateAllPossibleVerbalNounsStem7(root)];
             case 8:
                 return [GenerateAllPossibleVerbalNounsStem8(root)];
+            case 9:
+                return [];
             case 10:
                 return [GenerateAllPossibleVerbalNounsStem10(root)];
             default:

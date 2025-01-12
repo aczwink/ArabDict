@@ -30,6 +30,8 @@ It("Stem 1 past:a, present:i", () => {
         { expected: "عَصْف", rootRadicals: root },
         //Source: https://en.wiktionary.org/wiki/%D9%85%D9%84%D9%83#Verb
         { expected: "مُلْك", rootRadicals: "م-ل-ك" },
+        //Source: https://en.wiktionary.org/wiki/%D9%86%D8%B2%D9%84
+        { expected: "نُزُول", rootRadicals: "ن-ز-ل" },
     ]);
 
     RunParticipleTest(root, stem, "عَاصِف", "مَعْصُوف");

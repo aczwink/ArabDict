@@ -28,7 +28,7 @@ interface RootTashkil
 
 function DerivePastRootTashkil(params: ConjugationParams): RootTashkil
 {
-    const r1stem = ((params.stem === 4) || (params.stem === 8) || (params.stem === 10)) ? Tashkil.Sukun : ((params.voice === Voice.Active) ? Tashkil.Fatha : Tashkil.Dhamma);
+    const r1stem = ((params.stem === 4) || (params.stem === 8) || (params.stem === 9) || (params.stem === 10)) ? Tashkil.Sukun : ((params.voice === Voice.Active) ? Tashkil.Fatha : Tashkil.Dhamma);
     const r2active = (params.stem === 1) ? (params.stem1Context.middleRadicalTashkil) : Tashkil.Fatha;
     return {
         r1: r1stem,
@@ -41,6 +41,20 @@ function Derive3RadicalRootTashkil(params: ConjugationParams): RootTashkil
     if(params.tense === Tense.Perfect)
         return DerivePastRootTashkil(params);
 
+    function R1Tashkil()
+    {
+        switch(params.stem)
+        {
+            case 1:
+            case 4:
+            case 8:
+            case 9:
+            case 10:
+                return Tashkil.Sukun;
+        }
+        return Tashkil.Fatha;
+    }
+
     function R2Active(): Tashkil
     {
         switch(params.stem)
@@ -52,6 +66,7 @@ function Derive3RadicalRootTashkil(params: ConjugationParams): RootTashkil
             case 4:
             case 7:
             case 8:
+            case 9:
             case 10:
                 return Tashkil.Kasra;
             case 5:
@@ -61,7 +76,7 @@ function Derive3RadicalRootTashkil(params: ConjugationParams): RootTashkil
     }
 
     return {
-        r1: ((params.stem === 1) || (params.stem === 4) || (params.stem === 8) || (params.stem === 10)) ? Tashkil.Sukun : Tashkil.Fatha,
+        r1: R1Tashkil(),
         r2: (params.voice === Voice.Active) ? R2Active() : Tashkil.Fatha
     };
 }

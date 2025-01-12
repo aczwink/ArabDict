@@ -95,6 +95,37 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot, stem1Context
         }
         break;
 
+        case RootType.SecondConsonantDoubled:
+        {
+            switch(stem1Context.middleRadicalTashkil)
+            {
+                case Tashkil.Fatha:
+                {
+                    switch(stem1Context.middleRadicalTashkilPresent)
+                    {
+                        case Tashkil.Dhamma:
+                        {
+                            return [
+                                [
+                                    { letter: root.r1, tashkil: Tashkil.Dhamma },
+                                    { letter: root.r2, tashkil: Tashkil.Dhamma },
+                                    { letter: Letter.Waw, tashkil: Tashkil.LongVowelMarker },
+                                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                                ],
+                                [
+                                    { letter: root.r1, tashkil: Tashkil.Fatha },
+                                    { letter: root.r2, tashkil: Tashkil.Sukun },
+                                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                                ],
+                            ];
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        break;
+
         case RootType.Sound:
         {
             switch(stem1Context.middleRadicalTashkil)
@@ -118,6 +149,17 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot, stem1Context
                         {
                             return [
                                 [
+                                    { letter: root.r1, tashkil: Tashkil.Dhamma },
+                                    { letter: root.r2, tashkil: Tashkil.Sukun },
+                                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                                ],
+                                [
+                                    { letter: root.r1, tashkil: Tashkil.Dhamma },
+                                    { letter: root.r2, tashkil: Tashkil.Dhamma },
+                                    { letter: Letter.Waw, tashkil: Tashkil.LongVowelMarker },
+                                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                                ],
+                                [
                                     { letter: root.r1, tashkil: Tashkil.Fatha },
                                     { letter: root.r2, tashkil: Tashkil.Sukun },
                                     { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
@@ -134,6 +176,24 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot, stem1Context
                                     { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
                                 ],
                             ];
+                    }
+                }
+                break;
+
+                case Tashkil.Kasra:
+                {
+                    switch(stem1Context.middleRadicalTashkilPresent)
+                    {
+                        case Tashkil.Fatha:
+                        {
+                            return [
+                                [
+                                    { letter: root.r1, tashkil: Tashkil.Fatha },
+                                    { letter: root.r2, tashkil: Tashkil.Fatha },
+                                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
+                                ],
+                            ];
+                        }
                     }
                 }
                 break;
@@ -320,11 +380,6 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot, stem1Context
                 ],
                 root.r1 + Tashkil.Fatha + root.r2 + Tashkil.Kasra + Letter.Ya + root.r3,
                 [
-                    { letter: root.r1, tashkil: Tashkil.Fatha },
-                    { letter: root.r2, tashkil: Tashkil.Sukun },
-                    { letter: root.r2, tashkil: Tashkil.EndOfWordMarker },
-                ],
-                [
                     { letter: root.r1, tashkil: Tashkil.Kasra },
                     { letter: root.r2, tashkil: Tashkil.Fatha },
                     { letter: Letter.Alef, tashkil: Tashkil.Fatha },
@@ -355,12 +410,6 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot, stem1Context
                 ],
                 [
                     { letter: root.r1, tashkil: Tashkil.Dhamma },
-                    { letter: root.r2, tashkil: Tashkil.Dhamma },
-                    { letter: Letter.Waw, tashkil: Tashkil.Dhamma },
-                    { letter: root.r3, tashkil: Tashkil.Sukun },
-                ],
-                [
-                    { letter: root.r1, tashkil: Tashkil.Dhamma },
                     { letter: root.r2, tashkil: Tashkil.Fatha },
                     { letter: Letter.Alef, tashkil: Tashkil.LongVowelMarker },
                     { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
@@ -368,18 +417,8 @@ export function GenerateAllPossibleVerbalNounsStem1(root: VerbRoot, stem1Context
                 [
                     { letter: root.r1, tashkil: Tashkil.Dhamma },
                     { letter: root.r2, tashkil: Tashkil.Sukun },
-                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
-                ],
-                [
-                    { letter: root.r1, tashkil: Tashkil.Dhamma },
-                    { letter: root.r2, tashkil: Tashkil.Sukun },
                     { letter: root.r3, tashkil: Tashkil.Fatha },
                     { letter: Letter.TaMarbuta, tashkil: Tashkil.EndOfWordMarker },
-                ],
-                [
-                    { letter: root.r1, tashkil: Tashkil.Fatha },
-                    { letter: root.r2, tashkil: Tashkil.Fatha },
-                    { letter: root.r3, tashkil: Tashkil.EndOfWordMarker },
                 ],
                 [
                     { letter: root.r1, tashkil: Tashkil.Fatha },
@@ -434,6 +473,38 @@ export function HasPotentiallyMultipleVerbalNounFormsStem1(root: VerbRoot, stem1
             switch(stem1Context.middleRadicalTashkil)
             {
                 case Tashkil.Kasra:
+                {
+                    switch(stem1Context.middleRadicalTashkilPresent)
+                    {
+                        case Tashkil.Kasra:
+                            return true;
+                    }
+                }
+                break;
+            }
+        }
+        break;
+        case RootType.SecondConsonantDoubled:
+        {
+            switch(stem1Context.middleRadicalTashkil)
+            {
+                case Tashkil.Fatha:
+                {
+                    switch(stem1Context.middleRadicalTashkilPresent)
+                    {
+                        case Tashkil.Dhamma:
+                            return true;
+                    }
+                }
+                break;
+            }
+        }
+        break;
+        case RootType.Sound:
+        {
+            switch(stem1Context.middleRadicalTashkil)
+            {
+                case Tashkil.Fatha:
                 {
                     switch(stem1Context.middleRadicalTashkilPresent)
                     {

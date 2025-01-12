@@ -72,6 +72,7 @@ export function GenerateAllPossibleVerbalNounsStem8(root: VerbRoot): Conjugation
             return v;
         }
 
+        case RootType.SecondConsonantDoubled:
         case RootType.Sound:
         {
             const v: ConjugationVocalized[] = [

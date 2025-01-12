@@ -108,7 +108,6 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
                 switch(root.type)
                 {
                     case RootType.Defective:
-                    case RootType.Sound:
                         return needPassive;
                     case RootType.SecondConsonantDoubled:
                         return need;
@@ -125,10 +124,18 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
                         return needPassive;
                 }
                 break;
-            case 8:
+            case 9:
                 switch(root.type)
                 {
+                    case RootType.Assimilated:
+                    case RootType.Defective:
+                    case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+                    case RootType.HamzaOnR1:
+                    case RootType.Hollow:
+                    case RootType.Quadriliteral:
                     case RootType.SecondConsonantDoubled:
+                        return need;
+                    case RootType.Sound:
                         return needPassive;
                 }
                 break;

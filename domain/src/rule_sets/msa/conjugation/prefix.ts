@@ -35,6 +35,7 @@ function DerivePrefixTashkil(rootType: RootType, params: ConjugationParams)
         case 6:
         case 7:
         case 8:
+        case 9:
         case 10:
             return (params.voice === Voice.Active) ? Tashkil.Fatha : Tashkil.Dhamma;
         case 2:

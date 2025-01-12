@@ -44,7 +44,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
     protected Render(): RenderValue
     {
         const root = new VerbRoot(this.input.rootRadicals);
-        const stems = root.type === RootType.Quadriliteral ? [1, 2, 4] : [1, 2, 3, 4, 5, 6, 7, 8, 10];
+        const stems = root.type === RootType.Quadriliteral ? [1, 2, 4] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         return <fragment>
             <FormField title="Stem">

@@ -23,7 +23,7 @@ import { Stem1Context, Tashkil } from "arabdict-domain/dist/Definitions";
 //Source: "Levantine Arabic Verbs: Conjugation Tables and Grammar" by "Aldrich, M. and Choucaire, N.L.", ISBN: 9780998641133
 //Table: 77
 
-It("Stem1", () => {
+It("Stem1 Past:a Present:u", () => {
     const root = "ك-ت-ب";
     const stem: Stem1Context = { middleRadicalTashkil: Tashkil.Fatha, middleRadicalTashkilPresent: Tashkil.Dhamma, soundOverride: false };
 

@@ -26,7 +26,9 @@ It("Stem 1 Past:a Present:u", () => {
 
     RunVerbalNounPatternTest(stem, [
         //Source: https://en.wiktionary.org/wiki/%D9%85%D8%B1#Verb
-        { expected: "مُرُور", rootRadicals: "م-ر-ر" }
+        { expected: "مُرُور", rootRadicals: "م-ر-ر" },
+        //Source: https://en.wiktionary.org/wiki/%D9%85%D8%AF
+        { expected: "مَدّ", rootRadicals: "م-د-د" }
     ]);
     
     RunParticipleTest("د-ل-ل", stem, "دَالّ", "مَدْلُول");

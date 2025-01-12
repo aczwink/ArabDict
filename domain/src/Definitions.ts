@@ -96,7 +96,7 @@ export enum Case
     Nominative,
 }
 
-export type AdvancedStemNumber = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 10;
+export type AdvancedStemNumber = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type StemNumber = 1 | AdvancedStemNumber;
 export enum Gender
 {

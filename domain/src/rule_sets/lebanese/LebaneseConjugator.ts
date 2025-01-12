@@ -175,6 +175,14 @@ export class LebaneseConjugator implements DialectConjugator
                             tashkil: Tashkil.LongVowelMarker
                         });
                         return msaVersion;
+                    case 2:
+                        msaVersion[0].tashkil = Tashkil.Sukun;
+                        msaVersion[3].tashkil = Tashkil.Kasra;
+                        msaVersion.push({
+                            letter: Letter.Ya,
+                            tashkil: Tashkil.LongVowelMarker
+                        });
+                        return msaVersion;
                 }
                 break;
 
@@ -212,6 +220,9 @@ export class LebaneseConjugator implements DialectConjugator
                         return msaVersion;
                     case 2:
                         msaVersion[0].tashkil = Tashkil.Sukun;
+                        return msaVersion;
+                    case 9:
+                        msaVersion[0].tashkil = Tashkil.Kasra;
                         return msaVersion;
                 }
                 break;

@@ -191,6 +191,20 @@ export function AugmentRoot(stem: number, root: VerbRoot, params: ConjugationPar
             }
         }
         break;
+        case 9:
+        {
+            switch(root.type)
+            {
+                case RootType.Sound:
+                    return [
+                        { symbolName: SymbolName.R1 },
+                        { symbolName: SymbolName.R2 },
+                        { symbolName: SymbolName.Infix, letter: root.r3, tashkil: Tashkil.Sukun },
+                        { symbolName: SymbolName.R3 },
+                    ];
+            }
+        }
+        break;
         case 10:
         {
             switch(root.type)
