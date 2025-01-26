@@ -1,6 +1,0 @@
-{
-    "ext": "ts",
-    "ignore": ["./dist"],
-    "watch": ["./src", "../domain/src"],
-    "verbose": true
-}

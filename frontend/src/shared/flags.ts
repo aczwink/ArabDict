@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2024-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,15 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { IsFlagSet } from "arabdict-domain/src/Definitions";
+
 export enum RootFlags
 {
     //When for a defective root ending in waw, also an equivalent root with ya exists. Same for hollow
     DefectiveOrHollowAlsoYa = 1,
-}
-
-export function IsFlagSet(flags: number, flagToTest: number)
-{
-    return (flags & flagToTest) !== 0;
 }
 
 function SetFlag(flags: number, flagToSet: number)

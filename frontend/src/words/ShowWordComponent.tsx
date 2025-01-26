@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,13 +26,17 @@ import { ConjugationService } from "../services/ConjugationService";
 import { WordIdReferenceComponent } from "./WordReferenceComponent";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
-import { Case, Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
+import { Case, Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
 import { NounDeclensionTable } from "./NounDeclensionTable";
+import { DialectType } from "arabdict-domain/src/Dialects";
+import { DialectsService } from "../services/DialectsService";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 @Injectable
 export class ShowWordComponent extends Component
 {
-    constructor(private apiService: APIService, routerState: RouterState, private router: Router, private conjugationService: ConjugationService, private titleService: TitleService)
+    constructor(private apiService: APIService, routerState: RouterState, private router: Router, private conjugationService: ConjugationService,
+        private titleService: TitleService, private dialectsService: DialectsService)
     {
         super();
 
@@ -124,7 +128,7 @@ export class ShowWordComponent extends Component
     {
         const word = this.data!.word;
 
-        const render = (definite: boolean, gender: Gender, c: Case) => this.conjugationService.DeclineAdjective(word, {
+        const render = (definite: boolean, gender: Gender, c: Case) => this.conjugationService.DeclineAdjective(DialectType.ModernStandardArabic, word, {
             definite,
             gender,
             case: c
@@ -286,7 +290,17 @@ export class ShowWordComponent extends Component
                     return "verbal noun of ";
             }
         }
-        const conjugated = this.conjugationService.ConjugateToStringArgs(this.rootRadicals, this.verb!.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(this.verb!.stem1Data));
+        const dialectType = this.dialectsService.MapIdToType(this.verb!.dialectId);
+        const root = new VerbRoot(this.rootRadicals);
+        const conjugated = this.conjugationService.ConjugateToString(dialectType, root, {
+            gender: Gender.Male,
+            tense: Tense.Perfect,
+            numerus: Numerus.Singular,
+            person: Person.Third,
+            stem: this.verb!.stem as any,
+            stem1Context: Stem1DataToStem1ContextOptional(root.type, this.verb!.stem1Context),
+            voice: Voice.Active
+        });
 
         return <tr>
             <th>Derived from verb:</th>

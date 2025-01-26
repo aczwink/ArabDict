@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,6 @@ import { ConjugationService } from "../services/ConjugationService";
 import { RenderTranslations } from "../shared/translations";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
-import { Subscription } from "../../../../ACTS-Util/core/dist/main";
 import { WordRelationshipTypeToString } from "../shared/words";
 import { VerbIdReferenceComponent } from "./VerbReferenceComponent";
 import { RootToString } from "../roots/general";
@@ -35,11 +34,14 @@ import { Stem1Context, Person, TenseString, VoiceString, Numerus, Gender, Mood, 
 import { DisplayVocalized } from "arabdict-domain/src/Vocalization";
 import { _TODO_CheckConjugation } from "./_ConjugationCheck";
 import { Tense } from "arabdict-domain/dist/Definitions";
+import { DialectsService } from "../services/DialectsService";
+import { VerbFormComponent } from "./VerbFormComponent";
+import { ConjugationSchemeToString } from "./ToStringStuff";
 
 @Injectable
 export class ShowVerbComponent extends Component
 {
-    constructor(private apiService: APIService, routerState: RouterState, private conjugationService: ConjugationService, private router: Router)
+    constructor(private apiService: APIService, routerState: RouterState, private conjugationService: ConjugationService, private router: Router, private dialectsService: DialectsService)
     {
         super();
 
@@ -47,8 +49,6 @@ export class ShowVerbComponent extends Component
         this.data = null;
         this.root = { description: "", flags: 0, radicals: "" };
         this.derivedWords = null;
-
-        this.dialectSubscription = this.conjugationService.globalDialect.Subscribe(this.Update.bind(this));
     }
     
     protected Render(): RenderValue
@@ -57,8 +57,10 @@ export class ShowVerbComponent extends Component
             return <ProgressSpinner />;
 
         const verbData = this.data;
-        const stem1ctx = Stem1DataToStem1ContextOptional(verbData.stem1Data);
-        const conjugated = this.conjugationService.ConjugateToStringArgs(this.rootRadicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
+        const root = new VerbRoot(this.rootRadicals);
+        const stem1ctx = Stem1DataToStem1ContextOptional(root.type, verbData.stem1Context);
+        const dialectType = this.dialectsService.MapIdToType(verbData.dialectId);
+        const conjugated = this.conjugationService.ConjugateToStringArgs(dialectType, this.rootRadicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
 
         _TODO_CheckConjugation(new VerbRoot(this.rootRadicals), {
             gender: Gender.Male,
@@ -93,7 +95,6 @@ export class ShowVerbComponent extends Component
     private data: VerbData | null;
     private root: RootCreationData;
     private derivedWords: FullWordData[] | null;
-    private dialectSubscription: Subscription;
 
     //Private properties
     private get rootRadicals()
@@ -110,18 +111,20 @@ export class ShowVerbComponent extends Component
 
     private RenderConjugation(stem1ctx?: Stem1Context)
     {
-        const past = this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
+        const dialectType = this.dialectsService.MapIdToType(this.data!.dialectId);
+        const dialectMetaData = this.dialectsService.GetDialectMetaData(this.data!.dialectId);
+        const past = this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
 
-        const passive = this.conjugationService.globalDialectMetaData.hasPassive ? [
+        const passive = dialectMetaData.hasPassive ? [
             <h5>Passive voice الْفِعْل الْمَجْهُول</h5>,
-            this.RenderConjugationTable("Past الْمَاضِي", stem1ctx, "perfect", "passive", Mood.Indicative, (g, p, n) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "perfect", "active", g, p, n, Mood.Indicative, stem1ctx)),
-            this.RenderConjugationTable("Present indicative الْمُضَارِع الْمَرْفُوع", stem1ctx, "present", "passive", Mood.Indicative, (g, p, n) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "present", "active", g, p, n, Mood.Indicative, stem1ctx)),
-            this.RenderConjugationTable("Subjunctive الْمُضَارِع الْمَنْصُوب", stem1ctx, "present", "passive", Mood.Subjunctive, (g, p, n) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "present", "passive", g, p, n, Mood.Indicative, stem1ctx)),
-            this.RenderConjugationTable("Jussive الْمُضَارِع الْمَجْزُوم ", stem1ctx, "present", "passive", Mood.Jussive, (g, p, n) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "present", "passive", g, p, n, Mood.Subjunctive, stem1ctx)),
+            this.RenderConjugationTable("Past الْمَاضِي", stem1ctx, "perfect", "passive", Mood.Indicative, (g, p, n) => this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, "perfect", "active", g, p, n, Mood.Indicative, stem1ctx)),
+            this.RenderConjugationTable("Present indicative الْمُضَارِع الْمَرْفُوع", stem1ctx, "present", "passive", Mood.Indicative, (g, p, n) => this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, "present", "active", g, p, n, Mood.Indicative, stem1ctx)),
+            this.RenderConjugationTable("Subjunctive الْمُضَارِع الْمَنْصُوب", stem1ctx, "present", "passive", Mood.Subjunctive, (g, p, n) => this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, "present", "passive", g, p, n, Mood.Indicative, stem1ctx)),
+            this.RenderConjugationTable("Jussive الْمُضَارِع الْمَجْزُوم ", stem1ctx, "present", "passive", Mood.Jussive, (g, p, n) => this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, "present", "passive", g, p, n, Mood.Subjunctive, stem1ctx)),
         ] : null;
 
-        const jussive = this.conjugationService.globalDialectMetaData.hasJussive ?
-            this.RenderConjugationTable("Jussive الْمُضَارِع الْمَجْزُوم ", stem1ctx, "present", "active", Mood.Jussive, (g, p, n) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "present", "active", g, p, n, Mood.Subjunctive, stem1ctx))
+        const jussive = dialectMetaData.hasJussive ?
+            this.RenderConjugationTable("Jussive الْمُضَارِع الْمَجْزُوم ", stem1ctx, "present", "active", Mood.Jussive, (g, p, n) => this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, "present", "active", g, p, n, Mood.Subjunctive, stem1ctx))
             : null;
 
         return <div className="mt-2">
@@ -129,9 +132,9 @@ export class ShowVerbComponent extends Component
             <h5>Active voice الْفِعْل الْمَعْلُوم</h5>
             {this.RenderConjugationTable("Past الْمَاضِي", stem1ctx, "perfect", "active", Mood.Indicative, () => past)}
             {this.RenderConjugationTable("Present indicative الْمُضَارِع الْمَرْفُوع", stem1ctx, "present", "active", Mood.Indicative, () => past)}
-            {this.RenderConjugationTable("Subjunctive الْمُضَارِع الْمَنْصُوب", stem1ctx, "present", "active", Mood.Subjunctive, (g, p, n) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "present", "active", g, p, n, Mood.Indicative, stem1ctx))}
+            {this.RenderConjugationTable("Subjunctive الْمُضَارِع الْمَنْصُوب", stem1ctx, "present", "active", Mood.Subjunctive, (g, p, n) => this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, "present", "active", g, p, n, Mood.Indicative, stem1ctx))}
             {jussive}
-            {this.RenderConjugationTableImperative("Imperative الْأَمْر", stem1ctx, "present", "active", Mood.Imperative, (g, p, n) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "present", "active", g, p, n, Mood.Jussive, stem1ctx))}
+            {this.RenderConjugationTableImperative("Imperative الْأَمْر", stem1ctx, "present", "active", Mood.Imperative, (g, p, n) => this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, "present", "active", g, p, n, Mood.Jussive, stem1ctx))}
 
             {passive}
         </div>;
@@ -139,10 +142,13 @@ export class ShowVerbComponent extends Component
 
     private RenderConjugationTable(tenseTitle: string, stem1ctx: Stem1Context | undefined, tempus: TenseString, voice: VoiceString, mood: Mood, base: (g: Gender, p: Person, n: Numerus) => DisplayVocalized[])
     {
-        const conjugate = (g: Gender, p: Person, n: Numerus) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, tempus, voice, g, p, n, mood, stem1ctx);
+        const dialectType = this.dialectsService.MapIdToType(this.data!.dialectId);
+        const dialectMetaData = this.dialectsService.GetDialectMetaData(this.data!.dialectId);
+
+        const conjugate = (g: Gender, p: Person, n: Numerus) => this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, tempus, voice, g, p, n, mood, stem1ctx);
         const renderEntry = (g: Gender, p: Person, n: Numerus) => RenderWithDiffHighlights(conjugate(g, p, n), base(g, p, n));
 
-        const dual = this.conjugationService.globalDialectMetaData.hasDual ? [
+        const dual = dialectMetaData.hasDual ? [
             <tr>
                 <th rowSpan="2">dual الْمُثَنَّى</th>
                 <th>Male</th>
@@ -157,7 +163,7 @@ export class ShowVerbComponent extends Component
             </tr>
         ] : null;
 
-        const plural = this.conjugationService.globalDialectMetaData.hasFemalePlural ? [
+        const plural = dialectMetaData.hasFemalePlural ? [
             <tr>
                 <th rowSpan="2">plural الْجَمْع</th>
                 <th>Male</th>
@@ -182,7 +188,7 @@ export class ShowVerbComponent extends Component
 
         return <fragment>
             <h6>{tenseTitle}</h6>
-            <table className="table table-bordered">
+            <table className="table table-bordered table-sm">
             <thead>
                 <tr>
                     <th colSpan="2"> </th>
@@ -213,17 +219,20 @@ export class ShowVerbComponent extends Component
 
     private RenderConjugationTableImperative(tenseTitle: string, stem1ctx: Stem1Context | undefined, tempus: TenseString, voice: VoiceString, mood: Mood, base: (g: Gender, p: Person, n: Numerus) => DisplayVocalized[])
     {
-        const conjugate = (g: Gender, p: Person, n: Numerus) => this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, tempus, voice, g, p, n, mood, stem1ctx);
+        const dialectType = this.dialectsService.MapIdToType(this.data!.dialectId);
+        const dialectMetaData = this.dialectsService.GetDialectMetaData(this.data!.dialectId);
+
+        const conjugate = (g: Gender, p: Person, n: Numerus) => this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, tempus, voice, g, p, n, mood, stem1ctx);
         const renderEntry = (g: Gender, p: Person, n: Numerus) => RenderWithDiffHighlights(conjugate(g, p, n), base(g, p, n));
 
-        const dual = this.conjugationService.globalDialectMetaData.hasDual ? [
+        const dual = dialectMetaData.hasDual ? [
             <tr>
                 <th colSpan="2">dual الْمُثَنَّى</th>
                 <td>{renderEntry(Gender.Male, Person.Second, Numerus.Dual)}</td>
             </tr>
         ] : null;
 
-        const plural = this.conjugationService.globalDialectMetaData.hasFemalePlural ? [
+        const plural = dialectMetaData.hasFemalePlural ? [
             <tr>
                 <th rowSpan="2">plural الْجَمْع</th>
                 <th>Male</th>
@@ -243,7 +252,7 @@ export class ShowVerbComponent extends Component
 
         return <fragment>
             <h6>{tenseTitle}</h6>
-            <table className="table table-bordered">
+            <table className="table table-bordered table-sm">
             <thead>
                 <tr>
                     <th colSpan="2"> </th>
@@ -294,14 +303,16 @@ export class ShowVerbComponent extends Component
     {
         const data = this.data!;
         const root = new VerbRoot(this.rootRadicals);
-        const past = this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
-        const present = this.conjugationService.Conjugate(this.rootRadicals, this.data!.stem, "present", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
+        const dialect = this.dialectsService.GetDialect(data.dialectId);
+        const dialectType = this.dialectsService.MapIdToType(data.dialectId);
+        const past = this.conjugationService.Conjugate(dialectType, this.rootRadicals, this.data!.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
 
         const stemData = (stem1ctx === undefined) ? (this.data!.stem! as AdvancedStemNumber) : stem1ctx;
         const verbalNounRow = this.conjugationService.HasPotentiallyMultipleVerbalNounForms(this.rootRadicals, stemData) ? null : <tr>
             <th>Verbal noun الْمَصْدَر</th>
             <td>{this.conjugationService.GenerateAllPossibleVerbalNouns(this.rootRadicals, stemData)[0]}</td>
         </tr>;
+
         return <table>
             <tbody>
                 <tr>
@@ -309,20 +320,26 @@ export class ShowVerbComponent extends Component
                     <td><Anchor route={"/roots/" + data.rootId}>{RootToString(this.root)}</Anchor></td>
                 </tr>
                 <tr>
-                    <th>Stem:</th>
-                    <td><StemNumberComponent rootType={root.type} stem={data.stem} /></td>
+                    <th>Dialect:</th>
+                    <td>{dialect.emojiCodes} {dialect.name}</td>
                 </tr>
                 <tr>
-                    <th>Present:</th>
-                    <td>{RenderWithDiffHighlights(present, past)}</td>
+                    <th>Form:</th>
+                    <td>
+                        <StemNumberComponent rootType={root.type} stem={data.stem} />
+                        {" "}
+                        {stem1ctx === undefined ? null : ConjugationSchemeToString(stem1ctx.scheme)}
+                        {" "}
+                        <VerbFormComponent dialectType={dialectType} root={root} stem={this.data!.stem as any} stem1Context={this.data!.stem1Context} />
+                    </td>
                 </tr>
                 <tr>
                     <th>Active participle اِسْم الْفَاعِل:</th>
-                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.rootRadicals, data.stem, Voice.Active, stem1ctx), past)}</td>
+                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(dialectType, this.rootRadicals, data.stem, Voice.Active, stem1ctx), past)}</td>
                 </tr>
                 <tr>
                     <th>Passive participle اِسْم الْمَفْعُول:</th>
-                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(this.rootRadicals, data.stem, Voice.Passive, stem1ctx), past)}</td>
+                    <td>{RenderWithDiffHighlights(this.conjugationService.ConjugateParticiple(dialectType, this.rootRadicals, data.stem, Voice.Passive, stem1ctx), past)}</td>
                 </tr>
                 {verbalNounRow}
                 <tr>
@@ -357,8 +374,10 @@ export class ShowVerbComponent extends Component
         event.preventDefault();
 
         const verbData = this.data!;
-        const stem1ctx = Stem1DataToStem1ContextOptional(verbData.stem1Data);
-        const conjugated = this.conjugationService.ConjugateToStringArgs(this.rootRadicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
+        const root = new VerbRoot(this.rootRadicals);
+        const stem1ctx = Stem1DataToStem1ContextOptional(root.type, verbData.stem1Context);
+        const dialectType = this.dialectsService.MapIdToType(verbData.dialectId);
+        const conjugated = this.conjugationService.ConjugateToStringArgs(dialectType, this.rootRadicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
 
         if(confirm("Are you sure that you want to delete the verb: " + conjugated + "?"))
         {
@@ -385,10 +404,5 @@ export class ShowVerbComponent extends Component
         this.data = response1.data;
 
         this.LoadDerivedWords();
-    }
-
-    override OnUnmounted(): void
-    {
-        this.dialectSubscription.Unsubscribe();
     }
 }

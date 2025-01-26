@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,8 +18,8 @@
 
 import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { RootCreationData, RootOverviewData } from "../../dist/api";
-import { IsFlagSet, RootFlags } from "../shared/flags";
-import { Letter, Tashkil, TASHKIL_SHADDA } from "arabdict-domain/src/Definitions";
+import { RootFlags } from "../shared/flags";
+import { IsFlagSet, Letter, Tashkil, TASHKIL_SHADDA } from "arabdict-domain/src/Definitions";
 
 export function AreValidRootCharacters(rootRadicals: string)
 {
@@ -137,4 +137,50 @@ export function RootToString(rootData: RootCreationData | RootOverviewData)
     }
 
     return root.ToString();
+}
+
+export function RootTypeToPattern(rootType: RootType)
+{
+    switch(rootType)
+    {
+        case RootType.Assimilated:
+            return "(و|ي)-r2-r3";
+        case RootType.Defective:
+            return "r1-r2-(و|ي)";
+        case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+            return "و-r2-(و|ي)";
+        case RootType.HamzaOnR1:
+            return "ء-r2-r3";
+        case RootType.Hollow:
+            return "r1-(و|ي)-r3";
+        case RootType.Quadriliteral:
+            return "r1-r2-r3-r4";
+        case RootType.SecondConsonantDoubled:
+            return "r1-r2-r2";
+        case RootType.Sound:
+            return "r1-r2-r3";
+    }
+}
+
+export function RootTypeToString(rootType: RootType)
+{
+    switch(rootType)
+    {
+        case RootType.Assimilated:
+            return "Assimilated";
+        case RootType.Defective:
+            return "Defective";
+        case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
+            return "Doubly weak";
+        case RootType.HamzaOnR1:
+            return "Hamza on first radical";
+        case RootType.Hollow:
+            return "Hollow";
+        case RootType.Quadriliteral:
+            return "Quadriliteral";
+        case RootType.SecondConsonantDoubled:
+            return "Second consonant doubled";
+        case RootType.Sound:
+            return "Sound";
+    }
 }

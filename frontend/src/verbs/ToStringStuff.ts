@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,19 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Get } from "acts-util-apilib";
-import { DialectsController } from "../data-access/DialectsController";
+import { VerbConjugationScheme } from "arabdict-domain/src/Definitions";
 
-@APIController("dialects")
-class _api_
+export function ConjugationSchemeToString(scheme: VerbConjugationScheme): string
 {
-    constructor(private dialectsController: DialectsController)
+    switch(scheme)
     {
-    }
-    
-    @Get()
-    public async QueryDialects()
-    {
-        return this.dialectsController.QueryDialects();
+        case VerbConjugationScheme.Defective:
+            return "defective";
+        case VerbConjugationScheme.Hollow:
+            return "hollow";
+        case VerbConjugationScheme.Regular:
+            return "regular";
     }
 }

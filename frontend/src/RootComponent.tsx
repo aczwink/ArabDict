@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, Component, JSX_CreateElement, Navigation, NavItem, RouterComponent } from "acfrontend";
-import { DialectSelectionComponent } from "./DialectSelectionComponent";
+import { BootstrapIcon, Component, Injectable, JSX_CreateElement, Navigation, NavItem, ProgressSpinner, RouterComponent } from "acfrontend";
 import { SessionComponent } from "./SessionComponent";
+import { DialectsService } from "./services/DialectsService";
 
+@Injectable
 export class RootComponent extends Component
 {
+    constructor(private dialectsService: DialectsService)
+    {
+        super();
+
+        this.loading = true;
+    }
+    
     protected Render()
     {
+        if(this.loading)
+            return <ProgressSpinner />;
+
         return <fragment>
             <Navigation>
                 <ul className="nav nav-pills">
@@ -33,7 +44,6 @@ export class RootComponent extends Component
                     <NavItem route="/statistics">Statistics</NavItem>
                 </ul>
                 <div className="row">
-                    <div className="col-auto"><DialectSelectionComponent /></div>
                     <div className="col-auto"><SessionComponent /></div>
                 </div>
             </Navigation>
@@ -42,4 +52,14 @@ export class RootComponent extends Component
             </div>
         </fragment>;
     }
+
+    //Event handlers
+    override async OnInitiated(): Promise<void>
+    {
+        await this.dialectsService.CacheDialects(); //dialects are required to be loaded and cached
+        this.loading = false;
+    }
+
+    //State
+    private loading: boolean;
 }

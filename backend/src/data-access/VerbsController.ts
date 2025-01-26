@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ import { TranslationEntry, TranslationsController } from "./TranslationsControll
 import { RootsController } from "./RootsController";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 import { WordRelationshipType } from "./WordsController";
+import { DialectsService } from "../services/DialectsService";
 
 interface VerbRelation
 {
@@ -29,17 +30,11 @@ interface VerbRelation
     relationType: WordRelationshipType;
 }
 
-interface Stem1ExtraData
-{
-    middleRadicalTashkil: string;
-    middleRadicalTashkilPresent: string;
-    flags: number;
-}
-
 export interface VerbUpdateData
 {
+    dialectId: number;
     stem: number;
-    stem1Data?: Stem1ExtraData;
+    stem1Context?: string;
     translations: TranslationEntry[];
     related: VerbRelation[];
 }
@@ -57,7 +52,9 @@ interface VerbData extends VerbCreationData
 @Injectable
 export class VerbsController
 {
-    constructor(private dbController: DatabaseController, private translationsController: TranslationsController, private rootsController: RootsController)
+    constructor(private dbController: DatabaseController, private translationsController: TranslationsController, private rootsController: RootsController,
+        private dialectsService: DialectsService
+    )
     {
     }
 
@@ -69,11 +66,10 @@ export class VerbsController
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
         const result = await conn.InsertRow("verbs", {
+            dialectId: data.dialectId,
             rootId: data.rootId,
             stem: data.stem,
-            stem1MiddleRadicalTashkil: data.stem1Data?.middleRadicalTashkil ?? "",
-            stem1MiddleRadicalTashkilPresent: data.stem1Data?.middleRadicalTashkilPresent ?? "",
-            flags: data.stem1Data?.flags ?? 0
+            stem1Context: (data.stem1Context === undefined) ? null : data.stem1Context,
         });
         const verbId = result.insertId;
 
@@ -94,20 +90,17 @@ export class VerbsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const row = await conn.SelectOne("SELECT id, rootId, stem, stem1MiddleRadicalTashkil, stem1MiddleRadicalTashkilPresent, flags FROM verbs WHERE id = ?", verbId);
+        const row = await conn.SelectOne("SELECT id, rootId, dialectId, stem, stem1Context FROM verbs WHERE id = ?", verbId);
         if(row === undefined)
             return undefined;
 
         return {
             id: row.id,
             rootId: row.rootId,
+            dialectId: row.dialectId,
             stem: row.stem,
             translations: await this.translationsController.QueryVerbTranslations(row.id),
-            stem1Data: (row.stem === 1) ? {
-                middleRadicalTashkil: row.stem1MiddleRadicalTashkil,
-                middleRadicalTashkilPresent: row.stem1MiddleRadicalTashkilPresent,
-                flags: row.flags
-            } : undefined,
+            stem1Context: (row.stem1Context !== null) ? row.stem1Context : undefined,
             related: await this.QueryRelatedVerbs(row.id),
         };
     }
@@ -116,7 +109,7 @@ export class VerbsController
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        const rows = await conn.Select("SELECT id FROM verbs WHERE rootId = ? ORDER BY stem, stem1MiddleRadicalTashkil", rootId);
+        const rows = await conn.Select("SELECT id FROM verbs WHERE rootId = ? ORDER BY stem, stem1Context", rootId);
         const result = await rows.Values().Map(x => this.QueryVerb(x.id)).PromiseAll();
         return result.Values().NotUndefined().ToArray();
     }
@@ -152,9 +145,7 @@ export class VerbsController
 
         await conn.UpdateRows("verbs", {
             stem: data.stem,
-            stem1MiddleRadicalTashkil: data.stem1Data?.middleRadicalTashkil,
-            stem1MiddleRadicalTashkilPresent: data.stem1Data?.middleRadicalTashkilPresent,
-            flags: data.stem1Data?.flags
+            stem1Context: (data.stem1Context === undefined) ? null : data.stem1Context,
         }, "id = ?", verbId);
 
         await this.translationsController.UpdateVerbTranslations(verbId, data.translations);
@@ -197,10 +188,10 @@ export class VerbsController
     {
         if(data.stem !== 1)
         {
-            data.stem1Data = undefined;
+            data.stem1Context = undefined;
             return;
         }
-        if(data.stem1Data === undefined)
+        if(data.stem1Context === undefined)
             throw new Error("Missing context for stem 1");
 
         const rootData = await this.rootsController.QueryRoot(rootId);
@@ -208,8 +199,8 @@ export class VerbsController
             throw new Error("Root not found");
 
         const root = new VerbRoot(rootData.radicals);
-        const choices = root.GetStem1ContextChoices();
-        const r2choice = choices.r2options.find(x => (x.past === data.stem1Data?.middleRadicalTashkil) && (x.present === data.stem1Data?.middleRadicalTashkilPresent));
+        const choices = this.dialectsService.GetDialectMetaData(data.dialectId).GetStem1ContextChoices(root);
+        const r2choice = choices.types.indexOf(data.stem1Context);
         if(r2choice === undefined)
             throw new Error("Illegal stem1 context");
     }

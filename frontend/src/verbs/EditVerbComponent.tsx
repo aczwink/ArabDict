@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,11 +17,11 @@
  * */
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
-import { VerbData } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { VerbEditorComponent, VerbEditorData } from "./VerbEditorComponent";
 import { ConjugationService } from "../services/ConjugationService";
-import { Stem1ContextToStem1DataOptional, Stem1DataToStem1ContextOptional } from "./model";
+import { Stem1DataToStem1ContextOptional } from "./model";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 @Injectable
 export class EditVerbComponent extends Component
@@ -64,13 +64,15 @@ export class EditVerbComponent extends Component
             throw new Error("TODO implement me");
 
         this.rootRadicals = response2.data.radicals;
+        const root = new VerbRoot(this.rootRadicals);
 
         const data = response1.data;
         this.data = {
+            dialectId: data.dialectId,
             related: data.related,
             stem: data.stem,
             translations: data.translations,
-            stem1Context: Stem1DataToStem1ContextOptional(data.stem1Data)
+            stem1Context: Stem1DataToStem1ContextOptional(root.type, data.stem1Context)
         };
     }
 
@@ -82,9 +84,10 @@ export class EditVerbComponent extends Component
         await this.apiService.verbs.put({
             verbId: this.verbId,
             data: {
+                dialectId: data.dialectId,
                 stem: data.stem,
                 translations: data.translations,
-                stem1Data: Stem1ContextToStem1DataOptional(data.stem1Context),
+                stem1Context: data.stem1Context?.type,
                 related: data.related
             }
         });

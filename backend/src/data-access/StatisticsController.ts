@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +26,7 @@ import { Conjugator } from "arabdict-domain/src/Conjugator";
 import { WordsController } from "./WordsController";
 import { DisplayVocalized, VocalizedToString } from "arabdict-domain/src/Vocalization";
 import { AdvancedStemNumber, Stem1Context } from "arabdict-domain/src/Definitions";
+import { DialectsService } from "../services/DialectsService";
 
 interface DialectStatistics
 {
@@ -79,7 +80,7 @@ interface DictionaryStatistics
 export class StatisticsController
 {
     constructor(private dbController: DatabaseController, private verbsController: VerbsController, private rootsController: RootsController,
-        private wordsController: WordsController)
+        private wordsController: WordsController, private dialectsService: DialectsService)
     {
     }
 
@@ -110,16 +111,12 @@ export class StatisticsController
     }
 
     //Private methods
-    private GenerateStemData(verbData: VerbUpdateData): AdvancedStemNumber | Stem1Context
+    private GenerateStemData(rootType: RootType, verbData: VerbUpdateData): AdvancedStemNumber | Stem1Context
     {
-        if(verbData.stem1Data === undefined)
+        if(verbData.stem1Context === undefined)
             return verbData.stem as AdvancedStemNumber;
-        
-        return {
-            middleRadicalTashkil: verbData.stem1Data.middleRadicalTashkil as any,
-            middleRadicalTashkilPresent: verbData.stem1Data.middleRadicalTashkilPresent as any,
-            soundOverride: (verbData.stem1Data.flags & 1) != 0,
-        };
+
+        return this.dialectsService.GetDialectMetaData(verbData.dialectId).CreateStem1Context(rootType, verbData.stem1Context);
     }
 
     private async QueryDialectCounts()
@@ -180,9 +177,9 @@ export class StatisticsController
             const rootData = await this.rootsController.QueryRoot(verb!.rootId);
 
             const root = new VerbRoot(rootData!.radicals);
-            const choices = root.GetStem1ContextChoices();
+            const choices = this.dialectsService.GetDialectMetaData(verb!.dialectId).GetStem1ContextChoices(root);
 
-            const index = choices.r2options.findIndex(x => (x.past === verb?.stem1Data?.middleRadicalTashkil) && (x.present === verb?.stem1Data?.middleRadicalTashkilPresent));
+            const index = choices.types.indexOf(verb!.stem1Context!);
 
             const key = [root.type, index].join("_");
             const obj = dict[key];
@@ -220,7 +217,7 @@ export class StatisticsController
             const rootData = await this.rootsController.QueryRoot(verbData!.rootId);
 
             const root = new VerbRoot(rootData!.radicals);
-            const generated = conjugator.GenerateAllPossibleVerbalNouns(root, this.GenerateStemData(verbData!));
+            const generated = conjugator.GenerateAllPossibleVerbalNouns(root, this.GenerateStemData(root.type, verbData!));
             const verbalNounPossibilities = generated.map(VocalizedArrayToString);
 
             const wordData = await this.wordsController.QueryWord(row.wordId);
@@ -230,7 +227,7 @@ export class StatisticsController
             let stemChoiceIndex;
             if(verbData?.stem === 1)
             {
-                stemChoiceIndex = root.GetStem1ContextChoices().r2options.findIndex(x => (x.past === verbData.stem1Data?.middleRadicalTashkil) && (x.present === verbData.stem1Data?.middleRadicalTashkilPresent));
+                stemChoiceIndex = this.dialectsService.GetDialectMetaData(verbData.dialectId).GetStem1ContextChoices(root).types.indexOf(verbData.stem1Context!);
                 stemKey += "_" + stemChoiceIndex;
             }
 

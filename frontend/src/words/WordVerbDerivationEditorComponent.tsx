@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,11 +17,13 @@
  * */
 
 import { Component, FormField, Injectable, JSX_CreateElement, NumberSpinner, ProgressSpinner, Select } from "acfrontend";
-import { WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
+import { VerbData, WordVerbDerivationData, WordVerbDerivationType } from "../../dist/api";
 import { ConjugationService } from "../services/ConjugationService";
 import { APIService } from "../services/APIService";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
-import { AdvancedStemNumber, Stem1Context, StemNumber, Voice } from "arabdict-domain/src/Definitions";
+import { AdvancedStemNumber, Stem1Context, Voice } from "arabdict-domain/src/Definitions";
+import { DialectsService } from "../services/DialectsService";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 interface WordVerbDerivationEditorInput
 {
@@ -34,14 +36,14 @@ interface WordVerbDerivationEditorInput
 interface CurrentVerbData
 {
     rootRadicals: string;
-    stem: StemNumber;
+    data: VerbData;
     stem1Context?: Stem1Context;
 }
 
 @Injectable
 export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivationEditorInput>
 {
-    constructor(private conjugationService: ConjugationService, private apiService: APIService)
+    constructor(private conjugationService: ConjugationService, private apiService: APIService, private dialectsService: DialectsService)
     {
         super();
         this.verbalNounChoices = [];
@@ -75,7 +77,7 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
     private GetStemData(verbData: CurrentVerbData)
     {
         if(verbData.stem1Context === undefined)
-            return verbData.stem as AdvancedStemNumber;
+            return verbData.data.stem as AdvancedStemNumber;
         return verbData.stem1Context;
     }
 
@@ -106,10 +108,11 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
         if(response2.statusCode !== 200)
             throw new Error("TODO: implement me");
 
+        const root = new VerbRoot(response2.data.radicals);
         this.SetCurrentVerb({
             rootRadicals: response2.data.radicals,
-            stem: response.data.stem as any,
-            stem1Context: Stem1DataToStem1ContextOptional(response.data.stem1Data)
+            data: response.data,
+            stem1Context: Stem1DataToStem1ContextOptional(root.type, response.data.stem1Context)
         });
     }
 
@@ -118,17 +121,18 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
         this.currentVerb = newValue;
         this.verbalNounChoices = this.conjugationService.GenerateAllPossibleVerbalNouns(newValue.rootRadicals, this.GetStemData(newValue));
 
+        const dialectType = this.dialectsService.MapIdToType(newValue.data.dialectId);
         switch(this.input.derivation.type)
         {
             case WordVerbDerivationType.ActiveParticiple:
             {
-                const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, Voice.Active, this.currentVerb.stem1Context);
+                const word = this.conjugationService.ConjugateParticiple(dialectType, this.currentVerb.rootRadicals, this.currentVerb.data.stem, Voice.Active, this.currentVerb.stem1Context);
                 this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
             }
             break;
             case WordVerbDerivationType.PassiveParticiple:
             {
-                const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, Voice.Passive, this.currentVerb.stem1Context);
+                const word = this.conjugationService.ConjugateParticiple(dialectType, this.currentVerb.rootRadicals, this.currentVerb.data.stem, Voice.Passive, this.currentVerb.stem1Context);
                 this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
             }
             break;
@@ -153,7 +157,8 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
                     this.input.onDataChanged();
                 else
                 {
-                    const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, Voice.Active, this.currentVerb.stem1Context);
+                    const dialectType = this.dialectsService.MapIdToType(this.currentVerb.data.dialectId);
+                    const word = this.conjugationService.ConjugateParticiple(dialectType, this.currentVerb.rootRadicals, this.currentVerb.data.stem, Voice.Active, this.currentVerb.stem1Context);
                     this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
                 }
                 break;
@@ -163,7 +168,8 @@ export class WordVerbDerivationEditorComponent extends Component<WordVerbDerivat
                     this.input.onDataChanged();
                 else
                 {
-                    const word = this.conjugationService.ConjugateParticiple(this.currentVerb.rootRadicals, this.currentVerb.stem, Voice.Passive, this.currentVerb.stem1Context);
+                    const dialectType = this.dialectsService.MapIdToType(this.currentVerb.data.dialectId);
+                    const word = this.conjugationService.ConjugateParticiple(dialectType, this.currentVerb.rootRadicals, this.currentVerb.data.stem, Voice.Passive, this.currentVerb.stem1Context);
                     this.input.onUpdateWord(this.conjugationService.VocalizedToString(word));
                 }
                 break;

@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,13 +23,15 @@ import { ConjugationService } from "./services/ConjugationService";
 import { RemoveTashkilButKeepShadda } from "arabdict-domain/src/Util";
 import { RenderTranslations } from "./shared/translations";
 import { Stem1DataToStem1ContextOptional } from "./verbs/model";
-import { Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
+import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
 import { WordTypeToText } from "./shared/words";
+import { DialectsService } from "./services/DialectsService";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 @Injectable
 export class LearnComponent extends Component
 {
-    constructor(private apiService: APIService, private conjugationService: ConjugationService)
+    constructor(private apiService: APIService, private conjugationService: ConjugationService, private dialectsService: DialectsService)
     {
         super();
 
@@ -44,7 +46,16 @@ export class LearnComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        const title = ("rootId" in this.data) ? this.conjugationService.ConjugateToStringArgs(this.rootRadicals, this.data.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(this.data.stem1Data)) : this.data.word;
+        const root = new VerbRoot(this.rootRadicals);
+        const title = ("rootId" in this.data) ? this.conjugationService.ConjugateToString(this.dialectsService.MapIdToType(this.data.dialectId), root, {
+            gender: Gender.Male,
+            tense: Tense.Perfect,
+            numerus: Numerus.Singular,
+            person: Person.Third,
+            stem: this.data.stem as any,
+            stem1Context: Stem1DataToStem1ContextOptional(root.type, this.data.stem1Context),
+            voice: Voice.Active
+        }) : this.data.word;
 
         if(this.resolve)
         {

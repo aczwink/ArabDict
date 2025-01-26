@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, JSX_Fragment, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
 import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
-import { RootToString } from "./general";
+import { RootToString, RootTypeToPattern, RootTypeToString } from "./general";
 import { ConjugationService } from "../services/ConjugationService";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
 import { Buckwalter } from "arabdict-domain/dist/Transliteration";
@@ -49,10 +49,21 @@ export class ShowRootComponent extends Component
     
     protected Render(): RenderValue
     {
+        function desc(text: string)
+        {
+            if(text.trim().length === 0)
+                return "";
+            return <>
+                {text}
+                <br />
+            </>;
+        }
+
         if(this.data === null)
             return <ProgressSpinner />;
 
         const canEdit = this.conjugationService.canEdit.Get();
+        const root = new VerbRoot(this.data.root.radicals);
         return <fragment>
             <div className="row">
                 <div className="col"><h2>Root: {RootToString(this.data.root)}</h2></div>
@@ -60,7 +71,19 @@ export class ShowRootComponent extends Component
                     {canEdit ? this.RenderEditControls() : null}
                 </div>
             </div>
-            {this.data!.root.description}
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Type:</th>
+                        <td>
+                            {RootTypeToString(root.type)}
+                            {" "}
+                            {RootTypeToPattern(root.type)}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            {desc(this.data!.root.description)}
             <a href={"http://ejtaal.net/aa#bwq=" + this.ToEjtaalQuery()} target="_blank">See on Mawrid reader</a>
 
             <h4>Verbs</h4>

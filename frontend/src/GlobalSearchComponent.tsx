@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +25,7 @@ import { WordOverviewComponent } from "./words/WordOverviewComponent";
 import { VerbIdPreviewComponent, VerbPreviewComponent } from "./verbs/VerbPreviewComponent";
 import { Gender, Person, Numerus, Mood } from "arabdict-domain/src/Definitions";
 import { ConjugationService } from "./services/ConjugationService";
+import { DialectType } from "arabdict-domain/src/Dialects";
 
 @Injectable
 export class GlobalSearchComponent extends Component
@@ -205,7 +206,7 @@ export class GlobalSearchComponent extends Component
         }
 
         const stem1ctx = (result.params.stem === 1) ? result.params.stem1Context : undefined;
-        const base = this.conjugationService.ConjugateToStringArgs(result.root.radicalsAsSeparateLetters.join(""), result.params.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
+        const base = this.conjugationService.ConjugateToStringArgs(DialectType.ModernStandardArabic, result.root.radicalsAsSeparateLetters.join(""), result.params.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
 
         const root = (result.rootId !== undefined) ? <Anchor route={"/roots/" + result.rootId}>{result.root.ToString()}</Anchor> : result.root.ToString();
         const renderedVerb = (result.verbId !== undefined) ? <Anchor route={"/verbs/" + result.verbId}>{base}</Anchor> : base;

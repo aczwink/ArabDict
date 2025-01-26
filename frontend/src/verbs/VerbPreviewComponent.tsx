@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,15 +24,17 @@ import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { RenderTranslations } from "../shared/translations";
 import { ConjugationService } from "../services/ConjugationService";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { Stem1DataToStem1ContextOptional } from "./model";
-import { Gender, Mood, Numerus, Person, Tashkil, Tense, Voice } from "arabdict-domain/src/Definitions";
+import { Stem1DataToStem1Context, Stem1DataToStem1ContextOptional } from "./model";
+import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
 import { CachedAPIService, FullVerbData } from "../services/CachedAPIService";
 import { _TODO_CheckConjugation } from "./_ConjugationCheck";
+import { ModernStandardArabicStem1ContextType } from "arabdict-domain/src/DialectsMetadata";
+import { DialectsService } from "../services/DialectsService";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
 {
-    constructor(private apiService: APIService, private conjugationService: ConjugationService)
+    constructor(private apiService: APIService, private conjugationService: ConjugationService, private dialectsService: DialectsService)
     {
         super();
 
@@ -43,8 +45,9 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
     {
         const verbData = this.input.verbData;
         const root = new VerbRoot(this.input.root.radicals);
-        const conjugated = this.conjugationService.Conjugate(this.input.root.radicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(verbData.stem1Data));
-        const conjugationReference = this.conjugationService.Conjugate(this.input.root.radicals, 1, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, { middleRadicalTashkil: Tashkil.Kasra, middleRadicalTashkilPresent: Tashkil.Kasra, soundOverride: false });
+        const dialectType = this.dialectsService.MapIdToType(verbData.dialectId);
+        const conjugated = this.conjugationService.Conjugate(dialectType, this.input.root.radicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(root.type, verbData.stem1Context));
+        const conjugationReference = this.conjugationService.Conjugate(dialectType, this.input.root.radicals, 1, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1Context(root.type, ModernStandardArabicStem1ContextType.RegularOrHollow_PastI_PresentI));
         const verbPresentation = (verbData.stem === 1) ? this.conjugationService.VocalizedToString(conjugated) : RenderWithDiffHighlights(conjugated, conjugationReference);
 
         _TODO_CheckConjugation(root, {
@@ -54,12 +57,13 @@ export class VerbPreviewComponent extends Component<{ root: RootCreationData; ve
             numerus: Numerus.Singular,
             person: Person.Third,
             stem: verbData.stem as any,
-            stem1Context: Stem1DataToStem1ContextOptional(verbData.stem1Data)
+            stem1Context: Stem1DataToStem1ContextOptional(root.type, verbData.stem1Context)
         });
 
         return <div className="border border-3 rounded-2 p-2 my-2 shadow-sm">
             <h4>
                 <Anchor route={"/verbs/" + verbData.id}>
+                    {this.dialectsService.GetDialect(verbData.dialectId).emojiCodes}
                     <StemNumberComponent rootType={root.type} stem={verbData.stem} />:
                     {verbPresentation}
                 </Anchor>

@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2024-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,7 @@ import { DisplayVocalized, ParseVocalizedText } from "arabdict-domain/src/Vocali
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { TargetNounDerivation } from "arabdict-domain/src/DialectConjugator";
 import { ConjugationService } from "../services/ConjugationService";
+import { DialectType } from "arabdict-domain/src/Dialects";
 
 @Injectable
 export class NounDeclensionTable extends Component<{ word: FullWordData }>
@@ -60,7 +61,7 @@ export class NounDeclensionTable extends Component<{ word: FullWordData }>
         switch(targetNumerus)
         {
             case Numerus.Dual:
-                return this.conjugationService.DeriveSoundNoun(referenceWord, targetGender, TargetNounDerivation.DeriveDualSameGender);
+                return this.conjugationService.DeriveSoundNoun(DialectType.ModernStandardArabic, referenceWord, targetGender, TargetNounDerivation.DeriveDualSameGender);
             case Numerus.Plural:
             case Numerus.Singular:
                 return referenceWord;
@@ -151,7 +152,7 @@ export class NounDeclensionTable extends Component<{ word: FullWordData }>
     {
         const base = this.BuildBaseNoun(parsed, gender, numerus);
 
-        const declined = this.conjugationService.DeclineNoun({
+        const declined = this.conjugationService.DeclineNoun(DialectType.ModernStandardArabic, {
             gender,
             numerus,
             vocalized: base.DeepClone() //TODO: why is the clone necessary?

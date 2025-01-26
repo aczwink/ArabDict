@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2024-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,12 +21,14 @@ import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { ConjugationService } from "../services/ConjugationService";
 import { Stem1DataToStem1ContextOptional } from "./model";
-import { Gender, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
+import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
+import { DialectsService } from "../services/DialectsService";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 @Injectable
 export class VerbReferenceComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
 {
-    constructor(private conjugationService: ConjugationService)
+    constructor(private conjugationService: ConjugationService, private dialectsService: DialectsService)
     {
         super();
     }
@@ -34,7 +36,17 @@ export class VerbReferenceComponent extends Component<{ root: RootCreationData; 
     protected Render(): RenderValue
     {
         const verbData = this.input.verbData;
-        const conjugated = this.conjugationService.ConjugateToStringArgs(this.input.root.radicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(verbData.stem1Data));
+        const dialectType = this.dialectsService.MapIdToType(verbData.dialectId);
+        const root = new VerbRoot(this.input.root.radicals);
+        const conjugated = this.conjugationService.ConjugateToString(dialectType, root, {
+            gender: Gender.Male,
+            tense: Tense.Perfect,
+            numerus: Numerus.Singular,
+            person: Person.Third,
+            stem: verbData.stem as any,
+            stem1Context: Stem1DataToStem1ContextOptional(root.type, verbData.stem1Context),
+            voice: Voice.Active
+        });
 
         return <Anchor route={"/verbs/" + verbData.id}>{conjugated}</Anchor>;
     }

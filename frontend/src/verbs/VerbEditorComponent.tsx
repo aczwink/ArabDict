@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,17 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, CheckBox, Component, FormField, Injectable, JSX_CreateElement, NumberSpinner, Select, SingleSelect } from "acfrontend";
+import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, JSX_Fragment, NumberSpinner, Select, SingleSelect } from "acfrontend";
 import { TranslationEntry, VerbRelation, WordRelationshipType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 import { ConjugationService } from "../services/ConjugationService";
-import { RootType, Stem1ContextChoiceTashkil, VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { Gender, Mood, Numerus, Person, Stem1Context, Tashkil } from "arabdict-domain/src/Definitions";
+import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Gender, Mood, Numerus, Person, Stem1Context, StemlessConjugationParams } from "arabdict-domain/src/Definitions";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { WordRelationshipTypeToString } from "../shared/words";
+import { DialectSelectionComponent } from "../shared/DialectSelectionComponent";
+import { DialectsService } from "../services/DialectsService";
+import { DialectMetadata } from "arabdict-domain/src/DialectsMetadata";
+import { GenderToString, NumerusToString, PersonToString, TenseToString } from "arabdict-domain/src/Util";
 
 export interface VerbEditorData
 {
+    dialectId: number;
 	stem: number;
 	stem1Context?: Stem1Context;
 	translations: TranslationEntry[];
@@ -36,7 +41,7 @@ export interface VerbEditorData
 @Injectable
 export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootRadicals: string; onChanged: () => void }>
 {
-    constructor(private conjugatorService: ConjugationService)
+    constructor(private conjugatorService: ConjugationService, private dialectsService: DialectsService)
     {
         super();
     }
@@ -53,10 +58,7 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
                 </Select>
             </FormField>
             
-            <div className="row">
-                <div className="col">{this.RenderTashkilChoice()}</div>
-                <div className="col">{this.RenderStem1Context()}</div>
-            </div>
+            {this.RenderVerbConfig()}
             <TranslationsEditorComponent translations={this.input.data.translations} onDataChanged={this.DataChanged.bind(this)} />
             {this.RenderRelations()}
         </fragment>;
@@ -104,104 +106,100 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         </fragment>;
     }
 
-    private RenderTashkilHelp(stem1Ctx?: Stem1Context)
+    private RenderTashkilHelp(stem1Ctx: Stem1Context | undefined, requiredContext?: StemlessConjugationParams)
     {
-        const root = new VerbRoot(this.input.rootRadicals);
-
-        const cond = ((root.type === RootType.Hollow) && (this.input.data.stem === 1))
-            || ((root.type === RootType.SecondConsonantDoubled) && (this.input.data.stem === 1));
-
-        if( cond )
+        if( requiredContext !== undefined )
         {
-            const conj = this.conjugatorService.ConjugateToStringArgs(this.input.rootRadicals, this.input.data.stem, "perfect", "active", Gender.Male, Person.First, Numerus.Singular, Mood.Indicative, stem1Ctx);
-            return "Perfect 1st person male singular: " + conj;
+            const dialectType = this.dialectsService.MapIdToType(this.input.data.dialectId);
+            const root = new VerbRoot(this.input.rootRadicals);
+            const conj = this.conjugatorService.ConjugateToString(dialectType, root, {
+                ...requiredContext,
+                stem: this.input.data.stem as any,
+                stem1Context: stem1Ctx
+            });
+
+            const parts = [TenseToString(requiredContext.tense), PersonToString(requiredContext.person) + " person", GenderToString(requiredContext.gender), NumerusToString(requiredContext.numerus)];
+            return parts.join(" ") + " " + conj;
         }
 
         return null;
     }
 
-    private RenderStem1Context()
+    private RenderChoice(rootType: RootType, stem1Ctx: string, requiredContext: StemlessConjugationParams | undefined, meta: DialectMetadata<string>)
     {
-        const root = new VerbRoot(this.input.rootRadicals);
-
-        if(this.input.data.stem === 1)
-        {
-            const choices = root.GetStem1ContextChoices();
-            if(choices.soundOverride.length > 1)
-                return this.RenderSoundOverride();
-        }
-
-        return null;
+        const ctx = meta.CreateStem1Context(rootType, stem1Ctx);
+        return this.RenderConjugation(ctx, requiredContext, meta);
     }
 
-    private RenderChoice(tashkil: Stem1ContextChoiceTashkil)
+    private RenderConjugation(stem1Ctx: Stem1Context | undefined, requiredContext: StemlessConjugationParams | undefined, meta: DialectMetadata<string>)
     {
-        const stem1Ctx: Stem1Context = {
-            middleRadicalTashkil: tashkil.past,
-            middleRadicalTashkilPresent: tashkil.present,
-            soundOverride: this.input.data.stem1Context!.soundOverride
-        };
-        return this.RenderConjugation(stem1Ctx);
-    }
-
-    private RenderConjugation(stem1Ctx?: Stem1Context)
-    {
-        const past = this.conjugatorService.ConjugateToStringArgs(this.input.rootRadicals, this.input.data.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1Ctx);
-        const present = this.conjugatorService.ConjugateToStringArgs(this.input.rootRadicals, this.input.data.stem, "present", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1Ctx);
+        const dialectType = this.dialectsService.MapIdToType(this.input.data.dialectId);
+        const past = this.conjugatorService.ConjugateToStringArgs(dialectType, this.input.rootRadicals, this.input.data.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1Ctx);
+        const present = this.conjugatorService.ConjugateToStringArgs(dialectType, this.input.rootRadicals, this.input.data.stem, "present", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1Ctx);
 
         return <span style="white-space: pre;">
             Past: {past}
             {"\t"}
             Present: {present}
             {"\t"}
-            {this.RenderTashkilHelp(stem1Ctx)}
+            {this.RenderTashkilHelp(stem1Ctx, requiredContext)}
         </span>;
-    }
-
-    private RenderSoundOverride()
-    {
-        return <FormField title="Sound override" description="Some hollow verbs are actually conjugated as if they were strong verbs">
-            <CheckBox value={this.input.data.stem1Context!.soundOverride} onChanged={newValue => { this.input.data.stem1Context!.soundOverride = newValue; this.DataChanged(); }} />
-        </FormField>;
     }
 
     private RenderTashkilChoice()
     {
-        if(this.input.data.stem !== 1)
-            return this.RenderTashkilField([], 0, () => null);
+        if(this.input.data.dialectId === 0)
+            return null;
 
         const root = new VerbRoot(this.input.rootRadicals);
-        const choices = root.GetStem1ContextChoices();
-        const selectedIndex = choices.r2options.findIndex(x => (x.past === this.input.data.stem1Context?.middleRadicalTashkil) && (x.present === this.input.data.stem1Context.middleRadicalTashkilPresent));
+        const meta = this.dialectsService.GetDialectMetaData(this.input.data.dialectId);
+        if(this.input.data.stem !== 1)
+            return this.RenderTashkilField(root.type, meta, [], undefined, 0, () => null);
+
+        const choices = meta.GetStem1ContextChoices(root);
+        const selectedIndex = choices.types.indexOf(this.input.data.stem1Context?.type ?? "");
         const validatedIndex = (selectedIndex === -1) ? 0 : selectedIndex;
 
-        return this.RenderTashkilField(choices.r2options, validatedIndex, newValue =>
+        return this.RenderTashkilField(root.type, meta, choices.types, choices.requiredContext, validatedIndex, newValue =>
             {
-                this.input.data.stem1Context!.middleRadicalTashkil = newValue.past;
-                this.input.data.stem1Context!.middleRadicalTashkilPresent = newValue.present;
+                this.input.data.stem1Context = meta.CreateStem1Context(root.type, newValue);
                 this.ValidateStem1Context();
                 this.DataChanged();
             }
         );
     }
 
-    private RenderTashkilField(choices: Stem1ContextChoiceTashkil[], selectedIndex: number, onChanged: (newValue: Stem1ContextChoiceTashkil) => void)
+    private RenderTashkilField(rootType: RootType, meta: DialectMetadata<string>, choices: string[], requiredContext: StemlessConjugationParams | undefined, selectedIndex: number, onChanged: (newValue: string) => void)
     {
-        return <FormField title={"Tashkil"}>
-            {this.RenderTashkilSelect(choices, selectedIndex, onChanged)}
-        </FormField>
+        return <div className="col">
+            <FormField title={"Tashkil"}>
+                {this.RenderTashkilSelect(rootType, meta, choices, requiredContext, selectedIndex, onChanged)}
+            </FormField>
+        </div>;
     }
 
-    private RenderTashkilSelect(choices: Stem1ContextChoiceTashkil[], selectedIndex: number, onChanged: (newValue: Stem1ContextChoiceTashkil) => void)
+    private RenderTashkilSelect(rootType: RootType, meta: DialectMetadata<string>, choices: string[], requiredContext: StemlessConjugationParams | undefined, selectedIndex: number, onChanged: (newValue: string) => void)
     {
         if(choices.length === 0)
-            return <div>{this.RenderConjugation(this.input.data.stem1Context)}</div>;
+            return <div>{this.RenderConjugation(this.input.data.stem1Context, requiredContext, meta)}</div>;
         if(choices.length === 1)
-            return <div>{this.RenderChoice(choices[0])}</div>
+            return <div>{this.RenderChoice(rootType, choices[0], requiredContext, meta)}</div>
 
         return <SingleSelect onSelectionChanged={newIndex => onChanged(choices[newIndex])} selectedIndex={selectedIndex}>
-            {choices.map(x => this.RenderChoice(x))}
+            {choices.map(x => this.RenderChoice(rootType, x, requiredContext, meta))}
         </SingleSelect>;
+    }
+
+    private RenderVerbConfig()
+    {
+        return <div className="row">
+            <div className="col">
+                <FormField title="Dialect">
+                    <DialectSelectionComponent dialectId={this.input.data.dialectId} onValueChanged={this.OnDialectChanged.bind(this)} />
+                </FormField>
+            </div>
+            {this.RenderTashkilChoice()}
+        </div>;
     }
 
     private ValidateStem1Context()
@@ -212,24 +210,22 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
             return;
         }
 
+        const root = new VerbRoot(this.input.rootRadicals);
+        const meta = this.dialectsService.GetDialectMetaData(this.input.data.dialectId);
+        const choices = meta.GetStem1ContextChoices(root);
+
         if(this.input.data.stem1Context === undefined)
         {
-            this.input.data.stem1Context = {
-                middleRadicalTashkil: Tashkil.Fatha,
-                middleRadicalTashkilPresent: Tashkil.Fatha,
-                soundOverride: false
-            };
+            this.input.data.stem1Context = meta.CreateStem1Context(root.type, choices.types[0]);
+            this.DataChanged();
         }
 
         const ctx = this.input.data.stem1Context;
-        const root = new VerbRoot(this.input.rootRadicals);
 
-        const choices = root.GetStem1ContextChoices();
-        const r2choice = choices.r2options.find(x => (x.past === ctx.middleRadicalTashkil) && (x.present === ctx.middleRadicalTashkilPresent));
+        const r2choice = choices.types.indexOf(ctx.type);
         if(r2choice === undefined)
         {
-            ctx.middleRadicalTashkil = choices.r2options[0].past;
-            ctx.middleRadicalTashkilPresent = choices.r2options[0].present;
+            this.input.data.stem1Context = meta.CreateStem1Context(root.type, choices.types[0]);
             this.DataChanged();
         }
     }
@@ -252,9 +248,17 @@ export class VerbEditorComponent extends Component<{ data: VerbEditorData; rootR
         this.DataChanged();
     }
 
+    private OnDialectChanged(dialectId: number)
+    {
+        this.input.data.dialectId = dialectId;
+        this.ValidateStem1Context();
+        this.DataChanged();
+    }
+
     override OnInitiated(): void
     {
-        this.ValidateStem1Context();
+        if(this.input.data.dialectId !== 0)
+            this.ValidateStem1Context();
     }
 
     private OnRelatedVerbIdChanged(relation: VerbRelation, newValue: number)

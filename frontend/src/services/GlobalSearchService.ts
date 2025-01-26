@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,13 +21,15 @@ import { APIService } from "./APIService";
 import { FullWordData } from "../../dist/api";
 import { CachedAPIService, FullVerbData } from "./CachedAPIService";
 import { ConjugationService } from "./ConjugationService";
-import { ConjugationParams, Gender, Letter, Mood, Numerus, Person } from "arabdict-domain/src/Definitions";
+import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 import { ReverseLookupService } from "./ReverseLookupService";
 import { EqualsAny } from "../../../../ACTS-Util/core/dist/EqualsAny";
 import { VerbReverseConjugationResult } from "arabdict-domain/src/Conjugator";
 import { DisplayVocalized, ParseVocalizedText } from "arabdict-domain/src/Vocalization";
 import { IsArabicText } from "../roots/general";
+import { DialectsService } from "./DialectsService";
+import { VerbRoot } from "arabdict-domain/src/VerbRoot";
 
 interface RootMatchData extends VerbReverseConjugationResult
 {
@@ -187,7 +189,8 @@ class SearchQuery
 @Injectable
 export class GlobalSearchService
 {
-    constructor(private apiService: APIService, private cachedAPIService: CachedAPIService, private conjugationService: ConjugationService, private reverseLookupService: ReverseLookupService)
+    constructor(private apiService: APIService, private cachedAPIService: CachedAPIService, private conjugationService: ConjugationService,
+        private reverseLookupService: ReverseLookupService, private dialectsService: DialectsService)
     {
     }
 
@@ -245,12 +248,27 @@ export class GlobalSearchService
 
     private AddVerbsByTranslationToState(sq: SearchQuery, byTranslation: boolean, verbs: FullVerbData[])
     {
+        const ctx = this;
+        function conj(x: FullVerbData)
+        {
+            const root = new VerbRoot(x.rootData.radicals);
+            return ctx.conjugationService.ConjugateToString(ctx.dialectsService.MapIdToType(x.verbData.dialectId), root, {
+                gender: Gender.Male,
+                tense: Tense.Perfect,
+                numerus: Numerus.Singular,
+                person: Person.Third,
+                stem: x.verbData.stem as any,
+                stem1Context: Stem1DataToStem1ContextOptional(root.type, x.verbData.stem1Context),
+                voice: Voice.Active
+            });
+        }
+
         verbs.forEach(x => sq.Add({
             type: "verb",
             verb: x,
             score: 0,
             byTranslation,
-            conjugated: this.conjugationService.ConjugateToStringArgs(x.rootData.radicals, x.verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1ContextOptional(x.verbData.stem1Data)),
+            conjugated: conj(x),
         }));
 
         sq.Update();
@@ -351,6 +369,8 @@ export class GlobalSearchService
     private async TryFindVerb(rootId: number, params: ConjugationParams)
     {
         const verbs = await this.cachedAPIService.QueryVerbsOfRoot(rootId);
+        const rootData = await this.cachedAPIService.QueryRootData(rootId);
+        const root = new VerbRoot(rootData.radicals);
 
         for (const entry of verbs)
         {
@@ -358,7 +378,7 @@ export class GlobalSearchService
             {
                 if(params.stem === 1)
                 {
-                    if(EqualsAny(Stem1DataToStem1ContextOptional(entry.stem1Data), params.stem1Context))
+                    if(EqualsAny(Stem1DataToStem1ContextOptional(root.type, entry.stem1Context), params.stem1Context))
                         return entry.id;
                 }
                 else

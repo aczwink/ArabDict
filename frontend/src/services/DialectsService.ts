@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2024-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,36 +19,83 @@
 import { Injectable } from "acfrontend";
 import { APIService } from "./APIService";
 import { DialectData } from "../../dist/api";
+import { DialectType } from "arabdict-domain/src/Dialects";
+import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
+import { Dictionary } from "../../../../ACTS-Util/core/dist/Dictionary";
 
 @Injectable
 export class DialectsService
 {
     constructor(private apiService: APIService)
     {
+        this.dialects = [];
+        this.dialectTypeMap = {};
     }
 
     //Public methods
+    public async CacheDialects()
+    {
+        const response = await this.apiService.dialects.get();
+        const dialects = response.data;
+        this.dialects = dialects;
+
+        const types: DialectType[] = [DialectType.ModernStandardArabic, DialectType.Lebanese];
+        for (const type of types)
+        {
+            for (const dialect of dialects)
+            {
+                if(this.Match(type, dialect))
+                {
+                    this.dialectTypeMap[dialect.id] = type;
+                }
+            }
+        }
+    }
+
+    public FindDialect(dialectType: DialectType)
+    {
+        return this.dialects.find(x => this.Match(dialectType, x));
+    }
+
     public GetDialect(dialectId: number)
     {
-        if(this.dialects === undefined)
-            throw new Error("Method not implemented.");
         return this.dialects.find(x => x.id === dialectId)!;
     }
 
-    public async QueryDialects()
+    public GetDialectMetaData(dialectId: number)
     {
-        if(this.dialects === undefined)
-            this.dialects = await this.LoadDialects();
+        const dialectType = this.MapIdToType(dialectId);
+        return GetDialectMetadata(dialectType);
+    }
+
+    public MapIdToType(dialectId: number)
+    {
+        const dialectType = this.dialectTypeMap[dialectId];
+        if(dialectType === undefined)
+            throw new Error("Method not implemented.2");
+        return dialectType;
+    }
+
+    public QueryConjugatableDialects()
+    {
+        return this.dialects.filter(x => this.dialectTypeMap[x.id] !== undefined);
+    }
+
+    public QueryDialects()
+    {
         return this.dialects;
     }
 
-    //State
-    private dialects?: DialectData[];
-
     //Private methods
-    private async LoadDialects()
+    private Match(type: DialectType, dialect: DialectData)
     {
-        const response = await this.apiService.dialects.get();
-        return response.data;
+        const metaData = GetDialectMetadata(type);
+        if( (dialect.iso639code === metaData.iso639code) && (dialect.glottoCode === metaData.glottoCode) )
+            return true;
+        return false;
     }
+
+    //State
+    private dialects: DialectData[];
+    private dialectTypeMap: Dictionary<DialectType>;
 }

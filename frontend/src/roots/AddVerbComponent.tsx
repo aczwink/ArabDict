@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,6 @@ import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, Rout
 import { APIService } from "../services/APIService";
 import { RootCreationData } from "../../dist/api";
 import { VerbEditorComponent, VerbEditorData } from "../verbs/VerbEditorComponent";
-import { Stem1ContextToStem1DataOptional } from "../verbs/model";
 
 @Injectable
 export class AddVerbComponent extends Component
@@ -33,6 +32,7 @@ export class AddVerbComponent extends Component
         this.root = null;
 
         this.data = {
+            dialectId: 0,
             stem: 1,
             translations: [],
             related: []
@@ -60,9 +60,10 @@ export class AddVerbComponent extends Component
     private async OnCreateVerb()
     {
         await this.apiService.verbs.post({
+            dialectId: this.data.dialectId,
             rootId: this.rootId,
             stem: this.data.stem,
-            stem1Data: Stem1ContextToStem1DataOptional(this.data.stem1Context),
+            stem1Context: this.data.stem1Context?.type,
             translations: this.data.translations,
             related: this.data.related,
         });

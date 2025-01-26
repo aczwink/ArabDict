@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,8 +18,9 @@
 
 import { Component, FormField, JSX_CreateElement } from "acfrontend";
 import { RootCreationData } from "../../dist/api";
-import { IsFlagSet, RootFlags, ToggleFlag } from "../shared/flags";
+import { RootFlags, ToggleFlag } from "../shared/flags";
 import { RadicalsEditorComponent } from "./RadicalsEditorComponent";
+import { IsFlagSet } from "arabdict-domain/src/Definitions";
 
 export class RootEditorComponent extends Component<{ data: RootCreationData; onDataChanged: () => void }>
 {

@@ -1,6 +1,6 @@
 /**
- * ArabDict
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * OpenArabDictViewer
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,10 +24,13 @@ import { Dictionary } from "../../../ACTS-Util/core/dist/Dictionary";
 import { ObjectExtensions } from "../../../ACTS-Util/core/dist/ObjectExtensions";
 import { ConjugationService } from "./services/ConjugationService";
 import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { AdvancedStemNumber, Gender, Mood, Numerus, Person, Stem1Context, Tense, Voice } from "arabdict-domain/src/Definitions";
-import { Stem1DataToStem1Context } from "./verbs/model";
+import { AdvancedStemNumber, Stem1Context } from "arabdict-domain/src/Definitions";
 import { RomanNumberComponent, StemNumberComponent } from "./shared/RomanNumberComponent";
 import { KeyValuePair } from "../../../ACTS-Util/core/dist/KeyValuePair";
+import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
+import { DialectType } from "arabdict-domain/src/Dialects";
+import { VerbFormComponent } from "./verbs/VerbFormComponent";
+import { RootTypeToPattern, RootTypeToString } from "./roots/general";
 
 @Injectable
 export class StatisticsComponent extends Component
@@ -63,8 +66,8 @@ export class StatisticsComponent extends Component
                 count: "Count"
             }, this.data.rootCounts.map(x => ({
                 ...x,
-                rootType: this.RootTypeToString(x.rootType),
-                pattern: this.RootTypeToPattern(x.rootType)
+                rootType: RootTypeToString(x.rootType),
+                pattern: RootTypeToPattern(x.rootType)
             })))}
 
             {this.RenderKeyValueTable("Verbs per Stem", {
@@ -81,8 +84,8 @@ export class StatisticsComponent extends Component
                 form: "Form",
                 count: "Count"
             }, this.data.stem1Freq.map(x => ({
-                rootType: this.RootTypeToString(x.rootType),
-                pattern: this.RootTypeToPattern(x.rootType),
+                rootType: RootTypeToString(x.rootType),
+                pattern: RootTypeToPattern(x.rootType),
                 form: this.BuildForm(x.rootType, x.index),
                 count: x.count,
             })))}
@@ -95,8 +98,8 @@ export class StatisticsComponent extends Component
                 verbalNoun: "Verbal noun",
                 count: "Count"
             }, this.data.verbalNounFreq.map(x => ({
-                rootType: this.RootTypeToString(x.rootType),
-                pattern: this.RootTypeToPattern(x.rootType),
+                rootType: RootTypeToString(x.rootType),
+                pattern: RootTypeToPattern(x.rootType),
                 stem: <StemNumberComponent rootType={x.rootType} stem={x.stem} />,
                 form: (x.stemChoiceIndex === undefined) ? "" : this.BuildForm(x.rootType, x.stemChoiceIndex),
                 verbalNoun: this.GenerateVerbalNoun(x.rootType, x.stem, x.stemChoiceIndex, x.verbalNounIndex),
@@ -128,67 +131,21 @@ export class StatisticsComponent extends Component
 
         const radicals = this.GetExampleRootRadicals(rootType);
         const root = new VerbRoot(radicals.join(""));
-        const choice = root.GetStem1ContextChoices().r2options[index];
-        const past = this.conjugationService.ConjugateToString(root, {
-            gender: Gender.Male,
-            tense: Tense.Perfect,
-            numerus: Numerus.Singular,
-            person: Person.Third,
-            stem: 1,
-            stem1Context: Stem1DataToStem1Context({
-                flags: 0,
-                middleRadicalTashkil: choice.past,
-                middleRadicalTashkilPresent: choice.present
-            }),
-            voice: Voice.Active
-        });
-        const present = this.conjugationService.ConjugateToString(root, {
-            gender: Gender.Male,
-            tense: Tense.Present,
-            mood: Mood.Indicative,
-            numerus: Numerus.Singular,
-            person: Person.Third,
-            stem: 1,
-            stem1Context: Stem1DataToStem1Context({
-                flags: 0,
-                middleRadicalTashkil: choice.past,
-                middleRadicalTashkilPresent: choice.present
-            }),
-            voice: Voice.Active
-        });
-        const past_first = this.conjugationService.ConjugateToString(root, {
-            gender: Gender.Male,
-            tense: Tense.Perfect,
-            numerus: Numerus.Singular,
-            person: Person.First,
-            stem: 1,
-            stem1Context: Stem1DataToStem1Context({
-                flags: 0,
-                middleRadicalTashkil: choice.past,
-                middleRadicalTashkilPresent: choice.present
-            }),
-            voice: Voice.Active
-        });
-
-        switch(root.type)
-        {
-            case RootType.Hollow:
-            case RootType.SecondConsonantDoubled:
-                return past + " - " + present + " (" + past_first + ")";
-        }
-
-        return past + " - " + present;
+        
+        return <VerbFormComponent dialectType={DialectType.ModernStandardArabic} root={root} index={index} stem={1} />;
     }
 
-    private GenerateVerbalNoun(rootType: RootType, stem: number, stemChoiceIndex: number | undefined, verbalNounIndex: number)
+    private GenerateVerbalNoun(rootType: RootType, stem: number, stem1Context: number | undefined, verbalNounIndex: number)
     {
         if(verbalNounIndex === -1)
             return <i>invalid</i>;
 
         const radicals = this.GetExampleRootRadicals(rootType).join("");
         const root = new VerbRoot(radicals);
-        const choice = root.GetStem1ContextChoices().r2options[stemChoiceIndex ?? 0];
-        const stemData: AdvancedStemNumber | Stem1Context = (stemChoiceIndex === undefined) ? (stem as AdvancedStemNumber) : { middleRadicalTashkil: choice.past, middleRadicalTashkilPresent: choice.present, soundOverride: false };
+        const meta = GetDialectMetadata(DialectType.ModernStandardArabic);
+        const choices = meta.GetStem1ContextChoices(root);
+        const choice = choices.types[stem1Context ?? 0];
+        const stemData: AdvancedStemNumber | Stem1Context = (stem1Context === undefined) ? (stem as AdvancedStemNumber) : meta.CreateStem1Context(root.type, choice);
 
         const generated = this.conjugationService.GenerateAllPossibleVerbalNouns(radicals, stemData)[verbalNounIndex];
         return generated;
@@ -266,52 +223,6 @@ export class StatisticsComponent extends Component
                 <tbody>{rows}</tbody>
             </table>
         </fragment>;
-    }
-
-    private RootTypeToPattern(rootType: RootType)
-    {
-        switch(rootType)
-        {
-            case RootType.Assimilated:
-                return "(و|ي)-r2-r3";
-            case RootType.Defective:
-                return "r1-r2-(و|ي)";
-            case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-                return "و-r2-(و|ي)";
-            case RootType.HamzaOnR1:
-                return "ء-r2-r3";
-            case RootType.Hollow:
-                return "r1-(و|ي)-r3";
-            case RootType.Quadriliteral:
-                return "r1-r2-r3-r4";
-            case RootType.SecondConsonantDoubled:
-                return "r1-r2-r2";
-            case RootType.Sound:
-                return "r1-r2-r3";
-        }
-    }
-
-    private RootTypeToString(rootType: RootType)
-    {
-        switch(rootType)
-        {
-            case RootType.Assimilated:
-                return "Assimilated";
-            case RootType.Defective:
-                return "Defective";
-            case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-                return "Doubly weak";
-            case RootType.HamzaOnR1:
-                return "Hamza on first radical";
-            case RootType.Hollow:
-                return "Hollow";
-            case RootType.Quadriliteral:
-                return "Quadriliteral";
-            case RootType.SecondConsonantDoubled:
-                return "Second consonant doubled";
-            case RootType.Sound:
-                return "Sound";
-        }
     }
 
     //Event handlers
