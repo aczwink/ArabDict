@@ -23,12 +23,12 @@ import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { RenderTranslations } from "../shared/translations";
 import { ConjugationService } from "../services/ConjugationService";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { Stem1DataToStem1Context, Stem1DataToStem1ContextOptional } from "./model";
-import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
+import { Gender, Mood, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
 import { CachedAPIService, FullVerbData } from "../services/CachedAPIService";
 import { _TODO_CheckConjugation } from "./_ConjugationCheck";
-import { ModernStandardArabicStem1ContextType } from "arabdict-domain/src/DialectsMetadata";
+import { ModernStandardArabicStem1ContextType } from "openarabicconjugation/src/DialectsMetadata";
 import { DialectsService } from "../services/DialectsService";
 
 @Injectable

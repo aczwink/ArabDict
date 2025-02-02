@@ -19,8 +19,8 @@
 import { Injectable } from "acfrontend";
 import { APIService } from "./APIService";
 import { DialectData } from "../../dist/api";
-import { DialectType } from "arabdict-domain/src/Dialects";
-import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
+import { DialectType } from "openarabicconjugation/src/Dialects";
+import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
 import { Dictionary } from "../../../../ACTS-Util/core/dist/Dictionary";
 
 @Injectable

@@ -20,13 +20,13 @@ import { CheckBox, Component, FormField, Injectable, JSX_CreateElement, Progress
 import { APIService } from "./services/APIService";
 import { FullWordData, VerbData, WordFunctionData } from "../dist/api";
 import { ConjugationService } from "./services/ConjugationService";
-import { RemoveTashkilButKeepShadda } from "arabdict-domain/src/Util";
+import { RemoveTashkilButKeepShadda } from "openarabicconjugation/src/Util";
 import { RenderTranslations } from "./shared/translations";
 import { Stem1DataToStem1ContextOptional } from "./verbs/model";
-import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
+import { Gender, Mood, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
 import { WordTypeToText } from "./shared/words";
 import { DialectsService } from "./services/DialectsService";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 
 @Injectable
 export class LearnComponent extends Component

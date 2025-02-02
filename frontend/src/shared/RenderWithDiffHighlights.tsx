@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { JSX_CreateElement } from "acfrontend";
-import { ToDiffStream, DisplayVocalized } from "arabdict-domain/src/Vocalization";
+import { ToDiffStream, DisplayVocalized } from "openarabicconjugation/src/Vocalization";
 
 export function RenderWithDiffHighlights(word: DisplayVocalized[], reference: DisplayVocalized[])
 {

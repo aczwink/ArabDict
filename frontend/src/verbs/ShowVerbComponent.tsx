@@ -20,20 +20,20 @@ import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, Progre
 import { FullWordData, RootCreationData, VerbData, VerbRelation } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
-import { RemoveTashkil } from "arabdict-domain/src/Util";
+import { RemoveTashkil } from "openarabicconjugation/src/Util";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { ConjugationService } from "../services/ConjugationService";
 import { RenderTranslations } from "../shared/translations";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { WordRelationshipTypeToString } from "../shared/words";
 import { VerbIdReferenceComponent } from "./VerbReferenceComponent";
 import { RootToString } from "../roots/general";
 import { Stem1DataToStem1ContextOptional } from "./model";
-import { Stem1Context, Person, TenseString, VoiceString, Numerus, Gender, Mood, Voice, AdvancedStemNumber } from "arabdict-domain/src/Definitions";
-import { DisplayVocalized } from "arabdict-domain/src/Vocalization";
+import { Stem1Context, Person, TenseString, VoiceString, Numerus, Gender, Mood, Voice, AdvancedStemNumber } from "openarabicconjugation/src/Definitions";
+import { DisplayVocalized } from "openarabicconjugation/src/Vocalization";
 import { _TODO_CheckConjugation } from "./_ConjugationCheck";
-import { Tense } from "arabdict-domain/dist/Definitions";
+import { Tense } from "openarabicconjugation/dist/Definitions";
 import { DialectsService } from "../services/DialectsService";
 import { VerbFormComponent } from "./VerbFormComponent";
 import { ConjugationSchemeToString } from "./ToStringStuff";
@@ -47,7 +47,7 @@ export class ShowVerbComponent extends Component
 
         this.verbId = parseInt(routerState.routeParams.verbId!);
         this.data = null;
-        this.root = { description: "", flags: 0, radicals: "" };
+        this.root = { flags: 0, radicals: "" };
         this.derivedWords = null;
     }
     

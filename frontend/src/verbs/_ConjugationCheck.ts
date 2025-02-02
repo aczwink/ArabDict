@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { ConjugationParams, Letter, Tashkil } from "arabdict-domain/src/Definitions";
-import { VerbRoot, RootType } from "arabdict-domain/src/VerbRoot";
+import { ConjugationParams, Letter, Tashkil } from "openarabicconjugation/src/Definitions";
+import { VerbRoot, RootType } from "openarabicconjugation/src/VerbRoot";
 
 export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams)
 {

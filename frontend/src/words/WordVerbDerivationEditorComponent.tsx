@@ -21,9 +21,9 @@ import { VerbData, WordVerbDerivationData, WordVerbDerivationType } from "../../
 import { ConjugationService } from "../services/ConjugationService";
 import { APIService } from "../services/APIService";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
-import { AdvancedStemNumber, Stem1Context, Voice } from "arabdict-domain/src/Definitions";
+import { AdvancedStemNumber, Stem1Context, Voice } from "openarabicconjugation/src/Definitions";
 import { DialectsService } from "../services/DialectsService";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 
 interface WordVerbDerivationEditorInput
 {

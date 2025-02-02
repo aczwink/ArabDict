@@ -18,7 +18,7 @@
 
 import { Component, JSX_CreateElement } from "acfrontend";
 import { IsValidRootRadical } from "./general";
-import { Letter } from "arabdict-domain/src/Definitions";
+import { Letter } from "openarabicconjugation/src/Definitions";
 
 export class RadicalsEditorComponent extends Component<{ radicals: string; onDataChanged: (newValue: string) => void; joinBeginning?: boolean }>
 {

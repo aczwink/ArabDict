@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,14 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
+import fs from "fs";
 import { DBConnectionPool, DBFactory, DBResource, Injectable } from "acts-util-node";
+import { OpenArabDictDocument } from "openarabdict-domain";
 
 @Injectable
 export class DatabaseController
 {
     constructor()
     {
+        this.documentDB = null;
         this.pool = null;
     }
 
@@ -47,7 +49,19 @@ export class DatabaseController
         return factory.CreateQueryBuilder("mysql");
     }
 
+    public async GetDocumentDB()
+    {
+        if(this.documentDB === null)
+        {
+            const filePath = process.env.ARABDICT_DICTDB_PATH!;
+            const data = await fs.promises.readFile(filePath, "utf-8");
+            this.documentDB = JSON.parse(data);
+        }
+        return this.documentDB!;
+    }
+
     //Private state
+    private documentDB: OpenArabDictDocument | null;
     private pool: DBResource<DBConnectionPool> | null;
 
     //Private methods

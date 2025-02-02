@@ -17,7 +17,7 @@
  * */
 
 import { Injectable } from "acfrontend";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { Dictionary } from "../../../../ACTS-Util/core/dist/Dictionary";
 import { APIService } from "./APIService";
 

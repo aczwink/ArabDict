@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { IsFlagSet } from "arabdict-domain/src/Definitions";
+import { IsFlagSet } from "openarabicconjugation/src/Definitions";
 
 export enum RootFlags
 {

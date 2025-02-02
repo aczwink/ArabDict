@@ -23,12 +23,12 @@ import { DialectsService } from "./services/DialectsService";
 import { Dictionary } from "../../../ACTS-Util/core/dist/Dictionary";
 import { ObjectExtensions } from "../../../ACTS-Util/core/dist/ObjectExtensions";
 import { ConjugationService } from "./services/ConjugationService";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { AdvancedStemNumber, Stem1Context } from "arabdict-domain/src/Definitions";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
+import { AdvancedStemNumber, Stem1Context } from "openarabicconjugation/src/Definitions";
 import { RomanNumberComponent, StemNumberComponent } from "./shared/RomanNumberComponent";
 import { KeyValuePair } from "../../../ACTS-Util/core/dist/KeyValuePair";
-import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
-import { DialectType } from "arabdict-domain/src/Dialects";
+import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 import { VerbFormComponent } from "./verbs/VerbFormComponent";
 import { RootTypeToPattern, RootTypeToString } from "./roots/general";
 
@@ -199,16 +199,8 @@ export class StatisticsComponent extends Component
                 <td>{this.data!.rootsCount}</td>
             </tr>
             <tr>
-                <th>Number of verbs:</th>
-                <td>{this.data!.verbsCount}</td>
-            </tr>
-            <tr>
-                <th>Number of words (excluding verbs):</th>
+                <th>Number of words:</th>
                 <td>{this.data!.wordsCount}</td>
-            </tr>
-            <tr>
-                <th>Total number of words:</th>
-                <td>{this.data!.verbsCount + this.data!.wordsCount}</td>
             </tr>
         </fragment>;
     }

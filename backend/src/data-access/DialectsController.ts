@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2024-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ interface DialectData
     id: number;
     name: string;
     emojiCodes: string;
-    parent: number | null;
+    parentId: number | null;
     iso639code: string;
     glottoCode: string;
 }
@@ -39,10 +39,7 @@ export class DialectsController
     //Public methods
     public async QueryDialects()
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const rows = await conn.Select<DialectData>("SELECT id, name, emojiCodes, parent, iso639code, glottoCode FROM dialects");
-
-        return rows;
+        const document = await this.dbController.GetDocumentDB();
+        return document.dialects as DialectData[];
     }
 }

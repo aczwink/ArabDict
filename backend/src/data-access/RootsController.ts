@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,11 +18,11 @@
 
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
+import { Of } from "acts-util-core";
 
 export interface RootCreationData
 {
     radicals: string;
-    description: string;
     flags: number;
 }
 
@@ -59,26 +59,34 @@ export class RootsController
 
     public async QueryRoot(id: number)
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const document = await this.dbController.GetDocumentDB();
+        
+        const root = document.roots.find(x => x.id === id);
+        if(root === undefined)
+            return undefined;
 
-        const row = await conn.SelectOne<RootCreationData>("SELECT radicals, description, flags FROM roots WHERE id = ?", id);
-
-        return row;
+        return Of<RootCreationData>({
+            flags: 0,
+            radicals: root.radicals
+        });
     }
 
     public async QueryRoots(prefix: string)
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const document = await this.dbController.GetDocumentDB();
 
-        const rows = await conn.Select<RootOverviewData>("SELECT id, radicals, flags FROM roots WHERE radicals LIKE ? ORDER BY radicals", prefix + "%");
-
-        return rows;
+        const filtered = document.roots.Values().Filter(x => x.radicals.startsWith(prefix));
+        return filtered.Map<RootOverviewData>( x => ({
+            flags: 0,
+            id: x.id,
+            radicals: x.radicals
+        })).OrderBy(x => x.radicals).ToArray();
     }
 
     public async UpdateRoot(rootId: number, data: RootCreationData)
     {
         const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
 
-        await conn.UpdateRows("roots", { radicals: data.radicals, description: data.description, flags: data.flags }, "id = ?", rootId);
+        await conn.UpdateRows("roots", { radicals: data.radicals, flags: data.flags }, "id = ?", rootId);
     }
 }

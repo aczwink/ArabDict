@@ -21,9 +21,9 @@ import { RootCreationData, VerbData } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { ConjugationService } from "../services/ConjugationService";
 import { Stem1DataToStem1ContextOptional } from "./model";
-import { Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
+import { Gender, Mood, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
 import { DialectsService } from "../services/DialectsService";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 
 @Injectable
 export class VerbReferenceComponent extends Component<{ root: RootCreationData; verbData: VerbData }>

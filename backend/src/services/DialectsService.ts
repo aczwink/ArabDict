@@ -17,9 +17,9 @@
  * */
 
 import { Injectable } from "acts-util-node";
-import { DialectType } from "arabdict-domain/src/Dialects";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 import { DialectsController } from "../data-access/DialectsController";
-import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
+import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
 
 @Injectable
 export class DialectsService

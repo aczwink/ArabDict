@@ -21,7 +21,7 @@ import { APIService } from "../services/APIService";
 import { VerbEditorComponent, VerbEditorData } from "./VerbEditorComponent";
 import { ConjugationService } from "../services/ConjugationService";
 import { Stem1DataToStem1ContextOptional } from "./model";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 
 @Injectable
 export class EditVerbComponent extends Component

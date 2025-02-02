@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Stem1Context } from "arabdict-domain/src/Definitions";
-import { DialectType } from "arabdict-domain/src/Dialects";
-import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
-import { RootType } from "arabdict-domain/src/VerbRoot";
+import { Stem1Context } from "openarabicconjugation/src/Definitions";
+import { DialectType } from "openarabicconjugation/src/Dialects";
+import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
+import { RootType } from "openarabicconjugation/src/VerbRoot";
 
 export function Stem1DataToStem1Context(rootType: RootType, data: string): Stem1Context
 {

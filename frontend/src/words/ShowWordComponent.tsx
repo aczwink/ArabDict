@@ -21,16 +21,16 @@ import { APIService } from "../services/APIService";
 import { FullWordData, VerbData, WordFunctionData, WordRelation, WordRootDerivationData, WordType, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
 import { WordDerivationTypeFromWordToString, WordRelationshipTypeToString, WordTypeToText } from "../shared/words";
-import { RemoveTashkil } from "arabdict-domain/src/Util";
+import { RemoveTashkil } from "openarabicconjugation/src/Util";
 import { ConjugationService } from "../services/ConjugationService";
 import { WordIdReferenceComponent } from "./WordReferenceComponent";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
-import { Case, Gender, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
+import { Case, Gender, Mood, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
 import { NounDeclensionTable } from "./NounDeclensionTable";
-import { DialectType } from "arabdict-domain/src/Dialects";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 import { DialectsService } from "../services/DialectsService";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 
 @Injectable
 export class ShowWordComponent extends Component

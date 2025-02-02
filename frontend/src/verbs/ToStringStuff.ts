@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { VerbConjugationScheme } from "arabdict-domain/src/Definitions";
+import { VerbConjugationScheme } from "openarabicconjugation/src/Definitions";
 
 export function ConjugationSchemeToString(scheme: VerbConjugationScheme): string
 {

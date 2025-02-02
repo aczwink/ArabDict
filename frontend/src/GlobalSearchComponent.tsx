@@ -23,9 +23,9 @@ import { GlobalSearchService, SearchResultEntry, VerbByConjugationSearchResultEn
 import { APIService } from "./services/APIService";
 import { WordOverviewComponent } from "./words/WordOverviewComponent";
 import { VerbIdPreviewComponent, VerbPreviewComponent } from "./verbs/VerbPreviewComponent";
-import { Gender, Person, Numerus, Mood } from "arabdict-domain/src/Definitions";
+import { Gender, Person, Numerus, Mood } from "openarabicconjugation/src/Definitions";
 import { ConjugationService } from "./services/ConjugationService";
-import { DialectType } from "arabdict-domain/src/Dialects";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 
 @Injectable
 export class GlobalSearchComponent extends Component

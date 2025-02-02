@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { RootType, VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { RootCreationData, RootOverviewData } from "../../dist/api";
 import { RootFlags } from "../shared/flags";
-import { IsFlagSet, Letter, Tashkil, TASHKIL_SHADDA } from "arabdict-domain/src/Definitions";
+import { IsFlagSet, Letter, Tashkil, TASHKIL_SHADDA } from "openarabicconjugation/src/Definitions";
 
 export function AreValidRootCharacters(rootRadicals: string)
 {

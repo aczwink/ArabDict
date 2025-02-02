@@ -19,7 +19,7 @@
 import { Component, Injectable, JSX_CreateElement } from "acfrontend";
 import { DialectData } from "../../dist/api";
 import { DialectsService } from "../services/DialectsService";
-import { DialectType } from "arabdict-domain/src/Dialects";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 
 @Injectable
 export class DialectSelectionComponent extends Component<{ dialectId: number; onValueChanged: (dialectId: number) => void; }>

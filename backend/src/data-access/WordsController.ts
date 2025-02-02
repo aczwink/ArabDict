@@ -19,7 +19,7 @@
 import { DBQueryExecutor, Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { TranslationEntry, TranslationsController } from "./TranslationsController";
-import { RemoveTashkil } from "arabdict-domain/src/Util";
+import { RemoveTashkil } from "openarabicconjugation/src/Util";
 
 export enum WordType
 {

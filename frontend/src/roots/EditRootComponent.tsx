@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, TextArea } from "acfrontend";
+import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
 import { APIService } from "../services/APIService";
 import { RootCreationData } from "../../dist/api";
 import { RootEditorComponent } from "./RootEditorComponent";
@@ -40,10 +40,6 @@ export class EditRootComponent extends Component
 
         return <fragment>
             <RootEditorComponent data={this.data} onDataChanged={this.Update.bind(this)} />
-
-            <FormField title="Description" description="Descriptive text about the root">
-                <TextArea value={this.data.description} onChanged={newValue => {this.data!.description = newValue; this.Update();}} />
-            </FormField>
 
             <button disabled={!DoRootCharactersFormValidRoot(this.data.radicals)} className="btn btn-primary" type="button" onclick={this.OnSaveRoot.bind(this)}>Save</button>
         </fragment>;

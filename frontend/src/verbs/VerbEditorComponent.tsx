@@ -20,14 +20,14 @@ import { BootstrapIcon, Component, FormField, Injectable, JSX_CreateElement, JSX
 import { TranslationEntry, VerbRelation, WordRelationshipType } from "../../dist/api";
 import { TranslationsEditorComponent } from "../shared/TranslationsEditorComponent";
 import { ConjugationService } from "../services/ConjugationService";
-import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
-import { Gender, Mood, Numerus, Person, Stem1Context, StemlessConjugationParams } from "arabdict-domain/src/Definitions";
+import { RootType, VerbRoot } from "openarabicconjugation/src/VerbRoot";
+import { Gender, Mood, Numerus, Person, Stem1Context, StemlessConjugationParams } from "openarabicconjugation/src/Definitions";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { WordRelationshipTypeToString } from "../shared/words";
 import { DialectSelectionComponent } from "../shared/DialectSelectionComponent";
 import { DialectsService } from "../services/DialectsService";
-import { DialectMetadata } from "arabdict-domain/src/DialectsMetadata";
-import { GenderToString, NumerusToString, PersonToString, TenseToString } from "arabdict-domain/src/Util";
+import { DialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
+import { GenderToString, NumerusToString, PersonToString, TenseToString } from "openarabicconjugation/src/Util";
 
 export interface VerbEditorData
 {

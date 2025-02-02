@@ -21,15 +21,15 @@ import { APIService } from "./APIService";
 import { FullWordData } from "../../dist/api";
 import { CachedAPIService, FullVerbData } from "./CachedAPIService";
 import { ConjugationService } from "./ConjugationService";
-import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Tense, Voice } from "arabdict-domain/src/Definitions";
+import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 import { ReverseLookupService } from "./ReverseLookupService";
 import { EqualsAny } from "../../../../ACTS-Util/core/dist/EqualsAny";
-import { VerbReverseConjugationResult } from "arabdict-domain/src/Conjugator";
-import { DisplayVocalized, ParseVocalizedText } from "arabdict-domain/src/Vocalization";
+import { VerbReverseConjugationResult } from "openarabicconjugation/src/Conjugator";
+import { DisplayVocalized, ParseVocalizedText } from "openarabicconjugation/src/Vocalization";
 import { IsArabicText } from "../roots/general";
 import { DialectsService } from "./DialectsService";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 
 interface RootMatchData extends VerbReverseConjugationResult
 {

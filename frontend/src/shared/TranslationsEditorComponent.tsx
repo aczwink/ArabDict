@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -52,7 +52,7 @@ export class TranslationsEditorComponent extends Component<{ translations: Trans
     //Private methods
     private BuildDialectNodes(dialects: DialectData[], parent: number | null, level: number)
     {
-        const filtered = dialects.filter(x => x.parent === parent);
+        const filtered = dialects.filter(x => x.parentId === parent);
         filtered.forEach(x => {
             this.dialects.push({ dialect: x, level });
             this.BuildDialectNodes(dialects, x.id, level + 1);

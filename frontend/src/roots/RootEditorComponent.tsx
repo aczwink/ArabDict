@@ -20,7 +20,7 @@ import { Component, FormField, JSX_CreateElement } from "acfrontend";
 import { RootCreationData } from "../../dist/api";
 import { RootFlags, ToggleFlag } from "../shared/flags";
 import { RadicalsEditorComponent } from "./RadicalsEditorComponent";
-import { IsFlagSet } from "arabdict-domain/src/Definitions";
+import { IsFlagSet } from "openarabicconjugation/src/Definitions";
 
 export class RootEditorComponent extends Component<{ data: RootCreationData; onDataChanged: () => void }>
 {

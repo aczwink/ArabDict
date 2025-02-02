@@ -24,9 +24,9 @@ import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { RootToString, RootTypeToPattern, RootTypeToString } from "./general";
 import { ConjugationService } from "../services/ConjugationService";
 import { Subscription } from "../../../../ACTS-Util/core/dist/main";
-import { Buckwalter } from "arabdict-domain/dist/Transliteration";
-import { Letter } from "arabdict-domain/src/Definitions";
-import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Buckwalter } from "openarabicconjugation/dist/Transliteration";
+import { Letter } from "openarabicconjugation/src/Definitions";
+import { RootType, VerbRoot } from "openarabicconjugation/src/VerbRoot";
 
 interface ShowRootData
 {
@@ -49,16 +49,6 @@ export class ShowRootComponent extends Component
     
     protected Render(): RenderValue
     {
-        function desc(text: string)
-        {
-            if(text.trim().length === 0)
-                return "";
-            return <>
-                {text}
-                <br />
-            </>;
-        }
-
         if(this.data === null)
             return <ProgressSpinner />;
 
@@ -83,7 +73,6 @@ export class ShowRootComponent extends Component
                     </tr>
                 </tbody>
             </table>
-            {desc(this.data!.root.description)}
             <a href={"http://ejtaal.net/aa#bwq=" + this.ToEjtaalQuery()} target="_blank">See on Mawrid reader</a>
 
             <h4>Verbs</h4>

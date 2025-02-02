@@ -18,14 +18,14 @@
 
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
-import { RootType, VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { RootType, VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { Dictionary, ObjectExtensions, Of } from "acts-util-core";
 import { VerbsController, VerbUpdateData } from "./VerbsController";
 import { RootsController } from "./RootsController";
-import { Conjugator } from "arabdict-domain/src/Conjugator";
+import { Conjugator } from "openarabicconjugation/src/Conjugator";
 import { WordsController } from "./WordsController";
-import { DisplayVocalized, VocalizedToString } from "arabdict-domain/src/Vocalization";
-import { AdvancedStemNumber, Stem1Context } from "arabdict-domain/src/Definitions";
+import { DisplayVocalized, VocalizedToString } from "openarabicconjugation/src/Vocalization";
+import { AdvancedStemNumber, Stem1Context } from "openarabicconjugation/src/Definitions";
 import { DialectsService } from "../services/DialectsService";
 
 interface DialectStatistics
@@ -66,7 +66,6 @@ interface VerbStem1Frequencies
 interface DictionaryStatistics
 {
     rootsCount: number;
-    verbsCount: number;
     wordsCount: number;
 
     dialectCounts: DialectStatistics[];
@@ -86,27 +85,21 @@ export class StatisticsController
 
     public async QueryStatistics(): Promise<DictionaryStatistics>
     {
-        function ExtractCount(row: any)
-        {
-            const c = row.cnt as string;
-            return parseInt(c);
-        }
-
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const r1 = await conn.SelectOne("SELECT COUNT(*) AS cnt FROM roots");
-        const r2 = await conn.SelectOne("SELECT COUNT(*) AS cnt FROM verbs");
-        const r3 = await conn.SelectOne("SELECT COUNT(*) AS cnt FROM words");
+        const document = await this.dbController.GetDocumentDB();
 
         return {
-            rootsCount: ExtractCount(r1),
-            verbsCount: ExtractCount(r2),
-            wordsCount: ExtractCount(r3),
-            dialectCounts: await this.QueryDialectCounts(),
+            rootsCount: document.roots.length,
+            wordsCount: document.words.length,
+            /*dialectCounts: await this.QueryDialectCounts(),
             rootCounts: await this.QueryRootCounts(),
             stemCounts: await this.QueryStemCounts(),
             stem1Freq: await this.QueryStem1Frequencies(),
-            verbalNounFreq: await this.QueryVerbalNounFrequencies()
+            verbalNounFreq: await this.QueryVerbalNounFrequencies()*/
+            dialectCounts: [],
+            rootCounts: [],
+            stemCounts: [],
+            stem1Freq: [],
+            verbalNounFreq: []
         };
     }
 

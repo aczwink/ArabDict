@@ -13,7 +13,10 @@
     "acts-util-apilib": "*",
     "acts-util-core": "*",
     "acts-util-node": "*",
-    "arabdict-domain": "*"
+    "openarabdict-domain": "*",
+    "openarabicconjugation": "*",
+    "xml-js": "^1.6.11",
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",

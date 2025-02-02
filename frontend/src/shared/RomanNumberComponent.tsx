@@ -17,7 +17,7 @@
  * */
 
 import { Component, JSX_CreateElement } from "acfrontend";
-import { RootType } from "arabdict-domain/src/VerbRoot";
+import { RootType } from "openarabicconjugation/src/VerbRoot";
 
 export class RomanNumberComponent extends Component<{ num: number; }>
 {

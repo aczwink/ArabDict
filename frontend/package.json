@@ -21,6 +21,6 @@
   },
   "dependencies": {
     "acfrontend": "*",
-    "arabdict-domain": "*"
+    "openarabicconjugation": "*"
   }
 }

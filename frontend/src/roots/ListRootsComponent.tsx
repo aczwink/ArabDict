@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@
 import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, JSX_Fragment, ProgressSpinner, PushButton, Router, RouterButton, RouterState } from "acfrontend";
 import { APIService } from "../services/APIService";
 import { RootOverviewData } from "../../dist/api";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { AreValidRootCharacters, DoRootCharactersFormValidRoot, RootToString } from "./general";
 import { RadicalsEditorComponent } from "./RadicalsEditorComponent";
 
@@ -143,7 +143,6 @@ export class ListRootsComponent extends Component
     private async OnCreateRoot(rootRadicals: string)
     {
         const response = await this.apiService.roots.post({
-            description: "",
             flags: 0,
             radicals: rootRadicals
         });

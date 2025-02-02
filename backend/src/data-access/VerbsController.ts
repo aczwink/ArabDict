@@ -20,7 +20,7 @@ import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { TranslationEntry, TranslationsController } from "./TranslationsController";
 import { RootsController } from "./RootsController";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { WordRelationshipType } from "./WordsController";
 import { DialectsService } from "../services/DialectsService";
 

@@ -17,15 +17,15 @@
  * */
 
 import { Injectable } from "acfrontend";
-import { Conjugator } from "arabdict-domain/src/Conjugator";
-import { ReverseConjugator } from "arabdict-domain/src/ReverseConjugator";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { Conjugator } from "openarabicconjugation/src/Conjugator";
+import { ReverseConjugator } from "openarabicconjugation/src/ReverseConjugator";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
-import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
-import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "arabdict-domain/src/Vocalization";
-import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, AdvancedStemNumber } from "arabdict-domain/src/Definitions";
-import { NounInput, TargetNounDerivation } from "arabdict-domain/src/DialectConjugator";
-import { DialectType } from "arabdict-domain/src/Dialects";
+import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
+import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "openarabicconjugation/src/Vocalization";
+import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, AdvancedStemNumber } from "openarabicconjugation/src/Definitions";
+import { NounInput, TargetNounDerivation } from "openarabicconjugation/src/DialectConjugator";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 
 @Injectable
 export class ConjugationService

@@ -18,13 +18,13 @@
 
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { CachedAPIService } from "../services/CachedAPIService";
-import { Case, Gender, NounState, Numerus } from "arabdict-domain/src/Definitions";
+import { Case, Gender, NounState, Numerus } from "openarabicconjugation/src/Definitions";
 import { FullWordData, WordWordDerivationType } from "../../dist/api";
-import { DisplayVocalized, ParseVocalizedText } from "arabdict-domain/src/Vocalization";
+import { DisplayVocalized, ParseVocalizedText } from "openarabicconjugation/src/Vocalization";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
-import { TargetNounDerivation } from "arabdict-domain/src/DialectConjugator";
+import { TargetNounDerivation } from "openarabicconjugation/src/DialectConjugator";
 import { ConjugationService } from "../services/ConjugationService";
-import { DialectType } from "arabdict-domain/src/Dialects";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 
 @Injectable
 export class NounDeclensionTable extends Component<{ word: FullWordData }>

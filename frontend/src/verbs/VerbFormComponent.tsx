@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Gender, Tense, Numerus, Person, Voice, Mood, StemNumber } from "arabdict-domain/src/Definitions";
-import { GetDialectMetadata } from "arabdict-domain/src/DialectsMetadata";
+import { Gender, Tense, Numerus, Person, Voice, Mood, StemNumber } from "openarabicconjugation/src/Definitions";
+import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
 import { Stem1DataToStem1Context } from "./model";
-import { DialectType } from "arabdict-domain/src/Dialects";
-import { VerbRoot } from "arabdict-domain/src/VerbRoot";
+import { DialectType } from "openarabicconjugation/src/Dialects";
+import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { Use } from "acfrontend";
 import { ConjugationService } from "../services/ConjugationService";
 
