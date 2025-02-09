@@ -52,6 +52,21 @@ jobs:
           npm link
         working-directory: ./acfrontend
 
+      #OpenArabicConjugation
+      - name: Checkout OpenArabicConjugation repo
+        uses: actions/checkout@v4
+        with:
+          repository: aczwink/OpenArabicConjugation
+          path: openarabicconjugation
+
+      - name: Building OpenArabicConjugation
+        run: |
+          npm link acts-util-core
+          npm install
+          npm run build
+          npm link
+        working-directory: ./openarabicconjugation/conjugation_engine
+
       #OpenArabDictViewer
       - name: Building OpenArabDictViewer Frontend
         run: |
