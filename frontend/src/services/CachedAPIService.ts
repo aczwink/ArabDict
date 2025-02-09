@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2024-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,18 +18,18 @@
 
 import { Injectable } from "acfrontend";
 import { APIService } from "./APIService";
-import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
-import { NumberDictionary } from "../../../../ACTS-Util/core/dist/Dictionary";
+import { FullWordData, RootOverviewData, VerbData } from "../../dist/api";
+import { NumberDictionary } from "acts-util-core";
 
 export interface FullVerbData
 {
-    rootData: RootCreationData;
+    rootData: RootOverviewData;
     verbData: VerbData;
 }
 
 interface RootCache
 {
-    data: RootCreationData;
+    data: RootOverviewData;
     verbs?: VerbData[];
 }
 
@@ -112,7 +112,7 @@ export class CachedAPIService
     }
 
     //State
-    private rootsCache: NumberDictionary<RootCreationData>;
+    private rootsCache: NumberDictionary<RootOverviewData>;
     private rootVerbsCache: NumberDictionary<VerbData[]>;
     private verbsCache: NumberDictionary<VerbData>;
     private wordsCache: NumberDictionary<FullWordData>;

@@ -21,15 +21,15 @@ import { DialectType } from "openarabicconjugation/src/Dialects";
 import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
 import { RootType } from "openarabicconjugation/src/VerbRoot";
 
-export function Stem1DataToStem1Context(rootType: RootType, data: string): Stem1Context
+export function Stem1DataToStem1Context(dialect: DialectType, rootType: RootType, data: string): Stem1Context
 {
-    return GetDialectMetadata(DialectType.ModernStandardArabic).CreateStem1Context(rootType, data);
+    return GetDialectMetadata(dialect).CreateStem1Context(rootType, data);
 }
 
-export function Stem1DataToStem1ContextOptional(rootType: RootType, data?: string): Stem1Context | undefined
+export function Stem1DataToStem1ContextOptional(dialect: DialectType, rootType: RootType, data?: string): Stem1Context | undefined
 {
     if(data === undefined)
         return undefined;
 
-    return Stem1DataToStem1Context(rootType, data);
+    return Stem1DataToStem1Context(dialect, rootType, data);
 }

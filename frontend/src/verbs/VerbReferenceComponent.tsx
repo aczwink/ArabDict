@@ -17,16 +17,17 @@
  * */
 
 import { Injectable, Component, Anchor, ProgressSpinner, JSX_CreateElement } from "acfrontend";
-import { RootCreationData, VerbData } from "../../dist/api";
+import { RootOverviewData, VerbData } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { ConjugationService } from "../services/ConjugationService";
 import { Stem1DataToStem1ContextOptional } from "./model";
-import { Gender, Mood, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
+import { Gender, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
 import { DialectsService } from "../services/DialectsService";
 import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 
 @Injectable
-export class VerbReferenceComponent extends Component<{ root: RootCreationData; verbData: VerbData }>
+export class VerbReferenceComponent extends Component<{ root: RootOverviewData; verbData: VerbData }>
 {
     constructor(private conjugationService: ConjugationService, private dialectsService: DialectsService)
     {
@@ -44,7 +45,7 @@ export class VerbReferenceComponent extends Component<{ root: RootCreationData; 
             numerus: Numerus.Singular,
             person: Person.Third,
             stem: verbData.stem as any,
-            stem1Context: Stem1DataToStem1ContextOptional(root.type, verbData.stem1Context),
+            stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, verbData.stem1Context),
             voice: Voice.Active
         });
 
@@ -72,7 +73,7 @@ export class VerbIdReferenceComponent extends Component<{ verbId: number; }>
     }
 
     //Private state
-    private rootData: RootCreationData | null;
+    private rootData: RootOverviewData | null;
     private verbData: VerbData | null;
 
     //Event handlers

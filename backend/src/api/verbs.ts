@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, BodyProp, Delete, Get, NotFound, Post, Put, Query } from "acts-util-apilib";
-import { VerbCreationData, VerbUpdateData, VerbsController } from "../data-access/VerbsController";
+import { APIController, Get, NotFound, Query } from "acts-util-apilib";
+import { VerbsController } from "../data-access/VerbsController";
 import { WordsController } from "../data-access/WordsController";
 
 @APIController("verbs")
@@ -25,22 +25,6 @@ class _api_
 {
     constructor(private verbsController: VerbsController, private wordsController: WordsController)
     {
-    }
-
-    @Post()
-    public async CreateVerb(
-        @Body data: VerbCreationData
-    )
-    {
-        return await this.verbsController.CreateVerb(data);
-    }
-
-    @Delete()
-    public async DeleteVerb(
-        @Query verbId: number
-    )
-    {
-        await this.verbsController.DeleteVerb(verbId);
     }
 
     @Get()
@@ -54,28 +38,11 @@ class _api_
         return verb;
     }
 
-    @Get("search")
-    public Search(
-        @Query byTranslation: string
-    )
-    {
-        return this.verbsController.SearchVerbs(byTranslation);
-    }
-
     @Get("words")
     public async QueryVerbDerivedWords(
         @Query verbId: number
     )
     {
         return (await this.wordsController.QueryVerbDerivedWords(verbId)).PromiseAll();
-    }
-
-    @Put()
-    public async UpdateVerb(
-        @BodyProp verbId: number,
-        @BodyProp data: VerbUpdateData
-    )
-    {
-        await this.verbsController.UpdateVerb(verbId, data);
     }
 }

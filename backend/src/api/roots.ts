@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, Delete, Get, Path, Post, Put, Query } from "acts-util-apilib";
-import { RootCreationData, RootsController } from "../data-access/RootsController";
+import { APIController, Get, Path, Query } from "acts-util-apilib";
+import { RootsController } from "../data-access/RootsController";
 import { VerbsController } from "../data-access/VerbsController";
 import { WordsController } from "../data-access/WordsController";
 
@@ -26,14 +26,6 @@ class _api_
 {
     constructor(private rootsController: RootsController)
     {
-    }
-
-    @Post()
-    public async AddRoot(
-        @Body data: RootCreationData
-    )
-    {
-        return await this.rootsController.AddRoot(data);
     }
 
     @Get()
@@ -50,14 +42,6 @@ class _api2_
 {
     constructor(private rootsController: RootsController, private verbsController: VerbsController, private wordsController: WordsController)
     {
-    }
-
-    @Delete()
-    public async DeleteRoot(
-        @Path rootId: number
-    )
-    {
-        await this.rootsController.DeleteRoot(rootId);
     }
 
     @Get()
@@ -82,14 +66,5 @@ class _api2_
     )
     {
         return (await this.wordsController.QueryRootDerivedWords(rootId)).PromiseAll();
-    }
-
-    @Put()
-    public async UpdateRoot(
-        @Path rootId: number,
-        @Body data: RootCreationData
-    )
-    {
-        await this.rootsController.UpdateRoot(rootId, data);
     }
 }

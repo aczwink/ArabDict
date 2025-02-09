@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,68 +18,20 @@
 
 import { DBQueryExecutor, Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
-import { TranslationEntry, TranslationsController } from "./TranslationsController";
 import { RemoveTashkil } from "openarabicconjugation/src/Util";
-
-export enum WordType
-{
-    Noun = 0,
-    Preposition = 1,
-    Adjective = 2,
-    Conjunction = 3,
-    /**
-     * A verb that comes from an Arabic dialect or that was adopted by a foreign language and therefore does not base on a root, a stem etc.
-     */
-    ForeignVerb = 4,
-    Adverb = 5,
-    Pronoun = 6,
-    Phrase = 7,
-    Particle = 8,
-    Interjection = 9
-}
-
-enum WordWordDerivationType
-{
-    //Relation from x to y means: x is plural of y
-    Plural = 0,
-    //Relation from x to y means: x is feminine version of male word y
-    Feminine = 1,
-    //Relation from adjective x to noun y means: x is nisba of y
-    Nisba = 2,
-    //Relation from x to y means: x is colloquial version of fus7a word y
-    Colloquial = 3,
-    //Relation from x to y means: x is an extension of word y (for example taking a word to a further meaning in a phrase)
-    Extension = 4,
-    //Relation from noun x to adjective y means: x is elative degree of y
-    ElativeDegree = 5,
-    //Relation from x to y means: x is singulative of collective y
-    Singulative = 6,
-}
-
-export enum WordRelationshipType
-{
-    Synonym = 0,
-    Antonym = 1,
-}
-
-enum WordVerbDerivationType
-{
-    Unknown = 0,
-    VerbalNoun = 1,
-    ActiveParticiple = 2,
-    PassiveParticiple = 3,
-}
+import { OpenArabDictNonVerbDerivationType, OpenArabDictVerbDerivationType, OpenArabDictWord, OpenArabDictWordParentType, OpenArabDictWordRelationshipType, OpenArabDictWordType } from "openarabdict-domain";
+import { TranslationEntry } from "./VerbsController";
 
 interface WordWordDerivationLink
 {
     refWordId: number;
-    relationType: WordWordDerivationType;
+    relationType: OpenArabDictNonVerbDerivationType;
 }
 
 interface WordRelation
 {
     relatedWordId: number;
-    relationType: WordRelationshipType;
+    relationType: OpenArabDictWordRelationshipType;
 }
 
 interface WordRootDerivationData
@@ -89,7 +41,7 @@ interface WordRootDerivationData
 
 interface WordVerbDerivationData
 {
-    type: WordVerbDerivationType;
+    type: OpenArabDictVerbDerivationType;
     verbId: number;
 }
 
@@ -97,8 +49,7 @@ type WordDerivationData = WordRootDerivationData | WordVerbDerivationData | Word
 
 interface WordFunctionData
 {
-    id: number;
-    type: WordType;
+    type: OpenArabDictWordType;
     translations: TranslationEntry[];
 }
 
@@ -122,7 +73,7 @@ export interface WordFilterCriteria
 {
     includeRelated: boolean;
     translation: string;
-    type: WordType | null;
+    type: OpenArabDictWordType | null;
     derivation: "any" | "none" | "root" | "verb";
     word: string;
 }
@@ -130,117 +81,53 @@ export interface WordFilterCriteria
 @Injectable
 export class WordsController
 {
-    constructor(private dbController: DatabaseController, private translationsController: TranslationsController)
+    constructor(private dbController: DatabaseController)
     {
     }
 
     //Public methods
-    public async CreateWord(data: WordCreationData)
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const result = await conn.InsertRow("words", {
-            word: data.word,
-            isMale: data.isMale
-        });
-        const wordId = result.insertId;
-
-        if(data.derivation !== undefined)
-            await this.InsertDerivation(conn, data.derivation, wordId);
-
-        await this.UpdateWordFunctions(wordId, data.functions);
-        await this.UpdateWordRelations(wordId, data.related);
-
-        return wordId;
-    }
-
-    public async DeleteWord(wordId: number)
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const functions = await this.QueryWordFunctions(wordId);
-        for (const func of functions)
-            await conn.DeleteRows("words_functions_translations", "wordFunctionId = ?", func.id);
-        await conn.DeleteRows("words_functions", "wordId = ?", wordId);
-        await conn.DeleteRows("words_verbs", "wordId = ?", wordId);
-        await conn.DeleteRows("words", "id = ?", wordId);
-    }
-
     public async FindWords(filterCriteria: WordFilterCriteria, offset: number, limit: number)
     {
-        const builder = this.CreateQueryBuilder(filterCriteria);
-        builder.offset = offset;
-        builder.limit = limit;
+        const document = await this.dbController.GetDocumentDB();
 
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        filterCriteria.translation = filterCriteria.translation.toLowerCase();
+        filterCriteria.word = this.MapWordToSearchVariant(filterCriteria.word)
+        const filtered = document.words.filter(this.DoesWordMatchFilterCriteria.bind(this, filterCriteria));
 
-        const rows = await conn.Select(builder.CreateSQLQuery());
-        return rows.Values().Map(this.QueryFullWordData.bind(this)).PromiseAll();
-    }
-
-    public async FindWordsCount(filterCriteria: WordFilterCriteria)
-    {
-        const builder = this.CreateQueryBuilder(filterCriteria);
-        const query = "SELECT COUNT(*) as cnt FROM (" + builder.CreateSQLQuery() + ") tbl";
-
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-        const row = await conn.SelectOne(query);
-
-        if(row === undefined)
-            return 0;
-        return row.cnt as number;
+        return filtered.Values().Skip(offset).Take(limit).Map(this.QueryFullWordData.bind(this)).PromiseAll();
     }
 
     public async QueryRootDerivedWords(rootId: number)
     {
-        const query = `
-        SELECT w.id, w.word, w.isMale, wr.rootId
-        FROM words w
-        INNER JOIN words_roots wr
-            ON wr.wordId = w.id
-        WHERE wr.rootId = ?
-        `;
+        function filterFunc(x: OpenArabDictWord)
+        {
+            if(x.type === OpenArabDictWordType.Verb)
+                return x.rootId === rootId;
+            return (x.parent?.type === OpenArabDictWordParentType.Root) && (x.parent.rootId === rootId);
+        }
 
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-        const rows = await conn.Select(query, rootId);
+        const document = await this.dbController.GetDocumentDB();
 
-        return rows.Values().Map(this.QueryFullWordData.bind(this));
+        const words = document.words.Values().Filter(filterFunc);
+
+        return words.Map(this.QueryFullWordData.bind(this));
     }
 
     public async QueryVerbDerivedWords(verbId: number)
     {
-        const query = `
-        SELECT w.id, w.word, w.isMale, wv.verbId, wv.type AS derivationType
-        FROM words w
-        INNER JOIN words_verbs wv
-            ON wv.wordId = w.id
-        WHERE wv.verbId = ?
-        `;
+        const document = await this.dbController.GetDocumentDB();
 
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-        const rows = await conn.Select(query, verbId);
-
-        return rows.Values().Map(this.QueryFullWordData.bind(this));
+        const words = document.words.Values().Filter(x => (x.type !== OpenArabDictWordType.Verb) && (x.parent?.type === OpenArabDictWordParentType.Verb) && (x.parent.verbId === verbId));
+        return words.Map(this.QueryFullWordData.bind(this));
     }
 
     public async QueryWord(wordId: number)
     {
-        const query = `
-        SELECT w.id, w.word, w.isMale, wv.verbId, wv.type AS derivationType, wr.rootId, wd.sourceWordId, wd.relationship
-        FROM words w
-        LEFT JOIN words_derivations wd
-            ON wd.derivedWordId = w.id
-        LEFT JOIN words_roots wr
-            ON wr.wordId = w.id
-        LEFT JOIN words_verbs wv
-            ON wv.wordId = w.id
-        WHERE w.id = ?
-        `;
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const document = await this.dbController.GetDocumentDB();
 
-        const row = await conn.SelectOne(query, wordId);
-        if(row !== undefined)
-            return await this.QueryFullWordData(row);
+        const word = document.words.find(x => x.id === wordId);
+        if(word !== undefined)
+            return await this.QueryFullWordData(word);
 
         return undefined;
     }
@@ -255,189 +142,43 @@ export class WordsController
         return row.cnt as number;
     }
 
-    public async UpdateWord(wordId: number, data: WordCreationData)
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        await conn.UpdateRows("words", { word: data.word, isMale: data.isMale }, "id = ?", wordId);
-
-        await conn.DeleteRows("words_derivations", "derivedWordId = ?", wordId);
-        await conn.DeleteRows("words_roots", "wordId = ?", wordId);
-        await conn.DeleteRows("words_verbs", "wordId = ?", wordId);
-        if(data.derivation !== undefined)
-            await this.InsertDerivation(conn, data.derivation, wordId);
-
-        await this.UpdateWordFunctions(wordId, data.functions);
-        await this.UpdateWordRelations(wordId, data.related);
-    }
-
     //Private methods
-    private CreateQueryBuilder(filterCriteria: WordFilterCriteria)
+    private DoesWordMatchFilterCriteria(filterCriteria: WordFilterCriteria, word: OpenArabDictWord)
     {
-        const builder = this.dbController.CreateQueryBuilder();
-        const wordsTable = builder.SetPrimaryTable("words");
-
-        const wordsRootsTable = builder.AddJoin({
-            type: (filterCriteria.derivation === "root") ? "INNER" : "LEFT",
-            tableName: "words_roots",
-            conditions: [
-                {
-                    column: "wordId",
-                    joinTable: wordsTable,
-                    joinTableColumn: "id",
-                    operator: "="
-                }
-            ]
-        });
-
-        const wordsVerbsTable = builder.AddJoin({
-            type: (filterCriteria.derivation === "verb") ? "INNER" : "LEFT",
-            tableName: "words_verbs",
-            conditions: [
-                {
-                    column: "wordId",
-                    joinTable: wordsTable,
-                    joinTableColumn: "id",
-                    operator: "="
-                }
-            ]
-        });
-
-        const wordsFunctionsTable = builder.AddJoin({
-            type: "LEFT",
-            tableName: "words_functions",
-            conditions: [
-                {
-                    column: "wordId",
-                    joinTable: wordsTable,
-                    joinTableColumn: "id",
-                    operator: "="
-                }
-            ]
-        });
-
-        builder.SetColumns([
-            { table: wordsTable, column: "id" },
-            { table: wordsTable, column: "word" },
-            { table: wordsTable, column: "isMale" },
-            { table: wordsVerbsTable, column: "verbId" },
-            { table: wordsVerbsTable, column: "type AS derivationType" },
-            { table: wordsRootsTable, column: "rootId" },
-        ]);
-
-        builder.AddGrouping({
-            table: wordsTable,
-            columnName: "id"
-        });
-
-        builder.AddCondition({
-            operand: {
-                function: "AR_TRIM",
-                args: [{
-                    table: wordsTable,
-                    column: "word",
-                }]
-            },
-            operator: "LIKE",
-            constant: "%" + this.MapWordToSearchVariant(filterCriteria.word) + "%"
-        });
-
-        if(filterCriteria.translation.trim().length > 0)
+        switch(filterCriteria.derivation)
         {
-            const wordsFunctionsTranslationsTable = builder.AddJoin({
-                type: "INNER",
-                tableName: "words_functions_translations",
-                conditions: [
-                    {
-                        column: "wordFunctionId",
-                        joinTable: wordsFunctionsTable,
-                        joinTableColumn: "id",
-                        operator: "="
-                    }
-                ]
-            });
+            case "any":
+                break;
+            case "none":
+                throw new Error("TODO: reimplement me1");
+            case "root":
+                throw new Error("TODO: reimplement me2");
+            case "verb":
+                throw new Error("TODO: reimplement me3");
+        }
 
-            builder.AddCondition({
-                operand: {
-                    table: wordsFunctionsTranslationsTable,
-                    column: "text",
-                },
-                operator: "LIKE",
-                constant: "%" + filterCriteria.translation + "%"
-            });
+        //filterCriteria.includeRelated //TODO: is this still valid? should be derivation = word
+
+        if(filterCriteria.translation.length > 0)
+        {
+            const translationMatch = word.translations.Values().Map(x => x.text.Values().Map(x => x.toLowerCase().includes(filterCriteria.translation))).Flatten().AnyTrue();
+            if(!translationMatch)
+                return false;
         }
 
         if(filterCriteria.type !== null)
         {
-            builder.AddCondition({
-                operand: {
-                    table: wordsFunctionsTable,
-                    column: "type",
-                },
-                operator: "=",
-                constant: filterCriteria.type
-            });
+            if(filterCriteria.type !== word.type)
+                return false;
         }
 
-        if( (filterCriteria.derivation === "none") || (filterCriteria.derivation === "verb") )
+        if(filterCriteria.word.length > 0)
         {
-            builder.AddCondition({
-                operand: {
-                    table: wordsRootsTable,
-                    column: "rootId",
-                },
-                operator: "IS",
-                constant: null
-            });
-        }
-        if( (filterCriteria.derivation === "none") || (filterCriteria.derivation === "root") )
-        {
-            builder.AddCondition({
-                operand: {
-                    table: wordsVerbsTable,
-                    column: "verbId",
-                },
-                operator: "IS",
-                constant: null
-            });
+            if(!this.MapWordToSearchVariant(word.text).includes(filterCriteria.word))
+                return false;
         }
 
-        if(!filterCriteria.includeRelated)
-        {
-            const wordsRelationsTable = builder.AddJoin({
-                type: "LEFT",
-                tableName: "words_derivations",
-                conditions: [
-                    {
-                        column: "derivedWordId",
-                        joinTable: wordsTable,
-                        joinTableColumn: "id",
-                        operator: "="
-                    },
-                ]
-            });
-
-            builder.AddCondition({
-                operand: {
-                    table: wordsRelationsTable,
-                    column: "sourceWordId",
-                },
-                operator: "IS",
-                constant: null
-            });
-        }
-
-        return builder;
-    }
-
-    private async InsertDerivation(conn: DBQueryExecutor, derivation: WordDerivationData, wordId: number)
-    {
-        if("rootId" in derivation)
-            await conn.InsertRow("words_roots", { wordId, rootId: derivation.rootId });
-        else if("verbId" in derivation)
-            await conn.InsertRow("words_verbs", { wordId, verbId: derivation.verbId, type: derivation.type });
-        else
-            await conn.InsertRow("words_derivations", { derivedWordId: wordId, sourceWordId: derivation.refWordId, relationship: derivation.relationType });
+        return true;
     }
 
     private MapWordToSearchVariant(word: string)
@@ -454,44 +195,61 @@ export class WordsController
 
     private async QueryDerivedLinks(wordId: number)
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        function filterFunc(x: OpenArabDictWord)
+        {
+            if(x.type === OpenArabDictWordType.Verb)
+                return false;
+            if(x.parent?.type === OpenArabDictWordParentType.NonVerbWord)
+                return x.parent.wordId === wordId;
+            /*if(x.parent?.type === OpenArabDictWordParentType.Verb)
+                return x.parent.verbId === wordId;*/
+            return false;
+        }
 
-        const rows = await conn.Select("SELECT derivedWordId, relationship FROM words_derivations WHERE sourceWordId = ?", wordId)
+        const document = await this.dbController.GetDocumentDB();
 
-        return rows.map<WordWordDerivationLink>(x => ({
-            refWordId: x.derivedWordId,
-            relationType: x.relationship
+        const children = document.words.filter(filterFunc);
+
+        return children.map<WordWordDerivationLink>(x => ({
+            refWordId: x.id,
+            relationType: (x as any).parent.relationType
         }));
     }
 
-    private async QueryFullWordData(row: any)
+    private async QueryFullWordData(word: OpenArabDictWord)
     {
         const result: FullWordData = {
-            id: row.id,
-            isMale: (row.isMale === null) ? null : (row.isMale !== 0),
-            word: row.word,
-            derived: await this.QueryDerivedLinks(row.id),
-            related: await this.QueryRelatedWords(row.id),
-            functions: await this.QueryWordFunctions(row.id)
+            id: word.id,
+            isMale: ("isMale" in word) ? word.isMale : null,
+            word: word.text,
+            derived: await this.QueryDerivedLinks(word.id),
+            related: await this.QueryRelatedWords(word.id),
+            functions: await this.QueryWordFunctions(word.id),
         };
-        if(typeof row.verbId === "number")
+        if(word.type === OpenArabDictWordType.Verb)
         {
             result.derivation = {
-                type: row.derivationType,
-                verbId: row.verbId,
+                rootId: word.rootId
             };
         }
-        else if(typeof row.rootId === "number")
+        else if(word.parent?.type === OpenArabDictWordParentType.NonVerbWord)
         {
             result.derivation = {
-                rootId: row.rootId
+                refWordId: word.parent.wordId,
+                relationType: word.parent.relationType
             };
         }
-        else if(typeof row.sourceWordId === "number")
+        else if(word.parent?.type === OpenArabDictWordParentType.Root)
         {
             result.derivation = {
-                refWordId: row.sourceWordId,
-                relationType: row.relationship
+                rootId: word.parent.rootId
+            };
+        }
+        else if(word.parent?.type === OpenArabDictWordParentType.Verb)
+        {
+            result.derivation = {
+                type: word.parent.derivation,
+                verbId: word.parent.verbId,
             };
         }
 
@@ -500,79 +258,24 @@ export class WordsController
 
     private async QueryRelatedWords(wordId: number)
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const document = await this.dbController.GetDocumentDB();
 
-        const rows = await conn.Select("SELECT word1Id, word2Id, relationship FROM words_relations WHERE (word1Id = ?) OR (word2Id = ?)", wordId, wordId);
-
-        return rows.map<WordRelation>(x => ({
+        return document.wordRelations.Values().Filter(x => (x.word1Id === wordId) || (x.word2Id === wordId)).Map<WordRelation>(x => ({
             relatedWordId: x.word1Id === wordId ? x.word2Id : x.word1Id,
             relationType: x.relationship
-        }));
+        })).ToArray();
     }
 
     private async QueryWordFunctions(wordId: number)
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const document = await this.dbController.GetDocumentDB();
 
-        const rows = await conn.Select("SELECT id, type FROM words_functions WHERE wordId = ?", wordId);
-        const result: WordFunctionData[] = [];
-        for (const row of rows)
-        {
-            result.push({
-                id: row.id,
-                translations: await this.translationsController.QueryWordFunctionTranslations(row.id),
-                type: row.type
-            });
-        }
+        const word = document.words.find(x => x.id === wordId)!;
+
+        const result: WordFunctionData[] = [{
+            translations: word.translations,
+            type: word.type
+        }];
         return result;
-    }
-
-    private async UpdateWordFunctions(wordId: number, functions: WordFunctionData[])
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const oldRows = await this.QueryWordFunctions(wordId);
-        for (const oldRow of oldRows)
-        {
-            const matchedNewRowIdx = functions.findIndex(x => x.id === oldRow.id);
-            if(matchedNewRowIdx === -1)
-            {
-                await this.translationsController.UpdateWordFunctionTranslations(oldRow.id, []);
-                await conn.DeleteRows("words_functions", "id = ?", oldRow.id);
-            }
-            else
-            {
-                const matchedNewRow = functions[matchedNewRowIdx];
-                await conn.UpdateRows("words_functions", { type: matchedNewRow.type }, "id = ?", oldRow.id);
-                await this.translationsController.UpdateWordFunctionTranslations(oldRow.id, matchedNewRow.translations);
-
-                functions.Remove(matchedNewRowIdx);
-            }
-        }
-
-        for (const newRow of functions)
-        {
-            const result = await conn.InsertRow("words_functions", { wordId, type: newRow.type });
-            await this.translationsController.UpdateWordFunctionTranslations(result.insertId, newRow.translations);
-        }
-    }
-
-    private async UpdateWordRelations(wordId: number, related: WordRelation[])
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        await conn.DeleteRows("words_relations", "(word1Id = ?) OR (word2Id = ?)", wordId, wordId);
-
-        for (const relation of related)
-        {
-            const word1Id = Math.min(relation.relatedWordId, wordId);
-            const word2Id = Math.max(relation.relatedWordId, wordId);
-
-            await conn.InsertRow("words_relations", {
-                word1Id,
-                word2Id,
-                relationship: relation.relationType
-            });
-        }
     }
 }

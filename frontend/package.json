@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "acfrontend": "*",
+    "acts-util-core": "*",
     "openarabicconjugation": "*"
   }
 }

@@ -21,15 +21,16 @@ import { APIService } from "./APIService";
 import { FullWordData } from "../../dist/api";
 import { CachedAPIService, FullVerbData } from "./CachedAPIService";
 import { ConjugationService } from "./ConjugationService";
-import { ConjugationParams, Gender, Letter, Mood, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
+import { ConjugationParams, Gender, Letter, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
 import { ReverseLookupService } from "./ReverseLookupService";
-import { EqualsAny } from "../../../../ACTS-Util/core/dist/EqualsAny";
+import { EqualsAny } from "acts-util-core";
 import { VerbReverseConjugationResult } from "openarabicconjugation/src/Conjugator";
 import { DisplayVocalized, ParseVocalizedText } from "openarabicconjugation/src/Vocalization";
 import { IsArabicText } from "../roots/general";
 import { DialectsService } from "./DialectsService";
 import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 
 interface RootMatchData extends VerbReverseConjugationResult
 {
@@ -199,14 +200,12 @@ export class GlobalSearchService
         const isArabic = IsArabicText(filter);
 
         const p2 = this.FindWordsByTranslation(filter, offset, limit);
-        const p3 = this.FindVerbsByTranslation(filter, offset, limit);
 
         const sq = new SearchQuery(filter, resultCallback);
 
         p2.then(this.AddWordsToState.bind(this, sq, true));
-        p3.then(this.AddVerbsByTranslationToState.bind(this, sq, true));
 
-        const promises: Promise<any>[] = [p2, p3];
+        const promises: Promise<any>[] = [p2];
 
         if(isArabic)
         {
@@ -258,7 +257,7 @@ export class GlobalSearchService
                 numerus: Numerus.Singular,
                 person: Person.Third,
                 stem: x.verbData.stem as any,
-                stem1Context: Stem1DataToStem1ContextOptional(root.type, x.verbData.stem1Context),
+                stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, x.verbData.stem1Context),
                 voice: Voice.Active
             });
         }
@@ -326,14 +325,6 @@ export class GlobalSearchService
         };
     }
 
-    private async FindVerbsByTranslation(filter: string, offset: number, limit: number)
-    {
-        const response = await this.apiService.verbs.search.get({ byTranslation: filter });
-        const result = response.data;
-
-        return result.Values().Map(x => this.cachedAPIService.QueryFullVerbDataForVerbData(x)).PromiseAll();
-    }
-
     private async FindWords(filter: string, offset: number, limit: number): Promise<FullWordData[]>
     {
         const response = await this.apiService.words.get({
@@ -345,11 +336,11 @@ export class GlobalSearchService
             type: null,
             wordFilter: filter
         });
-        if((response.data.words.length === 0) && filter.endsWith(Letter.TaMarbuta))
+        if((response.data.length === 0) && filter.endsWith(Letter.TaMarbuta))
             return this.FindWords(filter.substring(0, filter.length - 1), offset, limit);
-        if((response.data.words.length === 0) && filter.startsWith(Letter.Alef + Letter.Lam))
+        if((response.data.length === 0) && filter.startsWith(Letter.Alef + Letter.Lam))
             return this.FindWords(filter.substring(2), offset, limit);
-        return response.data.words;
+        return response.data;
     }
 
     private async FindWordsByTranslation(filter: string, offset: number, limit: number)
@@ -363,7 +354,7 @@ export class GlobalSearchService
             type: null,
             wordFilter: ""
         });
-        return response.data.words;
+        return response.data;
     }
 
     private async TryFindVerb(rootId: number, params: ConjugationParams)
@@ -378,7 +369,7 @@ export class GlobalSearchService
             {
                 if(params.stem === 1)
                 {
-                    if(EqualsAny(Stem1DataToStem1ContextOptional(root.type, entry.stem1Context), params.stem1Context))
+                    if(EqualsAny(Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, entry.stem1Context), params.stem1Context))
                         return entry.id;
                 }
                 else

@@ -1,6 +1,6 @@
 {
     "ext": "ts",
     "ignore": ["./dist"],
-    "watch": "./src",
+    "watch": ["./src", "../../OpenArabDict/builder/dist/db.json"],
     "verbose": true
 }

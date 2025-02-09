@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,9 +18,8 @@
 import http from "http";
 
 import { OpenAPI } from "acts-util-core";
-import { Factory, GlobalInjector, HTTP } from "acts-util-node";
+import { Factory, HTTP } from "acts-util-node";
 import { APIRegistry } from "acts-util-apilib";
-import { DatabaseController } from "./data-access/DatabaseController";
 
 async function SetupServer()
 {
@@ -43,7 +42,6 @@ async function SetupServer()
     process.on('SIGINT', function()
     {
         console.log("Shutting server down...");
-        GlobalInjector.Resolve(DatabaseController).Close();
         server.close();
     });
 }

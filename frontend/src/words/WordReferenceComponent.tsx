@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 
 import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "../services/APIService";
-import { FullWordData, WordVerbDerivationType } from "../../dist/api";
+import { FullWordData, OpenArabDictVerbDerivationType } from "../../dist/api";
 import { WordGenderToAbbreviation, WordMayHaveGender, WordTypeToAbbreviationText } from "../shared/words";
 
 export class WordReferenceComponent extends Component<{ word: FullWordData; }>
@@ -51,11 +51,11 @@ export class WordReferenceComponent extends Component<{ word: FullWordData; }>
         {
             switch(word.derivation.type)
             {
-                case WordVerbDerivationType.ActiveParticiple:
+                case OpenArabDictVerbDerivationType.ActiveParticiple:
                     return "(active participle)";
-                case WordVerbDerivationType.PassiveParticiple:
+                case OpenArabDictVerbDerivationType.PassiveParticiple:
                     return "(passive participle)";
-                case WordVerbDerivationType.VerbalNoun:
+                case OpenArabDictVerbDerivationType.VerbalNoun:
                     return "(verbal noun)";
             }
         }

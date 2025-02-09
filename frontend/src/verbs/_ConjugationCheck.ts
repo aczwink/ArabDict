@@ -41,7 +41,7 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
             case 1:
                 switch(root.type)
                 {
-                    case RootType.Assimilated:
+                    case RootType.InitialWeak:
                     {
                         if((params.stem1Context._legacy_middleRadicalTashkil === Tashkil.Kasra) && (params.stem1Context._legacy_middleRadicalTashkilPresent === Tashkil.Fatha))
                             return need;
@@ -66,7 +66,7 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
                         if((params.stem1Context._legacy_middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context._legacy_middleRadicalTashkilPresent === Tashkil.Dhamma))
                             return need;
                     }
-                    case RootType.Hollow:
+                    case RootType.MiddleWeak:
                     {
                         if((params.stem1Context._legacy_middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context._legacy_middleRadicalTashkilPresent === Tashkil.Fatha))
                             return need;
@@ -80,7 +80,7 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
                             return needPassive;
                     }
                     break;
-                    case RootType.Sound:
+                    case RootType.Regular:
                     {
                         if((params.stem1Context._legacy_middleRadicalTashkil === Tashkil.Dhamma) && (params.stem1Context._legacy_middleRadicalTashkilPresent === Tashkil.Dhamma))
                             return need;
@@ -107,7 +107,7 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
             case 6:
                 switch(root.type)
                 {
-                    case RootType.Defective:
+                    case RootType.FinalWeak:
                         return needPassive;
                     case RootType.SecondConsonantDoubled:
                         return need;
@@ -116,26 +116,26 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
             case 7:
                 switch(root.type)
                 {
-                    case RootType.Defective:
-                    case RootType.Hollow:
+                    case RootType.FinalWeak:
+                    case RootType.MiddleWeak:
                     case RootType.SecondConsonantDoubled:
                         return need;
-                    case RootType.Sound:
+                    case RootType.Regular:
                         return needPassive;
                 }
                 break;
             case 9:
                 switch(root.type)
                 {
-                    case RootType.Assimilated:
-                    case RootType.Defective:
+                    case RootType.InitialWeak:
+                    case RootType.FinalWeak:
                     case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
                     case RootType.HamzaOnR1:
-                    case RootType.Hollow:
+                    case RootType.MiddleWeak:
                     case RootType.Quadriliteral:
                     case RootType.SecondConsonantDoubled:
                         return need;
-                    case RootType.Sound:
+                    case RootType.Regular:
                         return needPassive;
                 }
                 break;

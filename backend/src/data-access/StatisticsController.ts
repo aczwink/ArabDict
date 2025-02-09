@@ -19,25 +19,25 @@
 import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { RootType, VerbRoot } from "openarabicconjugation/src/VerbRoot";
-import { Dictionary, ObjectExtensions, Of } from "acts-util-core";
+import { Dictionary, ObjectExtensions } from "acts-util-core";
 import { VerbsController, VerbUpdateData } from "./VerbsController";
 import { RootsController } from "./RootsController";
 import { Conjugator } from "openarabicconjugation/src/Conjugator";
 import { WordsController } from "./WordsController";
 import { DisplayVocalized, VocalizedToString } from "openarabicconjugation/src/Vocalization";
-import { AdvancedStemNumber, Stem1Context } from "openarabicconjugation/src/Definitions";
+import { AdvancedStemNumber, MapRootTypeToConjugationScheme, Stem1Context, VerbConjugationScheme } from "openarabicconjugation/src/Definitions";
 import { DialectsService } from "../services/DialectsService";
+import { OpenArabDictWordType } from "openarabdict-domain";
 
 interface DialectStatistics
 {
     dialectId: number;
     wordsCount: number;
-    verbsCount: number;
 }
 
-interface RootStatistics
+interface VerbTypeStatistics
 {
-    rootType: RootType;
+    scheme: VerbConjugationScheme;
     count: number;
 }
 
@@ -69,7 +69,7 @@ interface DictionaryStatistics
     wordsCount: number;
 
     dialectCounts: DialectStatistics[];
-    rootCounts: RootStatistics[];
+    verbTypeCounts: VerbTypeStatistics[];
     stemCounts: VerbStemStatistics[];
     stem1Freq: VerbStem1Frequencies[];
     verbalNounFreq: VerbalNounFrequencies[];
@@ -90,14 +90,11 @@ export class StatisticsController
         return {
             rootsCount: document.roots.length,
             wordsCount: document.words.length,
-            /*dialectCounts: await this.QueryDialectCounts(),
-            rootCounts: await this.QueryRootCounts(),
+            dialectCounts: await this.QueryDialectCounts(),
+            verbTypeCounts: await this.QueryVerbTypeCounts(),
             stemCounts: await this.QueryStemCounts(),
-            stem1Freq: await this.QueryStem1Frequencies(),
+            /*stem1Freq: await this.QueryStem1Frequencies(),
             verbalNounFreq: await this.QueryVerbalNounFrequencies()*/
-            dialectCounts: [],
-            rootCounts: [],
-            stemCounts: [],
             stem1Freq: [],
             verbalNounFreq: []
         };
@@ -114,48 +111,64 @@ export class StatisticsController
 
     private async QueryDialectCounts()
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const verbs = await conn.Select("SELECT COUNT(DISTINCT verbId) as cnt, dialectId FROM `verbs_translations` GROUP BY dialectId");
-        const words = await conn.Select("SELECT COUNT(DISTINCT wf.id) as cnt, wft.dialectId FROM `words_functions` wf INNER JOIN `words_functions_translations` wft ON wft.wordFunctionId = wf.id GROUP BY wft.dialectId");
-
         const dialectCounts: DialectStatistics[] = [];
-        for (const row of verbs)
-            dialectCounts.push({ dialectId: row.dialectId, verbsCount: parseInt(row.cnt), wordsCount: 0});
 
-        for (const row of words)
+        const document = await this.dbController.GetDocumentDB();
+
+        for (const word of document.words)
         {
-            const count = parseInt(row.cnt);
-            const entry = dialectCounts.find(x => x.dialectId === row.dialectId);
-            if(entry === undefined)
-                dialectCounts.push({ dialectId: row.dialectId, verbsCount: 0, wordsCount: count });
-            else
-                entry.wordsCount = count;
+            for (const t of word.translations)
+            {
+                const entry = dialectCounts.find(x => x.dialectId === t.dialectId);
+                if(entry === undefined)
+                    dialectCounts.push({ dialectId: t.dialectId, wordsCount: 1 });
+                else
+                    entry.wordsCount++;
+            }
         }
 
         return dialectCounts;
     }
 
-    private async QueryRootCounts()
+    private async QueryVerbTypeCounts()
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const document = await this.dbController.GetDocumentDB();
 
-        const rows = await conn.Select("SELECT radicals FROM roots");
-        return rows.Values().Map(x => new VerbRoot(x.radicals)).GroupBy(x => x.type).Map<RootStatistics>(x => ({
-            count: x.value.length,
-            rootType: x.key
+        const counts: Dictionary<number> = {};
+        for (const word of document.words)
+        {
+            if(word.type !== OpenArabDictWordType.Verb)
+                continue;
+
+            const root = document.roots.find(x => x.id === word.rootId)!;
+            const rootInstance = new VerbRoot(root.radicals);
+            const scheme = MapRootTypeToConjugationScheme(rootInstance.type);
+            
+            counts[scheme] = (counts[scheme] ?? 0) + 1;
+        }
+
+        return ObjectExtensions.Entries(counts).Map<VerbTypeStatistics>(kv => ({
+            count: kv.value!,
+            scheme: parseInt(kv.key as any) as VerbConjugationScheme
         })).ToArray();
     }
 
     private async QueryStemCounts()
     {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
+        const document = await this.dbController.GetDocumentDB();
 
-        const rows = await conn.Select("SELECT stem, COUNT(*) AS cnt FROM verbs GROUP BY stem");
-        return rows.map(row => Of<VerbStemStatistics>({
-            count: parseInt(row.cnt),
-            stem: row.stem
-        }));
+        const counts: Dictionary<number> = {};
+        for (const word of document.words)
+        {
+            if(word.type !== OpenArabDictWordType.Verb)
+                continue;
+            
+            counts[word.stem] = (counts[word.stem] ?? 0) + 1;
+        }
+        return ObjectExtensions.Entries(counts).Map<VerbStemStatistics>(kv => ({
+            count: kv.value!,
+            stem: parseInt(kv.key as any)
+        })).ToArray();
     }
 
     private async QueryStem1Frequencies()

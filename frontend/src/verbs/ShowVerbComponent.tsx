@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
-import { FullWordData, RootCreationData, VerbData, VerbRelation } from "../../dist/api";
+import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
+import { FullWordData, RootOverviewData, VerbData, VerbRelation } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
 import { RemoveTashkil } from "openarabicconjugation/src/Util";
@@ -47,7 +47,7 @@ export class ShowVerbComponent extends Component
 
         this.verbId = parseInt(routerState.routeParams.verbId!);
         this.data = null;
-        this.root = { flags: 0, radicals: "" };
+        this.root = { flags: 0, radicals: "", id: 0 };
         this.derivedWords = null;
     }
     
@@ -58,8 +58,8 @@ export class ShowVerbComponent extends Component
 
         const verbData = this.data;
         const root = new VerbRoot(this.rootRadicals);
-        const stem1ctx = Stem1DataToStem1ContextOptional(root.type, verbData.stem1Context);
         const dialectType = this.dialectsService.MapIdToType(verbData.dialectId);
+        const stem1ctx = Stem1DataToStem1ContextOptional(dialectType, root.type, verbData.stem1Context);
         const conjugated = this.conjugationService.ConjugateToStringArgs(dialectType, this.rootRadicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
 
         _TODO_CheckConjugation(new VerbRoot(this.rootRadicals), {
@@ -74,11 +74,7 @@ export class ShowVerbComponent extends Component
 
         return <fragment>
             <div className="row">
-                <div className="col"><h2>{conjugated}</h2></div>
-                <div className="col-auto">
-                    <Anchor route={"verbs/edit/" + verbData.id}><BootstrapIcon>pencil</BootstrapIcon></Anchor>
-                    <a href="#" className="link-danger" onclick={this.OnDeleteVerb.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
-                </div>
+                <h2>{conjugated}</h2>
             </div>
 
             {this.RenderProperties(stem1ctx)}
@@ -93,7 +89,7 @@ export class ShowVerbComponent extends Component
     //Private state
     private verbId: number;
     private data: VerbData | null;
-    private root: RootCreationData;
+    private root: RootOverviewData;
     private derivedWords: FullWordData[] | null;
 
     //Private properties
@@ -294,8 +290,6 @@ export class ShowVerbComponent extends Component
                     {this.derivedWords.map(x => <WordOverviewComponent word={x} />)}
                 </tbody>
             </table>
-
-            <RouterButton color="primary" route={"/words/add?verbId=" + this.verbId}><BootstrapIcon>plus</BootstrapIcon></RouterButton>
         </div>;
     }
 
@@ -369,27 +363,6 @@ export class ShowVerbComponent extends Component
     }
 
     //Event handlers
-    private async OnDeleteVerb(event: Event)
-    {
-        event.preventDefault();
-
-        const verbData = this.data!;
-        const root = new VerbRoot(this.rootRadicals);
-        const stem1ctx = Stem1DataToStem1ContextOptional(root.type, verbData.stem1Context);
-        const dialectType = this.dialectsService.MapIdToType(verbData.dialectId);
-        const conjugated = this.conjugationService.ConjugateToStringArgs(dialectType, this.rootRadicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
-
-        if(confirm("Are you sure that you want to delete the verb: " + conjugated + "?"))
-        {
-            const rootId = this.data!.rootId;
-
-            this.data = null;
-            await this.apiService.verbs.delete({ verbId: this.verbId });
-            
-            this.router.RouteTo("/roots/" + rootId);
-        }
-    }
-
     override async OnInitiated(): Promise<void>
     {
         const response1 = await this.apiService.verbs.get({ verbId: this.verbId });

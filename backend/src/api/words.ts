@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,10 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIController, Body, Delete, Get, NotFound, Path, Post, Put, Query } from "acts-util-apilib";
-import { WordCreationData, WordFilterCriteria, WordType, WordsController } from "../data-access/WordsController";
+import { APIController, Get, NotFound, Path, Query } from "acts-util-apilib";
+import { WordFilterCriteria, WordsController } from "../data-access/WordsController";
+import { OpenArabDictWordType } from "openarabdict-domain";
 
-type OptionalWordType = WordType | null;
+type OptionalWordType = OpenArabDictWordType | null;
 type WordSearchDerivation = "any" | "none" | "root" | "verb";
 
 @APIController("words")
@@ -27,14 +28,6 @@ class _api_
 {
     constructor(private wordsController: WordsController)
     {
-    }
-
-    @Post()
-    public async AddWord(
-        @Body data: WordCreationData
-    )
-    {
-        return await this.wordsController.CreateWord(data);
     }
 
     @Get()
@@ -55,13 +48,9 @@ class _api_
             translation,
             type
         };
-        const totalCount = await this.wordsController.FindWordsCount(filterCriteria);
         const words = await this.wordsController.FindWords(filterCriteria, offset, limit);
 
-        return {
-            totalCount,
-            words,
-        };
+        return words;
     }
 }
 
@@ -70,14 +59,6 @@ class _api2_
 {
     constructor(private wordsController: WordsController)
     {
-    }
-
-    @Delete()
-    public async DeleteWord(
-        @Path wordId: number,
-    )
-    {
-        await this.wordsController.DeleteWord(wordId);
     }
 
     @Get()
@@ -89,14 +70,5 @@ class _api2_
         if(word === undefined)
             return NotFound("word not found");
         return word;
-    }
-
-    @Put()
-    public async UpdateWord(
-        @Path wordId: number,
-        @Body data: WordCreationData
-    )
-    {
-        return await this.wordsController.UpdateWord(wordId, data);
     }
 }

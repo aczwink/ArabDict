@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,16 +17,33 @@
  * */
 
 import { Routes } from "acfrontend";
-import { routes as rootRoutes } from "./roots/routing";
-import { routes as verbsRoutes } from "./verbs/routing";
-import { routes as wordsRoutes } from "./words/routing";
 import { LearnComponent } from "./LearnComponent";
 import { StatisticsComponent } from "./StatisticsComponent";
 import { GlobalSearchComponent } from "./GlobalSearchComponent";
+import { ShowVerbComponent } from "./verbs/ShowVerbComponent";
+import { ShowWordComponent } from "./words/ShowWordComponent";
+import { ListRootsComponent } from "./roots/ListRootsComponent";
+import { ShowRootComponent } from "./roots/ShowRootComponent";
+
+
+
+export const rootsRoutes : Routes = [
+    { path: ":rootId", component: ShowRootComponent },
+    { path: "", component: ListRootsComponent },
+];
+
+const verbsRoutes: Routes = [
+    { path: ":verbId", component: ShowVerbComponent },
+    
+];
+
+const wordsRoutes: Routes = [
+    { path: ":wordId", component: ShowWordComponent },
+];
 
 export const routes : Routes = [
     { path: "learn", component: LearnComponent },
-    { path: "roots", children: rootRoutes },
+    { path: "roots", children: rootsRoutes },
     { path: "search", component: GlobalSearchComponent },
     { path: "statistics", component: StatisticsComponent },
     { path: "verbs", children: verbsRoutes },

@@ -1,6 +1,6 @@
 /**
  * OpenArabDictViewer
- * Copyright (C) 2023-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2023-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,12 +20,23 @@ import { JSX_CreateElement, RootInjector } from "acfrontend";
 import { TranslationEntry } from "../../dist/api";
 import { DialectsService } from "../services/DialectsService";
 
+function RenderText(text: string[])
+{
+    if(text.length === 0)
+        return null;
+    if(text.length === 1)
+        return text[0];
+    return <ul>
+        {text.map(x => <li>{x}</li>)}
+    </ul>;
+}
+
 function RenderTranslationEntry(translationEntry: TranslationEntry)
 {
     const d = RootInjector.Resolve(DialectsService).GetDialect(translationEntry.dialectId);
     return <fragment>
         {d.emojiCodes}
-        <span style="white-space: pre-wrap;">{translationEntry.text}</span>
+        <span style="white-space: pre-wrap;">{RenderText(translationEntry.text)}</span>
     </fragment>;
 }
 

@@ -23,10 +23,11 @@ import { ConjugationService } from "./services/ConjugationService";
 import { RemoveTashkilButKeepShadda } from "openarabicconjugation/src/Util";
 import { RenderTranslations } from "./shared/translations";
 import { Stem1DataToStem1ContextOptional } from "./verbs/model";
-import { Gender, Mood, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
+import { Gender, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
 import { WordTypeToText } from "./shared/words";
 import { DialectsService } from "./services/DialectsService";
 import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 
 @Injectable
 export class LearnComponent extends Component
@@ -53,7 +54,7 @@ export class LearnComponent extends Component
             numerus: Numerus.Singular,
             person: Person.Third,
             stem: this.data.stem as any,
-            stem1Context: Stem1DataToStem1ContextOptional(root.type, this.data.stem1Context),
+            stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, this.data.stem1Context),
             voice: Voice.Active
         }) : this.data.word;
 

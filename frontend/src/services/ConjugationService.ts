@@ -20,8 +20,6 @@ import { Injectable } from "acfrontend";
 import { Conjugator } from "openarabicconjugation/src/Conjugator";
 import { ReverseConjugator } from "openarabicconjugation/src/ReverseConjugator";
 import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
-import { Property } from "../../../../ACTS-Util/core/dist/Observables/Property";
-import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
 import { DisplayVocalized, ParseVocalizedText, VocalizedToString } from "openarabicconjugation/src/Vocalization";
 import { Stem1Context, ConjugationParams, Person, Tense, Voice, Gender, Numerus, Mood, TenseString, VoiceString, AdjectiveDeclensionParams, NounDeclensionParams, AdvancedStemNumber } from "openarabicconjugation/src/Definitions";
 import { NounInput, TargetNounDerivation } from "openarabicconjugation/src/DialectConjugator";
@@ -33,13 +31,6 @@ export class ConjugationService
     constructor()
     {
         this.conjugator = new Conjugator;
-        this._canEdit = new Property(false);
-    }
-
-    //Properties
-    public get canEdit()
-    {
-        return this._canEdit;
     }
 
     //Public methods
@@ -119,5 +110,4 @@ export class ConjugationService
 
     //Private state
     private conjugator: Conjugator;
-    private _canEdit: Property<boolean>;
 }

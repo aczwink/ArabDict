@@ -29,24 +29,11 @@ export class DatabaseController
     }
 
     //Public methods
-    public Close()
-    {
-        if(this.pool === null)
-            return;
-        this.pool.Close();
-        this.pool = null;
-    }
-
     public async CreateAnyConnectionQueryExecutor()
     {
+        throw new Error("TODO: remove this");
         const instance = await this.GetPoolInstance();
         return instance.value.CreateAnyConnectionQueryExecutor();
-    }
-
-    public CreateQueryBuilder()
-    {
-        const factory = new DBFactory;
-        return factory.CreateQueryBuilder("mysql");
     }
 
     public async GetDocumentDB()
@@ -76,7 +63,7 @@ export class DatabaseController
                 host: process.env.ARABDICT_DB_HOST!,
                 username: process.env.ARABDICT_DB_USER!,
                 password: process.env.ARABDICT_DB_PW!,
-                defaultDatabase: "arabdict"
+                defaultDatabase: "arabdict1"
             });
         }
         return this.pool;

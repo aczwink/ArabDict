@@ -16,17 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterButton, RouterState, TitleService } from "acfrontend";
+import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState, TitleService } from "acfrontend";
 import { APIService } from "../services/APIService";
-import { FullWordData, VerbData, WordFunctionData, WordRelation, WordRootDerivationData, WordType, WordVerbDerivationData, WordVerbDerivationType, WordWordDerivationLink, WordWordDerivationType } from "../../dist/api";
+import { FullWordData, OpenArabDictNonVerbDerivationType, OpenArabDictVerbDerivationType, OpenArabDictWordType, VerbData, WordFunctionData, WordRelation, WordRootDerivationData, WordVerbDerivationData, WordWordDerivationLink } from "../../dist/api";
 import { RenderTranslations } from "../shared/translations";
 import { WordDerivationTypeFromWordToString, WordRelationshipTypeToString, WordTypeToText } from "../shared/words";
 import { RemoveTashkil } from "openarabicconjugation/src/Util";
 import { ConjugationService } from "../services/ConjugationService";
 import { WordIdReferenceComponent } from "./WordReferenceComponent";
 import { Stem1DataToStem1ContextOptional } from "../verbs/model";
-import { Subscription } from "../../../../ACTS-Util/core/dist/main";
-import { Case, Gender, Mood, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
+import { Case, Gender, Numerus, Person, Tense, Voice } from "openarabicconjugation/src/Definitions";
 import { NounDeclensionTable } from "./NounDeclensionTable";
 import { DialectType } from "openarabicconjugation/src/Dialects";
 import { DialectsService } from "../services/DialectsService";
@@ -43,7 +42,6 @@ export class ShowWordComponent extends Component
         this.wordId = parseInt(routerState.routeParams.wordId!);
         this.data = null;
         this.rootRadicals = "";
-        this.editSubscription = this.conjugationService.canEdit.Subscribe(this.Update.bind(this));
     }
 
     protected Render(): RenderValue
@@ -51,13 +49,9 @@ export class ShowWordComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        const canEdit = this.conjugationService.canEdit.Get();
         return <fragment>
             <div className="row">
-                <div className="col"><h1>Word: {this.data.word}</h1></div>
-                <div className="col-auto">
-                    {canEdit ? this.RenderEditControls() : null}
-                </div>
+                <h1>Word: {this.data.word}</h1>
             </div>
             <table>
                 <tbody>
@@ -80,8 +74,6 @@ export class ShowWordComponent extends Component
             <a href={"https://en.wiktionary.org/wiki/" + RemoveTashkil(this.data.word)} target="_blank">See on Wiktionary</a>
             <br />
             {this.RenderMultipleFunctions()}
-            <br />
-            {canEdit ? <RouterButton color="primary" route={"/words/add?relatedWordId=" + this.wordId}><BootstrapIcon>plus</BootstrapIcon> Add related word</RouterButton> : null}
         </fragment>;
     }
 
@@ -90,36 +82,28 @@ export class ShowWordComponent extends Component
     private data: FullWordData | null;
     private verb?: VerbData;
     private rootRadicals: string;
-    private editSubscription: Subscription;
 
     //Private methods
-    private IsPlural()
-    {
-        if((this.data!.derivation !== undefined) && ("relationType" in this.data!.derivation))
-            return this.data!.derivation.relationType === WordWordDerivationType.Plural;
-        return false;
-    }
-
-    private RelationshipToText(relationType: WordWordDerivationType, outgoing: boolean)
+    private RelationshipToText(relationType: OpenArabDictNonVerbDerivationType, outgoing: boolean)
     {
         if(outgoing)
             return WordDerivationTypeFromWordToString(relationType);
 
         switch(relationType)
         {
-            case WordWordDerivationType.Feminine:
+            case OpenArabDictNonVerbDerivationType.Feminine:
                 return "male version";
-            case WordWordDerivationType.Plural:
+            case OpenArabDictNonVerbDerivationType.Plural:
                 return "singular";
-            case WordWordDerivationType.Nisba:
+            case OpenArabDictNonVerbDerivationType.Nisba:
                 return "noun version";
-            case WordWordDerivationType.Colloquial:
+            case OpenArabDictNonVerbDerivationType.Colloquial:
                 return "فصحى version";
-            case WordWordDerivationType.Extension:
+            case OpenArabDictNonVerbDerivationType.Extension:
                 return "base";
-            case WordWordDerivationType.ElativeDegree:
+            case OpenArabDictNonVerbDerivationType.ElativeDegree:
                 return "positive degree";
-            case WordWordDerivationType.Singulative:
+            case OpenArabDictNonVerbDerivationType.Singulative:
                 return "collective";
         }
     }
@@ -185,14 +169,6 @@ export class ShowWordComponent extends Component
 
         return <ul>{this.data!.derived.map(x => <li>{this.RenderDerivedTerm(false, x)}</li>)}</ul>;
     }
-
-    private RenderEditControls()
-    {
-        return <fragment>
-            <Anchor route={"words/" + this.data!.id + "/edit"}><BootstrapIcon>pencil</BootstrapIcon></Anchor>
-            <a href="#" className="link-danger" onclick={this.OnDeleteWord.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
-        </fragment>;
-    }
     
     private RenderFunction(func: WordFunctionData)
     {
@@ -233,7 +209,7 @@ export class ShowWordComponent extends Component
     private RenderRelation(related: WordRelation)
     {
         return <li>
-            {WordRelationshipTypeToString(related.relationType)} of <WordIdReferenceComponent wordId={related.relatedWordId} />
+            {WordRelationshipTypeToString(related.relationType as any)} of <WordIdReferenceComponent wordId={related.relatedWordId} />
         </li>;
     }
 
@@ -280,13 +256,13 @@ export class ShowWordComponent extends Component
         {
             switch(verbData.type)
             {
-                case WordVerbDerivationType.ActiveParticiple:
+                case OpenArabDictVerbDerivationType.ActiveParticiple:
                     return "active participle of ";
-                case WordVerbDerivationType.PassiveParticiple:
+                case OpenArabDictVerbDerivationType.PassiveParticiple:
                     return "passive participle of ";
-                case WordVerbDerivationType.Unknown:
+                case OpenArabDictVerbDerivationType.Unknown:
                     return "";
-                case WordVerbDerivationType.VerbalNoun:
+                case OpenArabDictVerbDerivationType.VerbalNoun:
                     return "verbal noun of ";
             }
         }
@@ -298,7 +274,7 @@ export class ShowWordComponent extends Component
             numerus: Numerus.Singular,
             person: Person.Third,
             stem: this.verb!.stem as any,
-            stem1Context: Stem1DataToStem1ContextOptional(root.type, this.verb!.stem1Context),
+            stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, this.verb!.stem1Context),
             voice: Voice.Active
         });
 
@@ -308,13 +284,13 @@ export class ShowWordComponent extends Component
         </tr>;
     }
 
-    private RenderWordDeclensionTables(wordType: WordType)
+    private RenderWordDeclensionTables(wordType: OpenArabDictWordType)
     {
         switch(wordType)
         {
-            case WordType.Adjective:
+            case OpenArabDictWordType.Adjective:
                 return this.RenderAdjectiveDeclensionTable();
-            case WordType.Noun:
+            case OpenArabDictWordType.Noun:
                 return <NounDeclensionTable word={this.data!} />;
         }
         return null;
@@ -329,27 +305,6 @@ export class ShowWordComponent extends Component
     }
 
     //Event handlers
-    private async OnDeleteWord(event: Event)
-    {
-        event.preventDefault();
-
-        if(confirm("Are you sure that you want to delete the word: " + this.data!.word + "?"))
-        {
-            const word = this.data!;
-            this.data = null;
-            await this.apiService.words._any_.delete(this.wordId);
-
-            if(word.derivation === undefined)
-                this.router.RouteTo("/underived_words");
-            else if("rootId" in word.derivation)
-                this.router.RouteTo("/roots/" + word.derivation.rootId);
-            else if("verbId" in word.derivation)
-                this.router.RouteTo("/verbs/" + word.derivation.verbId);
-            else
-                this.router.RouteTo("/underived_words");
-        }
-    }
-
     override async OnInitiated(): Promise<void>
     {
         const response = await this.apiService.words._any_.get(this.wordId);
@@ -381,10 +336,5 @@ export class ShowWordComponent extends Component
             
         this.data = response.data;
         this.titleService.title = this.data.word;
-    }
-
-    override OnUnmounted(): void
-    {
-        this.editSubscription.Unsubscribe();
     }
 }

@@ -20,17 +20,16 @@ import { Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfro
 import { APIService } from "./services/APIService";
 import { DialectStatistics, DictionaryStatistics, RootType, VerbalNounFrequencies } from "../dist/api";
 import { DialectsService } from "./services/DialectsService";
-import { Dictionary } from "../../../ACTS-Util/core/dist/Dictionary";
-import { ObjectExtensions } from "../../../ACTS-Util/core/dist/ObjectExtensions";
+import { Dictionary, KeyValuePair, ObjectExtensions } from "acts-util-core";
 import { ConjugationService } from "./services/ConjugationService";
 import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { AdvancedStemNumber, Stem1Context } from "openarabicconjugation/src/Definitions";
 import { RomanNumberComponent, StemNumberComponent } from "./shared/RomanNumberComponent";
-import { KeyValuePair } from "../../../ACTS-Util/core/dist/KeyValuePair";
 import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
 import { DialectType } from "openarabicconjugation/src/Dialects";
 import { VerbFormComponent } from "./verbs/VerbFormComponent";
 import { RootTypeToPattern, RootTypeToString } from "./roots/general";
+import { ConjugationSchemeToString } from "./verbs/ToStringStuff";
 
 @Injectable
 export class StatisticsComponent extends Component
@@ -51,23 +50,19 @@ export class StatisticsComponent extends Component
             <h3>Ingested data</h3>
             {this.RenderColumnTable("General", this.RenderGeneralStatsTable())}
 
-            {this.RenderKeyValueTable("per dialect", {
+            {this.RenderKeyValueTable("Translations per dialect", {
                 dialect: "Dialect",
-                verbsCount: "Verbs",
-                wordsCount: "Words (excluding verbs)",
-                totalCount: "Total",
+                wordsCount: "Words",
             }, this.data.dialectCounts.map(this.BuildDialectRows.bind(this)))}
 
             <h3>Data analysis</h3>
 
-            {this.RenderKeyValueTable("Roots per type", {
-                rootType: "Root type",
-                pattern: "Pattern",
+            {this.RenderKeyValueTable("Verbs per type", {
+                rootType: "Verb type",
                 count: "Count"
-            }, this.data.rootCounts.map(x => ({
+            }, this.data.verbTypeCounts.map(x => ({
                 ...x,
-                rootType: RootTypeToString(x.rootType),
-                pattern: RootTypeToPattern(x.rootType)
+                rootType: ConjugationSchemeToString(x.scheme),
             })))}
 
             {this.RenderKeyValueTable("Verbs per Stem", {
@@ -118,8 +113,6 @@ export class StatisticsComponent extends Component
 
         return {
             dialect: d.emojiCodes + " " + d.name,
-            totalCount: dialectCounts.verbsCount + dialectCounts.wordsCount,
-            verbsCount: dialectCounts.verbsCount,
             wordsCount: dialectCounts.wordsCount,
         };
     }
@@ -157,13 +150,13 @@ export class StatisticsComponent extends Component
         {
             case RootType.Quadriliteral:
                 return ["ف", "ع", "ل", "ق"];
-            case RootType.Assimilated:
+            case RootType.InitialWeak:
                 return ["و", "ع", "ل"];
-            case RootType.Defective:
+            case RootType.FinalWeak:
                 return ["ف", "ع", "و"];
             case RootType.HamzaOnR1:
                 return ["ء", "ع", "ل"];
-            case RootType.Hollow:
+            case RootType.MiddleWeak:
                 return ["ف", "و", "ل"];
             case RootType.SecondConsonantDoubled:
                 return ["ف", "ل", "ل"];
@@ -230,8 +223,8 @@ export class StatisticsComponent extends Component
 
         const response = await this.apiService.statistics.get();
         this.data = response.data;
-        this.data.dialectCounts.SortByDescending(x => x.verbsCount + x.wordsCount);
-        this.data.rootCounts.SortByDescending(x => x.count);
+        this.data.dialectCounts.SortByDescending(x => x.wordsCount);
+        this.data.verbTypeCounts.SortByDescending(x => x.count);
         this.data.stemCounts.SortByDescending(x => x.count);
 
         this.data.stem1Freq.SortByDescending(x => x.count);

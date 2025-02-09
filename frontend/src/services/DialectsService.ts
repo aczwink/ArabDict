@@ -21,7 +21,7 @@ import { APIService } from "./APIService";
 import { DialectData } from "../../dist/api";
 import { DialectType } from "openarabicconjugation/src/Dialects";
 import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
-import { Dictionary } from "../../../../ACTS-Util/core/dist/Dictionary";
+import { Dictionary } from "acts-util-core";
 
 @Injectable
 export class DialectsService

@@ -39,10 +39,10 @@ export function VerbFormComponent(input: { dialectType: DialectType; root: VerbR
         {
             const choice = choices.types[input.index];
     
-            stem1Context = Stem1DataToStem1Context(input.root.type, choice);
+            stem1Context = Stem1DataToStem1Context(input.dialectType, input.root.type, choice);
         }
         else if(input.stem1Context !== undefined)
-            stem1Context = Stem1DataToStem1Context(input.root.type, input.stem1Context);
+            stem1Context = Stem1DataToStem1Context(input.dialectType, input.root.type, input.stem1Context);
     }
 
     const past = conjugationService.ConjugateToString(input.dialectType, input.root, {

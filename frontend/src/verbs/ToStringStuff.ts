@@ -22,11 +22,19 @@ export function ConjugationSchemeToString(scheme: VerbConjugationScheme): string
 {
     switch(scheme)
     {
+        case VerbConjugationScheme.Assimilated:
+            return "assimilated";
+        case VerbConjugationScheme.AssimilatedAndDefective:
+            return "assimilated+defective";
         case VerbConjugationScheme.Defective:
             return "defective";
+        case VerbConjugationScheme.Geminate:
+            return "geminate";
+        case VerbConjugationScheme.HamzaOnR1:
+            return "hamza on r1";
         case VerbConjugationScheme.Hollow:
             return "hollow";
-        case VerbConjugationScheme.Regular:
-            return "regular";
+        case VerbConjugationScheme.Sound:
+            return "sound";
     }
 }

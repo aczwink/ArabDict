@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, JSX_Fragment, ProgressSpinner, PushButton, Router, RouterButton, RouterState } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
 import { APIService } from "../services/APIService";
 import { RootOverviewData } from "../../dist/api";
 import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
@@ -66,9 +66,6 @@ export class ListRootsComponent extends Component
             </div>
             <div className="container">
                 {this.RenderTable()}
-                <br />
-                <RouterButton color="primary" route="/roots/add"><BootstrapIcon>plus</BootstrapIcon></RouterButton>
-                <RouterButton color="secondary" route="words/add"><BootstrapIcon>plus</BootstrapIcon> word</RouterButton>
             </div>
         </fragment>;
     }
@@ -115,10 +112,7 @@ export class ListRootsComponent extends Component
                 if(DoRootCharactersFormValidRoot(rootRadicals))
                 {
                     const root = new VerbRoot(rootRadicals);
-                    return <>
-                        Root "{root.ToString()}" does not exist.
-                        <PushButton color="success" enabled onActivated={this.OnCreateRoot.bind(this, rootRadicals)}>Create</PushButton>
-                    </>;
+                    return "Root " + root.ToString() + " does not exist.";
                 }
             }
             return "No roots found...";
@@ -140,15 +134,6 @@ export class ListRootsComponent extends Component
     }
 
     //Event handlers
-    private async OnCreateRoot(rootRadicals: string)
-    {
-        const response = await this.apiService.roots.post({
-            flags: 0,
-            radicals: rootRadicals
-        });
-        this.router.RouteTo("/roots/" + response.data);
-    }
-
     override async OnInitiated(): Promise<void>
     {
         if(this.searchText !== null)

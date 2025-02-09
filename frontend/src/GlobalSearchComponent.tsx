@@ -18,7 +18,7 @@
 
 import { Anchor, CheckBox, Component, FormField, Injectable, JSX_CreateElement, LineEdit, ProgressSpinner, Select, Switch } from "acfrontend";
 import { allWordTypes, WordTypeToText } from "./shared/words";
-import { WordSearchDerivation, WordType } from "../dist/api";
+import { OpenArabDictWordType, WordSearchDerivation } from "../dist/api";
 import { GlobalSearchService, SearchResultEntry, VerbByConjugationSearchResultEntry } from "./services/GlobalSearchService";
 import { APIService } from "./services/APIService";
 import { WordOverviewComponent } from "./words/WordOverviewComponent";
@@ -60,7 +60,7 @@ export class GlobalSearchComponent extends Component
     private filter: string;
 
     private extendedSearch: boolean;
-    private wordType: WordType | null;
+    private wordType: OpenArabDictWordType | null;
     private derivation: WordSearchDerivation;
     private includeRelated: boolean;
 
@@ -95,11 +95,11 @@ export class GlobalSearchComponent extends Component
                 offset: this.offset,
                 limit: this.limit
             });
-            this.data = response1.data.words.concat(response2.data.words).map( (x, i) => ({
+            this.data = response1.data.concat(response2.data).map( (x, i) => ({
                 type: "word",
                 word: x,
                 score: x.word.length - this.filter.length,
-                byTranslation: (i > response1.data.words.length),
+                byTranslation: (i > response1.data.length),
                 vocalized: [],
             }));
             this.data.SortByDescending(x => x.score)

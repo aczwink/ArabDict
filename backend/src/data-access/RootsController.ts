@@ -20,12 +20,6 @@ import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { Of } from "acts-util-core";
 
-export interface RootCreationData
-{
-    radicals: string;
-    flags: number;
-}
-
 interface RootOverviewData
 {
     id: number;
@@ -41,22 +35,6 @@ export class RootsController
     }
 
     //Public methods
-    public async AddRoot(data: RootCreationData)
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const result = await conn.InsertRow("roots", data);
-
-        return result.insertId;
-    }
-
-    public async DeleteRoot(rootId: number)
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        await conn.DeleteRows("roots", "id = ?", rootId);
-    }
-
     public async QueryRoot(id: number)
     {
         const document = await this.dbController.GetDocumentDB();
@@ -65,7 +43,8 @@ export class RootsController
         if(root === undefined)
             return undefined;
 
-        return Of<RootCreationData>({
+        return Of<RootOverviewData>({
+            id,
             flags: 0,
             radicals: root.radicals
         });
@@ -81,12 +60,5 @@ export class RootsController
             id: x.id,
             radicals: x.radicals
         })).OrderBy(x => x.radicals).ToArray();
-    }
-
-    public async UpdateRoot(rootId: number, data: RootCreationData)
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        await conn.UpdateRows("roots", { radicals: data.radicals, flags: data.flags }, "id = ?", rootId);
     }
 }

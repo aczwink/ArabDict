@@ -16,21 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, JSX_Fragment, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
-import { FullWordData, RootCreationData, VerbData } from "../../dist/api";
+import { Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
+import { FullWordData, RootOverviewData, VerbData } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { VerbPreviewComponent } from "../verbs/VerbPreviewComponent";
 import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { RootToString, RootTypeToPattern, RootTypeToString } from "./general";
 import { ConjugationService } from "../services/ConjugationService";
-import { Subscription } from "../../../../ACTS-Util/core/dist/main";
 import { Buckwalter } from "openarabicconjugation/dist/Transliteration";
 import { Letter } from "openarabicconjugation/src/Definitions";
 import { RootType, VerbRoot } from "openarabicconjugation/src/VerbRoot";
 
 interface ShowRootData
 {
-    root: RootCreationData;
+    root: RootOverviewData;
     verbs: VerbData[];
 }
 
@@ -44,7 +43,6 @@ export class ShowRootComponent extends Component
         this.rootId = parseInt(routerState.routeParams.rootId!);
         this.data = null;
         this.derivedWords = null;
-        this.editSubscription = this.conjugationService.canEdit.Subscribe(this.Update.bind(this));
     }
     
     protected Render(): RenderValue
@@ -52,14 +50,10 @@ export class ShowRootComponent extends Component
         if(this.data === null)
             return <ProgressSpinner />;
 
-        const canEdit = this.conjugationService.canEdit.Get();
         const root = new VerbRoot(this.data.root.radicals);
         return <fragment>
             <div className="row">
-                <div className="col"><h2>Root: {RootToString(this.data.root)}</h2></div>
-                <div className="col-auto">
-                    {canEdit ? this.RenderEditControls() : null}
-                </div>
+                <h2>Root: {RootToString(this.data.root)}</h2>
             </div>
             <table>
                 <tbody>
@@ -77,10 +71,8 @@ export class ShowRootComponent extends Component
 
             <h4>Verbs</h4>
             {this.data.verbs.map(x => <VerbPreviewComponent root={this.data!.root} verbData={x} />)}
-            {canEdit ? <RouterButton color="primary" route={"/roots/" + this.rootId + "/addverb"}><BootstrapIcon>plus</BootstrapIcon></RouterButton> : null}
             <h4>Words</h4>
             {this.RenderDerivedWords()}
-            {canEdit ? <RouterButton color="primary" route={"/words/add?rootId=" + this.rootId}><BootstrapIcon>plus</BootstrapIcon></RouterButton> : null}
         </fragment>;
     }
 
@@ -88,7 +80,6 @@ export class ShowRootComponent extends Component
     private rootId: number;
     private data: ShowRootData | null;
     private derivedWords: FullWordData[] | null;
-    private editSubscription: Subscription;
 
     //Private methods
     private RenderDerivedWords()
@@ -107,14 +98,6 @@ export class ShowRootComponent extends Component
                 {this.derivedWords.map(x => <WordOverviewComponent word={x} />)}
             </tbody>
         </table>;
-    }
-
-    private RenderEditControls()
-    {
-        return <fragment>
-            <Anchor route={"roots/" + this.rootId + "/edit"}><BootstrapIcon>pencil</BootstrapIcon></Anchor>
-            <a href="#" className="link-danger" onclick={this.OnDeleteRoot.bind(this)}><BootstrapIcon>trash</BootstrapIcon></a>
-        </fragment>;
     }
 
     private ToEjtaalQuery()
@@ -138,19 +121,6 @@ export class ShowRootComponent extends Component
     }
 
     //Event handlers
-    private async OnDeleteRoot(event: Event)
-    {
-        event.preventDefault();
-
-        if(confirm("Are you sure that you want to delete the verb: " + RootToString(this.data!.root) + "?"))
-        {
-            this.data = null;
-            await this.apiService.roots._any_.delete(this.rootId);
-            
-            this.router.RouteTo("/roots");
-        }
-    }
-
     override async OnInitiated(): Promise<void>
     {
         const response1 = await this.apiService.roots._any_.get(this.rootId);
@@ -166,10 +136,5 @@ export class ShowRootComponent extends Component
 
         const response3 = await this.apiService.roots._any_.words.get(this.rootId);
         this.derivedWords = response3.data;
-    }
-
-    override OnUnmounted(): void
-    {
-        this.editSubscription.Unsubscribe();
     }
 }

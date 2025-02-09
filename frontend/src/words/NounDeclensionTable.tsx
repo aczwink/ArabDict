@@ -19,7 +19,7 @@
 import { Component, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { CachedAPIService } from "../services/CachedAPIService";
 import { Case, Gender, NounState, Numerus } from "openarabicconjugation/src/Definitions";
-import { FullWordData, WordWordDerivationType } from "../../dist/api";
+import { FullWordData, OpenArabDictNonVerbDerivationType } from "../../dist/api";
 import { DisplayVocalized, ParseVocalizedText } from "openarabicconjugation/src/Vocalization";
 import { RenderWithDiffHighlights } from "../shared/RenderWithDiffHighlights";
 import { TargetNounDerivation } from "openarabicconjugation/src/DialectConjugator";
@@ -78,14 +78,14 @@ export class NounDeclensionTable extends Component<{ word: FullWordData }>
         if(this.input.word.derivation !== undefined)
         {
             if("relationType" in this.input.word.derivation)
-                return this.input.word.derivation.relationType !== WordWordDerivationType.Plural;
+                return this.input.word.derivation.relationType !== OpenArabDictNonVerbDerivationType.Plural;
         }
         return true;
     }
 
     private async LoadPlurals()
     {
-        const plurals = this.input.word.derived.filter(x => x.relationType === WordWordDerivationType.Plural);
+        const plurals = this.input.word.derived.filter(x => x.relationType === OpenArabDictNonVerbDerivationType.Plural);
         this.plurals = await plurals.Values().Map(x => this.cachedAPIService.QueryWord(x.refWordId)).PromiseAll();
     }
     

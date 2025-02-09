@@ -17,9 +17,14 @@
  * */
 
 import { RootType, VerbRoot } from "openarabicconjugation/src/VerbRoot";
-import { RootCreationData, RootOverviewData } from "../../dist/api";
-import { RootFlags } from "../shared/flags";
+import { RootOverviewData } from "../../dist/api";
 import { IsFlagSet, Letter, Tashkil, TASHKIL_SHADDA } from "openarabicconjugation/src/Definitions";
+
+enum RootFlags
+{
+    //When for a defective root ending in waw, also an equivalent root with ya exists. Same for hollow
+    DefectiveOrHollowAlsoYa = 1,
+}
 
 export function AreValidRootCharacters(rootRadicals: string)
 {
@@ -113,7 +118,7 @@ export function IsValidRootRadical(char: string)
     return false;
 }
 
-export function RootToString(rootData: RootCreationData | RootOverviewData)
+export function RootToString(rootData: RootOverviewData)
 {
     const root = new VerbRoot(rootData.radicals);
 
@@ -121,13 +126,13 @@ export function RootToString(rootData: RootCreationData | RootOverviewData)
     {
         switch(root.type)
         {
-            case RootType.Defective:
+            case RootType.FinalWeak:
                 {
                     const radicalsYa = rootData.radicals.substring(0, 2) + Letter.Ya;
                     const root2 = new VerbRoot(radicalsYa);
                     return root.ToString() + " / " + root2.ToString();
                 }
-            case RootType.Hollow:
+            case RootType.MiddleWeak:
                 {
                     const radicalsYa = root.r1 + Letter.Ya + root.r3;
                     const root2 = new VerbRoot(radicalsYa);
@@ -143,21 +148,21 @@ export function RootTypeToPattern(rootType: RootType)
 {
     switch(rootType)
     {
-        case RootType.Assimilated:
+        case RootType.InitialWeak:
             return "(و|ي)-r2-r3";
-        case RootType.Defective:
+        case RootType.FinalWeak:
             return "r1-r2-(و|ي)";
         case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
             return "و-r2-(و|ي)";
         case RootType.HamzaOnR1:
             return "ء-r2-r3";
-        case RootType.Hollow:
+        case RootType.MiddleWeak:
             return "r1-(و|ي)-r3";
         case RootType.Quadriliteral:
             return "r1-r2-r3-r4";
         case RootType.SecondConsonantDoubled:
             return "r1-r2-r2";
-        case RootType.Sound:
+        case RootType.Regular:
             return "r1-r2-r3";
     }
 }
@@ -166,21 +171,21 @@ export function RootTypeToString(rootType: RootType)
 {
     switch(rootType)
     {
-        case RootType.Assimilated:
-            return "Assimilated";
-        case RootType.Defective:
-            return "Defective";
+        case RootType.InitialWeak:
+            return "Initial-weak";
+        case RootType.FinalWeak:
+            return "final-weak";
         case RootType.DoublyWeak_WawOnR1_WawOrYaOnR3:
-            return "Doubly weak";
+            return "Doubly-weak";
         case RootType.HamzaOnR1:
             return "Hamza on first radical";
-        case RootType.Hollow:
-            return "Hollow";
+        case RootType.MiddleWeak:
+            return "middle-weak";
         case RootType.Quadriliteral:
             return "Quadriliteral";
         case RootType.SecondConsonantDoubled:
             return "Second consonant doubled";
-        case RootType.Sound:
-            return "Sound";
+        case RootType.Regular:
+            return "regular";
     }
 }

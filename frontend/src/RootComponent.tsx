@@ -17,7 +17,6 @@
  * */
 
 import { BootstrapIcon, Component, Injectable, JSX_CreateElement, Navigation, NavItem, ProgressSpinner, RouterComponent } from "acfrontend";
-import { SessionComponent } from "./SessionComponent";
 import { DialectsService } from "./services/DialectsService";
 
 @Injectable
@@ -43,9 +42,6 @@ export class RootComponent extends Component
                     <NavItem route="/learn">Learn</NavItem>
                     <NavItem route="/statistics">Statistics</NavItem>
                 </ul>
-                <div className="row">
-                    <div className="col-auto"><SessionComponent /></div>
-                </div>
             </Navigation>
             <div className="container-fluid">
                 <RouterComponent />
