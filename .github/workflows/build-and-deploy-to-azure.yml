@@ -109,7 +109,7 @@ jobs:
         
       - name: Building OpenArabDictViewer Frontend
         run: |
-          npm link acfrontend openarabicconjugation
+          npm link acfrontend acts-util-core openarabicconjugation
           npm install
           npm run generate-api
           npm run build
