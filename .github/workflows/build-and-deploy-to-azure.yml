@@ -1,0 +1,79 @@
+name: Build and deploy to Azure
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }} # secret containing deployment token for your static web app
+
+jobs:
+  build_and_deploy:
+    permissions:
+      contents: read # for actions/checkout to fetch code
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      #build acts-util-core
+      - name: Checkout ACTS-Util repo
+        uses: actions/checkout@v4
+        with:
+          repository: aczwink/ACTS-Util
+          path: actsutil
+  
+      - name: Building acts-util-core
+        run: |
+          npm install
+          npm run compile
+          npm link
+        working-directory: ./actsutil/core
+
+      #build acfrontend
+      - name: Checkout ACFrontEnd repo
+        uses: actions/checkout@v4
+        with:
+          repository: aczwink/ACFrontEnd
+          path: acfrontend
+
+      - name: Building acfrontend
+        run: |
+          npm link acts-util-core
+          npm install
+          npm run compile
+          npm run build
+          npm link
+        working-directory: ./acfrontend
+
+      #OpenArabDictViewer
+      - name: Building OpenArabDictViewer Frontend
+        run: |
+          npm link acfrontend openarabicconjugation
+          npm install
+          npm run build
+        working-directory: ./frontend
+
+      #Deploying frontend to azure          
+      - name: Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }} # secret containing api token for app
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          action: "upload"
+          ###### Repository/Build Configurations - These values can be configured to match you app requirements. ######
+          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+          app_location: "/frontend/dist"
+          api_location: ${{ env.API_LOCATION }}
+          skip_app_build: true
+          skip_api_build: true
+          output_location: ""
+          is_static_export: true
+          ###### End of Repository/Build Configurations ######
