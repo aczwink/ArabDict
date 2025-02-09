@@ -116,7 +116,7 @@ jobs:
         working-directory: ./frontend
 
       - name: unzip artifact for deployment
-        run: unzip arabdict-frontend-release.zip
+        run: unzip -n arabdict-frontend-release.zip
         working-directory: ./frontend/dist
 
       #Deploying frontend to azure          
