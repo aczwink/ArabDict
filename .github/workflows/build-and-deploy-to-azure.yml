@@ -36,6 +36,24 @@ jobs:
           npm link
         working-directory: ./actsutil/core
 
+      #build acts-util-node
+      - name: Building acts-util-node
+        run: |
+          npm link acts-util-core
+          npm install
+          npm run build
+          npm link
+        working-directory: ./actsutil/node
+  
+      #build acts-util-apilib
+      - name: Building acts-util-apilib
+        run: |
+          npm link acts-util-core acts-util-node
+          npm install
+          npm run build
+          npm link
+        working-directory: ./actsutil/apilib
+
       #build acfrontend
       - name: Checkout ACFrontEnd repo
         uses: actions/checkout@v4
@@ -52,11 +70,48 @@ jobs:
           npm link
         working-directory: ./acfrontend
 
+      #OpenArabicConjugation
+      - name: Checkout OpenArabicConjugation repo
+        uses: actions/checkout@v4
+        with:
+          repository: aczwink/OpenArabicConjugation
+          path: openarabicconjugation
+
+      - name: Building OpenArabicConjugation
+        run: |
+          npm link acts-util-core
+          npm install
+          npm run build
+          npm link
+        working-directory: ./openarabicconjugation/conjugation_engine
+
+      #OpenArabDict
+      - name: Checkout OpenArabDict repo
+        uses: actions/checkout@v4
+        with:
+          repository: aczwink/OpenArabDict
+          path: openarabdict
+
+      - name: Building OpenArabDict
+        run: |
+          npm install
+          npm run build
+          npm link
+        working-directory: ./openarabdict/domain
+
       #OpenArabDictViewer
+      - name: Building OpenArabDictViewer Backend
+        run: |
+          npm link acts-util-apilib acts-util-core acts-util-node openarabdict-domain openarabicconjugation
+          npm install
+          npm run build
+        working-directory: ./backend
+        
       - name: Building OpenArabDictViewer Frontend
         run: |
           npm link acfrontend openarabicconjugation
           npm install
+          npm run generate-api
           npm run build
         working-directory: ./frontend
 

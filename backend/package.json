@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run-dev-server": "nodemon --exec \"npx acts-util-apilib && npx webpack; (export $(cat .env | xargs) && cd dist && node bundle.js)\""
+    "build": "npx acts-util-apilib && npx webpack",
+    "run-dev-server": "nodemon --exec \"npm run build; (export $(cat .env | xargs) && cd dist && node bundle.js)\""
   },
   "keywords": [],
   "author": "Amir Czwink",
