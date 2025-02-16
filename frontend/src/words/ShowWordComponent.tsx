@@ -274,7 +274,7 @@ export class ShowWordComponent extends Component
             numerus: Numerus.Singular,
             person: Person.Third,
             stem: this.verb!.stem as any,
-            stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, this.verb!.stem1Context),
+            stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.DeriveDeducedVerbConjugationScheme(), this.verb!.stem1Context),
             voice: Voice.Active
         });
 

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
+import { Anchor, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterState } from "acfrontend";
 import { FullWordData, RootOverviewData, VerbData, VerbRelation } from "../../dist/api";
 import { APIService } from "../services/APIService";
 import { StemNumberComponent } from "../shared/RomanNumberComponent";
@@ -29,7 +29,6 @@ import { WordOverviewComponent } from "../words/WordOverviewComponent";
 import { WordRelationshipTypeToString } from "../shared/words";
 import { VerbIdReferenceComponent } from "./VerbReferenceComponent";
 import { RootToString } from "../roots/general";
-import { Stem1DataToStem1ContextOptional } from "./model";
 import { Stem1Context, Person, TenseString, VoiceString, Numerus, Gender, Mood, Voice, AdvancedStemNumber } from "openarabicconjugation/src/Definitions";
 import { DisplayVocalized } from "openarabicconjugation/src/Vocalization";
 import { _TODO_CheckConjugation } from "./_ConjugationCheck";
@@ -37,17 +36,20 @@ import { Tense } from "openarabicconjugation/dist/Definitions";
 import { DialectsService } from "../services/DialectsService";
 import { VerbFormComponent } from "./VerbFormComponent";
 import { ConjugationSchemeToString } from "./ToStringStuff";
+import { VerbConjugationService } from "../services/VerbConjugationService";
 
 @Injectable
 export class ShowVerbComponent extends Component
 {
-    constructor(private apiService: APIService, routerState: RouterState, private conjugationService: ConjugationService, private router: Router, private dialectsService: DialectsService)
+    constructor(private apiService: APIService, routerState: RouterState, private conjugationService: ConjugationService, private dialectsService: DialectsService,
+        private verbConjugationService: VerbConjugationService
+    )
     {
         super();
 
         this.verbId = parseInt(routerState.routeParams.verbId!);
         this.data = null;
-        this.root = { flags: 0, radicals: "", id: 0 };
+        this.root = { radicals: "", id: 0 };
         this.derivedWords = null;
     }
     
@@ -57,12 +59,10 @@ export class ShowVerbComponent extends Component
             return <ProgressSpinner />;
 
         const verbData = this.data;
-        const root = new VerbRoot(this.rootRadicals);
-        const dialectType = this.dialectsService.MapIdToType(verbData.dialectId);
-        const stem1ctx = Stem1DataToStem1ContextOptional(dialectType, root.type, verbData.stem1Context);
-        const conjugated = this.conjugationService.ConjugateToStringArgs(dialectType, this.rootRadicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
+        const conjugated = this.verbConjugationService.CreateDisplayVersionOfVerbAsString(this.rootRadicals, this.data);
+        const stem1ctx = this.verbConjugationService.BuildStem1Context(this.rootRadicals, this.data);
 
-        _TODO_CheckConjugation(new VerbRoot(this.rootRadicals), {
+        const check = _TODO_CheckConjugation(this.dialectsService.MapIdToType(this.data.dialectId), new VerbRoot(this.rootRadicals), {
             gender: Gender.Male,
             voice: Voice.Active,
             tense: Tense.Perfect,
@@ -73,6 +73,7 @@ export class ShowVerbComponent extends Component
         });
 
         return <fragment>
+            {check}
             <div className="row">
                 <h2>{conjugated}</h2>
             </div>
@@ -324,7 +325,7 @@ export class ShowVerbComponent extends Component
                         {" "}
                         {stem1ctx === undefined ? null : ConjugationSchemeToString(stem1ctx.scheme)}
                         {" "}
-                        <VerbFormComponent dialectType={dialectType} root={root} stem={this.data!.stem as any} stem1Context={this.data!.stem1Context} />
+                        <VerbFormComponent dialectType={dialectType} root={root} stem={this.data!.stem as any} stem1Context={this.data!.stem1Context} soundOverride={this.data!.soundOverride} />
                     </td>
                 </tr>
                 <tr>

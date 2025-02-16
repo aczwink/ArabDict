@@ -138,7 +138,7 @@ export class StatisticsComponent extends Component
         const meta = GetDialectMetadata(DialectType.ModernStandardArabic);
         const choices = meta.GetStem1ContextChoices(root);
         const choice = choices.types[stem1Context ?? 0];
-        const stemData: AdvancedStemNumber | Stem1Context = (stem1Context === undefined) ? (stem as AdvancedStemNumber) : meta.CreateStem1Context(root.type, choice);
+        const stemData: AdvancedStemNumber | Stem1Context = (stem1Context === undefined) ? (stem as AdvancedStemNumber) : meta.CreateStem1Context(root.DeriveDeducedVerbConjugationScheme(), choice);
 
         const generated = this.conjugationService.GenerateAllPossibleVerbalNouns(radicals, stemData)[verbalNounIndex];
         return generated;

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Gender, Tense, Numerus, Person, Voice, Mood, StemNumber } from "openarabicconjugation/src/Definitions";
+import { Gender, Tense, Numerus, Person, Voice, Mood, StemNumber, VerbConjugationScheme } from "openarabicconjugation/src/Definitions";
 import { GetDialectMetadata } from "openarabicconjugation/src/DialectsMetadata";
 import { Stem1DataToStem1Context } from "./model";
 import { DialectType } from "openarabicconjugation/src/Dialects";
@@ -24,7 +24,7 @@ import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { Use } from "acfrontend";
 import { ConjugationService } from "../services/ConjugationService";
 
-export function VerbFormComponent(input: { dialectType: DialectType; root: VerbRoot; index?: number; stem: StemNumber; stem1Context?: string; })
+export function VerbFormComponent(input: { dialectType: DialectType; root: VerbRoot; index?: number; stem: StemNumber; stem1Context?: string; soundOverride?: boolean })
 {
     const conjugationService = Use(ConjugationService);
 
@@ -35,14 +35,15 @@ export function VerbFormComponent(input: { dialectType: DialectType; root: VerbR
         const choices = GetDialectMetadata(input.dialectType).GetStem1ContextChoices(input.root);
         requiredContext = choices.requiredContext;
 
+        const scheme = (input.soundOverride === true) ? VerbConjugationScheme.Sound : input.root.DeriveDeducedVerbConjugationScheme();
         if(input.index !== undefined)
         {
             const choice = choices.types[input.index];
     
-            stem1Context = Stem1DataToStem1Context(input.dialectType, input.root.type, choice);
+            stem1Context = Stem1DataToStem1Context(input.dialectType, scheme, choice);
         }
         else if(input.stem1Context !== undefined)
-            stem1Context = Stem1DataToStem1Context(input.dialectType, input.root.type, input.stem1Context);
+            stem1Context = Stem1DataToStem1Context(input.dialectType, scheme, input.stem1Context);
     }
 
     const past = conjugationService.ConjugateToString(input.dialectType, input.root, {

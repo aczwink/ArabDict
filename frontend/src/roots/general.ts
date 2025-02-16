@@ -18,13 +18,7 @@
 
 import { RootType, VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { RootOverviewData } from "../../dist/api";
-import { IsFlagSet, Letter, Tashkil, TASHKIL_SHADDA } from "openarabicconjugation/src/Definitions";
-
-enum RootFlags
-{
-    //When for a defective root ending in waw, also an equivalent root with ya exists. Same for hollow
-    DefectiveOrHollowAlsoYa = 1,
-}
+import { ExtraTashkil, Letter, Tashkil } from "openarabicconjugation/src/Definitions";
 
 export function AreValidRootCharacters(rootRadicals: string)
 {
@@ -65,7 +59,8 @@ function IsArabicChar(char: string)
         case Tashkil.Kasra:
         case Tashkil.Kasratan:
         case Tashkil.Sukun:
-        case TASHKIL_SHADDA:
+        case ExtraTashkil.Shadda:
+        case ExtraTashkil.DaggerAlef:
             return true;
     }
     return IsValidRootRadical(char);
@@ -122,7 +117,7 @@ export function RootToString(rootData: RootOverviewData)
 {
     const root = new VerbRoot(rootData.radicals);
 
-    if(IsFlagSet(rootData.flags, RootFlags.DefectiveOrHollowAlsoYa))
+    if(rootData.ya === true)
     {
         switch(root.type)
         {

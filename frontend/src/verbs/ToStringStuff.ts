@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
 import { VerbConjugationScheme } from "openarabicconjugation/src/Definitions";
 
 export function ConjugationSchemeToString(scheme: VerbConjugationScheme): string
@@ -23,18 +22,18 @@ export function ConjugationSchemeToString(scheme: VerbConjugationScheme): string
     switch(scheme)
     {
         case VerbConjugationScheme.Assimilated:
-            return "assimilated";
+            return "Assimilated";
         case VerbConjugationScheme.AssimilatedAndDefective:
-            return "assimilated+defective";
+            return "Assimilated + Defective";
         case VerbConjugationScheme.Defective:
-            return "defective";
+            return "Defective";
         case VerbConjugationScheme.Geminate:
-            return "geminate";
+            return "Geminate";
         case VerbConjugationScheme.HamzaOnR1:
-            return "hamza on r1";
+            return "Hamza on R1";
         case VerbConjugationScheme.Hollow:
-            return "hollow";
+            return "Hollow";
         case VerbConjugationScheme.Sound:
-            return "sound";
+            return "Sound";
     }
 }

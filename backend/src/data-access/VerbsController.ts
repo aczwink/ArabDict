@@ -37,6 +37,7 @@ export interface VerbUpdateData
     dialectId: number;
     stem: number;
     stem1Context?: string;
+    soundOverride?: boolean;
     translations: TranslationEntry[];
     related: VerbRelation[];
 }
@@ -74,6 +75,7 @@ export class VerbsController
             stem: row.stem,
             translations: row.translations,
             stem1Context: row.stemParameters,
+            soundOverride: row.soundOverride,
             related: await this.QueryRelatedVerbs(row.id),
         };
     }
@@ -84,16 +86,6 @@ export class VerbsController
 
         const result = await document.words.Values().Filter(x => (x.type === OpenArabDictWordType.Verb) && (x.rootId === rootId)).Map(x => this.QueryVerb(x.id)).PromiseAll();
         return result.Values().NotUndefined().ToArray();
-    }
-
-    public async QueryVerbsCount()
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const row = await conn.SelectOne("SELECT COUNT(*) AS cnt FROM verbs");
-        if(row === undefined)
-            return 0;
-        return row.cnt as number;
     }
 
     //Private methods

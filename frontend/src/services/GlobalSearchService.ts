@@ -257,7 +257,7 @@ export class GlobalSearchService
                 numerus: Numerus.Singular,
                 person: Person.Third,
                 stem: x.verbData.stem as any,
-                stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, x.verbData.stem1Context),
+                stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.DeriveDeducedVerbConjugationScheme(), x.verbData.stem1Context),
                 voice: Voice.Active
             });
         }
@@ -369,7 +369,7 @@ export class GlobalSearchService
             {
                 if(params.stem === 1)
                 {
-                    if(EqualsAny(Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, entry.stem1Context), params.stem1Context))
+                    if(EqualsAny(Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.DeriveDeducedVerbConjugationScheme(), entry.stem1Context), params.stem1Context))
                         return entry.id;
                 }
                 else
