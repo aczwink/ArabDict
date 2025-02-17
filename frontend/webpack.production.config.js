@@ -1,5 +1,3 @@
-const Dotenv = require('dotenv-webpack');
-
 module.exports = {
     mode: "production",
 
@@ -12,12 +10,6 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".tsx", ".js"]
     },
-
-    plugins: [
-        new Dotenv({
-            path: './.env.production'
-        })
-    ],
 
     module: {
         rules: [

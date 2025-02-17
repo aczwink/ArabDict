@@ -54,6 +54,21 @@ class _api_
     }
 }
 
+//TODO: redesign this. should be a child of words
+@APIController("randomword")
+class _api3_
+{
+    constructor(private wordsController: WordsController)
+    {
+    }
+
+    @Get()
+    public async QueryRandomWord()
+    {
+        return await this.wordsController.QueryRandomWordId();
+    }
+}
+
 @APIController("words/{wordId}")
 class _api2_
 {

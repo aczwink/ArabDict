@@ -18,7 +18,7 @@
 
 import { CheckBox, Component, FormField, Injectable, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 import { APIService } from "./services/APIService";
-import { FullWordData, VerbData, WordFunctionData } from "../dist/api";
+import { FullWordData, WordFunctionData } from "../dist/api";
 import { ConjugationService } from "./services/ConjugationService";
 import { RemoveTashkilButKeepShadda } from "openarabicconjugation/src/Util";
 import { RenderTranslations } from "./shared/translations";
@@ -28,11 +28,12 @@ import { WordTypeToText } from "./shared/words";
 import { DialectsService } from "./services/DialectsService";
 import { VerbRoot } from "openarabicconjugation/src/VerbRoot";
 import { DialectType } from "openarabicconjugation/src/Dialects";
+import { CachedAPIService } from "./services/CachedAPIService";
 
 @Injectable
 export class LearnComponent extends Component
 {
-    constructor(private apiService: APIService, private conjugationService: ConjugationService, private dialectsService: DialectsService)
+    constructor(private apiService: APIService, private cachedAPIService: CachedAPIService, private conjugationService: ConjugationService, private dialectsService: DialectsService)
     {
         super();
 
@@ -48,13 +49,13 @@ export class LearnComponent extends Component
             return <ProgressSpinner />;
 
         const root = new VerbRoot(this.rootRadicals);
-        const title = ("rootId" in this.data) ? this.conjugationService.ConjugateToString(this.dialectsService.MapIdToType(this.data.dialectId), root, {
+        /*const title = ("rootId" in this.data) ? this.conjugationService.ConjugateToString(this.dialectsService.MapIdToType(this.data.dialectId), root, {
             gender: Gender.Male,
             tense: Tense.Perfect,
             numerus: Numerus.Singular,
             person: Person.Third,
             stem: this.data.stem as any,
-            stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, this.data.stem1Context),
+            stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.DeriveDeducedVerbConjugationScheme(), this.data.stem1Context),
             voice: Voice.Active
         }) : this.data.word;
 
@@ -83,11 +84,11 @@ export class LearnComponent extends Component
                 </FormField>
                 <button type="button" className="btn btn-primary" onclick={() => this.resolve = true}>Resolve</button>
             </div>
-        </div>;
+        </div>;*/
     }
 
     //Private state
-    private data: VerbData | FullWordData | null;
+    private data: FullWordData | null;
     private rootRadicals: string;
     private showTashkil: boolean;
     private resolve: boolean;
@@ -99,28 +100,19 @@ export class LearnComponent extends Component
         this.showTashkil = false;
         this.resolve = false;
 
-        const response = await this.apiService.random.get();
-        if(response.data.type === "verb")
-        {
-            const response2 = await this.apiService.verbs.get({ verbId: response.data.id });
-            if(response2.statusCode !== 200)
-                throw new Error("TODO: implement me");
+        const response = await this.apiService.randomword.get();
+        const wordId = response.data;
 
-            const response3 = await this.apiService.roots._any_.get(response2.data.rootId);
-            if(response3.statusCode !== 200)
-                throw new Error("TODO: implement me");
-            this.rootRadicals = response3.data.radicals;
+        const word = await this.cachedAPIService.QueryWord(wordId);
+
+        /*const response3 = await this.apiService.roots._any_.get(response2.data.rootId);
+        if(response3.statusCode !== 200)
+            throw new Error("TODO: implement me");
+        this.rootRadicals = response3.data.radicals;*/
 
 
-            this.data = response2.data;
-        }
-        else
-        {
-            const response2 = await this.apiService.words._any_.get(response.data.id);
-            if(response2.statusCode !== 200)
-                throw new Error("TODO: implement me");
-            this.data = response2.data;
-        }
+        this.data = word;
+        throw new Error("TODO: need root first, i.e. fix diff between verbs and words");
     }
 
     private RenderFunction(func: WordFunctionData)

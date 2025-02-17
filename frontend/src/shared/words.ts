@@ -141,5 +141,7 @@ export function WordTypeToText(wordType: OpenArabDictWordType)
             return "Interjection";
         case OpenArabDictWordType.Verb:
             return "Verb";
+        case OpenArabDictWordType.Numeral:
+            return "Numeral";
     }
 }

@@ -30,11 +30,13 @@ import { CachedAPIService, FullVerbData } from "../services/CachedAPIService";
 import { _TODO_CheckConjugation } from "./_ConjugationCheck";
 import { ModernStandardArabicStem1ContextType } from "openarabicconjugation/src/DialectsMetadata";
 import { DialectsService } from "../services/DialectsService";
+import { VerbConjugationService } from "../services/VerbConjugationService";
 
 @Injectable
 export class VerbPreviewComponent extends Component<{ root: RootOverviewData; verbData: VerbData }>
 {
-    constructor(private apiService: APIService, private conjugationService: ConjugationService, private dialectsService: DialectsService)
+    constructor(private apiService: APIService, private conjugationService: ConjugationService, private dialectsService: DialectsService,
+        private verbConjugationService: VerbConjugationService)
     {
         super();
 
@@ -46,12 +48,12 @@ export class VerbPreviewComponent extends Component<{ root: RootOverviewData; ve
         const verbData = this.input.verbData;
         const root = new VerbRoot(this.input.root.radicals);
         const dialectType = this.dialectsService.MapIdToType(verbData.dialectId);
-        const stem1ctx = Stem1DataToStem1ContextOptional(dialectType, root.type, verbData.stem1Context);
-        const conjugated = this.conjugationService.Conjugate(dialectType, this.input.root.radicals, verbData.stem, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, stem1ctx);
-        const conjugationReference = this.conjugationService.Conjugate(dialectType, this.input.root.radicals, 1, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1Context(dialectType, root.type, ModernStandardArabicStem1ContextType.RegularOrHollow_PastI_PresentI));
+        const stem1ctx = Stem1DataToStem1ContextOptional(dialectType, root.DeriveDeducedVerbConjugationScheme(), verbData.stem1Context);
+        const conjugated = this.verbConjugationService.CreateDisplayVersionOfVerb(this.input.root.radicals, this.input.verbData);
+        const conjugationReference = this.conjugationService.Conjugate(dialectType, this.input.root.radicals, 1, "perfect", "active", Gender.Male, Person.Third, Numerus.Singular, Mood.Indicative, Stem1DataToStem1Context(dialectType, root.DeriveDeducedVerbConjugationScheme(), ModernStandardArabicStem1ContextType.RegularOrHollow_PastI_PresentI));
         const verbPresentation = (verbData.stem === 1) ? this.conjugationService.VocalizedToString(conjugated) : RenderWithDiffHighlights(conjugated, conjugationReference);
 
-        _TODO_CheckConjugation(root, {
+        const check = _TODO_CheckConjugation(dialectType, root, {
             gender: Gender.Male,
             voice: Voice.Active,
             tense: Tense.Perfect,
@@ -62,6 +64,7 @@ export class VerbPreviewComponent extends Component<{ root: RootOverviewData; ve
         });
 
         return <div className="border border-3 rounded-2 p-2 my-2 shadow-sm">
+            {check}
             <h4>
                 <Anchor route={"/verbs/" + verbData.id}>
                     {this.dialectsService.GetDialect(verbData.dialectId).emojiCodes}

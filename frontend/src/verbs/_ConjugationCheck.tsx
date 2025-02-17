@@ -15,10 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { JSX_CreateElement } from "acfrontend";
 import { ConjugationParams, Letter, Tashkil } from "openarabicconjugation/src/Definitions";
+import { DialectType } from "openarabicconjugation/src/Dialects";
 import { VerbRoot, RootType } from "openarabicconjugation/src/VerbRoot";
 
-export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams)
+export function _TODO_CheckConjugation(dialectType: DialectType, root: VerbRoot, params: ConjugationParams)
 {
     const needNothing = 0;
     const needPassive = 1;
@@ -143,16 +145,19 @@ export function _TODO_CheckConjugation(root: VerbRoot, params: ConjugationParams
         return needNothing;
     }
 
+    if(dialectType !== DialectType.ModernStandardArabic)
+        return null;
+
     const special = IsSpecial();
     switch(special)
     {
         case needNothing:
             break;
         case needPassive:
-            alert("CHECK WIKTIONARY IF PASSIVE EXISTS AND WRITE TEST!");
-            break;
+            return <h1 className="text-bg-danger p-3">CHECK WIKTIONARY IF PASSIVE EXISTS AND WRITE TEST!</h1>;
         case need:
-            alert("CHECK WIKTIONARY AND WRITE TEST!");
-            break;
+            return <h1 className="text-bg-danger p-3">CHECK WIKTIONARY AND WRITE TEST!</h1>;
     }
+
+    return null;
 }

@@ -25,7 +25,7 @@ import { RootsController } from "./RootsController";
 import { Conjugator } from "openarabicconjugation/src/Conjugator";
 import { WordsController } from "./WordsController";
 import { DisplayVocalized, VocalizedToString } from "openarabicconjugation/src/Vocalization";
-import { AdvancedStemNumber, MapRootTypeToConjugationScheme, Stem1Context, VerbConjugationScheme } from "openarabicconjugation/src/Definitions";
+import { AdvancedStemNumber, Stem1Context, VerbConjugationScheme } from "openarabicconjugation/src/Definitions";
 import { DialectsService } from "../services/DialectsService";
 import { OpenArabDictWordType } from "openarabdict-domain";
 
@@ -101,12 +101,12 @@ export class StatisticsController
     }
 
     //Private methods
-    private GenerateStemData(rootType: RootType, verbData: VerbUpdateData): AdvancedStemNumber | Stem1Context
+    private GenerateStemData(verbConjugationScheme: VerbConjugationScheme, verbData: VerbUpdateData): AdvancedStemNumber | Stem1Context
     {
         if(verbData.stem1Context === undefined)
             return verbData.stem as AdvancedStemNumber;
 
-        return this.dialectsService.GetDialectMetaData(verbData.dialectId).CreateStem1Context(rootType, verbData.stem1Context);
+        return this.dialectsService.GetDialectMetaData(verbData.dialectId).CreateStem1Context(verbConjugationScheme, verbData.stem1Context);
     }
 
     private async QueryDialectCounts()
@@ -142,7 +142,7 @@ export class StatisticsController
 
             const root = document.roots.find(x => x.id === word.rootId)!;
             const rootInstance = new VerbRoot(root.radicals);
-            const scheme = MapRootTypeToConjugationScheme(rootInstance.type);
+            const scheme = rootInstance.DeriveDeducedVerbConjugationScheme();
             
             counts[scheme] = (counts[scheme] ?? 0) + 1;
         }
@@ -223,7 +223,7 @@ export class StatisticsController
             const rootData = await this.rootsController.QueryRoot(verbData!.rootId);
 
             const root = new VerbRoot(rootData!.radicals);
-            const generated = conjugator.GenerateAllPossibleVerbalNouns(root, this.GenerateStemData(root.type, verbData!));
+            const generated = conjugator.GenerateAllPossibleVerbalNouns(root, this.GenerateStemData(root.DeriveDeducedVerbConjugationScheme(), verbData!));
             const verbalNounPossibilities = generated.map(VocalizedArrayToString);
 
             const wordData = await this.wordsController.QueryWord(row.wordId);

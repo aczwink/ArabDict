@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { DBQueryExecutor, Injectable } from "acts-util-node";
+import { Injectable } from "acts-util-node";
 import { DatabaseController } from "./DatabaseController";
 import { RemoveTashkil } from "openarabicconjugation/src/Util";
 import { OpenArabDictNonVerbDerivationType, OpenArabDictVerbDerivationType, OpenArabDictWord, OpenArabDictWordParentType, OpenArabDictWordRelationshipType, OpenArabDictWordType } from "openarabdict-domain";
@@ -91,10 +91,20 @@ export class WordsController
         const document = await this.dbController.GetDocumentDB();
 
         filterCriteria.translation = filterCriteria.translation.toLowerCase();
-        filterCriteria.word = this.MapWordToSearchVariant(filterCriteria.word)
+        filterCriteria.word = this.MapWordToSearchVariant(filterCriteria.word);
         const filtered = document.words.filter(this.DoesWordMatchFilterCriteria.bind(this, filterCriteria));
 
         return filtered.Values().Skip(offset).Take(limit).Map(this.QueryFullWordData.bind(this)).PromiseAll();
+    }
+
+    public async QueryRandomWordId()
+    {
+        const document = await this.dbController.GetDocumentDB();
+
+        const count = document.words.length;
+        const index = Math.floor(count * Math.random());
+
+        return document.words[index].id;
     }
 
     public async QueryRootDerivedWords(rootId: number)
@@ -130,16 +140,6 @@ export class WordsController
             return await this.QueryFullWordData(word);
 
         return undefined;
-    }
-
-    public async QueryWordsCount()
-    {
-        const conn = await this.dbController.CreateAnyConnectionQueryExecutor();
-
-        const row = await conn.SelectOne("SELECT COUNT(*) AS cnt FROM words");
-        if(row === undefined)
-            return 0;
-        return row.cnt as number;
     }
 
     //Private methods

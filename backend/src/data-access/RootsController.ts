@@ -24,7 +24,7 @@ interface RootOverviewData
 {
     id: number;
     radicals: string;
-    flags: number;
+    ya?: boolean;
 }
 
 @Injectable
@@ -45,8 +45,8 @@ export class RootsController
 
         return Of<RootOverviewData>({
             id,
-            flags: 0,
-            radicals: root.radicals
+            radicals: root.radicals,
+            ya: root.ya
         });
     }
 
@@ -56,9 +56,9 @@ export class RootsController
 
         const filtered = document.roots.Values().Filter(x => x.radicals.startsWith(prefix));
         return filtered.Map<RootOverviewData>( x => ({
-            flags: 0,
             id: x.id,
-            radicals: x.radicals
+            radicals: x.radicals,
+            ya: x.ya
         })).OrderBy(x => x.radicals).ToArray();
     }
 }

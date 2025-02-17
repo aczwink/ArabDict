@@ -45,7 +45,7 @@ export class VerbReferenceComponent extends Component<{ root: RootOverviewData; 
             numerus: Numerus.Singular,
             person: Person.Third,
             stem: verbData.stem as any,
-            stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.type, verbData.stem1Context),
+            stem1Context: Stem1DataToStem1ContextOptional(DialectType.ModernStandardArabic, root.DeriveDeducedVerbConjugationScheme(), verbData.stem1Context),
             voice: Voice.Active
         });
 
