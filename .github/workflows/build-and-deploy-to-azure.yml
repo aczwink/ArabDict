@@ -120,6 +120,7 @@ jobs:
           rm arabdict-frontend-release.zip
           mv index.htm index.html
           echo 'window.process = { env: { ARABDICT_BACKEND_HOSTNAME: "openarabdictviewer-backend.azurewebsites.net", ARABDICT_BACKEND_PORT: 443, ARABDICT_BACKEND_PROTOCOL: "https" } };' >> env.js
+          echo '{ "navigationFallback": { "rewrite": "/index.html" } }' >> staticwebapp.config.json
         working-directory: ./frontend/dist
 
       # deploy backend to azure
