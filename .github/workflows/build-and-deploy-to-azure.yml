@@ -119,6 +119,7 @@ jobs:
           unzip -n arabdict-frontend-release.zip
           rm arabdict-frontend-release.zip
           mv index.htm index.html
+          echo 'window.process = { env: { ARABDICT_BACKEND_HOSTNAME: "openarabdictviewer-backend.azurewebsites.net", ARABDICT_BACKEND_PORT: 443, ARABDICT_BACKEND_PROTOCOL: "https" } };' >> env.js
         working-directory: ./frontend/dist
 
       # deploy backend to azure
