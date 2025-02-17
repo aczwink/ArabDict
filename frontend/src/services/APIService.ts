@@ -21,7 +21,7 @@ import { APIServiceInterceptor } from "../shared/APIServiceInterceptor";
 
 export const g_backendHostname = process.env.ARABDICT_BACKEND_HOSTNAME!;
 export const g_backendPort = parseInt(process.env.ARABDICT_BACKEND_PORT!);
-export const g_backendProtocol = process.env.ARABDICT_BACKEND_PROTOCOL!;
+export const g_backendProtocol = process.env.ARABDICT_BACKEND_PROTOCOL! as any;
 
 @Injectable
 export class APIService extends API
